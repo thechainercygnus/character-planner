@@ -12,9 +12,10 @@ class GearTarget(BaseModel):
     source: str
     priority: int | None = None
 
-    # Optional hand-entered item data (from Wowhead, ForeverDB...). Used when the
-    # Battle.net item search can't find the item, as happens for Forever-new items.
+    # The item's id: the reliable key for Forever Companion lookups (ADR 0004).
     item_id: int | None = None
+    # Optional hand-entered item facts (from Wowhead, ForeverDB...). They override every
+    # other source, so use them for corrections or items no source has.
     item_level: int | None = None
     armor_type: str | None = None  # Cloth, Leather, Mail, Plate, Shield...
     armor: int | None = None
@@ -22,9 +23,13 @@ class GearTarget(BaseModel):
 
     @property
     def has_manual_data(self) -> bool:
-        return any(
-            value is not None for value in (self.item_id, self.item_level, self.armor_type)
-        ) or bool(self.armor is not None or self.stats)
+        """Hand-entered item facts. item_id alone doesn't count: it's a lookup key."""
+        return (
+            self.item_level is not None
+            or self.armor_type is not None
+            or self.armor is not None
+            or bool(self.stats)
+        )
 
 
 class Bracket(BaseModel):
@@ -43,6 +48,11 @@ class GearTargets(BaseModel):
     def next_after(self, level: int) -> Bracket | None:
         upcoming = [b for b in self.brackets if b.min_level > level]
         return min(upcoming, key=lambda b: b.min_level, default=None)
+
+    def item_ids(self) -> list[int]:
+        """Hand-entered item ids across all brackets, deduplicated."""
+        ids = (t.item_id for b in self.brackets for t in b.targets if t.item_id is not None)
+        return list(dict.fromkeys(ids))
 
     def item_names(self) -> list[str]:
         """Every target item name across all brackets, deduplicated, in file order."""

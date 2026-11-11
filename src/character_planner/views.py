@@ -12,8 +12,11 @@ from typing import Any, Literal
 from pydantic import BaseModel
 
 from character_planner import fields
+from character_planner.companion import ATTRIBUTION as COMPANION_ATTRIBUTION
+from character_planner.companion import CompanionInfo
 from character_planner.curated import GearTarget, GearTargets
 from character_planner.db import CatalogItem, Snapshot
+from character_planner.scoring import Weights, score
 
 # Short local names for the defensive readers.
 _get = fields.get
@@ -40,6 +43,7 @@ class EquippedItem(BaseModel):
     armor_type: str | None = None  # item subclass: Cloth, Leather, Mail, Shield, Axe...
     armor: int | None = None
     stats: list[ItemStat] = []
+    dps: float | None = None
     icon_url: str | None = None
 
 
@@ -96,10 +100,16 @@ class CharacterView(BaseModel):
 Verdict = Literal["reached", "upgrade", "sidegrade", "downgrade", "unknown"]
 
 
-class TargetInfo(BaseModel):
-    """What we know about a target item, from the item search or gear_targets.yaml."""
+SourceName = Literal["blizzard", "companion", "manual"]
 
-    source: Literal["api", "manual"]
+
+class TargetInfo(BaseModel):
+    """What we know about a target item, merged from every source (ADR 0004).
+
+    Precedence per field: manual (gear_targets.yaml) > Blizzard > Forever Companion.
+    """
+
+    sources: list[SourceName]
     item_id: int | None = None
     item_level: int | None = None
     required_level: int | None = None
@@ -107,7 +117,13 @@ class TargetInfo(BaseModel):
     armor_type: str | None = None
     armor: int | None = None
     stats: list[ItemStat] = []
+    dps: float | None = None
     icon_url: str | None = None
+    drops: list[str] = []
+    rewards: list[str] = []
+    verified: int | None = None
+    wowhead: str | None = None
+    conflicts: list[str] = []
 
 
 class GearRow(BaseModel):
@@ -118,6 +134,10 @@ class GearRow(BaseModel):
     reached: bool
     verdict: Verdict
     item_level_delta: int | None
+    armor_delta: int | None = None
+    stat_deltas: dict[str, int] = {}
+    score_delta: float | None = None
+    verdict_basis: Literal["score", "item_level", "none"] = "none"
     warning: str | None
 
 
@@ -127,6 +147,7 @@ class GearPlan(BaseModel):
     next_bracket_level: int | None
     next_bracket_size: int
     rows: list[GearRow]
+    attributions: list[dict[str, str]] = []  # credits the data sources require
 
 
 # --- parsers ----------------------------------------------------------------------------
@@ -161,6 +182,7 @@ def parse_equipment(equipment: Any) -> list[EquippedItem]:
                 armor_type=_name(_get(item, "item_subclass", "name")),
                 armor=_int(_get(item, "armor", "value")),
                 stats=stats,
+                dps=_float(_get(item, "weapon", "dps", "value")),
             )
         )
     return parsed
@@ -267,49 +289,166 @@ SIDEGRADE_BAND = 2
 ARMOR_TIERS = {"Cloth": 1, "Leather": 2, "Mail": 3, "Plate": 4}
 
 
+def _first[T](*values: T | None) -> T | None:
+    return next((v for v in values if v is not None), None)
+
+
 def target_info(
     target: GearTarget,
     catalog: Mapping[str, CatalogItem],
     icons: Mapping[int, str],
+    companion: Mapping[int, CompanionInfo] | None = None,
 ) -> TargetInfo | None:
-    """API data for the target when the search found it, filled in with manual YAML data."""
+    """Merge Blizzard search, Forever Companion and manual data for one target."""
     entry = catalog.get(target.item.casefold().strip())
-    data = entry.payload if entry and entry.found else None
-    if data is None and not target.has_manual_data:
+    blizzard = entry.payload if entry and entry.found else None
+    item_id = _first(target.item_id, _int(_get(blizzard, "id")))
+    comp = (companion or {}).get(item_id) if item_id is not None else None
+    manual = target.has_manual_data
+
+    sources: list[SourceName] = []
+    if blizzard is not None:
+        sources.append("blizzard")
+    if comp is not None:
+        sources.append("companion")
+    if manual:
+        sources.append("manual")
+    if not sources:
         return None
 
-    item_id = _int(_get(data, "id")) or target.item_id
+    bz_level = _int(_get(blizzard, "level"))
+    bz_armor_type = _name(_get(blizzard, "item_subclass", "name"))
+    conflicts: list[str] = []
+    if (
+        comp
+        and bz_level is not None
+        and comp.item_level is not None
+        and bz_level != comp.item_level
+    ):
+        conflicts.append(f"item level: Blizzard {bz_level}, Forever Companion {comp.item_level}")
+    if (
+        comp
+        and bz_armor_type
+        and comp.armor_type
+        and bz_armor_type.casefold() != comp.armor_type.casefold()
+    ):
+        conflicts.append(
+            f"armor type: Blizzard {bz_armor_type}, Forever Companion {comp.armor_type}"
+        )
+
+    stats = target.stats or (comp.stats if comp else {})
     return TargetInfo(
-        source="api" if data is not None else "manual",
+        sources=sources,
         item_id=item_id,
-        item_level=_int(_get(data, "level")) or target.item_level,
-        required_level=_int(_get(data, "required_level")),
-        quality=_get(data, "quality", "type"),
-        armor_type=_name(_get(data, "item_subclass", "name")) or target.armor_type,
-        armor=target.armor,
-        stats=[ItemStat(name=k, value=v) for k, v in target.stats.items()],
-        icon_url=icons.get(item_id) if item_id else None,
+        item_level=_first(target.item_level, bz_level, comp.item_level if comp else None),
+        required_level=_first(
+            _int(_get(blizzard, "required_level")), comp.required_level if comp else None
+        ),
+        quality=_first(_get(blizzard, "quality", "type"), comp.quality if comp else None),
+        armor_type=_first(target.armor_type, bz_armor_type, comp.armor_type if comp else None),
+        armor=_first(target.armor, comp.armor if comp else None),
+        stats=[ItemStat(name=name, value=value) for name, value in stats.items()],
+        dps=comp.dps if comp else None,
+        icon_url=_first(icons.get(item_id) if item_id else None, comp.icon_url if comp else None),
+        drops=comp.drops if comp else [],
+        rewards=comp.rewards if comp else [],
+        verified=comp.verified if comp else None,
+        wowhead=comp.wowhead if comp else None,
+        conflicts=conflicts,
     )
 
 
+def deltas(
+    equipped: EquippedItem | None, info: TargetInfo | None
+) -> tuple[int | None, dict[str, int]]:
+    """Armor and stat change from swapping the equipped item for the target."""
+    if equipped is None or info is None:
+        return None, {}
+    armor = (
+        info.armor - (equipped.armor or 0)
+        if info.armor is not None and (equipped.armor is not None or equipped.armor_type)
+        else None
+    )
+    known_stats = info.stats or info.armor is not None  # stat lines were read for this item
+    if not known_stats:
+        return armor, {}
+    worn = {s.name: s.value for s in equipped.stats}
+    wanted = {s.name: s.value for s in info.stats}
+    changes = {name: wanted.get(name, 0) - worn.get(name, 0) for name in {*worn, *wanted}}
+    return armor, {name: change for name, change in sorted(changes.items()) if change}
+
+
+# Score differences within this band count as a sidegrade.
+SCORE_SIDEGRADE_BAND = 1.0
+
+
+def has_stat_data(info: TargetInfo | None) -> bool:
+    return info is not None and (info.armor is not None or bool(info.stats) or info.dps is not None)
+
+
+def score_delta(
+    slot: str, equipped: EquippedItem | None, info: TargetInfo | None, weights: Weights | None
+) -> float | None:
+    """Weighted score of the target minus the equipped item's; None without stat data."""
+    if weights is None or info is None or not has_stat_data(info):
+        return None
+    target_score = score(
+        weights,
+        slot=slot,
+        armor=info.armor,
+        stats={s.name: s.value for s in info.stats},
+        dps=info.dps,
+    )
+    worn_score = (
+        score(
+            weights,
+            slot=slot,
+            armor=equipped.armor,
+            stats={s.name: s.value for s in equipped.stats},
+            dps=equipped.dps,
+        )
+        if equipped is not None
+        else 0.0
+    )
+    return round(target_score - worn_score, 2)
+
+
 def judge(
-    target: GearTarget, equipped: EquippedItem | None, info: TargetInfo | None
-) -> tuple[Verdict, int | None]:
+    target: GearTarget,
+    equipped: EquippedItem | None,
+    info: TargetInfo | None,
+    gain: float | None = None,
+) -> tuple[Verdict, int | None, Literal["score", "item_level", "none"]]:
+    """Verdict, item level change, and what the verdict was based on.
+
+    A weighted score gain decides when both items' stats are known; otherwise item
+    level does (ADR 0003, 0005).
+    """
     if equipped is not None and equipped.name.casefold() == target.item.casefold():
-        return "reached", 0
+        return "reached", 0, "none"
     target_level = info.item_level if info else None
+    level_delta = (
+        target_level - equipped.item_level
+        if target_level is not None and equipped is not None and equipped.item_level is not None
+        else None
+    )
+    if gain is not None:
+        if gain > SCORE_SIDEGRADE_BAND:
+            return "upgrade", level_delta, "score"
+        if gain < -SCORE_SIDEGRADE_BAND:
+            return "downgrade", level_delta, "score"
+        return "sidegrade", level_delta, "score"
     if target_level is None:
-        return "unknown", None
+        return "unknown", None, "none"
     if equipped is None:
-        return "upgrade", None
-    if equipped.item_level is None:
-        return "unknown", None
-    delta = target_level - equipped.item_level
-    if delta > SIDEGRADE_BAND:
-        return "upgrade", delta
-    if delta < -SIDEGRADE_BAND:
-        return "downgrade", delta
-    return "sidegrade", delta
+        return "upgrade", None, "item_level"
+    if level_delta is None:
+        return "unknown", None, "none"
+    if level_delta > SIDEGRADE_BAND:
+        return "upgrade", level_delta, "item_level"
+    if level_delta < -SIDEGRADE_BAND:
+        return "downgrade", level_delta, "item_level"
+    return "sidegrade", level_delta, "item_level"
 
 
 def armor_warning(equipped: EquippedItem | None, info: TargetInfo | None) -> str | None:
@@ -328,6 +467,8 @@ def gear_plan(
     targets: GearTargets,
     catalog: Mapping[str, CatalogItem] | None = None,
     icons: Mapping[int, str] | None = None,
+    companion: Mapping[int, CompanionInfo] | None = None,
+    weights: Weights | None = None,
 ) -> GearPlan:
     catalog = catalog or {}
     icons = icons or {}
@@ -346,8 +487,10 @@ def gear_plan(
     rows: list[GearRow] = []
     for target in ordered:
         worn = equipped.get(target.slot)
-        info = target_info(target, catalog, icons)
-        verdict, delta = judge(target, worn, info)
+        info = target_info(target, catalog, icons, companion)
+        gain = score_delta(target.slot, worn, info, weights)
+        verdict, delta, basis = judge(target, worn, info, gain)
+        armor_delta, stat_deltas = deltas(worn, info)
         rows.append(
             GearRow(
                 slot=target.slot,
@@ -357,13 +500,24 @@ def gear_plan(
                 reached=verdict == "reached",
                 verdict=verdict,
                 item_level_delta=delta,
+                armor_delta=armor_delta,
+                stat_deltas=stat_deltas,
+                score_delta=gain,
+                verdict_basis=basis,
                 warning=armor_warning(worn, info),
             )
         )
+    # Biggest gain first; rows without a score keep their priority order after them,
+    # and reached targets go last. The sort is stable, so ties keep priority order.
+    rows.sort(
+        key=lambda r: (r.verdict == "reached", r.score_delta is None, -(r.score_delta or 0.0))
+    )
+    uses_companion = any(r.target_info and "companion" in r.target_info.sources for r in rows)
     return GearPlan(
         level=level,
         bracket_min_level=bracket.min_level if bracket else None,
         next_bracket_level=upcoming.min_level if upcoming else None,
         next_bracket_size=len(upcoming.targets) if upcoming else 0,
         rows=rows,
+        attributions=[COMPANION_ATTRIBUTION] if uses_companion else [],
     )

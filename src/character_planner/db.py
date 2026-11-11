@@ -56,6 +56,23 @@ class ItemIcon(SQLModel, table=True):
     fetched_at: datetime = Field(default_factory=utcnow)
 
 
+class CompanionItem(SQLModel, table=True):
+    """Raw Forever Companion GET /items/{id} responses (ADR 0004)."""
+
+    item_id: int = Field(primary_key=True)
+    found: bool
+    payload: Any = Field(default=None, sa_column=Column(JSON, nullable=True))
+    fetched_at: datetime = Field(default_factory=utcnow)
+
+
+class StoredWeights(SQLModel, table=True):
+    """Stat weights edited in the app (ADR 0005). One row, id 1; none means defaults."""
+
+    id: int = Field(default=1, primary_key=True)
+    weights: Any = Field(sa_column=Column(JSON, nullable=False))
+    updated_at: datetime = Field(default_factory=utcnow)
+
+
 def catalog_by_name(session: Session) -> dict[str, CatalogItem]:
     return {row.name_key: row for row in session.exec(select(CatalogItem)).all()}
 

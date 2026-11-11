@@ -13,7 +13,7 @@ from character_planner.blizzard import oauth
 from character_planner.config import Settings
 
 from .conftest import FIXTURES
-from .test_items import mock_battlenet
+from .test_items import COMPANION, companion_responder, mock_battlenet
 
 BASE = "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet"
 
@@ -95,19 +95,30 @@ def test_login_sync_and_read_end_to_end(client: TestClient) -> None:
     assert off_hand["target"]["item"] == "Dwarven Defender"
     assert off_hand["reached"] is False
     # The level-15 shield target is item level 17; the equipped shield is 21.
-    assert off_hand["target_info"]["source"] == "api"
+    assert off_hand["target_info"]["sources"] == ["blizzard"]  # Companion 404s for it here
     assert off_hand["target_info"]["item_level"] == 17
     assert off_hand["verdict"] == "downgrade"
     assert off_hand["item_level_delta"] == -4
     assert off_hand["equipped"]["icon_url"].endswith(".jpg")
+    # Kindlegem Girdle isn't in Blizzard's search; Forever Companion has it by id.
     waist = next(row for row in gear["rows"] if row["slot"] == "WAIST")
-    assert waist["target_info"] is None  # Kindlegem Girdle isn't in the search index
-    assert waist["verdict"] == "unknown"
+    assert waist["target_info"]["sources"] == ["companion"]
+    assert waist["target_info"]["item_level"] == 18
+    assert waist["verdict"] == "upgrade"  # equipped belt is ilvl 14
+    assert waist["armor_delta"] == 27  # 100 vs 73
+    assert waist["stat_deltas"] == {"Stamina": 7}
+    # Default weights: (100 x 0.1 + 7 x 1.0) - 73 x 0.1 = 9.7
+    assert (waist["score_delta"], waist["verdict_basis"]) == (9.7, "score")
+    assert gear["rows"][0]["slot"] == "WAIST"  # biggest gain sorts first
+    assert off_hand["verdict_basis"] == "item_level"  # no stats for it: falls back
+    assert gear["attributions"][0]["name"] == "Forever Companion"
 
     summary = client.get("/api/summary.md").text
     assert "- Level: 18" in summary
     assert "Kindlegem Girdle" in summary
     assert "downgrade (ilvl 21 -> 17)" in summary
+    assert "upgrade (ilvl 14 -> 18, score +9.7); +27 armor, +7 Stamina [companion]" in summary
+    assert "Forever Companion" in summary
 
 
 @respx.mock
@@ -119,9 +130,13 @@ def test_items_refresh_endpoint(client: TestClient) -> None:
 
 
 @respx.mock
-def test_items_refresh_reports_battlenet_outage(client: TestClient) -> None:
+def test_items_refresh_reports_battlenet_outage_without_failing(client: TestClient) -> None:
     respx.post(oauth.TOKEN_URL).mock(return_value=httpx.Response(503))
-    assert client.post("/api/items/refresh").status_code == 502
+    respx.get(url__startswith=COMPANION).mock(side_effect=companion_responder)
+    response = client.post("/api/items/refresh")
+    assert response.status_code == 200
+    assert any(error.startswith("Blizzard") for error in response.json()["errors"])
+    assert response.json()["companion_fetched"] >= 1  # the other source still ran
 
 
 def test_reads_are_empty_before_any_sync(client: TestClient) -> None:
@@ -148,3 +163,23 @@ def test_serves_built_frontend_when_present(
     with TestClient(app) as client:
         assert "<title>planner</title>" in client.get("/").text
         assert client.get("/api/healthz").json() == {"status": "ok"}  # API still wins
+
+
+def test_weights_api_edit_and_reset(client: TestClient) -> None:
+    initial = client.get("/api/weights").json()
+    assert initial["customised"] is False
+    assert initial["weights"]["Stamina"] == 1.0
+
+    edited = client.put("/api/weights", json={"weights": {"Stamina": 2.0}}).json()
+    assert edited["customised"] is True
+    assert edited["weights"]["Stamina"] == 2.0
+    assert edited["weights"]["Armor"] == initial["defaults"]["Armor"]  # unspecified: default
+
+    reset = client.delete("/api/weights").json()
+    assert reset["customised"] is False
+    assert reset["weights"]["Stamina"] == 1.0
+
+
+def test_weights_api_rejects_bad_values(client: TestClient) -> None:
+    assert client.put("/api/weights", json={"weights": {"Stamina": 99}}).status_code == 422
+    assert client.put("/api/weights", json={"weights": {"": 1}}).status_code == 422

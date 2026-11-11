@@ -1,0 +1,34 @@
+# Default stat weights for scoring gear: Protection Warrior, leveling and 5-player dungeons.
+# An item's score is the sum of (stat value x weight). A target's score gain is its score
+# minus the equipped item's. Weights are starting heuristics, not sims: tune them in the
+# app (Gear targets > Stat weights); edits are saved in the database and these values
+# come back with "Reset". Stat names match tooltip text ("+5 Stamina" -> Stamina).
+#
+# Reasoning, per point, with Stamina as the yardstick:
+# - Stamina 1.0: health is the leveling tank's main buffer.
+# - Armor 0.1: about 10 armor per Stamina at these levels; "+N Armor" bonus lines count.
+# - Agility 0.6: 2 armor per point plus dodge and crit.
+# - Strength 0.5: attack power and block value, so threat and a little mitigation.
+# - Defense 1.0: rare below 30 but strong (dodge, parry, block, fewer crits taken).
+# - Attack Power 0.25: threat only.
+# - Weapon DPS 1.5 per DPS: Protection threat leans on white damage and Revenge.
+# - Ranged DPS 0.2 per DPS: pulling only.
+# - Spirit 0.05, Intellect 0: almost nothing for a warrior.
+# - Resistances 0.05: situational.
+
+weights:
+  Stamina: 1.0
+  Armor: 0.1
+  Agility: 0.6
+  Strength: 0.5
+  Defense: 1.0
+  Attack Power: 0.25
+  Weapon DPS: 1.5
+  Ranged DPS: 0.2
+  Spirit: 0.05
+  Intellect: 0.0
+  Fire Resistance: 0.05
+  Frost Resistance: 0.05
+  Nature Resistance: 0.05
+  Shadow Resistance: 0.05
+  Arcane Resistance: 0.05

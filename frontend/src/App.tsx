@@ -3,6 +3,7 @@ import { api } from './api'
 import { CharacterHeader, ProfessionsPanel, StatsPanel, TalentsPanel } from './components/CharacterPanels'
 import { GearTable } from './components/GearTable'
 import { StatusBar } from './components/StatusBar'
+import { WeightsDialog } from './components/WeightsDialog'
 import './App.css'
 
 export default function App() {
@@ -23,7 +24,7 @@ export default function App() {
       {character.data && character.data.level !== null && (
         <>
           <CharacterHeader character={character.data} />
-          {gear.data && <GearTable plan={gear.data} />}
+          {gear.data && <GearTable plan={gear.data} actions={<WeightsDialog />} />}
           <div className="panels">
             {character.data.stats && <StatsPanel stats={character.data.stats} />}
             <TalentsPanel character={character.data} />

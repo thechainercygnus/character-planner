@@ -15,12 +15,13 @@ import httpx
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
+from character_planner.companion import companion_by_id
 from character_planner.config import Settings, get_settings
 from character_planner.curated import GearTargets, load_gear_targets
 from character_planner.db import (
@@ -32,7 +33,15 @@ from character_planner.db import (
     latest_by_kind,
     make_engine,
 )
-from character_planner.items import RefreshResult, refresh_catalog
+from character_planner.items import RefreshResult, refresh_item_sources
+from character_planner.scoring import (
+    Weights,
+    WeightsView,
+    current_weights,
+    load_default_weights,
+    reset_weights,
+    save_weights,
+)
 from character_planner.summary import build_summary
 from character_planner.views import (
     CharacterView,
@@ -73,7 +82,17 @@ def equipped_item_ids(session: Session) -> list[int]:
     return [item.item_id for item in items if item.item_id is not None]
 
 
+def get_default_weights(request: Request) -> Weights:
+    settings: Settings = request.app.state.settings
+    return load_default_weights(settings.curated_dir / "stat_weights.yaml")
+
+
+class WeightsUpdate(BaseModel):
+    weights: dict[str, Annotated[float, Field(ge=-10, le=10, allow_inf_nan=False)]]
+
+
 SessionDep = Annotated[Session, Depends(get_session)]
+DefaultWeightsDep = Annotated[Weights, Depends(get_default_weights)]
 TargetsDep = Annotated[GearTargets, Depends(get_targets)]
 
 
@@ -161,28 +180,20 @@ def create_app(
                 Snapshot(source="api", kind=result.kind, status=result.status, payload=result.body)
             )
         session.commit()
-        try:
-            refresh_catalog(
-                session, settings, gear.item_names(), equipped_item_ids(session), http=http
-            )
-        except httpx.HTTPError:
-            logger.warning("Item catalog refresh failed after sync", exc_info=True)
+        items = refresh_item_sources(session, settings, gear, equipped_item_ids(session), http=http)
+        for error in items.errors:
+            logger.warning("Item data refresh after sync: %s", error)
         return {result.kind: result.status for result in results}
 
     @app.post("/api/items/refresh")
     def refresh_items(session: SessionDep, gear: TargetsDep, force: bool = False) -> RefreshResult:
-        """Look up target items and icons. force=true retries everything, found or not."""
-        try:
-            return refresh_catalog(
-                session,
-                settings,
-                gear.item_names(),
-                equipped_item_ids(session),
-                force=force,
-                http=http,
-            )
-        except httpx.HTTPError as error:
-            raise HTTPException(502, f"Battle.net item lookup failed: {error}") from error
+        """Refresh item data from every source. force=true refetches everything.
+
+        Source failures are reported in `errors` rather than failing the request.
+        """
+        return refresh_item_sources(
+            session, settings, gear, equipped_item_ids(session), force=force, http=http
+        )
 
     @app.post("/api/snapshots/manual", status_code=201)
     def add_manual(entry: ManualSnapshot, session: SessionDep) -> dict[str, int | None]:
@@ -208,10 +219,16 @@ def create_app(
         return gear
 
     @app.get("/api/summary.md", response_class=PlainTextResponse)
-    def summary(session: SessionDep, gear: TargetsDep) -> str:
+    def summary(session: SessionDep, gear: TargetsDep, defaults: DefaultWeightsDep) -> str:
         name = f"{settings.character_name} {settings.character_surname}"
         return build_summary(
-            name, latest_by_kind(session), gear, catalog_by_name(session), icons_by_id(session)
+            name,
+            latest_by_kind(session),
+            gear,
+            catalog_by_name(session),
+            icons_by_id(session),
+            companion_by_id(session),
+            current_weights(session, defaults),
         )
 
     @app.get("/api/character")
@@ -219,10 +236,45 @@ def create_app(
         return character_view(latest_by_kind(session), icons_by_id(session))
 
     @app.get("/api/gear")
-    def gear(session: SessionDep, targets: TargetsDep) -> GearPlan:
+    def gear(session: SessionDep, targets: TargetsDep, defaults: DefaultWeightsDep) -> GearPlan:
         return gear_plan(
-            latest_by_kind(session), targets, catalog_by_name(session), icons_by_id(session)
+            latest_by_kind(session),
+            targets,
+            catalog_by_name(session),
+            icons_by_id(session),
+            companion_by_id(session),
+            current_weights(session, defaults),
         )
+
+    def weights_view(session: Session, defaults: Weights) -> WeightsView:
+        current = current_weights(session, defaults)
+        return WeightsView(
+            weights=current.weights,
+            defaults=defaults.weights,
+            customised=current.weights != defaults.weights,
+        )
+
+    @app.get("/api/weights")
+    def get_weights(session: SessionDep, defaults: DefaultWeightsDep) -> WeightsView:
+        """Stat weights used to score gear, and the shipped defaults."""
+        return weights_view(session, defaults)
+
+    @app.put("/api/weights")
+    def put_weights(
+        update: WeightsUpdate, session: SessionDep, defaults: DefaultWeightsDep
+    ) -> WeightsView:
+        """Replace the weights. Stats left out fall back to their default weight."""
+        names = [name.strip() for name in update.weights]
+        if any(not name or len(name) > 40 for name in names):
+            raise HTTPException(422, "Stat names must be 1-40 characters")
+        save_weights(session, {name.strip(): value for name, value in update.weights.items()})
+        return weights_view(session, defaults)
+
+    @app.delete("/api/weights")
+    def delete_weights(session: SessionDep, defaults: DefaultWeightsDep) -> WeightsView:
+        """Go back to the defaults in data/curated/stat_weights.yaml."""
+        reset_weights(session)
+        return weights_view(session, defaults)
 
     # Serve the built frontend (npm run build) from the same origin, after every API
     # route so those win. In development Vite serves it instead and proxies to us.

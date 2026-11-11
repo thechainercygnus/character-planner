@@ -18,6 +18,7 @@ export interface EquippedItem {
   armor_type: string | null
   armor: number | null
   stats: ItemStat[]
+  dps: number | null
   icon_url: string | null
 }
 
@@ -83,9 +84,11 @@ export interface GearTarget {
   stats: Record<string, number>
 }
 
-/** What's known about a target item: from Battle.net item search, or typed into gear_targets.yaml. */
+export type SourceName = 'blizzard' | 'companion' | 'manual'
+
+/** What's known about a target item, merged from Blizzard, Forever Companion and gear_targets.yaml. */
 export interface TargetInfo {
-  source: 'api' | 'manual'
+  sources: SourceName[]
   item_id: number | null
   item_level: number | null
   required_level: number | null
@@ -93,7 +96,13 @@ export interface TargetInfo {
   armor_type: string | null
   armor: number | null
   stats: ItemStat[]
+  dps: number | null
   icon_url: string | null
+  drops: string[]
+  rewards: string[]
+  verified: number | null
+  wowhead: string | null
+  conflicts: string[]
 }
 
 export type Verdict = 'reached' | 'upgrade' | 'sidegrade' | 'downgrade' | 'unknown'
@@ -106,7 +115,18 @@ export interface GearRow {
   reached: boolean
   verdict: Verdict
   item_level_delta: number | null
+  armor_delta: number | null
+  stat_deltas: Record<string, number>
+  /** Weighted score of the target minus the equipped item; null without stat data. */
+  score_delta: number | null
+  verdict_basis: 'score' | 'item_level' | 'none'
   warning: string | null
+}
+
+export interface Attribution {
+  name: string
+  url: string
+  text: string
 }
 
 export interface GearPlan {
@@ -115,6 +135,7 @@ export interface GearPlan {
   next_bracket_level: number | null
   next_bracket_size: number
   rows: GearRow[]
+  attributions: Attribution[]
 }
 
 export interface Status {
@@ -127,11 +148,19 @@ export interface Status {
 
 export type SyncResult = Record<string, number>
 
+export interface WeightsView {
+  weights: Record<string, number>
+  defaults: Record<string, number>
+  customised: boolean
+}
+
 export interface RefreshResult {
   found: string[]
   missing: string[]
   errors: string[]
   icons: number
+  companion_fetched: number
+  companion_not_found: number[]
 }
 
 export class ApiError extends Error {
@@ -164,6 +193,14 @@ export const api = {
   gear: () => request<GearPlan>('/api/gear'),
   sync: () => request<SyncResult>('/api/sync', { method: 'POST' }),
   refreshItems: () => request<RefreshResult>('/api/items/refresh?force=true', { method: 'POST' }),
+  weights: () => request<WeightsView>('/api/weights'),
+  saveWeights: (weights: Record<string, number>) =>
+    request<WeightsView>('/api/weights', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ weights }),
+    }),
+  resetWeights: () => request<WeightsView>('/api/weights', { method: 'DELETE' }),
 }
 
 /** Battle.net slot types (MAIN_HAND) as people read them (Main Hand). */

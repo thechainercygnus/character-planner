@@ -63,7 +63,8 @@ export function StatusBar() {
       )}
       {refreshItems.data && (
         <span className="muted">
-          Found {refreshItems.data.found.length}, not in item data {refreshItems.data.missing.length}
+          Blizzard found {refreshItems.data.found.length}, Forever Companion fetched{' '}
+          {refreshItems.data.companion_fetched}
           {refreshItems.data.errors.length > 0 && `, ${refreshItems.data.errors.length} errors`}
         </span>
       )}

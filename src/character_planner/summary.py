@@ -6,8 +6,10 @@ Rendering only: all parsing of API responses lives in views.py.
 from collections.abc import Mapping
 from typing import Any
 
+from character_planner.companion import CompanionInfo
 from character_planner.curated import GearTargets
 from character_planner.db import CatalogItem, Snapshot
+from character_planner.scoring import Weights
 from character_planner.views import (
     EquippedItem,
     GearRow,
@@ -33,10 +35,21 @@ def _verdict(row: GearRow) -> str:
         return "reached"
     text = row.verdict
     info = row.target_info
+    details = []
     if row.equipped and row.equipped.item_level is not None and info and info.item_level:
-        text += f" (ilvl {row.equipped.item_level} -> {info.item_level})"
-    if info and info.source == "manual":
-        text += ", manual data"
+        details.append(f"ilvl {row.equipped.item_level} -> {info.item_level}")
+    if row.score_delta is not None:
+        details.append(f"score {row.score_delta:+.1f}")
+    if details:
+        text += f" ({', '.join(details)})"
+    gains = []
+    if row.armor_delta:
+        gains.append(f"{row.armor_delta:+d} armor")
+    gains += [f"{change:+d} {name}" for name, change in row.stat_deltas.items()]
+    if gains:
+        text += f"; {', '.join(gains)}"
+    if info:
+        text += f" [{'+'.join(info.sources)}]"
     if row.warning:
         text += f"; {row.warning}"
     return text
@@ -54,6 +67,8 @@ def build_summary(
     targets: GearTargets,
     catalog: Mapping[str, CatalogItem] | None = None,
     icons: Mapping[int, str] | None = None,
+    companion: Mapping[int, CompanionInfo] | None = None,
+    weights: Weights | None = None,
 ) -> str:
     lines = [f"# {character}", ""]
     if not latest:
@@ -108,7 +123,7 @@ def build_summary(
         lines += ["", "## Professions"]
         lines += [f"- {p.name}: {_fmt(p.skill)}/{_fmt(p.max_skill)}" for p in view.professions]
 
-    plan = gear_plan(latest, targets, catalog, icons)
+    plan = gear_plan(latest, targets, catalog, icons, companion, weights)
     lines += ["", "## Gear vs targets"]
     if plan.bracket_min_level is None:
         lines.append("No target bracket for this level.")
@@ -129,6 +144,9 @@ def build_summary(
                 f"| {row.slot} | {current} | {row.target.item} | {row.target.source} "
                 f"| {_verdict(row)} |"
             )
+
+    for credit in plan.attributions:
+        lines += ["", f"_{credit['text']} {credit['url']}_"]
 
     if plan.next_bracket_level is not None:
         lines += [

@@ -1,0 +1,79 @@
+{
+  "data": {
+    "id": 270230,
+    "name": "Kindlegem Girdle",
+    "quality": "rare",
+    "icon": "inv_belt_20",
+    "itemLevel": 18,
+    "requiredLevel": 13,
+    "slot": "Waist",
+    "armor": "mail",
+    "weaponType": null,
+    "stats": [
+      "sta"
+    ],
+    "classicOnly": false,
+    "verified": null,
+    "wowhead": "https://www.wowhead.com/forever/item=270230",
+    "tooltip": [
+      {
+        "left": "Binds when picked up",
+        "right": null,
+        "kind": "plain",
+        "changed": false
+      },
+      {
+        "left": "Waist",
+        "right": "Mail",
+        "kind": "plain",
+        "changed": false
+      },
+      {
+        "left": "100 Armor",
+        "right": null,
+        "kind": "plain",
+        "changed": false
+      },
+      {
+        "left": "+7 Stamina",
+        "right": null,
+        "kind": "plain",
+        "changed": false
+      },
+      {
+        "left": "Requires Level 13",
+        "right": null,
+        "kind": "plain",
+        "changed": false
+      },
+      {
+        "left": "Sell Price: 3s 90c",
+        "right": null,
+        "kind": "muted",
+        "changed": false
+      }
+    ],
+    "dropsFrom": [],
+    "rewardFrom": []
+  },
+  "meta": {
+    "updatedAt": "2026-11-07T06:03:32.067+00:00",
+    "version": "v1",
+    "docs": "https://forevercompanion.io/developers",
+    "attribution": "Data from Forever Companion (https://forevercompanion.io), gathered from ForeverChanges, Wowhead and Zockify and checked in game by players. Please link back. Fan-made, not affiliated with Blizzard Entertainment.",
+    "sources": [
+      {
+        "name": "ForeverChanges",
+        "url": "https://foreverchanges.pro"
+      },
+      {
+        "name": "Wowhead",
+        "url": "https://www.wowhead.com/forever"
+      },
+      {
+        "name": "Zockify",
+        "url": "https://www.zockify.com/forever/"
+      }
+    ]
+  }
+}

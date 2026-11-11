@@ -22,6 +22,7 @@ uv run pytest
 Run the app: `uv run uvicorn character_planner.app:create_app --factory --reload`
 Capture real API responses: `uv run character-planner-spike` (needs `.env`, opens a browser).
 Probe static item endpoints: `uv run character-planner-probe-items` (app-only token, no browser).
+Look up Forever Companion items by id: `uv run character-planner-probe-companion --ids 270200-270260`.
 Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `npm run dev`.
 
 ## Rules
@@ -32,6 +33,7 @@ Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `n
 - Every behaviour change gets a test. External HTTP is mocked with respx; tests never
   hit the network or read `.env`.
 - Never commit `.env`, `samples/` or `data/*.db`: they hold secrets or personal data.
+- Check a third-party API against its vendored spec (`docs/vendor/`) before concluding it's broken.
 - Never log or print access tokens or the client secret.
 - Record decisions with lasting consequences as a new ADR in `docs/adr/`, numbered,
   short and terse.
@@ -41,8 +43,10 @@ Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `n
 
 - `src/character_planner/blizzard/`: OAuth and the API client (raw JSON in, status always reported)
 - `src/character_planner/db.py`: SQLModel tables (`Snapshot`, `StoredToken`)
-- `src/character_planner/curated.py` + `data/curated/*.yaml`: hand-maintained targets
+- `src/character_planner/curated.py` + `data/curated/*.yaml`: hand-maintained targets and default stat weights
+- `src/character_planner/scoring.py`: gear scores from editable stat weights (ADR 0005)
 - `src/character_planner/items.py`: item catalog (Battle.net item search + icons), cached in SQLite (ADR 0003)
+- `src/character_planner/companion.py`: Forever Companion source, GET /items/{id} only (ADR 0004); spec in `docs/vendor/`
 - `src/character_planner/fields.py`: defensive JSON readers used by all parsers
 - `src/character_planner/views.py`: the only code that reads API response shapes; typed views for the frontend
 - `src/character_planner/summary.py`: Markdown rendering of those views, for pasting into a chat

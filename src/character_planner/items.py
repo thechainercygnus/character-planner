@@ -17,7 +17,9 @@ from sqlmodel import Session, col, select
 from character_planner import fields
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
+from character_planner.companion import refresh_companion
 from character_planner.config import Settings
+from character_planner.curated import GearTargets
 from character_planner.db import CatalogItem, ItemIcon, catalog_by_name, utcnow
 
 SEARCH_PATH = "/data/wow/search/item"
@@ -34,6 +36,8 @@ class RefreshResult(BaseModel):
     missing: list[str] = []
     errors: list[str] = []
     icons: int = 0
+    companion_fetched: int = 0
+    companion_not_found: list[int] = []
 
 
 def name_key(item_name: str) -> str:
@@ -149,4 +153,34 @@ def refresh_catalog(
             outcome.icons += url is not None
         session.commit()
 
+    return outcome
+
+
+def refresh_item_sources(
+    session: Session,
+    settings: Settings,
+    targets: GearTargets,
+    equipped_item_ids: Iterable[int] = (),
+    *,
+    force: bool = False,
+    http: httpx.Client | None = None,
+) -> RefreshResult:
+    """Blizzard item search first (for ids and icons), then Forever Companion by id.
+
+    One source failing never stops the other; failures land in RefreshResult.errors.
+    """
+    try:
+        outcome = refresh_catalog(
+            session, settings, targets.item_names(), equipped_item_ids, force=force, http=http
+        )
+    except httpx.HTTPError as error:
+        outcome = RefreshResult(errors=[f"Blizzard: {error}"])
+
+    catalog_ids = [row.item_id for row in catalog_by_name(session).values() if row.item_id]
+    companion = refresh_companion(
+        session, [*targets.item_ids(), *catalog_ids], force=force, http=http
+    )
+    outcome.companion_fetched = len(companion.fetched)
+    outcome.companion_not_found = companion.not_found
+    outcome.errors += [f"Forever Companion {e}" for e in companion.errors]
     return outcome

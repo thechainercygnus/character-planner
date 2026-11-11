@@ -1,4 +1,13 @@
-import { slotLabel, type EquippedItem, type GearPlan, type GearRow, type Verdict } from '../api'
+import type { ReactNode } from 'react'
+import {
+  slotLabel,
+  type EquippedItem,
+  type GearPlan,
+  type GearRow,
+  type SourceName,
+  type TargetInfo,
+  type Verdict,
+} from '../api'
 
 function Icon({ url }: { url: string | null }) {
   return url ? <img className="icon" src={url} alt="" width={28} height={28} /> : <span className="icon" />
@@ -24,6 +33,20 @@ function ItemName({ item }: { item: EquippedItem }) {
   )
 }
 
+const SOURCE_LABEL: Record<SourceName, string> = {
+  blizzard: 'Blizzard',
+  companion: 'Forever Companion',
+  manual: 'manual',
+}
+
+function sourcesText(info: TargetInfo): string {
+  return info.sources
+    .map((source) =>
+      source === 'companion' && info.verified ? `${SOURCE_LABEL[source]} (${info.verified} verified)` : SOURCE_LABEL[source],
+    )
+    .join(' + ')
+}
+
 function TargetName({ row }: { row: GearRow }) {
   const info = row.target_info
   const quality = (info?.quality ?? 'COMMON').toLowerCase()
@@ -32,18 +55,43 @@ function TargetName({ row }: { row: GearRow }) {
     info?.armor_type,
     info?.armor ? `${info.armor} armor` : null,
     ...(info?.stats ?? []).map((stat) => `+${stat.value} ${stat.name}`),
-    info?.source === 'manual' ? 'manual data' : null,
   ].filter(Boolean)
 
   return (
     <div className="item-cell">
       <Icon url={info?.icon_url ?? null} />
       <span className={info ? `item quality-${quality}` : 'item'}>
-        {row.target.item}
-        <small>{details.length > 0 ? details.join(' · ') : 'not in Battle.net item data'}</small>
+        {info?.wowhead ? (
+          <a className="item-link" href={info.wowhead} target="_blank" rel="noreferrer">
+            {row.target.item}
+          </a>
+        ) : (
+          row.target.item
+        )}
+        {info ? (
+          <>
+            {details.length > 0 && <small>{details.join(' · ')}</small>}
+            <small className="source-line">from {sourcesText(info)}</small>
+            {info.conflicts.map((conflict) => (
+              <small key={conflict} className="warn">
+                Sources disagree on {conflict}
+              </small>
+            ))}
+          </>
+        ) : (
+          <small>no item data yet</small>
+        )}
       </span>
     </div>
   )
+}
+
+function Gains({ row }: { row: GearRow }) {
+  const parts = [
+    row.armor_delta ? `${row.armor_delta > 0 ? '+' : ''}${row.armor_delta} armor` : null,
+    ...Object.entries(row.stat_deltas).map(([name, change]) => `${change > 0 ? '+' : ''}${change} ${name}`),
+  ].filter(Boolean)
+  return parts.length > 0 ? <small className="gains">{parts.join(' · ')}</small> : null
 }
 
 const VERDICT_TEXT: Record<Verdict, string> = {
@@ -54,33 +102,54 @@ const VERDICT_TEXT: Record<Verdict, string> = {
   unknown: 'unknown',
 }
 
+function signed(value: number, digits = 0): string {
+  return `${value > 0 ? '+' : ''}${value.toFixed(digits)}`
+}
+
 export function VerdictBadge({ row }: { row: GearRow }) {
-  const delta = row.item_level_delta
-  const deltaText = delta !== null && delta !== 0 ? ` (${delta > 0 ? '+' : ''}${delta} ilvl)` : ''
+  const level = row.item_level_delta
+  let deltaText = ''
+  if (row.verdict_basis === 'score' && row.score_delta !== null) {
+    deltaText = ` (${signed(row.score_delta, 1)} score)`
+  } else if (level !== null && level !== 0) {
+    deltaText = ` (${signed(level)} ilvl)`
+  }
   return (
     <div>
-      <span className={`badge verdict-${row.verdict}`}>
+      <span
+        className={`badge verdict-${row.verdict}`}
+        title={row.verdict_basis === 'score' ? 'Weighted stat score vs what you wear' : 'Item level vs what you wear'}
+      >
         {VERDICT_TEXT[row.verdict]}
         {deltaText}
       </span>
+      {row.verdict_basis === 'score' && level !== null && level !== 0 && (
+        <small className="muted">{signed(level)} item level</small>
+      )}
+      <Gains row={row} />
       {row.warning && <small className="warn">{row.warning}</small>}
     </div>
   )
 }
 
-export function GearTable({ plan }: { plan: GearPlan }) {
+/** `actions` renders on the right of the section heading (e.g. the stat weights button). */
+export function GearTable({ plan, actions }: { plan: GearPlan; actions?: ReactNode }) {
   if (plan.bracket_min_level === null) {
     return <p className="muted">No gear targets for this level yet.</p>
   }
 
   const upgrades = plan.rows.filter((row) => row.verdict === 'upgrade').length
+  // Rows arrive sorted by score gain (server-side), biggest first.
   const unknown = plan.rows.filter((row) => row.verdict === 'unknown').length
 
   return (
     <section>
-      <h2>
-        Gear targets <span className="muted">level {plan.bracket_min_level}+</span>
-      </h2>
+      <div className="section-heading">
+        <h2>
+          Gear targets <span className="muted">level {plan.bracket_min_level}+</span>
+        </h2>
+        {actions}
+      </div>
       <p className="muted">
         {upgrades} upgrade{upgrades === 1 ? '' : 's'} to chase
         {unknown > 0 && `, ${unknown} without item data`}.
@@ -108,11 +177,23 @@ export function GearTable({ plan }: { plan: GearPlan }) {
               <td>
                 <VerdictBadge row={row} />
               </td>
-              <td className="muted">{row.target.source}</td>
+              <td className="muted">
+                {row.target_info && row.target_info.drops.length > 0
+                  ? row.target_info.drops.join('; ')
+                  : row.target.source}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+      {plan.attributions.map((credit) => (
+        <p key={credit.url} className="attribution muted">
+          {credit.text}{' '}
+          <a href={credit.url} target="_blank" rel="noreferrer">
+            {credit.name}
+          </a>
+        </p>
+      ))}
     </section>
   )
 }

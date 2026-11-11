@@ -225,3 +225,110 @@ button.secondary {
 .talents li {
   padding: 0.2rem 0;
 }
+
+.item-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.item-link:hover {
+  text-decoration: underline;
+}
+
+.item small.source-line {
+  font-style: italic;
+}
+
+.gains {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--ok);
+}
+
+.attribution {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+}
+
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.section-heading h2 {
+  margin: 0;
+}
+
+.customised-dot {
+  color: var(--accent);
+}
+
+/* Stat weights modal (native <dialog>) */
+.weights-dialog {
+  width: min(760px, calc(100vw - 2rem));
+  max-height: calc(100vh - 4rem);
+  overflow: auto;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+}
+
+.weights-dialog::backdrop {
+  background: rgb(0 0 0 / 60%);
+}
+
+.weights-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.weights-dialog-header h2 {
+  margin: 0;
+}
+
+.weights {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.5rem 1.5rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.weights label {
+  display: grid;
+  grid-template-columns: 1fr 5rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.weights label small {
+  grid-column: 1 / -1;
+  margin-top: -0.3rem;
+}
+
+.weights label.changed span {
+  color: var(--accent);
+}
+
+.weights input {
+  width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.2rem 0.4rem;
+  font: inherit;
+}
+
+.weights-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}

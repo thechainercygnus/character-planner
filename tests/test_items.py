@@ -14,6 +14,7 @@ from character_planner.items import exact_match, icon_url, refresh_catalog, sear
 from .conftest import FIXTURES
 
 SEARCH = "https://us.api.blizzard.com/data/wow/search/item"
+COMPANION = "https://forevercompanion.io/api/v1/items/"
 MEDIA = "https://us.api.blizzard.com/data/wow/media/item/"
 
 
@@ -34,9 +35,17 @@ def mock_battlenet() -> respx.Route:
         return_value=httpx.Response(200, json={"access_token": "app", "expires_in": 86399})
     )
     respx.get(SEARCH).mock(side_effect=search_responder)
+    respx.get(url__startswith=COMPANION).mock(side_effect=companion_responder)
     return respx.get(url__startswith=MEDIA).mock(
         return_value=httpx.Response(200, json=fixture("forever_item_media_3655"))
     )
+
+
+def companion_responder(request: httpx.Request) -> httpx.Response:
+    """Forever Companion by id: Kindlegem Girdle is known, everything else 404s."""
+    if request.url.path.endswith("/270230"):
+        return httpx.Response(200, json=fixture("companion_item_270230"))
+    return httpx.Response(404, json={"error": "Not found"})
 
 
 def test_exact_match_ignores_word_matches() -> None:
