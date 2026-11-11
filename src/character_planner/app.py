@@ -13,6 +13,7 @@ from typing import Annotated, Any
 import httpx
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import PlainTextResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
@@ -23,6 +24,7 @@ from character_planner.config import Settings, get_settings
 from character_planner.curated import GearTargets, load_gear_targets
 from character_planner.db import Snapshot, StoredToken, init_db, latest_by_kind, make_engine
 from character_planner.summary import build_summary
+from character_planner.views import CharacterView, GearPlan, character_view, gear_plan
 
 PENDING_STATE_TTL_SECONDS = 600
 
@@ -77,7 +79,7 @@ def create_app(
         token = oauth.Token(stored.access_token, stored.expires_at, stored.scope)
         return None if token.expired else token
 
-    @app.get("/healthz")
+    @app.get("/api/healthz")
     def healthz() -> dict[str, str]:
         return {"status": "ok"}
 
@@ -104,9 +106,9 @@ def create_app(
         token = oauth.exchange_code(settings, code, client=http)
         session.merge(StoredToken(id=1, **asdict(token)))
         session.commit()
-        return RedirectResponse("/status", status_code=303)
+        return RedirectResponse(settings.post_login_redirect, status_code=303)
 
-    @app.get("/status")
+    @app.get("/api/status")
     def status(session: SessionDep) -> dict[str, Any]:
         stored = session.get(StoredToken, 1)
         latest = latest_by_kind(session)
@@ -118,7 +120,7 @@ def create_app(
             "latest_snapshots": {k: s.captured_at.isoformat() for k, s in latest.items()},
         }
 
-    @app.post("/sync")
+    @app.post("/api/sync")
     def sync(session: SessionDep) -> dict[str, int]:
         """Pull every endpoint and store each response, failures included."""
         token = current_token(session)
@@ -133,7 +135,7 @@ def create_app(
         session.commit()
         return {result.kind: result.status for result in results}
 
-    @app.post("/snapshots/manual", status_code=201)
+    @app.post("/api/snapshots/manual", status_code=201)
     def add_manual(entry: ManualSnapshot, session: SessionDep) -> dict[str, int | None]:
         """Fallback for data the API doesn't return: store it in the same shape."""
         snapshot = Snapshot(source="manual", kind=entry.kind, status=200, payload=entry.payload)
@@ -141,7 +143,7 @@ def create_app(
         session.commit()
         return {"id": snapshot.id}
 
-    @app.get("/snapshots/latest")
+    @app.get("/api/snapshots/latest")
     def latest(session: SessionDep) -> dict[str, Any]:
         return {
             kind: {
@@ -152,13 +154,26 @@ def create_app(
             for kind, s in latest_by_kind(session).items()
         }
 
-    @app.get("/targets")
+    @app.get("/api/targets")
     def targets(gear: TargetsDep) -> GearTargets:
         return gear
 
-    @app.get("/summary.md", response_class=PlainTextResponse)
+    @app.get("/api/summary.md", response_class=PlainTextResponse)
     def summary(session: SessionDep, gear: TargetsDep) -> str:
         name = f"{settings.character_name} {settings.character_surname}"
         return build_summary(name, latest_by_kind(session), gear)
+
+    @app.get("/api/character")
+    def character(session: SessionDep) -> CharacterView:
+        return character_view(latest_by_kind(session))
+
+    @app.get("/api/gear")
+    def gear(session: SessionDep, targets: TargetsDep) -> GearPlan:
+        return gear_plan(latest_by_kind(session), targets)
+
+    # Serve the built frontend (npm run build) from the same origin, after every API
+    # route so those win. In development Vite serves it instead and proxies to us.
+    if (settings.frontend_dist / "index.html").is_file():
+        app.mount("/", StaticFiles(directory=settings.frontend_dist, html=True), name="frontend")
 
     return app

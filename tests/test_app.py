@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 import httpx
@@ -16,6 +17,10 @@ from .conftest import FIXTURES
 BASE = "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet"
 
 
+def fixture(kind: str) -> object:
+    return json.loads((FIXTURES / f"forever_{kind}.json").read_text(encoding="utf-8"))
+
+
 @pytest.fixture
 def client(settings: Settings, engine: Engine):
     with TestClient(create_app(settings, engine)) as test_client:
@@ -30,10 +35,23 @@ def log_in(client: TestClient) -> None:
     )
     callback = client.get(f"/auth/callback?code=c&state={state}", follow_redirects=False)
     assert callback.status_code == 303
+    assert callback.headers["location"] == "http://localhost:5173/"
+
+
+def mock_character_api() -> None:
+    for kind, suffix in [
+        ("profile", ""),
+        ("equipment", "/equipment"),
+        ("statistics", "/statistics"),
+        ("professions", "/professions"),
+        ("specializations", "/specializations"),
+    ]:
+        respx.get(f"{BASE}{suffix}").mock(return_value=httpx.Response(200, json=fixture(kind)))
+    respx.get(url__startswith=f"{BASE}/").mock(return_value=httpx.Response(404, text="Not Found"))
 
 
 def test_healthz(client: TestClient) -> None:
-    assert client.get("/healthz").json() == {"status": "ok"}
+    assert client.get("/api/healthz").json() == {"status": "ok"}
 
 
 def test_login_redirects_to_battlenet(client: TestClient) -> None:
@@ -47,35 +65,60 @@ def test_callback_rejects_unknown_state(client: TestClient) -> None:
 
 
 def test_sync_requires_login(client: TestClient) -> None:
-    assert client.post("/sync").status_code == 401
+    assert client.post("/api/sync").status_code == 401
 
 
 @respx.mock
-def test_login_sync_and_summary_end_to_end(client: TestClient) -> None:
+def test_login_sync_and_read_end_to_end(client: TestClient) -> None:
     log_in(client)
-    assert client.get("/status").json()["logged_in"] is True
+    assert client.get("/api/status").json()["logged_in"] is True
 
-    profile = json.loads((FIXTURES / "forever_profile.json").read_text(encoding="utf-8"))
-    equipment = json.loads((FIXTURES / "forever_equipment.json").read_text(encoding="utf-8"))
-    respx.get(BASE).mock(return_value=httpx.Response(200, json=profile))
-    respx.get(f"{BASE}/equipment").mock(return_value=httpx.Response(200, json=equipment))
-    respx.get(url__startswith=f"{BASE}/").mock(return_value=httpx.Response(404, text="Not Found"))
-
-    statuses = client.post("/sync").json()
+    mock_character_api()
+    statuses = client.post("/api/sync").json()
     assert statuses["profile"] == 200
-    assert statuses["professions"] == 404
+    assert statuses["appearance"] == 404
 
-    latest = client.get("/snapshots/latest").json()
-    assert set(latest) == {"profile", "equipment"}  # failures are stored but not "latest"
+    latest = client.get("/api/snapshots/latest").json()
+    assert "appearance" not in latest  # failures are stored but never "latest"
 
-    summary = client.get("/summary.md").text
+    character = client.get("/api/character").json()
+    assert character["level"] == 18
+    assert character["specialization"]["name"] == "Protection"
+    assert character["stats"]["defense"] == 91
+
+    gear = client.get("/api/gear").json()
+    assert gear["bracket_min_level"] == 15
+    off_hand = next(row for row in gear["rows"] if row["slot"] == "OFF_HAND")
+    assert off_hand["equipped"]["name"] == "Burnished Shield"
+    assert off_hand["target"]["item"] == "Dwarven Defender"
+    assert off_hand["reached"] is False
+
+    summary = client.get("/api/summary.md").text
     assert "- Level: 18" in summary
     assert "Kindlegem Girdle" in summary
 
 
+def test_reads_are_empty_before_any_sync(client: TestClient) -> None:
+    assert client.get("/api/character").json()["level"] is None
+    assert client.get("/api/gear").json()["rows"] == []
+
+
 def test_manual_snapshot_fills_gaps(client: TestClient) -> None:
     response = client.post(
-        "/snapshots/manual", json={"kind": "professions", "payload": {"Mining": 93}}
+        "/api/snapshots/manual", json={"kind": "professions", "payload": {"Mining": 93}}
     )
     assert response.status_code == 201
-    assert client.get("/snapshots/latest").json()["professions"]["source"] == "manual"
+    assert client.get("/api/snapshots/latest").json()["professions"]["source"] == "manual"
+
+
+def test_serves_built_frontend_when_present(
+    settings: Settings, engine: Engine, tmp_path: Path
+) -> None:
+    dist = tmp_path / "dist"
+    dist.mkdir()
+    (dist / "index.html").write_text("<!doctype html><title>planner</title>", encoding="utf-8")
+    app = create_app(settings.model_copy(update={"frontend_dist": dist}), engine)
+
+    with TestClient(app) as client:
+        assert "<title>planner</title>" in client.get("/").text
+        assert client.get("/api/healthz").json() == {"status": "ok"}  # API still wins

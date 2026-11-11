@@ -1,9 +1,6 @@
 """Markdown character summary, for pasting into a Claude chat.
 
-Forever responses use the retail Profile API shapes (level on the profile,
-equipped_items[].slot.type on equipment), confirmed by the 2026-11-11 spike; see
-tests/fixtures/forever_*.json. Reads stay defensive because the API is undocumented
-and can change: a missing field shows as unknown instead of failing the summary.
+Rendering only: all parsing of API responses lives in views.py.
 """
 
 from collections.abc import Mapping
@@ -11,84 +8,108 @@ from typing import Any
 
 from character_planner.curated import GearTargets
 from character_planner.db import Snapshot
+from character_planner.views import (
+    EquippedItem,
+    character_level,
+    character_view,
+    gear_plan,
+    parse_equipment,
+)
+
+__all__ = ["build_summary", "character_level", "equipped_by_slot"]
 
 
-def _get(data: Any, *keys: str) -> Any:
-    for key in keys:
-        if not isinstance(data, Mapping):
-            return None
-        data = data.get(key)
-    return data
-
-
-def _name(value: Any) -> str | None:
-    """Localised names arrive as a string, or as {"en_US": ...} without a locale param."""
-    if isinstance(value, str):
-        return value
-    if isinstance(value, Mapping):
-        return value.get("en_US") or next(iter(value.values()), None)
-    return None
-
-
-def character_level(profile: Any) -> int | None:
-    level = _get(profile, "level")
-    return level if isinstance(level, int) else None
+def _label(item: EquippedItem) -> str:
+    return f"{item.name} ({item.quality_name})" if item.quality_name else item.name
 
 
 def equipped_by_slot(equipment: Any) -> dict[str, str]:
-    items = _get(equipment, "equipped_items") or []
-    equipped: dict[str, str] = {}
-    for item in items:
-        slot = _get(item, "slot", "type")
-        name = _name(_get(item, "name"))
-        quality = _name(_get(item, "quality", "name"))
-        if slot and name:
-            equipped[slot] = f"{name} ({quality})" if quality else name
-    return equipped
+    return {item.slot: _label(item) for item in parse_equipment(equipment)}
 
 
-def build_summary(
-    character: str,
-    latest: Mapping[str, Snapshot],
-    targets: GearTargets,
-) -> str:
-    profile = latest.get("profile")
-    equipment = latest.get("equipment")
-    level = character_level(profile.payload) if profile else None
+def _fmt(value: float | int | None, suffix: str = "") -> str:
+    if value is None:
+        return "?"
+    return f"{value:.1f}{suffix}" if isinstance(value, float) else f"{value}{suffix}"
 
+
+def build_summary(character: str, latest: Mapping[str, Snapshot], targets: GearTargets) -> str:
     lines = [f"# {character}", ""]
     if not latest:
-        lines.append("No snapshots yet. Log in at /auth/login, then POST /sync.")
+        lines.append("No snapshots yet. Log in at /auth/login, then POST /api/sync.")
         return "\n".join(lines) + "\n"
 
-    newest = max(s.captured_at for s in latest.values())
-    lines.append(f"- Level: {level if level is not None else 'unknown'}")
-    lines.append(f"- Data as of: {newest:%Y-%m-%d %H:%M} UTC")
+    view = character_view(latest)
+    who = " ".join(part for part in (view.race, view.character_class) if part)
+    lines.append(f"- Level: {view.level if view.level is not None else 'unknown'}")
+    if who:
+        lines.append(f"- {who}" + (f", {view.specialization.name}" if view.specialization else ""))
+    if view.guild:
+        lines.append(f"- Guild: {view.guild}")
+    if view.equipped_item_level is not None:
+        lines.append(f"- Equipped item level: {view.equipped_item_level}")
+    if view.captured_at:
+        lines.append(f"- Data as of: {view.captured_at:%Y-%m-%d %H:%M} UTC")
     lines.append(f"- Snapshots: {', '.join(sorted(latest))}")
-    lines.append("")
 
-    equipped = equipped_by_slot(equipment.payload) if equipment else {}
-    bracket = targets.for_level(level) if level is not None else None
+    if view.stats:
+        s = view.stats
+        lines += [
+            "",
+            "## Stats",
+            "| Health | Armor | Defense | Str | Agi | Sta | AP | Dodge | Parry | Block | Crit |",
+            "|---|---|---|---|---|---|---|---|---|---|---|",
+            "| "
+            + " | ".join(
+                [
+                    _fmt(s.health),
+                    _fmt(s.armor),
+                    _fmt(s.defense),
+                    _fmt(s.strength),
+                    _fmt(s.agility),
+                    _fmt(s.stamina),
+                    _fmt(s.attack_power),
+                    _fmt(s.dodge, "%"),
+                    _fmt(s.parry, "%"),
+                    _fmt(s.block, "%"),
+                    _fmt(s.crit, "%"),
+                ]
+            )
+            + " |",
+        ]
 
-    lines.append("## Gear vs targets")
-    if bracket is None:
+    if view.specialization:
+        spec = view.specialization
+        lines += ["", f"## Talents: {spec.name} ({_fmt(spec.spent_points)} points)"]
+        lines += [f"- {t.name} {_fmt(t.rank)}" for t in spec.talents]
+
+    if view.professions:
+        lines += ["", "## Professions"]
+        lines += [f"- {p.name}: {_fmt(p.skill)}/{_fmt(p.max_skill)}" for p in view.professions]
+
+    plan = gear_plan(latest, targets)
+    lines += ["", "## Gear vs targets"]
+    if plan.bracket_min_level is None:
         lines.append("No target bracket for this level.")
     else:
-        lines.append(f"Bracket: level {bracket.min_level}+")
-        lines.append("")
-        lines.append("| Slot | Equipped | Target | Source |")
-        lines.append("|---|---|---|---|")
-        ordered = sorted(bracket.targets, key=lambda t: (t.priority is None, t.priority or 0))
-        for target in ordered:
-            current = equipped.get(target.slot, "unknown" if not equipped else "empty")
-            done = "done: " if target.item in current else ""
-            lines.append(f"| {target.slot} | {done}{current} | {target.item} | {target.source} |")
+        lines += [
+            f"Bracket: level {plan.bracket_min_level}+",
+            "",
+            "| Slot | Equipped | Target | Source |",
+            "|---|---|---|---|",
+        ]
+        any_equipment = bool(view.equipment)
+        for row in plan.rows:
+            if row.equipped:
+                current = ("done: " if row.reached else "") + _label(row.equipped)
+            else:
+                current = "empty" if any_equipment else "unknown"
+            lines.append(f"| {row.slot} | {current} | {row.target.item} | {row.target.source} |")
 
-    upcoming = targets.next_after(level) if level is not None else None
-    if upcoming:
-        lines.append("")
-        lines.append(
-            f"Next bracket at level {upcoming.min_level} ({len(upcoming.targets)} targets)."
-        )
+    if plan.next_bracket_level is not None:
+        lines += [
+            "",
+            f"Next bracket at level {plan.next_bracket_level} ({plan.next_bracket_size} targets).",
+        ]
 
     return "\n".join(lines) + "\n"

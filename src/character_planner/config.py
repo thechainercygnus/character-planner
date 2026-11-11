@@ -24,6 +24,11 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///data/character-planner.db"
     curated_dir: Path = Path("data/curated")
 
+    # Where the browser lands after login. "/" when the backend serves the built
+    # frontend; the Vite dev server's URL (http://localhost:5173/) during development.
+    post_login_redirect: str = "/"
+    frontend_dist: Path = Path("frontend/dist")
+
     @property
     def api_base_url(self) -> str:
         return f"https://{self.bnet_region}.api.blizzard.com"

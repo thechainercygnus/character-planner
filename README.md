@@ -21,8 +21,9 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Capture raw API responses (phase 0) | `uv run character-planner-spike` |
 | Run the app | `uv run uvicorn character_planner.app:create_app --factory --reload` |
 | Log in | http://localhost:8000/auth/login |
-| Pull fresh data | `POST /sync` |
-| Character summary (Markdown) | http://localhost:8000/summary.md |
+| Pull fresh data | `POST /api/sync` |
+| Character summary (Markdown) | http://localhost:8000/api/summary.md |
+| Character / gear plan (JSON) | `/api/character`, `/api/gear` |
 | API docs | http://localhost:8000/docs |
 
 ## Develop

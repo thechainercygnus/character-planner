@@ -24,6 +24,8 @@ def settings(tmp_path: Path) -> Settings:
         character_surname="Doomlet",
         database_url=f"sqlite:///{tmp_path / 'test.db'}",
         curated_dir=REPO_ROOT / "data" / "curated",
+        post_login_redirect="http://localhost:5173/",
+        frontend_dist=tmp_path / "no-frontend-build",
     )
 
 
