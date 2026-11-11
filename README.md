@@ -25,6 +25,8 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Character summary (Markdown) | http://localhost:8000/api/summary.md |
 | Character / gear plan (JSON) | `/api/character`, `/api/gear` |
 | Re-run item lookups | `POST /api/items/refresh?force=true` |
+| Build the item pool (dungeon drops + quest rewards) | `uv run character-planner-pool` or `POST /api/pool/refresh` |
+| Item pool for your level window (JSON) | `/api/pool` |
 | Stat weights for scoring | `GET`/`PUT`/`DELETE /api/weights` (or the **Stat weights** button on Gear targets) |
 | API docs | http://localhost:8000/docs |
 

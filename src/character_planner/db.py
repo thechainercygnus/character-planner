@@ -65,6 +65,14 @@ class CompanionItem(SQLModel, table=True):
     fetched_at: datetime = Field(default_factory=utcnow)
 
 
+class CompanionDungeon(SQLModel, table=True):
+    """Raw Forever Companion GET /dungeons/{id} responses: drop tables, quests (ADR 0006)."""
+
+    dungeon_id: str = Field(primary_key=True)  # e.g. "hall-of-thanes"
+    payload: Any = Field(sa_column=Column(JSON, nullable=False))
+    fetched_at: datetime = Field(default_factory=utcnow)
+
+
 class StoredWeights(SQLModel, table=True):
     """Stat weights edited in the app (ADR 0005). One row, id 1; none means defaults."""
 

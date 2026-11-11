@@ -33,7 +33,16 @@ from character_planner.db import (
     latest_by_kind,
     make_engine,
 )
+from character_planner.dungeons import stored_dungeons
 from character_planner.items import RefreshResult, refresh_item_sources
+from character_planner.pool import (
+    PoolRefresh,
+    PoolView,
+    build_pool,
+    pool_view,
+    refresh_pool,
+    resolve_target_ids,
+)
 from character_planner.scoring import (
     Weights,
     WeightsView,
@@ -46,6 +55,8 @@ from character_planner.summary import build_summary
 from character_planner.views import (
     CharacterView,
     GearPlan,
+    character_faction,
+    character_level,
     character_view,
     gear_plan,
     parse_equipment,
@@ -71,9 +82,22 @@ def get_session(request: Request) -> Iterator[Session]:
         yield session
 
 
-def get_targets(request: Request) -> GearTargets:
+SessionDep = Annotated[Session, Depends(get_session)]
+
+
+def get_targets(request: Request, session: SessionDep) -> GearTargets:
+    """gear_targets.yaml, with item ids filled in from the item pool where it has them."""
     settings: Settings = request.app.state.settings
-    return load_gear_targets(settings.curated_dir / "gear_targets.yaml")
+    targets = load_gear_targets(settings.curated_dir / "gear_targets.yaml")
+    pool = build_pool(stored_dungeons(session), character_context(session)[1])
+    return resolve_target_ids(targets, pool)
+
+
+def character_context(session: Session) -> tuple[int | None, str | None]:
+    """Level and faction from the latest profile snapshot."""
+    profile = latest_by_kind(session).get("profile")
+    payload = profile.payload if profile else None
+    return character_level(payload), character_faction(payload)
 
 
 def equipped_item_ids(session: Session) -> list[int]:
@@ -91,7 +115,6 @@ class WeightsUpdate(BaseModel):
     weights: dict[str, Annotated[float, Field(ge=-10, le=10, allow_inf_nan=False)]]
 
 
-SessionDep = Annotated[Session, Depends(get_session)]
 DefaultWeightsDep = Annotated[Weights, Depends(get_default_weights)]
 TargetsDep = Annotated[GearTargets, Depends(get_targets)]
 
@@ -194,6 +217,28 @@ def create_app(
         return refresh_item_sources(
             session, settings, gear, equipped_item_ids(session), force=force, http=http
         )
+
+    @app.post("/api/pool/refresh")
+    def refresh_item_pool(session: SessionDep, force: bool = False) -> PoolRefresh:
+        """Refresh dungeon drop tables and quest rewards, then item details for the level
+        window. The first run takes a few minutes (paced under Forever Companion's rate
+        limit); `uv run character-planner-pool` does the same with progress output.
+        """
+        level, faction = character_context(session)
+        return refresh_pool(
+            session,
+            level=level,
+            faction=faction,
+            force=force,
+            http=http,
+            pause=settings.companion_request_pause,
+        )
+
+    @app.get("/api/pool")
+    def item_pool(session: SessionDep) -> PoolView:
+        """Dungeon drops and quest rewards for the character's level window."""
+        level, faction = character_context(session)
+        return pool_view(session, level, faction)
 
     @app.post("/api/snapshots/manual", status_code=201)
     def add_manual(entry: ManualSnapshot, session: SessionDep) -> dict[str, int | None]:

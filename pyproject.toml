@@ -17,6 +17,7 @@ dependencies = [
 character-planner-spike = "character_planner.spike:main"
 character-planner-probe-items = "character_planner.probe_items:main"
 character-planner-probe-companion = "character_planner.probe_companion:main"
+character-planner-pool = "character_planner.pool_cli:main"
 
 [dependency-groups]
 dev = [

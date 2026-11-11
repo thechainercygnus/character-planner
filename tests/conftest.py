@@ -26,6 +26,7 @@ def settings(tmp_path: Path) -> Settings:
         curated_dir=REPO_ROOT / "data" / "curated",
         post_login_redirect="http://localhost:5173/",
         frontend_dist=tmp_path / "no-frontend-build",
+        companion_request_pause=0,
     )
 
 

@@ -23,6 +23,7 @@ Run the app: `uv run uvicorn character_planner.app:create_app --factory --reload
 Capture real API responses: `uv run character-planner-spike` (needs `.env`, opens a browser).
 Probe static item endpoints: `uv run character-planner-probe-items` (app-only token, no browser).
 Look up Forever Companion items by id: `uv run character-planner-probe-companion --ids 270200-270260`.
+Build the item pool with progress: `uv run character-planner-pool` (first run takes a few minutes).
 Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `npm run dev`.
 
 ## Rules
@@ -47,6 +48,8 @@ Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `n
 - `src/character_planner/scoring.py`: gear scores from editable stat weights (ADR 0005)
 - `src/character_planner/items.py`: item catalog (Battle.net item search + icons), cached in SQLite (ADR 0003)
 - `src/character_planner/companion.py`: Forever Companion source, GET /items/{id} only (ADR 0004); spec in `docs/vendor/`
+- `src/character_planner/dungeons.py`: Forever Companion dungeons: drop tables and quest rewards (ADR 0006)
+- `src/character_planner/pool.py`: item pool built from dungeon data, level window, target id resolution (ADR 0006)
 - `src/character_planner/fields.py`: defensive JSON readers used by all parsers
 - `src/character_planner/views.py`: the only code that reads API response shapes; typed views for the frontend
 - `src/character_planner/summary.py`: Markdown rendering of those views, for pasting into a chat

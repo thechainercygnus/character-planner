@@ -157,6 +157,12 @@ def character_level(profile: Any) -> int | None:
     return _int(_get(profile, "level"))
 
 
+def character_faction(profile: Any) -> str | None:
+    """ "alliance" or "horde", lowercased to match Forever Companion's quest factions."""
+    faction = _get(profile, "faction", "type")
+    return faction.lower() if isinstance(faction, str) else None
+
+
 def parse_equipment(equipment: Any) -> list[EquippedItem]:
     items = _get(equipment, "equipped_items")
     parsed: list[EquippedItem] = []

@@ -12,7 +12,8 @@ see ATTRIBUTION.
 """
 
 import re
-from collections.abc import Iterable
+import time
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -150,25 +151,32 @@ def refresh_companion(
     *,
     force: bool = False,
     http: httpx.Client | None = None,
+    max_age: timedelta = MAX_AGE,
+    pause: float = 0.0,
+    progress: Callable[[str], None] | None = None,
 ) -> CompanionRefresh:
-    """Fetch items not cached in the last 24 hours (all of them with force).
+    """Fetch items not cached within max_age (all of them with force).
 
-    Stops at the first 429 so a batch never hammers the rate limit; the rest are
-    tried on the next refresh.
+    pause sleeps between requests, for long batches (the item pool). Stops at the first
+    429 so a batch never hammers the rate limit; the rest are tried on the next refresh.
     """
     outcome = CompanionRefresh()
-    cutoff = utcnow() - MAX_AGE
+    cutoff = utcnow() - max_age
     cached = {row.item_id: row for row in session.exec(select(CompanionItem)).all()}
     wanted = [
         item_id
         for item_id in dict.fromkeys(item_ids)
-        if force or item_id not in cached or _as_utc(cached[item_id].fetched_at) < cutoff
+        if force or item_id not in cached or as_utc(cached[item_id].fetched_at) < cutoff
     ]
 
     own_http = http is None
     client = http or httpx.Client(timeout=20, headers={"User-Agent": USER_AGENT})
     try:
-        for item_id in wanted:
+        for index, item_id in enumerate(wanted, start=1):
+            if pause and index > 1:
+                time.sleep(pause)
+            if progress:
+                progress(f"item {index}/{len(wanted)}: {item_id}")
             try:
                 response = fetch_item(client, item_id)
             except httpx.HTTPError as error:
@@ -199,6 +207,6 @@ def refresh_companion(
     return outcome
 
 
-def _as_utc(moment: datetime) -> datetime:
+def as_utc(moment: datetime) -> datetime:
     # SQLite hands datetimes back without a timezone; they were stored as UTC.
     return moment.replace(tzinfo=UTC) if moment.tzinfo is None else moment

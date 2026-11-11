@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     post_login_redirect: str = "/"
     frontend_dist: Path = Path("frontend/dist")
 
+    # Seconds between Forever Companion requests in long batches (the item pool), to stay
+    # under its 120 requests/min limit. Tests set 0.
+    companion_request_pause: float = 0.55
+
     @property
     def api_base_url(self) -> str:
         return f"https://{self.bnet_region}.api.blizzard.com"

@@ -13,6 +13,7 @@ from character_planner.blizzard import oauth
 from character_planner.config import Settings
 
 from .conftest import FIXTURES
+from .test_dungeons import mock_companion_dungeons
 from .test_items import COMPANION, companion_responder, mock_battlenet
 
 BASE = "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet"
@@ -137,6 +138,42 @@ def test_items_refresh_reports_battlenet_outage_without_failing(client: TestClie
     assert response.status_code == 200
     assert any(error.startswith("Blizzard") for error in response.json()["errors"])
     assert response.json()["companion_fetched"] >= 1  # the other source still ran
+
+
+@respx.mock
+def test_pool_refresh_lists_items_and_fills_target_ids(client: TestClient) -> None:
+    log_in(client)
+    mock_character_api()
+    mock_battlenet()
+    client.post("/api/sync")
+    mock_companion_dungeons()
+
+    result = client.post("/api/pool/refresh").json()
+    assert result["dungeons_fetched"] == 2
+    assert result["pool_size"] >= 13  # 10 Hall of Thanes drops + 3 alliance Deadmines items
+    assert result["errors"] == []
+
+    pool = client.get("/api/pool").json()
+    assert (pool["level"], pool["faction"], pool["window"]) == (18, "alliance", [15, 28])
+    pool_ids = {item["item_id"] for item in pool["items"]}
+    assert {271098, 271097, 5193, 2041} <= pool_ids
+
+    # Golemguard Chest and Spiritwraith Drape have no item_id in the YAML: the pool fills
+    # them in by name.
+    targets = client.get("/api/targets").json()["brackets"][0]["targets"]
+    ids = {t["item"]: t["item_id"] for t in targets}
+    assert ids["Golemguard Chest"] == 271098
+    assert ids["Spiritwraith Drape"] == 271097
+    assert ids["Kindlegem Girdle"] == 270230  # from the YAML
+
+
+def test_pool_is_empty_before_any_refresh(client: TestClient) -> None:
+    assert client.get("/api/pool").json() == {
+        "level": None,
+        "faction": None,
+        "window": None,
+        "items": [],
+    }
 
 
 def test_reads_are_empty_before_any_sync(client: TestClient) -> None:
