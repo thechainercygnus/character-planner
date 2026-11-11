@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from 'react'
 import { slotLabel, type Candidate, type Recommendations as RecommendationsData, type SlotRecommendation } from '../api'
 import { ItemName } from './GearTable'
-import { Attributions, PoolItemName, signed } from './PoolItems'
+import { signed } from '../format'
+import { Attributions, PoolItemName } from './PoolItems'
 
 function GainBadge({ candidate }: { candidate: Candidate }) {
   return (

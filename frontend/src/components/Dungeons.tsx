@@ -1,5 +1,6 @@
 import { slotLabel, type Recommendations } from '../api'
-import { Attributions, levelRange, PoolItemName, signed } from './PoolItems'
+import { levelRange, signed } from '../format'
+import { Attributions, PoolItemName } from './PoolItems'
 
 /** Dungeons ranked by the upgrades they hold for you right now (ADR 0007). */
 export function Dungeons({ data }: { data: Recommendations }) {

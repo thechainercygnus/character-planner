@@ -254,6 +254,39 @@ export interface PoolRefresh {
   errors: string[]
 }
 
+/** One sync (progress.py). Timestamps are UTC without an offset. */
+export interface ProgressPoint {
+  captured_at: string
+  level: number | null
+  item_level: number | null
+  /** Sum of the equipped items' scores with the current stat weights. */
+  gear_score: number | null
+  health: number | null
+  armor: number | null
+  stamina: number | null
+}
+
+export interface GearChange {
+  captured_at: string
+  slot: string
+  before: string | null
+  after: string | null
+  item_level_before: number | null
+  item_level_after: number | null
+  score_change: number
+}
+
+export interface LevelUp {
+  captured_at: string
+  level: number
+}
+
+export interface Progress {
+  points: ProgressPoint[]
+  gear_changes: GearChange[]
+  level_ups: LevelUp[]
+}
+
 export class ApiError extends Error {
   readonly status: number
 
@@ -293,7 +326,13 @@ export const api = {
     }),
   resetWeights: () => request<WeightsView>('/api/weights', { method: 'DELETE' }),
   recommendations: () => request<Recommendations>('/api/recommendations'),
+  progress: () => request<Progress>('/api/progress'),
   refreshPool: () => request<PoolRefresh>('/api/pool/refresh', { method: 'POST' }),
+}
+
+/** Backend timestamps are UTC without an offset; mark them as UTC before parsing. */
+export function parseUtc(timestamp: string): Date {
+  return new Date(/Z$|[+-]\d\d:\d\d$/.test(timestamp) ? timestamp : `${timestamp}Z`)
 }
 
 /** Battle.net slot types (MAIN_HAND) as people read them (Main Hand). */

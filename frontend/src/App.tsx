@@ -9,26 +9,30 @@ import {
 } from './components/CharacterPanels'
 import { Dungeons } from './components/Dungeons'
 import { GearTable } from './components/GearTable'
+import { Progress } from './components/Progress'
 import { Recommendations } from './components/Recommendations'
 import { StatusBar } from './components/StatusBar'
-import { TabBar, useHashTab, type Tab } from './components/Tabs'
+import { TabBar } from './components/Tabs'
+import { useHashTab, type Tab } from './useHashTab'
 import { WeightsDialog } from './components/WeightsDialog'
 import './App.css'
 
-type TabId = 'upgrades' | 'dungeons' | 'plan' | 'character'
+type TabId = 'upgrades' | 'dungeons' | 'plan' | 'progress' | 'character'
 
 const TABS: readonly Tab<TabId>[] = [
   { id: 'upgrades', label: 'Upgrades' },
   { id: 'dungeons', label: 'Dungeons' },
   { id: 'plan', label: 'Plan' },
+  { id: 'progress', label: 'Progress' },
   { id: 'character', label: 'Character' },
 ]
 
 export default function App() {
+  const [tab, setTab] = useHashTab(TABS, 'upgrades')
   const character = useQuery({ queryKey: ['character'], queryFn: api.character })
   const gear = useQuery({ queryKey: ['gear'], queryFn: api.gear })
   const recommendations = useQuery({ queryKey: ['recommendations'], queryFn: api.recommendations })
-  const [tab, setTab] = useHashTab(TABS, 'upgrades')
+  const progress = useQuery({ queryKey: ['progress'], queryFn: api.progress, enabled: tab === 'progress' })
 
   const upgradeSlots = recommendations.data?.rows.filter((row) => row.candidates.length > 0).length
   const recommendationsError = recommendations.isError && (
@@ -71,6 +75,13 @@ export default function App() {
           )}
 
           {tab === 'plan' && gear.data && <GearTable plan={gear.data} actions={<WeightsDialog />} />}
+
+          {tab === 'progress' && (
+            <>
+              {progress.isError && <p className="error">Couldn't load progress: {progress.error.message}</p>}
+              {progress.data && <Progress data={progress.data} />}
+            </>
+          )}
 
           {tab === 'character' && (
             <>

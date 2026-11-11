@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
-import { TabBar, useHashTab, type Tab } from './Tabs'
+import { useHashTab, type Tab } from '../useHashTab'
+import { TabBar } from './Tabs'
 
 type Id = 'one' | 'two'
 const TABS: readonly Tab<Id>[] = [

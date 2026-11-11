@@ -114,6 +114,9 @@ def test_login_sync_and_read_end_to_end(client: TestClient) -> None:
     assert off_hand["verdict_basis"] == "item_level"  # no stats for it: falls back
     assert gear["attributions"][0]["name"] == "Forever Companion"
 
+    points = client.get("/api/progress").json()["points"]
+    assert [(p["level"], p["item_level"]) for p in points] == [(18, 14.6)]
+
     summary = client.get("/api/summary.md").text
     assert "- Level: 18" in summary
     assert "Kindlegem Girdle" in summary

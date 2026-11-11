@@ -547,3 +547,118 @@ button.expand {
   color: var(--ok);
   font-weight: 600;
 }
+
+/* Progress */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.75rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.tile strong {
+  font-size: 1.4rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.line-chart {
+  margin: 0;
+}
+
+.line-chart figcaption {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.line-chart figcaption strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.line-chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.line-chart .axis {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.line-chart .tick {
+  fill: var(--muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.line-chart .series {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.line-chart .marker {
+  fill: var(--accent);
+  stroke: var(--panel);
+  stroke-width: 2;
+}
+
+.line-chart .marker.active {
+  r: 5;
+}
+
+.line-chart .crosshair {
+  stroke: var(--muted);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.line-chart .hit {
+  fill: transparent;
+  cursor: crosshair;
+}
+
+.change-log {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.change-log li {
+  display: grid;
+  grid-template-columns: 9rem 1fr auto;
+  gap: 0.75rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.change-log .gain {
+  color: var(--ok);
+  font-weight: 600;
+}

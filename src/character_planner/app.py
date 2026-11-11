@@ -43,6 +43,7 @@ from character_planner.pool import (
     refresh_pool,
     resolve_target_ids,
 )
+from character_planner.progress import Progress, progress
 from character_planner.recommend import Recommendations, UsageRules, load_rules, recommend
 from character_planner.scoring import (
     Weights,
@@ -246,6 +247,11 @@ def create_app(
         """Dungeon drops and quest rewards for the character's level window."""
         level, faction = character_context(session)
         return pool_view(session, level, faction)
+
+    @app.get("/api/progress")
+    def progress_over_time(session: SessionDep, defaults: DefaultWeightsDep) -> Progress:
+        """One point per sync, plus gear changes and level-ups (ADR 0008)."""
+        return progress(session, current_weights(session, defaults))
 
     @app.get("/api/recommendations")
     def recommendations(
