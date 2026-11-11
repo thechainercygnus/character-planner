@@ -23,6 +23,10 @@ export function StatusBar() {
     mutationFn: api.sync,
     onSuccess: () => queryClient.invalidateQueries(),
   })
+  const refreshItems = useMutation({
+    mutationFn: api.refreshItems,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['gear'] }),
+  })
 
   if (status.isPending) return <div className="status-bar">Checking login…</div>
   if (status.isError) {
@@ -44,7 +48,25 @@ export function StatusBar() {
           Log in with Battle.net
         </a>
       )}
+      <button
+        type="button"
+        className="secondary"
+        onClick={() => refreshItems.mutate()}
+        disabled={refreshItems.isPending}
+        title="Look up every gear target in Battle.net item data again"
+      >
+        {refreshItems.isPending ? 'Looking up items…' : 'Refresh item data'}
+      </button>
       {sync.isError && <span className="error">Sync failed: {sync.error.message}</span>}
+      {refreshItems.isError && (
+        <span className="error">Item lookup failed: {refreshItems.error.message}</span>
+      )}
+      {refreshItems.data && (
+        <span className="muted">
+          Found {refreshItems.data.found.length}, not in item data {refreshItems.data.missing.length}
+          {refreshItems.data.errors.length > 0 && `, ${refreshItems.data.errors.length} errors`}
+        </span>
+      )}
       {failed.length > 0 && <span className="warn">Not returned: {failed.join(', ')}</span>}
     </div>
   )

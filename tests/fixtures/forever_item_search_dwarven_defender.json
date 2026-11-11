@@ -1,0 +1,4946 @@
+{
+  "page": 1,
+  "pageSize": 48,
+  "maxPageSize": 100,
+  "pageCount": 1,
+  "results": [
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/61?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 5,
+        "required_level": 0,
+        "sell_price": 12,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 61
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Comune",
+            "ru_RU": "Обычное",
+            "en_GB": "Common",
+            "zh_TW": "普通",
+            "ko_KR": "일반",
+            "en_US": "Common",
+            "es_MX": "Común",
+            "pt_BR": "Comum",
+            "es_ES": "Común",
+            "zh_CN": "普通",
+            "fr_FR": "Commun",
+            "de_DE": "Verbreitet"
+          },
+          "type": "COMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 63243
+          }
+        ],
+        "name": {
+          "it_IT": "Pantaloni Nanici di Cuoio",
+          "ru_RU": "Дворфийские кожаные штаны",
+          "en_GB": "Dwarven Leather Pants",
+          "zh_TW": "矮人皮質短褲",
+          "ko_KR": "드워프족 가죽 바지",
+          "en_US": "Dwarven Leather Pants",
+          "es_MX": "Pantalones de cuero enano",
+          "pt_BR": "Calças de Couro Enânicas",
+          "es_ES": "Pantalones de cuero enano",
+          "zh_CN": "矮人皮质短裤",
+          "fr_FR": "Pantalon nain en cuir",
+          "de_DE": "Zwergische Lederhose"
+        },
+        "purchase_price": 60,
+        "id": 61,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Gambe",
+            "ru_RU": "Ноги",
+            "en_GB": "Legs",
+            "zh_TW": "腿部",
+            "ko_KR": "다리",
+            "en_US": "Legs",
+            "es_MX": "Piernas",
+            "pt_BR": "Pernas",
+            "es_ES": "Piernas",
+            "zh_CN": "腿部",
+            "fr_FR": "Jambes",
+            "de_DE": "Beine"
+          },
+          "type": "LEGS"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/79?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 5,
+        "required_level": 0,
+        "sell_price": 10,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Stoffa",
+            "ru_RU": "Ткань",
+            "en_GB": "Cloth",
+            "zh_TW": "布甲",
+            "ko_KR": "천",
+            "en_US": "Cloth",
+            "es_MX": "Tela",
+            "pt_BR": "Tecido",
+            "es_ES": "Tela",
+            "zh_CN": "布甲",
+            "fr_FR": "Tissu",
+            "de_DE": "Stoff"
+          },
+          "id": 1
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 79
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Comune",
+            "ru_RU": "Обычное",
+            "en_GB": "Common",
+            "zh_TW": "普通",
+            "ko_KR": "일반",
+            "en_US": "Common",
+            "es_MX": "Común",
+            "pt_BR": "Comum",
+            "es_ES": "Común",
+            "zh_CN": "普通",
+            "fr_FR": "Commun",
+            "de_DE": "Verbreitet"
+          },
+          "type": "COMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 63244
+          }
+        ],
+        "name": {
+          "it_IT": "Pantaloni Nanici di Stoffa",
+          "ru_RU": "Дворфийские матерчатые брюки",
+          "en_GB": "Dwarven Cloth Britches",
+          "zh_TW": "矮人布質短褲",
+          "ko_KR": "드워프족 헝겊 반바지",
+          "en_US": "Dwarven Cloth Britches",
+          "es_MX": "Calzones de paño enano",
+          "pt_BR": "Culotes Enânicos de Tecido",
+          "es_ES": "Calzones de paño enano",
+          "zh_CN": "矮人布质短裤",
+          "fr_FR": "Chausses naines en tissu",
+          "de_DE": "Zwergische Stoffkniehose"
+        },
+        "purchase_price": 52,
+        "id": 79,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Gambe",
+            "ru_RU": "Ноги",
+            "en_GB": "Legs",
+            "zh_TW": "腿部",
+            "ko_KR": "다리",
+            "en_US": "Legs",
+            "es_MX": "Piernas",
+            "pt_BR": "Pernas",
+            "es_ES": "Piernas",
+            "zh_CN": "腿部",
+            "fr_FR": "Jambes",
+            "de_DE": "Beine"
+          },
+          "type": "LEGS"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/422?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 25,
+        "required_level": 15,
+        "sell_price": 25,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cibo e bevande",
+            "ru_RU": "Еда и напитки",
+            "en_GB": "Food & Drink",
+            "zh_TW": "食物和飲料",
+            "ko_KR": "음식과 음료",
+            "en_US": "Food & Drink",
+            "es_MX": "Comida y bebida",
+            "pt_BR": "Comida e Bebida",
+            "es_ES": "Comida y bebida",
+            "zh_CN": "食物和饮料",
+            "fr_FR": "Nourriture & boissons",
+            "de_DE": "Essen & Trinken"
+          },
+          "id": 5
+        },
+        "is_equippable": false,
+        "purchase_quantity": 5,
+        "media": {
+          "id": 422
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Consumabili",
+            "ru_RU": "Расходуемые",
+            "en_GB": "Consumable",
+            "zh_TW": "消耗品",
+            "ko_KR": "소비 용품",
+            "en_US": "Consumable",
+            "es_MX": "Consumible",
+            "pt_BR": "Consumível",
+            "es_ES": "Consumible",
+            "zh_CN": "消耗品",
+            "fr_FR": "Consommable",
+            "de_DE": "Verbrauchbar"
+          },
+          "id": 0
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Comune",
+            "ru_RU": "Обычное",
+            "en_GB": "Common",
+            "zh_TW": "普通",
+            "ko_KR": "일반",
+            "en_US": "Common",
+            "es_MX": "Común",
+            "pt_BR": "Comum",
+            "es_ES": "Común",
+            "zh_CN": "普通",
+            "fr_FR": "Commun",
+            "de_DE": "Verbreitet"
+          },
+          "type": "COMMON"
+        },
+        "max_count": 0,
+        "is_stackable": true,
+        "name": {
+          "it_IT": "Caciotta Nanica",
+          "ru_RU": "Дворфийский мягкий сыр",
+          "en_GB": "Dwarven Mild",
+          "zh_TW": "矮人乳酪",
+          "ko_KR": "드워프의 부드러운 치즈",
+          "en_US": "Dwarven Mild",
+          "es_MX": "Queso enano",
+          "pt_BR": "Queijo Enânico Suave",
+          "es_ES": "Cerveza enana",
+          "zh_CN": "矮人奶酪",
+          "fr_FR": "Caprice des nains",
+          "de_DE": "Zwergenmild"
+        },
+        "purchase_price": 500,
+        "id": 422,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/1163?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 10,
+        "required_level": 5,
+        "sell_price": 44,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Stoffa",
+            "ru_RU": "Ткань",
+            "en_GB": "Cloth",
+            "zh_TW": "布甲",
+            "ko_KR": "천",
+            "en_US": "Cloth",
+            "es_MX": "Tela",
+            "pt_BR": "Tecido",
+            "es_ES": "Tela",
+            "zh_CN": "布甲",
+            "fr_FR": "Tissu",
+            "de_DE": "Stoff"
+          },
+          "id": 1
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 1163
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Comune",
+            "ru_RU": "Обычное",
+            "en_GB": "Common",
+            "zh_TW": "普通",
+            "ko_KR": "일반",
+            "en_US": "Common",
+            "es_MX": "Común",
+            "pt_BR": "Comum",
+            "es_ES": "Común",
+            "zh_CN": "普通",
+            "fr_FR": "Commun",
+            "de_DE": "Verbreitet"
+          },
+          "type": "COMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 63391
+          }
+        ],
+        "name": {
+          "en_GB": "Dwarven Explorer's Monocle (Test)",
+          "en_US": "Dwarven Explorer's Monocle (Test)"
+        },
+        "purchase_price": 223,
+        "id": 1163,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Testa",
+            "ru_RU": "Голова",
+            "en_GB": "Head",
+            "zh_TW": "頭部",
+            "ko_KR": "머리",
+            "en_US": "Head",
+            "es_MX": "Cabeza",
+            "pt_BR": "Cabeça",
+            "es_ES": "Cabeza",
+            "zh_CN": "头部",
+            "fr_FR": "Tête",
+            "de_DE": "Kopf"
+          },
+          "type": "HEAD"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/2594?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 25,
+        "required_level": 0,
+        "sell_price": 375,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cibo e bevande",
+            "ru_RU": "Еда и напитки",
+            "en_GB": "Food & Drink",
+            "zh_TW": "食物和飲料",
+            "ko_KR": "음식과 음료",
+            "en_US": "Food & Drink",
+            "es_MX": "Comida y bebida",
+            "pt_BR": "Comida e Bebida",
+            "es_ES": "Comida y bebida",
+            "zh_CN": "食物和饮料",
+            "fr_FR": "Nourriture & boissons",
+            "de_DE": "Essen & Trinken"
+          },
+          "id": 5
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 2594
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Consumabili",
+            "ru_RU": "Расходуемые",
+            "en_GB": "Consumable",
+            "zh_TW": "消耗品",
+            "ko_KR": "소비 용품",
+            "en_US": "Consumable",
+            "es_MX": "Consumible",
+            "pt_BR": "Consumível",
+            "es_ES": "Consumible",
+            "zh_CN": "消耗品",
+            "fr_FR": "Consommable",
+            "de_DE": "Verbrauchbar"
+          },
+          "id": 0
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Comune",
+            "ru_RU": "Обычное",
+            "en_GB": "Common",
+            "zh_TW": "普通",
+            "ko_KR": "일반",
+            "en_US": "Common",
+            "es_MX": "Común",
+            "pt_BR": "Comum",
+            "es_ES": "Común",
+            "zh_CN": "普通",
+            "fr_FR": "Commun",
+            "de_DE": "Verbreitet"
+          },
+          "type": "COMMON"
+        },
+        "max_count": 0,
+        "is_stackable": true,
+        "name": {
+          "it_IT": "Caraffa di Idromele dei Nani",
+          "ru_RU": "Кружка дворфийской медовухи",
+          "en_GB": "Flagon of Dwarven Honeymead",
+          "zh_TW": "壺裝矮人蜜酒",
+          "ko_KR": "벌꿀술",
+          "en_US": "Flagon of Dwarven Honeymead",
+          "es_MX": "Cántaro de hidromiel enano",
+          "pt_BR": "Jarra de Hidromel Enânico",
+          "es_ES": "Cántaro de hidromiel enana",
+          "zh_CN": "壶装矮人蜜酒",
+          "fr_FR": "Cruche d’hydromiel nain",
+          "de_DE": "Krug Zwergenhonigmet"
+        },
+        "purchase_price": 1500,
+        "id": 2594,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/2596?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 15,
+        "required_level": 0,
+        "sell_price": 30,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cibo e bevande",
+            "ru_RU": "Еда и напитки",
+            "en_GB": "Food & Drink",
+            "zh_TW": "食物和飲料",
+            "ko_KR": "음식과 음료",
+            "en_US": "Food & Drink",
+            "es_MX": "Comida y bebida",
+            "pt_BR": "Comida e Bebida",
+            "es_ES": "Comida y bebida",
+            "zh_CN": "食物和饮料",
+            "fr_FR": "Nourriture & boissons",
+            "de_DE": "Essen & Trinken"
+          },
+          "id": 5
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 2596
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Consumabili",
+            "ru_RU": "Расходуемые",
+            "en_GB": "Consumable",
+            "zh_TW": "消耗品",
+            "ko_KR": "소비 용품",
+            "en_US": "Consumable",
+            "es_MX": "Consumible",
+            "pt_BR": "Consumível",
+            "es_ES": "Consumible",
+            "zh_CN": "消耗品",
+            "fr_FR": "Consommable",
+            "de_DE": "Verbrauchbar"
+          },
+          "id": 0
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Comune",
+            "ru_RU": "Обычное",
+            "en_GB": "Common",
+            "zh_TW": "普通",
+            "ko_KR": "일반",
+            "en_US": "Common",
+            "es_MX": "Común",
+            "pt_BR": "Comum",
+            "es_ES": "Común",
+            "zh_CN": "普通",
+            "fr_FR": "Commun",
+            "de_DE": "Verbreitet"
+          },
+          "type": "COMMON"
+        },
+        "max_count": 0,
+        "is_stackable": true,
+        "name": {
+          "it_IT": "Birra Scura Nanica",
+          "ru_RU": "Мех дворфийского эля",
+          "en_GB": "Skin of Dwarven Stout",
+          "zh_TW": "矮人烈酒",
+          "ko_KR": "드워프 스타우트 맥주",
+          "en_US": "Skin of Dwarven Stout",
+          "es_MX": "Odre de cerveza enana",
+          "pt_BR": "Odre de Stout Enânica",
+          "es_ES": "Nata de cerveza enana",
+          "zh_CN": "矮人烈酒",
+          "fr_FR": "Outre de bière naine",
+          "de_DE": "Schlauch mit zwergischem Starkbier"
+        },
+        "purchase_price": 120,
+        "id": 2596,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/2907?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 20,
+        "required_level": 0,
+        "sell_price": 1755,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Ascia",
+            "ru_RU": "Топор",
+            "en_GB": "Axe",
+            "zh_TW": "斧",
+            "ko_KR": "도끼",
+            "en_US": "Axe",
+            "es_MX": "Hacha",
+            "pt_BR": "Machado",
+            "es_ES": "Hacha",
+            "zh_CN": "斧",
+            "fr_FR": "Hache",
+            "de_DE": "Axt"
+          },
+          "id": 1
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 2907
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armi",
+            "ru_RU": "Оружие",
+            "en_GB": "Weapon",
+            "zh_TW": "武器",
+            "ko_KR": "무기",
+            "en_US": "Weapon",
+            "es_MX": "Arma",
+            "pt_BR": "Arma",
+            "es_ES": "Arma",
+            "zh_CN": "武器",
+            "fr_FR": "Arme",
+            "de_DE": "Waffe"
+          },
+          "id": 2
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 64075
+          }
+        ],
+        "name": {
+          "it_IT": "Scure per Legna dei Nani",
+          "ru_RU": "Дворфийский двуручный дровокол",
+          "en_GB": "Dwarven Tree Chopper",
+          "zh_TW": "矮人伐木斧",
+          "ko_KR": "드워프족 벌목용 도끼",
+          "en_US": "Dwarven Tree Chopper",
+          "es_MX": "Corta árboles enana",
+          "pt_BR": "Cortador de Árvore Enânico",
+          "es_ES": "Corta árboles enana",
+          "zh_CN": "矮人伐木斧",
+          "fr_FR": "Hache de bûcheron naine",
+          "de_DE": "Zwergischer Baumhacker"
+        },
+        "purchase_price": 8778,
+        "id": 2907,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Due mani",
+            "ru_RU": "Двуручное",
+            "en_GB": "Two-Hand",
+            "zh_TW": "雙手",
+            "ko_KR": "양손 장비",
+            "en_US": "Two-Hand",
+            "es_MX": "Dos manos",
+            "pt_BR": "Duas mãos",
+            "es_ES": "Dos manos",
+            "zh_CN": "双手",
+            "fr_FR": "Deux mains",
+            "de_DE": "Zweihändig"
+          },
+          "type": "TWOHWEAPON"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/3339?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 1,
+        "required_level": 0,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Missione",
+            "ru_RU": "Задания",
+            "en_GB": "Quest",
+            "zh_TW": "任務",
+            "ko_KR": "퀘스트",
+            "en_US": "Quest",
+            "es_MX": "Misión",
+            "pt_BR": "Missão",
+            "es_ES": "Misión",
+            "zh_CN": "任务",
+            "fr_FR": "Quête",
+            "de_DE": "Quest"
+          },
+          "id": 0
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 3339
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Missione",
+            "ru_RU": "Задания",
+            "en_GB": "Quest",
+            "zh_TW": "任務",
+            "ko_KR": "퀘스트",
+            "en_US": "Quest",
+            "es_MX": "Misión",
+            "pt_BR": "Missão",
+            "es_ES": "Misión",
+            "zh_CN": "任务",
+            "fr_FR": "Quête",
+            "de_DE": "Quest"
+          },
+          "id": 12
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Comune",
+            "ru_RU": "Обычное",
+            "en_GB": "Common",
+            "zh_TW": "普通",
+            "ko_KR": "일반",
+            "en_US": "Common",
+            "es_MX": "Común",
+            "pt_BR": "Comum",
+            "es_ES": "Común",
+            "zh_CN": "普通",
+            "fr_FR": "Commun",
+            "de_DE": "Verbreitet"
+          },
+          "type": "COMMON"
+        },
+        "max_count": 1,
+        "is_stackable": false,
+        "name": {
+          "it_IT": "Esca Nanica",
+          "ru_RU": "Дворфийский трут",
+          "en_GB": "Dwarven Tinder",
+          "zh_TW": "矮人火絨",
+          "ko_KR": "드워프족 부싯깃",
+          "en_US": "Dwarven Tinder",
+          "es_MX": "Yesca enana",
+          "pt_BR": "Isca de Pederneira Enânica",
+          "es_ES": "Yesca enana",
+          "zh_CN": "矮人火绒",
+          "fr_FR": "Combustible nain",
+          "de_DE": "Zwergenzunder"
+        },
+        "purchase_price": 0,
+        "id": 3339,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/3567?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 19,
+        "required_level": 0,
+        "sell_price": 922,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Arma da fuoco",
+            "ru_RU": "Огнестрельное",
+            "en_GB": "Gun",
+            "zh_TW": "槍械",
+            "ko_KR": "총",
+            "en_US": "Gun",
+            "es_MX": "Arma de fuego",
+            "pt_BR": "Arma de fogo",
+            "es_ES": "Arma de fuego",
+            "zh_CN": "枪械",
+            "fr_FR": "Arme à feu",
+            "de_DE": "Schusswaffe"
+          },
+          "id": 3
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 3567
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armi",
+            "ru_RU": "Оружие",
+            "en_GB": "Weapon",
+            "zh_TW": "武器",
+            "ko_KR": "무기",
+            "en_US": "Weapon",
+            "es_MX": "Arma",
+            "pt_BR": "Arma",
+            "es_ES": "Arma",
+            "zh_CN": "武器",
+            "fr_FR": "Arme",
+            "de_DE": "Waffe"
+          },
+          "id": 2
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 64367
+          }
+        ],
+        "name": {
+          "it_IT": "Canna da Pesca Nanica",
+          "ru_RU": "Дворфийская удочка",
+          "en_GB": "Dwarven Fishing Pole",
+          "zh_TW": "矮人釣魚竿",
+          "ko_KR": "드워프 작살총",
+          "en_US": "Dwarven Fishing Pole",
+          "es_MX": "Caña de pescar enana",
+          "pt_BR": "Vara de Pescar Enânica",
+          "es_ES": "Caña de pescar enana",
+          "zh_CN": "矮人钓鱼竿",
+          "fr_FR": "Canne à pêche naine",
+          "de_DE": "Zwergische Angelrute"
+        },
+        "purchase_price": 4613,
+        "id": 3567,
+        "inventory_type": {
+          "name": {
+            "it_IT": "A distanza",
+            "ru_RU": "Дальний бой",
+            "en_GB": "Ranged",
+            "zh_TW": "遠程",
+            "ko_KR": "원거리 장비",
+            "en_US": "Ranged",
+            "es_MX": "A distancia",
+            "pt_BR": "Longo alcance",
+            "es_ES": "A distancia",
+            "zh_CN": "远程",
+            "fr_FR": "À distance",
+            "de_DE": "Distanz"
+          },
+          "type": "RANGEDRIGHT"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/4504?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 31,
+        "required_level": 0,
+        "sell_price": 2222,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Stoffa",
+            "ru_RU": "Ткань",
+            "en_GB": "Cloth",
+            "zh_TW": "布甲",
+            "ko_KR": "천",
+            "en_US": "Cloth",
+            "es_MX": "Tela",
+            "pt_BR": "Tecido",
+            "es_ES": "Tela",
+            "zh_CN": "布甲",
+            "fr_FR": "Tissu",
+            "de_DE": "Stoff"
+          },
+          "id": 1
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 4504
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 64725
+          }
+        ],
+        "name": {
+          "it_IT": "Mantello del Guardiano Nano",
+          "ru_RU": "Плащ дворфийского стражника",
+          "en_GB": "Dwarven Guard Cloak",
+          "zh_TW": "矮人衛兵披風",
+          "ko_KR": "드워프 경비병 망토",
+          "en_US": "Dwarven Guard Cloak",
+          "es_MX": "Capa de guardia enano",
+          "pt_BR": "Manto de Guarda Anão",
+          "es_ES": "Capa de guarda enano",
+          "zh_CN": "矮人卫兵披风",
+          "fr_FR": "Cape de garde nain",
+          "de_DE": "Zwergenwachen-Umhang"
+        },
+        "purchase_price": 11112,
+        "id": 4504,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Schiena",
+            "ru_RU": "Спина",
+            "en_GB": "Back",
+            "zh_TW": "背部",
+            "ko_KR": "등",
+            "en_US": "Back",
+            "es_MX": "Espalda",
+            "pt_BR": "Costas",
+            "es_ES": "Espalda",
+            "zh_CN": "背部",
+            "fr_FR": "Dos",
+            "de_DE": "Rücken"
+          },
+          "type": "CLOAK"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/5241?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 18,
+        "required_level": 0,
+        "sell_price": 821,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Bacchetta",
+            "ru_RU": "Жезл",
+            "en_GB": "Wand",
+            "zh_TW": "魔杖",
+            "ko_KR": "마법봉",
+            "en_US": "Wand",
+            "es_MX": "Varita",
+            "pt_BR": "Varinha",
+            "es_ES": "Varita",
+            "zh_CN": "魔杖",
+            "fr_FR": "Baguette",
+            "de_DE": "Zauberstab"
+          },
+          "id": 19
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 5241
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armi",
+            "ru_RU": "Оружие",
+            "en_GB": "Weapon",
+            "zh_TW": "武器",
+            "ko_KR": "무기",
+            "en_US": "Weapon",
+            "es_MX": "Arma",
+            "pt_BR": "Arma",
+            "es_ES": "Arma",
+            "zh_CN": "武器",
+            "fr_FR": "Arme",
+            "de_DE": "Waffe"
+          },
+          "id": 2
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 64901
+          }
+        ],
+        "name": {
+          "it_IT": "Fiammante Nanica",
+          "ru_RU": "Дворфийская спичка",
+          "en_GB": "Dwarven Flamestick",
+          "zh_TW": "矮人火槍",
+          "ko_KR": "드워프족 불막대",
+          "en_US": "Dwarven Flamestick",
+          "es_MX": "Palo de fuego enano",
+          "pt_BR": "Vara-lume Enânica",
+          "es_ES": "Palo de fuego enano",
+          "zh_CN": "矮人火焰魔杖",
+          "fr_FR": "Bâton de flammes nain",
+          "de_DE": "Zwergischer Flammenstecken"
+        },
+        "purchase_price": 4105,
+        "id": 5241,
+        "inventory_type": {
+          "name": {
+            "it_IT": "A distanza",
+            "ru_RU": "Дальний бой",
+            "en_GB": "Ranged",
+            "zh_TW": "遠程",
+            "ko_KR": "원거리 장비",
+            "en_US": "Ranged",
+            "es_MX": "A distancia",
+            "pt_BR": "Longo alcance",
+            "es_ES": "A distancia",
+            "zh_CN": "远程",
+            "fr_FR": "À distance",
+            "de_DE": "Distanz"
+          },
+          "type": "RANGEDRIGHT"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/5459?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 13,
+        "required_level": 0,
+        "sell_price": 472,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Ascia",
+            "ru_RU": "Топор",
+            "en_GB": "Axe",
+            "zh_TW": "斧",
+            "ko_KR": "도끼",
+            "en_US": "Axe",
+            "es_MX": "Hacha",
+            "pt_BR": "Machado",
+            "es_ES": "Hacha",
+            "zh_CN": "斧",
+            "fr_FR": "Hache",
+            "de_DE": "Axt"
+          },
+          "id": 0
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 5459
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armi",
+            "ru_RU": "Оружие",
+            "en_GB": "Weapon",
+            "zh_TW": "武器",
+            "ko_KR": "무기",
+            "en_US": "Weapon",
+            "es_MX": "Arma",
+            "pt_BR": "Arma",
+            "es_ES": "Arma",
+            "zh_CN": "武器",
+            "fr_FR": "Arme",
+            "de_DE": "Waffe"
+          },
+          "id": 2
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 64987
+          }
+        ],
+        "name": {
+          "it_IT": "Ascia da Difesa",
+          "ru_RU": "Топор защитника",
+          "en_GB": "Defender Axe",
+          "zh_TW": "防禦者之斧",
+          "ko_KR": "수호자의 도끼",
+          "en_US": "Defender Axe",
+          "es_MX": "Hacha defensora",
+          "pt_BR": "Machado Defensor",
+          "es_ES": "Hacha de defensor",
+          "zh_CN": "防御者之斧",
+          "fr_FR": "Hache de défenseur",
+          "de_DE": "Verteidigeraxt"
+        },
+        "purchase_price": 2361,
+        "id": 5459,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mano primaria",
+            "ru_RU": "Правая рука",
+            "en_GB": "Main Hand",
+            "zh_TW": "主手",
+            "ko_KR": "주장비",
+            "en_US": "Main Hand",
+            "es_MX": "Mano derecha",
+            "pt_BR": "Mão principal",
+            "es_ES": "Mano principal",
+            "zh_CN": "主手",
+            "fr_FR": "Main droite",
+            "de_DE": "Waffenhand"
+          },
+          "type": "WEAPONMAINHAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/6176?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 5,
+        "required_level": 0,
+        "sell_price": 15,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Scudo",
+            "ru_RU": "Щит",
+            "en_GB": "Shield",
+            "zh_TW": "盾牌",
+            "ko_KR": "방패",
+            "en_US": "Shield",
+            "es_MX": "Escudo",
+            "pt_BR": "Escudo",
+            "es_ES": "Escudo",
+            "zh_CN": "盾牌",
+            "fr_FR": "Bouclier",
+            "de_DE": "Schild"
+          },
+          "id": 6
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 6176
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Comune",
+            "ru_RU": "Обычное",
+            "en_GB": "Common",
+            "zh_TW": "普通",
+            "ko_KR": "일반",
+            "en_US": "Common",
+            "es_MX": "Común",
+            "pt_BR": "Comum",
+            "es_ES": "Común",
+            "zh_CN": "普通",
+            "fr_FR": "Commun",
+            "de_DE": "Verbreitet"
+          },
+          "type": "COMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 65110
+          }
+        ],
+        "name": {
+          "it_IT": "Scudo Aquilone Nanico",
+          "ru_RU": "Дворфийский каплевидный щит",
+          "en_GB": "Dwarven Kite Shield",
+          "zh_TW": "矮人鳶盾",
+          "ko_KR": "드워프족 카이트실드",
+          "en_US": "Dwarven Kite Shield",
+          "es_MX": "Escudo oblongo enano",
+          "pt_BR": "Escudo Ogival Enânico",
+          "es_ES": "Escudo cometa enano",
+          "zh_CN": "矮人鸢盾",
+          "fr_FR": "Grand pavois nain",
+          "de_DE": "Zwergisches Viereckschild"
+        },
+        "purchase_price": 79,
+        "id": 6176,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mano secondaria",
+            "ru_RU": "Левая рука",
+            "en_GB": "Off Hand",
+            "zh_TW": "副手",
+            "ko_KR": "보조장비",
+            "en_US": "Off Hand",
+            "es_MX": "Mano izquierda",
+            "pt_BR": "Mão Secundária",
+            "es_ES": "Mano secundaria",
+            "zh_CN": "副手",
+            "fr_FR": "Main gauche",
+            "de_DE": "Schildhand"
+          },
+          "type": "SHIELD"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/6187?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 17,
+        "required_level": 0,
+        "sell_price": 613,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Scudo",
+            "ru_RU": "Щит",
+            "en_GB": "Shield",
+            "zh_TW": "盾牌",
+            "ko_KR": "방패",
+            "en_US": "Shield",
+            "es_MX": "Escudo",
+            "pt_BR": "Escudo",
+            "es_ES": "Escudo",
+            "zh_CN": "盾牌",
+            "fr_FR": "Bouclier",
+            "de_DE": "Schild"
+          },
+          "id": 6
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 6187
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 65114
+          }
+        ],
+        "name": {
+          "it_IT": "Difensore Nanico",
+          "ru_RU": "Дворфийская защита",
+          "en_GB": "Dwarven Defender",
+          "zh_TW": "矮人防禦者",
+          "ko_KR": "드워프족 철벽방패",
+          "en_US": "Dwarven Defender",
+          "es_MX": "Defensor enano",
+          "pt_BR": "Defensor Enânico",
+          "es_ES": "Defensor enano",
+          "zh_CN": "矮人防御者",
+          "fr_FR": "Défenseur nain",
+          "de_DE": "Zwergischer Verteidiger"
+        },
+        "purchase_price": 3066,
+        "id": 6187,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mano secondaria",
+            "ru_RU": "Левая рука",
+            "en_GB": "Off Hand",
+            "zh_TW": "副手",
+            "ko_KR": "보조장비",
+            "en_US": "Off Hand",
+            "es_MX": "Mano izquierda",
+            "pt_BR": "Mão Secundária",
+            "es_ES": "Mano secundaria",
+            "zh_CN": "副手",
+            "fr_FR": "Main gauche",
+            "de_DE": "Schildhand"
+          },
+          "type": "SHIELD"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/6579?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 24,
+        "required_level": 19,
+        "sell_price": 667,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Maglia",
+            "ru_RU": "Кольчуга",
+            "en_GB": "Mail",
+            "zh_TW": "鎖甲",
+            "ko_KR": "사슬",
+            "en_US": "Mail",
+            "es_MX": "Malla",
+            "pt_BR": "Malha",
+            "es_ES": "Mallas",
+            "zh_CN": "锁甲",
+            "fr_FR": "Mailles",
+            "de_DE": "Schwere Rüstung"
+          },
+          "id": 3
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 6579
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Comune",
+            "ru_RU": "Обычное",
+            "en_GB": "Common",
+            "zh_TW": "普通",
+            "ko_KR": "일반",
+            "en_US": "Common",
+            "es_MX": "Común",
+            "pt_BR": "Comum",
+            "es_ES": "Común",
+            "zh_CN": "普通",
+            "fr_FR": "Commun",
+            "de_DE": "Verbreitet"
+          },
+          "type": "COMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 65116
+          }
+        ],
+        "name": {
+          "it_IT": "Guardaspalle da Difesa",
+          "ru_RU": "Наплеч поборника",
+          "en_GB": "Defender Spaulders",
+          "zh_TW": "防禦者肩甲",
+          "ko_KR": "수호자 어깨갑옷",
+          "en_US": "Defender Spaulders",
+          "es_MX": "Bufas defensoras",
+          "pt_BR": "Espaldares do Defensor",
+          "es_ES": "Bufas de defensor",
+          "zh_CN": "防御者肩甲",
+          "fr_FR": "Spallières de défenseur",
+          "de_DE": "Verteidigerschiftung"
+        },
+        "purchase_price": 3339,
+        "id": 6579,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Spalle",
+            "ru_RU": "Плечо",
+            "en_GB": "Shoulder",
+            "zh_TW": "肩部",
+            "ko_KR": "어깨",
+            "en_US": "Shoulder",
+            "es_MX": "Hombro",
+            "pt_BR": "Ombros",
+            "es_ES": "Hombro",
+            "zh_CN": "肩部",
+            "fr_FR": "Epaule",
+            "de_DE": "Schulter"
+          },
+          "type": "SHOULDER"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/12003?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 55,
+        "required_level": 0,
+        "sell_price": 250,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cibo e bevande",
+            "ru_RU": "Еда и напитки",
+            "en_GB": "Food & Drink",
+            "zh_TW": "食物和飲料",
+            "ko_KR": "음식과 음료",
+            "en_US": "Food & Drink",
+            "es_MX": "Comida y bebida",
+            "pt_BR": "Comida e Bebida",
+            "es_ES": "Comida y bebida",
+            "zh_CN": "食物和饮料",
+            "fr_FR": "Nourriture & boissons",
+            "de_DE": "Essen & Trinken"
+          },
+          "id": 5
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 12003
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Consumabili",
+            "ru_RU": "Расходуемые",
+            "en_GB": "Consumable",
+            "zh_TW": "消耗品",
+            "ko_KR": "소비 용품",
+            "en_US": "Consumable",
+            "es_MX": "Consumible",
+            "pt_BR": "Consumível",
+            "es_ES": "Consumible",
+            "zh_CN": "消耗品",
+            "fr_FR": "Consommable",
+            "de_DE": "Verbrauchbar"
+          },
+          "id": 0
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Comune",
+            "ru_RU": "Обычное",
+            "en_GB": "Common",
+            "zh_TW": "普通",
+            "ko_KR": "일반",
+            "en_US": "Common",
+            "es_MX": "Común",
+            "pt_BR": "Comum",
+            "es_ES": "Común",
+            "zh_CN": "普通",
+            "fr_FR": "Commun",
+            "de_DE": "Verbreitet"
+          },
+          "type": "COMMON"
+        },
+        "max_count": 0,
+        "is_stackable": true,
+        "name": {
+          "it_IT": "Birra Scura dei Nani",
+          "ru_RU": "Темное дворфийское пиво",
+          "en_GB": "Dark Dwarven Lager",
+          "zh_TW": "矮人黑啤酒",
+          "ko_KR": "검은 드워프 맥주잔",
+          "en_US": "Dark Dwarven Lager",
+          "es_MX": "Cerveza negra enana",
+          "pt_BR": "Cerveja Escura dos Anões",
+          "es_ES": "Cerveza negra enana",
+          "zh_CN": "矮人黑啤酒",
+          "fr_FR": "Bière brune naine",
+          "de_DE": "Dunkles zwergisches Lagerbier"
+        },
+        "purchase_price": 1000,
+        "id": 12003,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/21326?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 62,
+        "required_level": 0,
+        "sell_price": 8991,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Varie",
+            "ru_RU": "Разное",
+            "en_GB": "Miscellaneous",
+            "zh_TW": "其他",
+            "ko_KR": "기타",
+            "en_US": "Miscellaneous",
+            "es_MX": "Miscelánea",
+            "pt_BR": "Diversos",
+            "es_ES": "Misceláneo",
+            "zh_CN": "其它",
+            "fr_FR": "Divers",
+            "de_DE": "Verschiedenes"
+          },
+          "id": 0
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 21326
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Epico",
+            "ru_RU": "Превосходное",
+            "en_GB": "Epic",
+            "zh_TW": "史詩",
+            "ko_KR": "영웅",
+            "en_US": "Epic",
+            "es_MX": "Épico",
+            "pt_BR": "Épico",
+            "es_ES": "Épico",
+            "zh_CN": "史诗",
+            "fr_FR": "Epique",
+            "de_DE": "Episch"
+          },
+          "type": "EPIC"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "it_IT": "Difensore dei Mordilegno",
+          "ru_RU": "Защита Древобрюхов",
+          "en_GB": "Defender of the Timbermaw",
+          "zh_TW": "木喉防禦者",
+          "ko_KR": "나무구렁 수호자",
+          "en_US": "Defender of the Timbermaw",
+          "es_MX": "Defensor de los Fauces de Madera",
+          "pt_BR": "Defensor dos Presamatos",
+          "es_ES": "Defensor de los Fauce de Madera",
+          "zh_CN": "木喉防御者",
+          "fr_FR": "Défenseur des Grumegueules",
+          "de_DE": "Verteidiger der Holzschlundfeste"
+        },
+        "purchase_price": 35965,
+        "id": 21326,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Monile",
+            "ru_RU": "Аксессуар",
+            "en_GB": "Trinket",
+            "zh_TW": "飾品",
+            "ko_KR": "장신구",
+            "en_US": "Trinket",
+            "es_MX": "Abalorio",
+            "pt_BR": "Berloque",
+            "es_ES": "Alhaja",
+            "zh_CN": "饰品",
+            "fr_FR": "Bijou",
+            "de_DE": "Schmuck"
+          },
+          "type": "TRINKET"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/22173?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 1,
+        "required_level": 0,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "ru_RU": "Праздничные предметы",
+            "en_GB": "Holiday",
+            "zh_TW": "節慶用品",
+            "ko_KR": "축제용품",
+            "en_US": "Holiday",
+            "es_MX": "Vacaciones",
+            "pt_BR": "Feriado",
+            "es_ES": "Vacaciones",
+            "zh_CN": "节日",
+            "fr_FR": "Fête",
+            "de_DE": "Festtag"
+          },
+          "id": 3
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 22173
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Varie",
+            "ru_RU": "Разное",
+            "en_GB": "Miscellaneous",
+            "zh_TW": "其他",
+            "ko_KR": "기타",
+            "en_US": "Miscellaneous",
+            "es_MX": "Miscelánea",
+            "pt_BR": "Diversos",
+            "es_ES": "Misceláneas",
+            "zh_CN": "其它",
+            "fr_FR": "Divers",
+            "de_DE": "Verschiedenes"
+          },
+          "id": 15
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Comune",
+            "ru_RU": "Обычное",
+            "en_GB": "Common",
+            "zh_TW": "普通",
+            "ko_KR": "일반",
+            "en_US": "Common",
+            "es_MX": "Común",
+            "pt_BR": "Comum",
+            "es_ES": "Común",
+            "zh_CN": "普通",
+            "fr_FR": "Commun",
+            "de_DE": "Verbreitet"
+          },
+          "type": "COMMON"
+        },
+        "max_count": 0,
+        "is_stackable": true,
+        "name": {
+          "it_IT": "Birra Artigianale Nanica",
+          "ru_RU": "Дворфийское домашнее пиво",
+          "en_GB": "Dwarven Homebrew",
+          "zh_TW": "矮人家釀",
+          "ko_KR": "잘 담근 드워프 맥주",
+          "en_US": "Dwarven Homebrew",
+          "es_MX": "Cerveza casera enana",
+          "pt_BR": "Cerveja Caseira Enânica",
+          "es_ES": "Brebaje casero enano",
+          "zh_CN": "矮人美酒",
+          "fr_FR": "Bière artisanale naine",
+          "de_DE": "Hausgemachtes Zwergenbier"
+        },
+        "purchase_price": 0,
+        "id": 22173,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/23018?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 83,
+        "required_level": 60,
+        "sell_price": 60256,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Varie",
+            "ru_RU": "Разное",
+            "en_GB": "Miscellaneous",
+            "zh_TW": "其他",
+            "ko_KR": "기타",
+            "en_US": "Miscellaneous",
+            "es_MX": "Miscelánea",
+            "pt_BR": "Diversos",
+            "es_ES": "Misceláneo",
+            "zh_CN": "其它",
+            "fr_FR": "Divers",
+            "de_DE": "Verschiedenes"
+          },
+          "id": 0
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 23018
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Epico",
+            "ru_RU": "Превосходное",
+            "en_GB": "Epic",
+            "zh_TW": "史詩",
+            "ko_KR": "영웅",
+            "en_US": "Epic",
+            "es_MX": "Épico",
+            "pt_BR": "Épico",
+            "es_ES": "Épico",
+            "zh_CN": "史诗",
+            "fr_FR": "Epique",
+            "de_DE": "Episch"
+          },
+          "type": "EPIC"
+        },
+        "max_count": 1,
+        "is_stackable": false,
+        "name": {
+          "it_IT": "Anello con Sigillo del Difensore Caduto",
+          "ru_RU": "Перстень Павшего Защитника",
+          "en_GB": "Signet of the Fallen Defender",
+          "zh_TW": "墮落防禦者之戒",
+          "ko_KR": "전사한 수호병의 인장 반지",
+          "en_US": "Signet of the Fallen Defender",
+          "es_MX": "Sello del Defensor caído",
+          "pt_BR": "Sinete do Defensor Caído",
+          "es_ES": "Sello del Defensor caído",
+          "zh_CN": "堕落卫士的徽记",
+          "fr_FR": "Chevalière du défenseur déchu",
+          "de_DE": "Siegel des gefallenen Verteidigers"
+        },
+        "purchase_price": 241024,
+        "id": 23018,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Dito",
+            "ru_RU": "Палец",
+            "en_GB": "Finger",
+            "zh_TW": "手指",
+            "ko_KR": "손가락",
+            "en_US": "Finger",
+            "es_MX": "Dedo",
+            "pt_BR": "Dedo",
+            "es_ES": "Dedo",
+            "zh_CN": "手指",
+            "fr_FR": "Doigt",
+            "de_DE": "Finger"
+          },
+          "type": "FINGER"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252430?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 17,
+        "required_level": 12,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252430
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 121524
+          }
+        ],
+        "name": {
+          "ru_RU": "Кожаный пояс защитника",
+          "en_GB": "Defender's Leather Belt",
+          "zh_TW": "防衛者皮甲腰帶",
+          "ko_KR": "파수병의 가죽 허리띠",
+          "en_US": "Defender's Leather Belt",
+          "es_MX": "Cinturón de cuero de defensor",
+          "pt_BR": "Cinto de Couro do Defensor",
+          "es_ES": "Cinturón de cuero de defensor",
+          "zh_CN": "防御者的皮带",
+          "fr_FR": "Ceinture de défenseur en cuir",
+          "de_DE": "Ledergürtel des Verteidigers"
+        },
+        "purchase_price": 0,
+        "id": 252430,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Fianchi",
+            "ru_RU": "Пояс",
+            "en_GB": "Waist",
+            "zh_TW": "腰部",
+            "ko_KR": "허리",
+            "en_US": "Waist",
+            "es_MX": "Cintura",
+            "pt_BR": "Cintura",
+            "es_ES": "Cintura",
+            "zh_CN": "腰部",
+            "fr_FR": "Taille",
+            "de_DE": "Taille"
+          },
+          "type": "WAIST"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252434?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 20,
+        "required_level": 15,
+        "sell_price": 430,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252434
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 121523
+          }
+        ],
+        "name": {
+          "ru_RU": "Кожаный доспех защитника",
+          "en_GB": "Defender's Leather Armor",
+          "zh_TW": "防衛者皮甲護甲",
+          "ko_KR": "파수병의 가죽 갑옷",
+          "en_US": "Defender's Leather Armor",
+          "es_MX": "Armadura de cuero de defensor",
+          "pt_BR": "Armadura de Couro do Defensor",
+          "es_ES": "Armadura de cuero de defensor",
+          "zh_CN": "防御者的皮甲",
+          "fr_FR": "Armure de défenseur en cuir",
+          "de_DE": "Lederrüstung des Verteidigers"
+        },
+        "purchase_price": 2150,
+        "id": 252434,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Torso",
+            "ru_RU": "Грудь",
+            "en_GB": "Chest",
+            "zh_TW": "胸部",
+            "ko_KR": "가슴",
+            "en_US": "Chest",
+            "es_MX": "Pecho",
+            "pt_BR": "Torso",
+            "es_ES": "Pecho",
+            "zh_CN": "胸部",
+            "fr_FR": "Torse",
+            "de_DE": "Brust"
+          },
+          "type": "CHEST"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252441?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 22,
+        "required_level": 17,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252441
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 121525
+          }
+        ],
+        "name": {
+          "ru_RU": "Кожаные сапоги защитника",
+          "en_GB": "Defender's Leather Boots",
+          "zh_TW": "防衛者皮甲長靴",
+          "ko_KR": "파수병의 가죽 장화",
+          "en_US": "Defender's Leather Boots",
+          "es_MX": "Botas de cuero de defensor",
+          "pt_BR": "Botas de Couro do Defensor",
+          "es_ES": "Botas de cuero de defensor",
+          "zh_CN": "防御者的皮靴",
+          "fr_FR": "Bottes de défenseur en cuir",
+          "de_DE": "Lederstiefel des Verteidigers"
+        },
+        "purchase_price": 0,
+        "id": 252441,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Piedi",
+            "ru_RU": "Ступни",
+            "en_GB": "Feet",
+            "zh_TW": "腳",
+            "ko_KR": "발",
+            "en_US": "Feet",
+            "es_MX": "Pies",
+            "pt_BR": "Pés",
+            "es_ES": "Pies",
+            "zh_CN": "脚",
+            "fr_FR": "Pieds",
+            "de_DE": "Füße"
+          },
+          "type": "FEET"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252445?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 25,
+        "required_level": 20,
+        "sell_price": 834,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252445
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 121528
+          }
+        ],
+        "name": {
+          "ru_RU": "Кожаные штаны защитника",
+          "en_GB": "Defender's Leather Pants",
+          "zh_TW": "防衛者皮甲束褲",
+          "ko_KR": "파수병의 가죽 바지",
+          "en_US": "Defender's Leather Pants",
+          "es_MX": "Pantalones de cuero de defensor",
+          "pt_BR": "Calças de Couro do Defensor",
+          "es_ES": "Pantalones de cuero de defensor",
+          "zh_CN": "防御者的皮裤",
+          "fr_FR": "Pantalon de défenseur en cuir",
+          "de_DE": "Lederhose des Verteidigers"
+        },
+        "purchase_price": 4171,
+        "id": 252445,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Gambe",
+            "ru_RU": "Ноги",
+            "en_GB": "Legs",
+            "zh_TW": "腿部",
+            "ko_KR": "다리",
+            "en_US": "Legs",
+            "es_MX": "Piernas",
+            "pt_BR": "Pernas",
+            "es_ES": "Piernas",
+            "zh_CN": "腿部",
+            "fr_FR": "Jambes",
+            "de_DE": "Beine"
+          },
+          "type": "LEGS"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252447?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 25,
+        "required_level": 20,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252447
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 135313
+          }
+        ],
+        "name": {
+          "ru_RU": "Кожаный капюшон защитника",
+          "en_GB": "Defender's Leather Hood",
+          "zh_TW": "防衛者皮甲兜帽",
+          "ko_KR": "파수병의 가죽 두건",
+          "en_US": "Defender's Leather Hood",
+          "es_MX": "Caperuza de cuero de defensor",
+          "pt_BR": "Capuz de Couro do Defensor",
+          "es_ES": "Caperuza de cuero de defensor",
+          "zh_CN": "防御者的皮帽",
+          "fr_FR": "Chaperon de défenseur en cuir",
+          "de_DE": "Lederkapuze des Verteidigers"
+        },
+        "purchase_price": 0,
+        "id": 252447,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Testa",
+            "ru_RU": "Голова",
+            "en_GB": "Head",
+            "zh_TW": "頭部",
+            "ko_KR": "머리",
+            "en_US": "Head",
+            "es_MX": "Cabeza",
+            "pt_BR": "Cabeça",
+            "es_ES": "Cabeza",
+            "zh_CN": "头部",
+            "fr_FR": "Tête",
+            "de_DE": "Kopf"
+          },
+          "type": "HEAD"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252450?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 27,
+        "required_level": 22,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252450
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 121529
+          }
+        ],
+        "name": {
+          "ru_RU": "Кожаный мундир защитника",
+          "en_GB": "Defender's Leather Tunic",
+          "zh_TW": "防衛者皮甲外套",
+          "ko_KR": "파수병의 가죽 튜닉",
+          "en_US": "Defender's Leather Tunic",
+          "es_MX": "Túnica de cuero de defensor",
+          "pt_BR": "Túnica de Couro do Defensor",
+          "es_ES": "Guerrera de cuero de defensor",
+          "zh_CN": "防御者的皮外衣",
+          "fr_FR": "Tunique de défenseur en cuir",
+          "de_DE": "Ledertunika des Verteidigers"
+        },
+        "purchase_price": 0,
+        "id": 252450,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Torso",
+            "ru_RU": "Грудь",
+            "en_GB": "Chest",
+            "zh_TW": "胸部",
+            "ko_KR": "가슴",
+            "en_US": "Chest",
+            "es_MX": "Pecho",
+            "pt_BR": "Torso",
+            "es_ES": "Pecho",
+            "zh_CN": "胸部",
+            "fr_FR": "Torse",
+            "de_DE": "Brust"
+          },
+          "type": "CHEST"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252455?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 30,
+        "required_level": 25,
+        "sell_price": 1038,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252455
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "ru_RU": "Кожаный шлем защитника",
+          "en_GB": "Defender's Leather Helm",
+          "zh_TW": "防衛者皮甲頭盔",
+          "ko_KR": "파수병의 가죽 투구",
+          "en_US": "Defender's Leather Helm",
+          "es_MX": "Yelmo de cuero de defensor",
+          "pt_BR": "Elmo de Couro do Defensor",
+          "es_ES": "Yelmo de cuero de defensor",
+          "zh_CN": "防御者的皮头盔",
+          "fr_FR": "Casque de défenseur en cuir",
+          "de_DE": "Lederhelm des Verteidigers"
+        },
+        "purchase_price": 5192,
+        "id": 252455,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Testa",
+            "ru_RU": "Голова",
+            "en_GB": "Head",
+            "zh_TW": "頭部",
+            "ko_KR": "머리",
+            "en_US": "Head",
+            "es_MX": "Cabeza",
+            "pt_BR": "Cabeça",
+            "es_ES": "Cabeza",
+            "zh_CN": "头部",
+            "fr_FR": "Tête",
+            "de_DE": "Kopf"
+          },
+          "type": "HEAD"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252457?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 30,
+        "required_level": 25,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252457
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 121527
+          }
+        ],
+        "name": {
+          "ru_RU": "Кожаный килт защитника",
+          "en_GB": "Defender's Leather Kilt",
+          "zh_TW": "防衛者皮甲褶裙",
+          "ko_KR": "파수병의 가죽 킬트",
+          "en_US": "Defender's Leather Kilt",
+          "es_MX": "Falda de cuero de defensor",
+          "pt_BR": "Kilt de Couro do Defensor",
+          "es_ES": "Falda de cuero de defensor",
+          "zh_CN": "防御者的皮短裙",
+          "fr_FR": "Kilt de défenseur en cuir",
+          "de_DE": "Lederkilt des Verteidigers"
+        },
+        "purchase_price": 0,
+        "id": 252457,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Gambe",
+            "ru_RU": "Ноги",
+            "en_GB": "Legs",
+            "zh_TW": "腿部",
+            "ko_KR": "다리",
+            "en_US": "Legs",
+            "es_MX": "Piernas",
+            "pt_BR": "Pernas",
+            "es_ES": "Piernas",
+            "zh_CN": "腿部",
+            "fr_FR": "Jambes",
+            "de_DE": "Beine"
+          },
+          "type": "LEGS"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252496?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 20,
+        "required_level": 15,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252496
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 121526
+          }
+        ],
+        "name": {
+          "ru_RU": "Кожаные перчатки защитника",
+          "en_GB": "Defender's Leather Gloves",
+          "zh_TW": "防衛者皮甲手套",
+          "ko_KR": "파수병의 가죽 장갑",
+          "en_US": "Defender's Leather Gloves",
+          "es_MX": "Guantes de cuero de defensor",
+          "pt_BR": "Luvas de Couro do Defensor",
+          "es_ES": "Guantes de cuero de defensor",
+          "zh_CN": "防御者的皮手套",
+          "fr_FR": "Gants de défenseur en cuir",
+          "de_DE": "Lederhandschuhe des Verteidigers"
+        },
+        "purchase_price": 0,
+        "id": 252496,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252767?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 17,
+        "required_level": 0,
+        "sell_price": 300,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Conciatura",
+            "ru_RU": "Кожевничество",
+            "en_GB": "Leatherworking",
+            "zh_TW": "製皮",
+            "ko_KR": "가죽세공",
+            "en_US": "Leatherworking",
+            "es_MX": "Peletería",
+            "pt_BR": "Couraria",
+            "es_ES": "Peletería",
+            "zh_CN": "制皮",
+            "fr_FR": "Travail du cuir",
+            "de_DE": "Lederverarbeitung"
+          },
+          "id": 1
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252767
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "it_IT": "Modello: Maschera del Grande Vudù",
+          "ru_RU": "Выкройка: кожаный пояс защитника",
+          "en_GB": "Pattern: Defender's Leather Belt",
+          "zh_TW": "圖樣：防衛者皮甲腰帶",
+          "ko_KR": "도안: 파수병의 가죽 허리띠",
+          "en_US": "Pattern: Defender's Leather Belt",
+          "es_MX": "Patrón: cinturón de cuero de defensor",
+          "pt_BR": "Molde: Cinto de Couro do Defensor",
+          "es_ES": "Patrón: cinturón de cuero de defensor",
+          "zh_CN": "图样：防御者的皮带",
+          "fr_FR": "Patron : ceinture de défenseur en cuir",
+          "de_DE": "Muster: Ledergürtel des Verteidigers"
+        },
+        "purchase_price": 1500,
+        "id": 252767,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252773?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 20,
+        "required_level": 0,
+        "sell_price": 350,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Conciatura",
+            "ru_RU": "Кожевничество",
+            "en_GB": "Leatherworking",
+            "zh_TW": "製皮",
+            "ko_KR": "가죽세공",
+            "en_US": "Leatherworking",
+            "es_MX": "Peletería",
+            "pt_BR": "Couraria",
+            "es_ES": "Peletería",
+            "zh_CN": "制皮",
+            "fr_FR": "Travail du cuir",
+            "de_DE": "Lederverarbeitung"
+          },
+          "id": 1
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252773
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "it_IT": "Modello: Maschera del Grande Vudù",
+          "ru_RU": "Выкройка: кожаный доспех защитника",
+          "en_GB": "Pattern: Defender's Leather Armor",
+          "zh_TW": "圖樣：防衛者皮甲護甲",
+          "ko_KR": "도안: 파수병의 가죽 갑옷",
+          "en_US": "Pattern: Defender's Leather Armor",
+          "es_MX": "Patrón: armadura de cuero de defensor",
+          "pt_BR": "Molde: Armadura de Couro do Defensor",
+          "es_ES": "Patrón: armadura de cuero de defensor",
+          "zh_CN": "图样：防御者的皮甲",
+          "fr_FR": "Patron : armure de défenseur en cuir",
+          "de_DE": "Muster: Lederrüstung des Verteidigers"
+        },
+        "purchase_price": 1400,
+        "id": 252773,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252779?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 20,
+        "required_level": 0,
+        "sell_price": 375,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Conciatura",
+            "ru_RU": "Кожевничество",
+            "en_GB": "Leatherworking",
+            "zh_TW": "製皮",
+            "ko_KR": "가죽세공",
+            "en_US": "Leatherworking",
+            "es_MX": "Peletería",
+            "pt_BR": "Couraria",
+            "es_ES": "Peletería",
+            "zh_CN": "制皮",
+            "fr_FR": "Travail du cuir",
+            "de_DE": "Lederverarbeitung"
+          },
+          "id": 1
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252779
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "it_IT": "Modello: Maschera del Grande Vudù",
+          "ru_RU": "Выкройка: кожаные перчатки защитника",
+          "en_GB": "Pattern: Defender's Leather Gloves",
+          "zh_TW": "圖樣：防衛者皮甲手套",
+          "ko_KR": "도안: 파수병의 가죽 장갑",
+          "en_US": "Pattern: Defender's Leather Gloves",
+          "es_MX": "Patrón: guantes de cuero de defensor",
+          "pt_BR": "Molde: Luvas de Couro do Defensor",
+          "es_ES": "Patrón: guantes de cuero de defensor",
+          "zh_CN": "图样：防御者的皮手套",
+          "fr_FR": "Patron : gants de défenseur en cuir",
+          "de_DE": "Muster: Lederhandschuhe des Verteidigers"
+        },
+        "purchase_price": 1875,
+        "id": 252779,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252788?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 22,
+        "required_level": 0,
+        "sell_price": 425,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Conciatura",
+            "ru_RU": "Кожевничество",
+            "en_GB": "Leatherworking",
+            "zh_TW": "製皮",
+            "ko_KR": "가죽세공",
+            "en_US": "Leatherworking",
+            "es_MX": "Peletería",
+            "pt_BR": "Couraria",
+            "es_ES": "Peletería",
+            "zh_CN": "制皮",
+            "fr_FR": "Travail du cuir",
+            "de_DE": "Lederverarbeitung"
+          },
+          "id": 1
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252788
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "it_IT": "Modello: Maschera del Grande Vudù",
+          "ru_RU": "Выкройка: кожаные сапоги защитника",
+          "en_GB": "Pattern: Defender's Leather Boots",
+          "zh_TW": "圖樣：防衛者皮甲長靴",
+          "ko_KR": "도안: 파수병의 가죽 장화",
+          "en_US": "Pattern: Defender's Leather Boots",
+          "es_MX": "Patrón: botas de cuero de defensor",
+          "pt_BR": "Molde: Botas de Couro do Defensor",
+          "es_ES": "Patrón: botas de cuero de defensor",
+          "zh_CN": "图样：防御者的皮靴",
+          "fr_FR": "Patron : bottes de défenseur en cuir",
+          "de_DE": "Muster: Lederstiefel des Verteidigers"
+        },
+        "purchase_price": 2125,
+        "id": 252788,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252794?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 25,
+        "required_level": 0,
+        "sell_price": 400,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Conciatura",
+            "ru_RU": "Кожевничество",
+            "en_GB": "Leatherworking",
+            "zh_TW": "製皮",
+            "ko_KR": "가죽세공",
+            "en_US": "Leatherworking",
+            "es_MX": "Peletería",
+            "pt_BR": "Couraria",
+            "es_ES": "Peletería",
+            "zh_CN": "制皮",
+            "fr_FR": "Travail du cuir",
+            "de_DE": "Lederverarbeitung"
+          },
+          "id": 1
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252794
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "it_IT": "Modello: Maschera del Grande Vudù",
+          "ru_RU": "Выкройка: кожаные штаны защитника",
+          "en_GB": "Pattern: Defender's Leather Pants",
+          "zh_TW": "圖樣：防衛者皮甲束褲",
+          "ko_KR": "도안: 파수병의 가죽 바지",
+          "en_US": "Pattern: Defender's Leather Pants",
+          "es_MX": "Patrón: pantalones de cuero de defensor",
+          "pt_BR": "Molde: Calças de Couro do Defensor",
+          "es_ES": "Patrón: pantalones de cuero de defensor",
+          "zh_CN": "图样：防御者的皮裤",
+          "fr_FR": "Patron : pantalon de défenseur en cuir",
+          "de_DE": "Muster: Lederhose des Verteidigers"
+        },
+        "purchase_price": 1600,
+        "id": 252794,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252800?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 25,
+        "required_level": 0,
+        "sell_price": 500,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Conciatura",
+            "ru_RU": "Кожевничество",
+            "en_GB": "Leatherworking",
+            "zh_TW": "製皮",
+            "ko_KR": "가죽세공",
+            "en_US": "Leatherworking",
+            "es_MX": "Peletería",
+            "pt_BR": "Couraria",
+            "es_ES": "Peletería",
+            "zh_CN": "制皮",
+            "fr_FR": "Travail du cuir",
+            "de_DE": "Lederverarbeitung"
+          },
+          "id": 1
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252800
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "it_IT": "Modello: Maschera del Grande Vudù",
+          "ru_RU": "Выкройка: кожаный капюшон защитника",
+          "en_GB": "Pattern: Defender's Leather Hood",
+          "zh_TW": "圖樣：防衛者皮甲兜帽",
+          "ko_KR": "도안: 파수병의 가죽 두건",
+          "en_US": "Pattern: Defender's Leather Hood",
+          "es_MX": "Patrón: caperuza de cuero de defensor",
+          "pt_BR": "Molde: Capuz de Couro do Defensor",
+          "es_ES": "Patrón: caperuza de cuero de defensor",
+          "zh_CN": "图样：防御者的皮帽",
+          "fr_FR": "Patron : chaperon de défenseur en cuir",
+          "de_DE": "Muster: Lederkapuze des Verteidigers"
+        },
+        "purchase_price": 2500,
+        "id": 252800,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252807?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 27,
+        "required_level": 0,
+        "sell_price": 550,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Conciatura",
+            "ru_RU": "Кожевничество",
+            "en_GB": "Leatherworking",
+            "zh_TW": "製皮",
+            "ko_KR": "가죽세공",
+            "en_US": "Leatherworking",
+            "es_MX": "Peletería",
+            "pt_BR": "Couraria",
+            "es_ES": "Peletería",
+            "zh_CN": "制皮",
+            "fr_FR": "Travail du cuir",
+            "de_DE": "Lederverarbeitung"
+          },
+          "id": 1
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252807
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "it_IT": "Modello: Maschera del Grande Vudù",
+          "ru_RU": "Выкройка: кожаный мундир защитника",
+          "en_GB": "Pattern: Defender's Leather Tunic",
+          "zh_TW": "圖樣：防衛者皮甲外套",
+          "ko_KR": "도안: 파수병의 가죽 튜닉",
+          "en_US": "Pattern: Defender's Leather Tunic",
+          "es_MX": "Patrón: túnica de cuero de defensor",
+          "pt_BR": "Molde: Túnica de Couro do Defensor",
+          "es_ES": "Patrón: guerrera de cuero de defensor",
+          "zh_CN": "图样：防御者的皮外衣",
+          "fr_FR": "Patron : tunique de défenseur en cuir",
+          "de_DE": "Muster: Ledertunika des Verteidigers"
+        },
+        "purchase_price": 2750,
+        "id": 252807,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252816?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 30,
+        "required_level": 0,
+        "sell_price": 500,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Conciatura",
+            "ru_RU": "Кожевничество",
+            "en_GB": "Leatherworking",
+            "zh_TW": "製皮",
+            "ko_KR": "가죽세공",
+            "en_US": "Leatherworking",
+            "es_MX": "Peletería",
+            "pt_BR": "Couraria",
+            "es_ES": "Peletería",
+            "zh_CN": "制皮",
+            "fr_FR": "Travail du cuir",
+            "de_DE": "Lederverarbeitung"
+          },
+          "id": 1
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252816
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "it_IT": "Modello: Maschera del Grande Vudù",
+          "ru_RU": "Выкройка: кожаный шлем защитника",
+          "en_GB": "Pattern: Defender's Leather Helm",
+          "zh_TW": "圖樣：防衛者皮甲頭盔",
+          "ko_KR": "도안: 파수병의 가죽 투구",
+          "en_US": "Pattern: Defender's Leather Helm",
+          "es_MX": "Patrón: yelmo de cuero de defensor",
+          "pt_BR": "Molde: Elmo de Couro do Defensor",
+          "es_ES": "Patrón: yelmo de cuero de defensor",
+          "zh_CN": "图样：防御者的皮头盔",
+          "fr_FR": "Patron : casque de défenseur en cuir",
+          "de_DE": "Muster: Lederhelm des Verteidigers"
+        },
+        "purchase_price": 2000,
+        "id": 252816,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/252822?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 30,
+        "required_level": 0,
+        "sell_price": 625,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Conciatura",
+            "ru_RU": "Кожевничество",
+            "en_GB": "Leatherworking",
+            "zh_TW": "製皮",
+            "ko_KR": "가죽세공",
+            "en_US": "Leatherworking",
+            "es_MX": "Peletería",
+            "pt_BR": "Couraria",
+            "es_ES": "Peletería",
+            "zh_CN": "制皮",
+            "fr_FR": "Travail du cuir",
+            "de_DE": "Lederverarbeitung"
+          },
+          "id": 1
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 252822
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "it_IT": "Modello: Maschera del Grande Vudù",
+          "ru_RU": "Выкройка: кожаный килт защитника",
+          "en_GB": "Pattern: Defender's Leather Kilt",
+          "zh_TW": "圖樣：防衛者皮甲褶裙",
+          "ko_KR": "도안: 파수병의 가죽 킬트",
+          "en_US": "Pattern: Defender's Leather Kilt",
+          "es_MX": "Patrón: falda de cuero de defensor",
+          "pt_BR": "Molde: Kilt de Couro do Defensor",
+          "es_ES": "Patrón: falda de cuero de defensor",
+          "zh_CN": "图样：防御者的皮短裙",
+          "fr_FR": "Patron : kilt de défenseur en cuir",
+          "de_DE": "Muster: Lederkilt des Verteidigers"
+        },
+        "purchase_price": 3125,
+        "id": 252822,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/257255?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 8,
+        "required_level": 0,
+        "sell_price": 15,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Scudo",
+            "ru_RU": "Щит",
+            "en_GB": "Shield",
+            "zh_TW": "盾牌",
+            "ko_KR": "방패",
+            "en_US": "Shield",
+            "es_MX": "Escudo",
+            "pt_BR": "Escudo",
+            "es_ES": "Escudo",
+            "zh_CN": "盾牌",
+            "fr_FR": "Bouclier",
+            "de_DE": "Schild"
+          },
+          "id": 6
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 257255
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 130328
+          }
+        ],
+        "name": {
+          "ru_RU": "Щит горного защитника",
+          "en_GB": "Highlands Defender's Shield",
+          "zh_TW": "高地防衛者之盾",
+          "ko_KR": "고원 수호자의 방패",
+          "en_US": "Highlands Defender's Shield",
+          "es_MX": "Escudo de defensor de las Tierras Altas",
+          "pt_BR": "Escudo do Defensor do Planalto",
+          "es_ES": "Escudo de defensor de las Tierras Altas",
+          "zh_CN": "高地防御者之盾",
+          "fr_FR": "Bouclier de défense des hautes-terres",
+          "de_DE": "Schild des Hochlandverteidigers"
+        },
+        "purchase_price": 78,
+        "id": 257255,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mano secondaria",
+            "ru_RU": "Левая рука",
+            "en_GB": "Off Hand",
+            "zh_TW": "副手",
+            "ko_KR": "보조장비",
+            "en_US": "Off Hand",
+            "es_MX": "Mano izquierda",
+            "pt_BR": "Mão Secundária",
+            "es_ES": "Mano secundaria",
+            "zh_CN": "副手",
+            "fr_FR": "Main gauche",
+            "de_DE": "Schildhand"
+          },
+          "type": "SHIELD"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/263338?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 13,
+        "required_level": 0,
+        "sell_price": 32,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 263338
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 130342
+          }
+        ],
+        "name": {
+          "it_IT": "Bracciali di Cuoio Distorti",
+          "ru_RU": "Наручи поборника",
+          "en_GB": "Defender's Bracers",
+          "zh_TW": "保衛者護腕",
+          "ko_KR": "수호자의 팔보호구",
+          "en_US": "Defender's Bracers",
+          "es_MX": "Brazales de defensor",
+          "pt_BR": "Braçadeiras de Defensor",
+          "es_ES": "Brazales de defensor",
+          "zh_CN": "防御者的护腕",
+          "fr_FR": "Brassards de défense",
+          "de_DE": "Armschienen des Verteidigers"
+        },
+        "purchase_price": 162,
+        "id": 263338,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Polsi",
+            "ru_RU": "Запястья",
+            "en_GB": "Wrist",
+            "zh_TW": "手腕",
+            "ko_KR": "손목",
+            "en_US": "Wrist",
+            "es_MX": "Muñeca",
+            "pt_BR": "Pulsos",
+            "es_ES": "Muñeca",
+            "zh_CN": "手腕",
+            "fr_FR": "Poignets",
+            "de_DE": "Handgelenke"
+          },
+          "type": "WRIST"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/263431?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 10,
+        "required_level": 0,
+        "sell_price": 89,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Scudo",
+            "ru_RU": "Щит",
+            "en_GB": "Shield",
+            "zh_TW": "盾牌",
+            "ko_KR": "방패",
+            "en_US": "Shield",
+            "es_MX": "Escudo",
+            "pt_BR": "Escudo",
+            "es_ES": "Escudo",
+            "zh_CN": "盾牌",
+            "fr_FR": "Bouclier",
+            "de_DE": "Schild"
+          },
+          "id": 6
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 263431
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 130330
+          }
+        ],
+        "name": {
+          "it_IT": "Brocchiero di Pietra",
+          "ru_RU": "Эгида защитника",
+          "en_GB": "Defender's Aegis",
+          "zh_TW": "防衛者禦盾",
+          "ko_KR": "수호자의 아이기스",
+          "en_US": "Defender's Aegis",
+          "es_MX": "Égida del defensor",
+          "pt_BR": "Égide do Defensor",
+          "es_ES": "Égida del defensor",
+          "zh_CN": "防御者的神盾",
+          "fr_FR": "Égide de défense",
+          "de_DE": "Aegis des Verteidigers"
+        },
+        "purchase_price": 446,
+        "id": 263431,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mano secondaria",
+            "ru_RU": "Левая рука",
+            "en_GB": "Off Hand",
+            "zh_TW": "副手",
+            "ko_KR": "보조장비",
+            "en_US": "Off Hand",
+            "es_MX": "Mano izquierda",
+            "pt_BR": "Mão Secundária",
+            "es_ES": "Mano secundaria",
+            "zh_CN": "副手",
+            "fr_FR": "Main gauche",
+            "de_DE": "Schildhand"
+          },
+          "type": "SHIELD"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/268873?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 62,
+        "required_level": 55,
+        "sell_price": 29415,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Varie",
+            "ru_RU": "Разное",
+            "en_GB": "Miscellaneous",
+            "zh_TW": "其他",
+            "ko_KR": "기타",
+            "en_US": "Miscellaneous",
+            "es_MX": "Miscelánea",
+            "pt_BR": "Diversos",
+            "es_ES": "Misceláneo",
+            "zh_CN": "其它",
+            "fr_FR": "Divers",
+            "de_DE": "Verschiedenes"
+          },
+          "id": 0
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 268873
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Epico",
+            "ru_RU": "Превосходное",
+            "en_GB": "Epic",
+            "zh_TW": "史詩",
+            "ko_KR": "영웅",
+            "en_US": "Epic",
+            "es_MX": "Épico",
+            "pt_BR": "Épico",
+            "es_ES": "Épico",
+            "zh_CN": "史诗",
+            "fr_FR": "Epique",
+            "de_DE": "Episch"
+          },
+          "type": "EPIC"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "ru_RU": "Защитник Древокожих",
+          "en_GB": "Defender of the Barkskin",
+          "zh_TW": "樹皮防衛者",
+          "ko_KR": "나무껍질의 수호자",
+          "en_US": "Defender of the Barkskin",
+          "es_MX": "Defensor de los piel de corteza",
+          "pt_BR": "Defensor dos Pele de Árvore",
+          "es_ES": "Defensor de los Pielcorteza",
+          "zh_CN": "树皮熊怪防御者",
+          "fr_FR": "Défenseur peau-d’écorce",
+          "de_DE": "Verteidiger der Baumrindenfurbolgs"
+        },
+        "purchase_price": 147075,
+        "id": 268873,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Monile",
+            "ru_RU": "Аксессуар",
+            "en_GB": "Trinket",
+            "zh_TW": "飾品",
+            "ko_KR": "장신구",
+            "en_US": "Trinket",
+            "es_MX": "Abalorio",
+            "pt_BR": "Berloque",
+            "es_ES": "Alhaja",
+            "zh_CN": "饰品",
+            "fr_FR": "Bijou",
+            "de_DE": "Schmuck"
+          },
+          "type": "TRINKET"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/269502?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 58,
+        "required_level": 53,
+        "sell_price": 22519,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Piastre",
+            "ru_RU": "Латы",
+            "en_GB": "Plate",
+            "zh_TW": "鎧甲",
+            "ko_KR": "판금",
+            "en_US": "Plate",
+            "es_MX": "Placas",
+            "pt_BR": "Placas",
+            "es_ES": "Placas",
+            "zh_CN": "板甲",
+            "fr_FR": "Plaques",
+            "de_DE": "Platte"
+          },
+          "id": 4
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 269502
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 67632
+          }
+        ],
+        "name": {
+          "ru_RU": "Дворфийские латы",
+          "en_GB": "Dwarven Plate",
+          "zh_TW": "矮人鎧甲",
+          "ko_KR": "드워프식 판금",
+          "en_US": "Dwarven Plate",
+          "es_MX": "Placa enana",
+          "pt_BR": "Placa Enânica",
+          "es_ES": "Placa enana",
+          "zh_CN": "矮人板甲",
+          "fr_FR": "Plaque naine",
+          "de_DE": "Zwergenplatte"
+        },
+        "purchase_price": 112596,
+        "id": 269502,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Torso",
+            "ru_RU": "Грудь",
+            "en_GB": "Chest",
+            "zh_TW": "胸部",
+            "ko_KR": "가슴",
+            "en_US": "Chest",
+            "es_MX": "Pecho",
+            "pt_BR": "Torso",
+            "es_ES": "Pecho",
+            "zh_CN": "胸部",
+            "fr_FR": "Torse",
+            "de_DE": "Brust"
+          },
+          "type": "CHEST"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/270868?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 1,
+        "required_level": 1,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "ru_RU": "Другое",
+            "en_GB": "Other",
+            "zh_TW": "其他",
+            "ko_KR": "기타",
+            "en_US": "Other",
+            "es_MX": "Otros",
+            "pt_BR": "Outro",
+            "es_ES": "Otros",
+            "zh_CN": "其它",
+            "fr_FR": "Autre",
+            "de_DE": "Sonstige"
+          },
+          "id": 4
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 270868
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Varie",
+            "ru_RU": "Разное",
+            "en_GB": "Miscellaneous",
+            "zh_TW": "其他",
+            "ko_KR": "기타",
+            "en_US": "Miscellaneous",
+            "es_MX": "Miscelánea",
+            "pt_BR": "Diversos",
+            "es_ES": "Misceláneas",
+            "zh_CN": "其它",
+            "fr_FR": "Divers",
+            "de_DE": "Verschiedenes"
+          },
+          "id": 15
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "ru_RU": "Дворфийский ремесленный указатель",
+          "en_GB": "Dwarven Tradeskill Signpost",
+          "zh_TW": "矮人交易技能路標",
+          "ko_KR": "드워프풍 전문 기술 표지판",
+          "en_US": "Dwarven Tradeskill Signpost",
+          "es_MX": "Letrero de habilidad comercial enana",
+          "pt_BR": "Placa de Profissões Enânicas",
+          "es_ES": "Letrero de habilidad comercial de los enanos",
+          "zh_CN": "矮人商业技能路标",
+          "fr_FR": "Panneau d’artisanat nain",
+          "de_DE": "Zwergischer Handwerkswegweiser"
+        },
+        "purchase_price": 0,
+        "id": 270868,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/272440?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 65,
+        "required_level": 60,
+        "sell_price": 16250,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Varie",
+            "ru_RU": "Разное",
+            "en_GB": "Miscellaneous",
+            "zh_TW": "其他",
+            "ko_KR": "기타",
+            "en_US": "Miscellaneous",
+            "es_MX": "Miscelánea",
+            "pt_BR": "Diversos",
+            "es_ES": "Misceláneo",
+            "zh_CN": "其它",
+            "fr_FR": "Divers",
+            "de_DE": "Verschiedenes"
+          },
+          "id": 0
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 272440
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "ru_RU": "Стабилизатор хватки защитника",
+          "en_GB": "Defender's Grip Stabilizer",
+          "zh_TW": "防衛者抓握穩定器",
+          "ko_KR": "파수병의 악력 안정기",
+          "en_US": "Defender's Grip Stabilizer",
+          "es_MX": "Estabilizador de agarre de defensor",
+          "pt_BR": "Estabilizador de Adesão do Defensor",
+          "es_ES": "Estabilizador de agarre de defensor",
+          "zh_CN": "防御者的握把稳定器",
+          "fr_FR": "Stabilisateur de poigne de défense",
+          "de_DE": "Griffstabilisierer des Verteidigers"
+        },
+        "purchase_price": 65000,
+        "id": 272440,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Monile",
+            "ru_RU": "Аксессуар",
+            "en_GB": "Trinket",
+            "zh_TW": "飾品",
+            "ko_KR": "장신구",
+            "en_US": "Trinket",
+            "es_MX": "Abalorio",
+            "pt_BR": "Berloque",
+            "es_ES": "Alhaja",
+            "zh_CN": "饰品",
+            "fr_FR": "Bijou",
+            "de_DE": "Schmuck"
+          },
+          "type": "TRINKET"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/274289?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 1,
+        "required_level": 0,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Missione",
+            "ru_RU": "Задания",
+            "en_GB": "Quest",
+            "zh_TW": "任務",
+            "ko_KR": "퀘스트",
+            "en_US": "Quest",
+            "es_MX": "Misión",
+            "pt_BR": "Missão",
+            "es_ES": "Misión",
+            "zh_CN": "任务",
+            "fr_FR": "Quête",
+            "de_DE": "Quest"
+          },
+          "id": 0
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 274289
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Missione",
+            "ru_RU": "Задания",
+            "en_GB": "Quest",
+            "zh_TW": "任務",
+            "ko_KR": "퀘스트",
+            "en_US": "Quest",
+            "es_MX": "Misión",
+            "pt_BR": "Missão",
+            "es_ES": "Misión",
+            "zh_CN": "任务",
+            "fr_FR": "Quête",
+            "de_DE": "Quest"
+          },
+          "id": 12
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Comune",
+            "ru_RU": "Обычное",
+            "en_GB": "Common",
+            "zh_TW": "普通",
+            "ko_KR": "일반",
+            "en_US": "Common",
+            "es_MX": "Común",
+            "pt_BR": "Comum",
+            "es_ES": "Común",
+            "zh_CN": "普通",
+            "fr_FR": "Commun",
+            "de_DE": "Verbreitet"
+          },
+          "type": "COMMON"
+        },
+        "max_count": 0,
+        "is_stackable": true,
+        "name": {
+          "ru_RU": "Дворфийская реликвия",
+          "en_GB": "Dwarven Heirloom",
+          "zh_TW": "矮人傳家寶",
+          "ko_KR": "드워프 가보",
+          "en_US": "Dwarven Heirloom",
+          "es_MX": "Reliquia de los enanos",
+          "pt_BR": "Herança Enânica",
+          "es_ES": "Reliquia enana",
+          "zh_CN": "矮人的篝火",
+          "fr_FR": "Héritage nain",
+          "de_DE": "Zwergisches Erbstück"
+        },
+        "purchase_price": 0,
+        "id": 274289,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/275891?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 1,
+        "required_level": 0,
+        "sell_price": 115,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cianfrusaglia",
+            "ru_RU": "Хлам",
+            "en_GB": "Junk",
+            "zh_TW": "垃圾",
+            "ko_KR": "잡동사니",
+            "en_US": "Junk",
+            "es_MX": "Chatarra",
+            "pt_BR": "Sucata",
+            "es_ES": "Chatarra",
+            "zh_CN": "垃圾",
+            "fr_FR": "Camelote",
+            "de_DE": "Plunder"
+          },
+          "id": 0
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 275891
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Varie",
+            "ru_RU": "Разное",
+            "en_GB": "Miscellaneous",
+            "zh_TW": "其他",
+            "ko_KR": "기타",
+            "en_US": "Miscellaneous",
+            "es_MX": "Miscelánea",
+            "pt_BR": "Diversos",
+            "es_ES": "Misceláneas",
+            "zh_CN": "其它",
+            "fr_FR": "Divers",
+            "de_DE": "Verschiedenes"
+          },
+          "id": 15
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Scarso",
+            "ru_RU": "Низкое",
+            "en_GB": "Poor",
+            "zh_TW": "粗糙",
+            "ko_KR": "하급",
+            "en_US": "Poor",
+            "es_MX": "Pobre",
+            "pt_BR": "Inferior",
+            "es_ES": "Pobre",
+            "zh_CN": "粗糙",
+            "fr_FR": "Mauvais",
+            "de_DE": "Schlecht"
+          },
+          "type": "POOR"
+        },
+        "max_count": 0,
+        "is_stackable": true,
+        "name": {
+          "ru_RU": "Дворфийский череп",
+          "en_GB": "Dwarven Skull",
+          "zh_TW": "矮人顱骨",
+          "ko_KR": "드워프 해골",
+          "en_US": "Dwarven Skull",
+          "es_MX": "Calavera enana",
+          "pt_BR": "Crânio Enânico",
+          "es_ES": "Calavera de enano",
+          "zh_CN": "矮人颅骨",
+          "fr_FR": "Crâne nain",
+          "de_DE": "Zwergenschädel"
+        },
+        "purchase_price": 575,
+        "id": 275891,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/279260?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 65,
+        "required_level": 60,
+        "sell_price": 5062,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Ascia",
+            "ru_RU": "Топор",
+            "en_GB": "Axe",
+            "zh_TW": "斧",
+            "ko_KR": "도끼",
+            "en_US": "Axe",
+            "es_MX": "Hacha",
+            "pt_BR": "Machado",
+            "es_ES": "Hacha",
+            "zh_CN": "斧",
+            "fr_FR": "Hache",
+            "de_DE": "Axt"
+          },
+          "id": 1
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 279260
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armi",
+            "ru_RU": "Оружие",
+            "en_GB": "Weapon",
+            "zh_TW": "武器",
+            "ko_KR": "무기",
+            "en_US": "Weapon",
+            "es_MX": "Arma",
+            "pt_BR": "Arma",
+            "es_ES": "Arma",
+            "zh_CN": "武器",
+            "fr_FR": "Arme",
+            "de_DE": "Waffe"
+          },
+          "id": 2
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Epico",
+            "ru_RU": "Превосходное",
+            "en_GB": "Epic",
+            "zh_TW": "史詩",
+            "ko_KR": "영웅",
+            "en_US": "Epic",
+            "es_MX": "Épico",
+            "pt_BR": "Épico",
+            "es_ES": "Épico",
+            "zh_CN": "史诗",
+            "fr_FR": "Epique",
+            "de_DE": "Episch"
+          },
+          "type": "EPIC"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 133640
+          }
+        ],
+        "name": {
+          "ru_RU": "Топор защитника леса",
+          "en_GB": "Forest Defender's Axe",
+          "zh_TW": "樹林防衛者斧頭",
+          "ko_KR": "숲 수호자의 도끼",
+          "en_US": "Forest Defender's Axe",
+          "es_MX": "Hacha del defensor del bosque",
+          "pt_BR": "Machado do Defensor da Floresta",
+          "es_ES": "Hacha de defensor del bosque",
+          "zh_CN": "森林卫士之斧",
+          "fr_FR": "Hache de défense de la forêt",
+          "de_DE": "Axt des Waldverteidigers"
+        },
+        "purchase_price": 25312,
+        "id": 279260,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Due mani",
+            "ru_RU": "Двуручное",
+            "en_GB": "Two-Hand",
+            "zh_TW": "雙手",
+            "ko_KR": "양손 장비",
+            "en_US": "Two-Hand",
+            "es_MX": "Dos manos",
+            "pt_BR": "Duas mãos",
+            "es_ES": "Dos manos",
+            "zh_CN": "双手",
+            "fr_FR": "Deux mains",
+            "de_DE": "Zweihändig"
+          },
+          "type": "TWOHWEAPON"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/279309?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 1,
+        "required_level": 0,
+        "sell_price": 125000,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Forgiatura",
+            "ru_RU": "Кузнечное дело",
+            "en_GB": "Blacksmithing",
+            "zh_TW": "鍛造",
+            "ko_KR": "대장기술",
+            "en_US": "Blacksmithing",
+            "es_MX": "Herrería",
+            "pt_BR": "Ferraria",
+            "es_ES": "Herrería",
+            "zh_CN": "锻造",
+            "fr_FR": "Forge",
+            "de_DE": "Schmiedekunst"
+          },
+          "id": 4
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 279309
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Epico",
+            "ru_RU": "Превосходное",
+            "en_GB": "Epic",
+            "zh_TW": "史詩",
+            "ko_KR": "영웅",
+            "en_US": "Epic",
+            "es_MX": "Épico",
+            "pt_BR": "Épico",
+            "es_ES": "Épico",
+            "zh_CN": "史诗",
+            "fr_FR": "Epique",
+            "de_DE": "Episch"
+          },
+          "type": "EPIC"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "ru_RU": "Чертеж: топор защитника леса",
+          "en_GB": "Plans: Forest Defender's Axe",
+          "zh_TW": "設計圖：樹林防衛者斧頭",
+          "ko_KR": "도면: 숲 수호자의 도끼",
+          "en_US": "Plans: Forest Defender's Axe",
+          "es_MX": "Diseño: hacha del defensor del bosque",
+          "pt_BR": "Instruções: Machado do Defensor da Floresta",
+          "es_ES": "Diseño: hacha de defensor del bosque",
+          "zh_CN": "设计图：森林卫士之斧",
+          "fr_FR": "Plans : hache de défense de la forêt",
+          "de_DE": "Pläne: Axt des Waldverteidigers"
+        },
+        "purchase_price": 500000,
+        "id": 279309,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    }
+  ]
+}

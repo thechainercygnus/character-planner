@@ -39,6 +39,11 @@ class Settings(BaseSettings):
         return f"profile-forever-{self.bnet_region}"
 
     @property
+    def static_namespace(self) -> str:
+        # Game data (item search, item media). The version-free name works; see ADR 0003.
+        return f"static-forever-{self.bnet_region}"
+
+    @property
     def character_slug(self) -> str:
         # Forever character routes use {name}-{surname}, lowercase.
         return f"{self.character_name}-{self.character_surname}".lower()

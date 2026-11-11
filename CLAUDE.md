@@ -21,6 +21,8 @@ uv run pytest
 
 Run the app: `uv run uvicorn character_planner.app:create_app --factory --reload`
 Capture real API responses: `uv run character-planner-spike` (needs `.env`, opens a browser).
+Probe static item endpoints: `uv run character-planner-probe-items` (app-only token, no browser).
+Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `npm run dev`.
 
 ## Rules
 
@@ -40,6 +42,8 @@ Capture real API responses: `uv run character-planner-spike` (needs `.env`, open
 - `src/character_planner/blizzard/`: OAuth and the API client (raw JSON in, status always reported)
 - `src/character_planner/db.py`: SQLModel tables (`Snapshot`, `StoredToken`)
 - `src/character_planner/curated.py` + `data/curated/*.yaml`: hand-maintained targets
+- `src/character_planner/items.py`: item catalog (Battle.net item search + icons), cached in SQLite (ADR 0003)
+- `src/character_planner/fields.py`: defensive JSON readers used by all parsers
 - `src/character_planner/views.py`: the only code that reads API response shapes; typed views for the frontend
 - `src/character_planner/summary.py`: Markdown rendering of those views, for pasting into a chat
 - `src/character_planner/app.py`: FastAPI routes, built by `create_app()`. Data routes live under `/api`, login under `/auth`; a built frontend in `frontend/dist` is served at `/`

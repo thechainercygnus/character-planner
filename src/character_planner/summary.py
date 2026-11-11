@@ -7,9 +7,10 @@ from collections.abc import Mapping
 from typing import Any
 
 from character_planner.curated import GearTargets
-from character_planner.db import Snapshot
+from character_planner.db import CatalogItem, Snapshot
 from character_planner.views import (
     EquippedItem,
+    GearRow,
     character_level,
     character_view,
     gear_plan,
@@ -27,19 +28,39 @@ def equipped_by_slot(equipment: Any) -> dict[str, str]:
     return {item.slot: _label(item) for item in parse_equipment(equipment)}
 
 
+def _verdict(row: GearRow) -> str:
+    if row.verdict == "reached":
+        return "reached"
+    text = row.verdict
+    info = row.target_info
+    if row.equipped and row.equipped.item_level is not None and info and info.item_level:
+        text += f" (ilvl {row.equipped.item_level} -> {info.item_level})"
+    if info and info.source == "manual":
+        text += ", manual data"
+    if row.warning:
+        text += f"; {row.warning}"
+    return text
+
+
 def _fmt(value: float | int | None, suffix: str = "") -> str:
     if value is None:
         return "?"
     return f"{value:.1f}{suffix}" if isinstance(value, float) else f"{value}{suffix}"
 
 
-def build_summary(character: str, latest: Mapping[str, Snapshot], targets: GearTargets) -> str:
+def build_summary(
+    character: str,
+    latest: Mapping[str, Snapshot],
+    targets: GearTargets,
+    catalog: Mapping[str, CatalogItem] | None = None,
+    icons: Mapping[int, str] | None = None,
+) -> str:
     lines = [f"# {character}", ""]
     if not latest:
         lines.append("No snapshots yet. Log in at /auth/login, then POST /api/sync.")
         return "\n".join(lines) + "\n"
 
-    view = character_view(latest)
+    view = character_view(latest, icons)
     who = " ".join(part for part in (view.race, view.character_class) if part)
     lines.append(f"- Level: {view.level if view.level is not None else 'unknown'}")
     if who:
@@ -87,7 +108,7 @@ def build_summary(character: str, latest: Mapping[str, Snapshot], targets: GearT
         lines += ["", "## Professions"]
         lines += [f"- {p.name}: {_fmt(p.skill)}/{_fmt(p.max_skill)}" for p in view.professions]
 
-    plan = gear_plan(latest, targets)
+    plan = gear_plan(latest, targets, catalog, icons)
     lines += ["", "## Gear vs targets"]
     if plan.bracket_min_level is None:
         lines.append("No target bracket for this level.")
@@ -95,8 +116,8 @@ def build_summary(character: str, latest: Mapping[str, Snapshot], targets: GearT
         lines += [
             f"Bracket: level {plan.bracket_min_level}+",
             "",
-            "| Slot | Equipped | Target | Source |",
-            "|---|---|---|---|",
+            "| Slot | Equipped | Target | Source | Verdict |",
+            "|---|---|---|---|---|",
         ]
         any_equipment = bool(view.equipment)
         for row in plan.rows:
@@ -104,7 +125,10 @@ def build_summary(character: str, latest: Mapping[str, Snapshot], targets: GearT
                 current = ("done: " if row.reached else "") + _label(row.equipped)
             else:
                 current = "empty" if any_equipment else "unknown"
-            lines.append(f"| {row.slot} | {current} | {row.target.item} | {row.target.source} |")
+            lines.append(
+                f"| {row.slot} | {current} | {row.target.item} | {row.target.source} "
+                f"| {_verdict(row)} |"
+            )
 
     if plan.next_bracket_level is not None:
         lines += [

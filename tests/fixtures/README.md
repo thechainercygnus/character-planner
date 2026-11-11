@@ -9,3 +9,7 @@ character on the account.
 
 To refresh: run `uv run character-planner-spike`, then
 `jq 'del(.. | ._links?) | .body' samples/<ts>/<kind>.json > tests/fixtures/forever_<kind>.json`.
+
+`forever_item_*.json` come from the item probe (`samples/items-20261111T193134Z`):
+the Dwarven Defender search (exact match present), the Flamefist Grips search (no exact
+match: Forever-new item) and the item media response for Burnished Shield (3655).

@@ -15,8 +15,10 @@ export interface EquippedItem {
   quality: Quality | null
   quality_name: string | null
   item_level: number | null
+  armor_type: string | null
   armor: number | null
   stats: ItemStat[]
+  icon_url: string | null
 }
 
 export interface Stats {
@@ -74,13 +76,37 @@ export interface GearTarget {
   item: string
   source: string
   priority: number | null
+  item_id: number | null
+  item_level: number | null
+  armor_type: string | null
+  armor: number | null
+  stats: Record<string, number>
 }
+
+/** What's known about a target item: from Battle.net item search, or typed into gear_targets.yaml. */
+export interface TargetInfo {
+  source: 'api' | 'manual'
+  item_id: number | null
+  item_level: number | null
+  required_level: number | null
+  quality: Quality | null
+  armor_type: string | null
+  armor: number | null
+  stats: ItemStat[]
+  icon_url: string | null
+}
+
+export type Verdict = 'reached' | 'upgrade' | 'sidegrade' | 'downgrade' | 'unknown'
 
 export interface GearRow {
   slot: string
   equipped: EquippedItem | null
   target: GearTarget
+  target_info: TargetInfo | null
   reached: boolean
+  verdict: Verdict
+  item_level_delta: number | null
+  warning: string | null
 }
 
 export interface GearPlan {
@@ -100,6 +126,13 @@ export interface Status {
 }
 
 export type SyncResult = Record<string, number>
+
+export interface RefreshResult {
+  found: string[]
+  missing: string[]
+  errors: string[]
+  icons: number
+}
 
 export class ApiError extends Error {
   readonly status: number
@@ -130,6 +163,7 @@ export const api = {
   character: () => request<CharacterView>('/api/character'),
   gear: () => request<GearPlan>('/api/gear'),
   sync: () => request<SyncResult>('/api/sync', { method: 'POST' }),
+  refreshItems: () => request<RefreshResult>('/api/items/refresh?force=true', { method: 'POST' }),
 }
 
 /** Battle.net slot types (MAIN_HAND) as people read them (Main Hand). */

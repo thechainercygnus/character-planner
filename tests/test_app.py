@@ -13,6 +13,7 @@ from character_planner.blizzard import oauth
 from character_planner.config import Settings
 
 from .conftest import FIXTURES
+from .test_items import mock_battlenet
 
 BASE = "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet"
 
@@ -74,6 +75,7 @@ def test_login_sync_and_read_end_to_end(client: TestClient) -> None:
     assert client.get("/api/status").json()["logged_in"] is True
 
     mock_character_api()
+    mock_battlenet()  # item search + media, called by sync's catalog refresh
     statuses = client.post("/api/sync").json()
     assert statuses["profile"] == 200
     assert statuses["appearance"] == 404
@@ -92,10 +94,34 @@ def test_login_sync_and_read_end_to_end(client: TestClient) -> None:
     assert off_hand["equipped"]["name"] == "Burnished Shield"
     assert off_hand["target"]["item"] == "Dwarven Defender"
     assert off_hand["reached"] is False
+    # The level-15 shield target is item level 17; the equipped shield is 21.
+    assert off_hand["target_info"]["source"] == "api"
+    assert off_hand["target_info"]["item_level"] == 17
+    assert off_hand["verdict"] == "downgrade"
+    assert off_hand["item_level_delta"] == -4
+    assert off_hand["equipped"]["icon_url"].endswith(".jpg")
+    waist = next(row for row in gear["rows"] if row["slot"] == "WAIST")
+    assert waist["target_info"] is None  # Kindlegem Girdle isn't in the search index
+    assert waist["verdict"] == "unknown"
 
     summary = client.get("/api/summary.md").text
     assert "- Level: 18" in summary
     assert "Kindlegem Girdle" in summary
+    assert "downgrade (ilvl 21 -> 17)" in summary
+
+
+@respx.mock
+def test_items_refresh_endpoint(client: TestClient) -> None:
+    mock_battlenet()
+    result = client.post("/api/items/refresh").json()
+    assert "Dwarven Defender" in result["found"]
+    assert "Kindlegem Girdle" in result["missing"]
+
+
+@respx.mock
+def test_items_refresh_reports_battlenet_outage(client: TestClient) -> None:
+    respx.post(oauth.TOKEN_URL).mock(return_value=httpx.Response(503))
+    assert client.post("/api/items/refresh").status_code == 502
 
 
 def test_reads_are_empty_before_any_sync(client: TestClient) -> None:

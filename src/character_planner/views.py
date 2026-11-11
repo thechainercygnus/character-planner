@@ -7,37 +7,19 @@ defensive: a missing or reshaped field becomes None instead of an error.
 
 from collections.abc import Mapping
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel
 
+from character_planner import fields
 from character_planner.curated import GearTarget, GearTargets
-from character_planner.db import Snapshot
+from character_planner.db import CatalogItem, Snapshot
 
-
-def _get(data: Any, *keys: str) -> Any:
-    for key in keys:
-        if not isinstance(data, Mapping):
-            return None
-        data = data.get(key)
-    return data
-
-
-def _name(value: Any) -> str | None:
-    """Localised names arrive as a string, or as {"en_US": ...} without a locale param."""
-    if isinstance(value, str):
-        return value
-    if isinstance(value, Mapping):
-        return value.get("en_US") or next(iter(value.values()), None)
-    return None
-
-
-def _int(value: Any) -> int | None:
-    return value if isinstance(value, int) and not isinstance(value, bool) else None
-
-
-def _float(value: Any) -> float | None:
-    return float(value) if isinstance(value, int | float) and not isinstance(value, bool) else None
+# Short local names for the defensive readers.
+_get = fields.get
+_name = fields.name
+_int = fields.as_int
+_float = fields.as_float
 
 
 # --- models ---------------------------------------------------------------------------
@@ -55,8 +37,10 @@ class EquippedItem(BaseModel):
     quality: str | None = None  # API quality type: POOR, COMMON, UNCOMMON, RARE, EPIC
     quality_name: str | None = None
     item_level: int | None = None
+    armor_type: str | None = None  # item subclass: Cloth, Leather, Mail, Shield, Axe...
     armor: int | None = None
     stats: list[ItemStat] = []
+    icon_url: str | None = None
 
 
 class Stats(BaseModel):
@@ -109,11 +93,32 @@ class CharacterView(BaseModel):
     equipment: list[EquippedItem] = []
 
 
+Verdict = Literal["reached", "upgrade", "sidegrade", "downgrade", "unknown"]
+
+
+class TargetInfo(BaseModel):
+    """What we know about a target item, from the item search or gear_targets.yaml."""
+
+    source: Literal["api", "manual"]
+    item_id: int | None = None
+    item_level: int | None = None
+    required_level: int | None = None
+    quality: str | None = None
+    armor_type: str | None = None
+    armor: int | None = None
+    stats: list[ItemStat] = []
+    icon_url: str | None = None
+
+
 class GearRow(BaseModel):
     slot: str
     equipped: EquippedItem | None
     target: GearTarget
+    target_info: TargetInfo | None
     reached: bool
+    verdict: Verdict
+    item_level_delta: int | None
+    warning: str | None
 
 
 class GearPlan(BaseModel):
@@ -153,6 +158,7 @@ def parse_equipment(equipment: Any) -> list[EquippedItem]:
                 quality=_get(item, "quality", "type"),
                 quality_name=_name(_get(item, "quality", "name")),
                 item_level=_int(_get(item, "level", "value")),
+                armor_type=_name(_get(item, "item_subclass", "name")),
                 armor=_int(_get(item, "armor", "value")),
                 stats=stats,
             )
@@ -232,7 +238,10 @@ def _payload(latest: Mapping[str, Snapshot], kind: str) -> Any:
     return snapshot.payload if snapshot else None
 
 
-def character_view(latest: Mapping[str, Snapshot]) -> CharacterView:
+def character_view(
+    latest: Mapping[str, Snapshot], icons: Mapping[int, str] | None = None
+) -> CharacterView:
+    icons = icons or {}
     profile = _payload(latest, "profile")
     return CharacterView(
         name=_name(_get(profile, "name")),
@@ -246,13 +255,87 @@ def character_view(latest: Mapping[str, Snapshot]) -> CharacterView:
         stats=parse_stats(_payload(latest, "statistics")),
         professions=parse_professions(_payload(latest, "professions")),
         specialization=parse_specialization(_payload(latest, "specializations")),
-        equipment=parse_equipment(_payload(latest, "equipment")),
+        equipment=[
+            item.model_copy(update={"icon_url": icons.get(item.item_id or 0)})
+            for item in parse_equipment(_payload(latest, "equipment"))
+        ],
     )
 
 
-def gear_plan(latest: Mapping[str, Snapshot], targets: GearTargets) -> GearPlan:
+# Item level differences within this band count as a sidegrade.
+SIDEGRADE_BAND = 2
+ARMOR_TIERS = {"Cloth": 1, "Leather": 2, "Mail": 3, "Plate": 4}
+
+
+def target_info(
+    target: GearTarget,
+    catalog: Mapping[str, CatalogItem],
+    icons: Mapping[int, str],
+) -> TargetInfo | None:
+    """API data for the target when the search found it, filled in with manual YAML data."""
+    entry = catalog.get(target.item.casefold().strip())
+    data = entry.payload if entry and entry.found else None
+    if data is None and not target.has_manual_data:
+        return None
+
+    item_id = _int(_get(data, "id")) or target.item_id
+    return TargetInfo(
+        source="api" if data is not None else "manual",
+        item_id=item_id,
+        item_level=_int(_get(data, "level")) or target.item_level,
+        required_level=_int(_get(data, "required_level")),
+        quality=_get(data, "quality", "type"),
+        armor_type=_name(_get(data, "item_subclass", "name")) or target.armor_type,
+        armor=target.armor,
+        stats=[ItemStat(name=k, value=v) for k, v in target.stats.items()],
+        icon_url=icons.get(item_id) if item_id else None,
+    )
+
+
+def judge(
+    target: GearTarget, equipped: EquippedItem | None, info: TargetInfo | None
+) -> tuple[Verdict, int | None]:
+    if equipped is not None and equipped.name.casefold() == target.item.casefold():
+        return "reached", 0
+    target_level = info.item_level if info else None
+    if target_level is None:
+        return "unknown", None
+    if equipped is None:
+        return "upgrade", None
+    if equipped.item_level is None:
+        return "unknown", None
+    delta = target_level - equipped.item_level
+    if delta > SIDEGRADE_BAND:
+        return "upgrade", delta
+    if delta < -SIDEGRADE_BAND:
+        return "downgrade", delta
+    return "sidegrade", delta
+
+
+def armor_warning(equipped: EquippedItem | None, info: TargetInfo | None) -> str | None:
+    """Flag a target that is lighter armor than what's worn (Leather replacing Mail)."""
+    if equipped is None or info is None:
+        return None
+    worn = ARMOR_TIERS.get(equipped.armor_type or "")
+    wanted = ARMOR_TIERS.get(info.armor_type or "")
+    if worn and wanted and wanted < worn:
+        return f"{info.armor_type} replacing {equipped.armor_type}"
+    return None
+
+
+def gear_plan(
+    latest: Mapping[str, Snapshot],
+    targets: GearTargets,
+    catalog: Mapping[str, CatalogItem] | None = None,
+    icons: Mapping[int, str] | None = None,
+) -> GearPlan:
+    catalog = catalog or {}
+    icons = icons or {}
     level = character_level(_payload(latest, "profile"))
-    equipped = {item.slot: item for item in parse_equipment(_payload(latest, "equipment"))}
+    equipped = {
+        item.slot: item.model_copy(update={"icon_url": icons.get(item.item_id or 0)})
+        for item in parse_equipment(_payload(latest, "equipment"))
+    }
     bracket = targets.for_level(level) if level is not None else None
     upcoming = targets.next_after(level) if level is not None else None
 
@@ -260,15 +343,23 @@ def gear_plan(latest: Mapping[str, Snapshot], targets: GearTargets) -> GearPlan:
         bracket.targets if bracket else [],
         key=lambda t: (t.priority is None, t.priority or 0),
     )
-    rows = [
-        GearRow(
-            slot=target.slot,
-            equipped=equipped.get(target.slot),
-            target=target,
-            reached=(item := equipped.get(target.slot)) is not None and item.name == target.item,
+    rows: list[GearRow] = []
+    for target in ordered:
+        worn = equipped.get(target.slot)
+        info = target_info(target, catalog, icons)
+        verdict, delta = judge(target, worn, info)
+        rows.append(
+            GearRow(
+                slot=target.slot,
+                equipped=worn,
+                target=target,
+                target_info=info,
+                reached=verdict == "reached",
+                verdict=verdict,
+                item_level_delta=delta,
+                warning=armor_warning(worn, info),
+            )
         )
-        for target in ordered
-    ]
     return GearPlan(
         level=level,
         bracket_min_level=bracket.min_level if bracket else None,

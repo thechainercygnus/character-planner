@@ -1,4 +1,4 @@
-"""SQLite storage: raw API snapshots and the current OAuth token.
+"""SQLite storage: raw API snapshots, the current OAuth token and the item catalog.
 
 Snapshots keep the API's JSON as-is. Typed models come later, built from real
 samples, so nothing captured now is lost to a guessed schema (ADR 0002).
@@ -33,6 +33,35 @@ class StoredToken(SQLModel, table=True):
     access_token: str
     expires_at: float
     scope: str = ""
+
+
+class CatalogItem(SQLModel, table=True):
+    """Static item data found by name through the item search (ADR 0003).
+
+    found=False is cached too, so items the search can't see aren't re-queried on
+    every sync; a forced refresh retries them.
+    """
+
+    name_key: str = Field(primary_key=True)  # casefolded item name
+    name: str
+    found: bool
+    item_id: int | None = None
+    payload: Any = Field(default=None, sa_column=Column(JSON, nullable=True))
+    fetched_at: datetime = Field(default_factory=utcnow)
+
+
+class ItemIcon(SQLModel, table=True):
+    item_id: int = Field(primary_key=True)
+    url: str | None = None
+    fetched_at: datetime = Field(default_factory=utcnow)
+
+
+def catalog_by_name(session: Session) -> dict[str, CatalogItem]:
+    return {row.name_key: row for row in session.exec(select(CatalogItem)).all()}
+
+
+def icons_by_id(session: Session) -> dict[int, str]:
+    return {row.item_id: row.url for row in session.exec(select(ItemIcon)).all() if row.url}
 
 
 def make_engine(database_url: str) -> Engine:

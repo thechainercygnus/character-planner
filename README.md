@@ -24,6 +24,7 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Pull fresh data | `POST /api/sync` |
 | Character summary (Markdown) | http://localhost:8000/api/summary.md |
 | Character / gear plan (JSON) | `/api/character`, `/api/gear` |
+| Re-run item lookups | `POST /api/items/refresh?force=true` |
 | API docs | http://localhost:8000/docs |
 
 ## Develop

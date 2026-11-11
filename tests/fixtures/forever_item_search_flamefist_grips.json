@@ -1,0 +1,2403 @@
+{
+  "page": 1,
+  "pageSize": 23,
+  "maxPageSize": 100,
+  "pageCount": 1,
+  "results": [
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/4940?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 10,
+        "required_level": 0,
+        "sell_price": 36,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 4940
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Comune",
+            "ru_RU": "Обычное",
+            "en_GB": "Common",
+            "zh_TW": "普通",
+            "ko_KR": "일반",
+            "en_US": "Common",
+            "es_MX": "Común",
+            "pt_BR": "Comum",
+            "es_ES": "Común",
+            "zh_CN": "普通",
+            "fr_FR": "Commun",
+            "de_DE": "Verbreitet"
+          },
+          "type": "COMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 64866
+          }
+        ],
+        "name": {
+          "it_IT": "Guantini Leggeri",
+          "ru_RU": "Маскировочные захваты",
+          "en_GB": "Veiled Grips",
+          "zh_TW": "迷霧手套",
+          "ko_KR": "망사 장갑",
+          "en_US": "Veiled Grips",
+          "es_MX": "Mandiletes velados",
+          "pt_BR": "Guantes Velados",
+          "es_ES": "Mandiletes velados",
+          "zh_CN": "迷雾手套",
+          "fr_FR": "Poignes voilées",
+          "de_DE": "Verhüllter Handschutz"
+        },
+        "purchase_price": 182,
+        "id": 4940,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/6727?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 41,
+        "required_level": 0,
+        "sell_price": 2996,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 6727
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 65350
+          }
+        ],
+        "name": {
+          "it_IT": "Guanti da Corsa di Razzeric",
+          "ru_RU": "Гоночные перчатки Раззерика",
+          "en_GB": "Razzeric's Racing Grips",
+          "zh_TW": "拉澤瑞克的賽車手套",
+          "ko_KR": "래저릭의 경주용 장갑",
+          "en_US": "Razzeric's Racing Grips",
+          "es_MX": "Mandiletes de competición de Razzeric",
+          "pt_BR": "Luvas de Corrida do Razzeric",
+          "es_ES": "Mandiletes de competición de Razzeric",
+          "zh_CN": "拉泽瑞克的赛车手套",
+          "fr_FR": "Gants de course de Razzeric",
+          "de_DE": "Razzerics Rennhandschutz"
+        },
+        "purchase_price": 14982,
+        "id": 6727,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/9656?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 49,
+        "required_level": 0,
+        "sell_price": 4251,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Piastre",
+            "ru_RU": "Латы",
+            "en_GB": "Plate",
+            "zh_TW": "鎧甲",
+            "ko_KR": "판금",
+            "en_US": "Plate",
+            "es_MX": "Placas",
+            "pt_BR": "Placas",
+            "es_ES": "Placas",
+            "zh_CN": "板甲",
+            "fr_FR": "Plaques",
+            "de_DE": "Platte"
+          },
+          "id": 4
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 9656
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 65650
+          }
+        ],
+        "name": {
+          "it_IT": "Guardamani di Granito",
+          "ru_RU": "Гранитные захваты",
+          "en_GB": "Granite Grips",
+          "zh_TW": "花崗岩護手",
+          "ko_KR": "화강암 장갑",
+          "en_US": "Granite Grips",
+          "es_MX": "Mandiletes de granito",
+          "pt_BR": "Manoplas de Granito",
+          "es_ES": "Mandiletes de granito",
+          "zh_CN": "花岗岩护手",
+          "fr_FR": "Poignes de granit",
+          "de_DE": "Granithandschutz"
+        },
+        "purchase_price": 21256,
+        "id": 9656,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/15585?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 35,
+        "required_level": 0,
+        "sell_price": 1446,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Stoffa",
+            "ru_RU": "Ткань",
+            "en_GB": "Cloth",
+            "zh_TW": "布甲",
+            "ko_KR": "천",
+            "en_US": "Cloth",
+            "es_MX": "Tela",
+            "pt_BR": "Tecido",
+            "es_ES": "Tela",
+            "zh_CN": "布甲",
+            "fr_FR": "Tissu",
+            "de_DE": "Stoff"
+          },
+          "id": 1
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 15585
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 65427
+          }
+        ],
+        "name": {
+          "it_IT": "Mitene di Pardoc",
+          "ru_RU": "Захваты Пардока",
+          "en_GB": "Pardoc Grips",
+          "zh_TW": "帕多克護手",
+          "ko_KR": "파르독 장갑",
+          "en_US": "Pardoc Grips",
+          "es_MX": "Mandiletes Pardoc",
+          "pt_BR": "Guantes Imorais",
+          "es_ES": "Mandiletes Pardoc",
+          "zh_CN": "帕多克护手",
+          "fr_FR": "Poignes de Pardoc",
+          "de_DE": "Pardochandschutz"
+        },
+        "purchase_price": 7234,
+        "id": 15585,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/16463?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 71,
+        "required_level": 60,
+        "sell_price": 16644,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Maglia",
+            "ru_RU": "Кольчуга",
+            "en_GB": "Mail",
+            "zh_TW": "鎖甲",
+            "ko_KR": "사슬",
+            "en_US": "Mail",
+            "es_MX": "Malla",
+            "pt_BR": "Malha",
+            "es_ES": "Mallas",
+            "zh_CN": "锁甲",
+            "fr_FR": "Mailles",
+            "de_DE": "Schwere Rüstung"
+          },
+          "id": 3
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 16463
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Epico",
+            "ru_RU": "Превосходное",
+            "en_GB": "Epic",
+            "zh_TW": "史詩",
+            "ko_KR": "영웅",
+            "en_US": "Epic",
+            "es_MX": "Épico",
+            "pt_BR": "Épico",
+            "es_ES": "Épico",
+            "zh_CN": "史诗",
+            "fr_FR": "Epique",
+            "de_DE": "Episch"
+          },
+          "type": "EPIC"
+        },
+        "max_count": 1,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 67943
+          }
+        ],
+        "name": {
+          "it_IT": "Impugnature Inanellate del Maresciallo",
+          "ru_RU": "Плетеные захваты маршала",
+          "en_GB": "Marshal's Chain Grips",
+          "zh_TW": "元帥的鍊甲護手",
+          "ko_KR": "작전사령관의 사슬 장갑",
+          "en_US": "Marshal's Chain Grips",
+          "es_MX": "Mandiletes de anillas de Mariscal",
+          "pt_BR": "Guantes Encadeados do Marechal",
+          "es_ES": "Mandiletes de anillas de mariscal",
+          "zh_CN": "统帅的链甲护手",
+          "fr_FR": "Poignes de maréchal en anneaux",
+          "de_DE": "Kettenhandschutz des Marschalls"
+        },
+        "purchase_price": 83221,
+        "id": 16463,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/16519?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 63,
+        "required_level": 58,
+        "sell_price": 8318,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Maglia",
+            "ru_RU": "Кольчуга",
+            "en_GB": "Mail",
+            "zh_TW": "鎖甲",
+            "ko_KR": "사슬",
+            "en_US": "Mail",
+            "es_MX": "Malla",
+            "pt_BR": "Malha",
+            "es_ES": "Mallas",
+            "zh_CN": "锁甲",
+            "fr_FR": "Mailles",
+            "de_DE": "Schwere Rüstung"
+          },
+          "id": 3
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 16519
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 1,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 67981
+          }
+        ],
+        "name": {
+          "it_IT": "Impugnature di Maglia della Guardia di Sangue",
+          "ru_RU": "Кольчужные захваты Кровавого стража",
+          "en_GB": "Blood Guard's Mail Grips",
+          "zh_TW": "血衛士的鎖甲護手",
+          "ko_KR": "혈투사의 쇠사슬 장갑",
+          "en_US": "Blood Guard's Mail Grips",
+          "es_MX": "Mandiletes de malla de Guardia de sangre",
+          "pt_BR": "Guantes de Malha do Guarda-de-sangue",
+          "es_ES": "Mandiletes de malla de Guardia de sangre",
+          "zh_CN": "军团士兵的锁甲护手",
+          "fr_FR": "Poignes de garde de sang en mailles",
+          "de_DE": "Panzerhandschutz des Blutgardisten"
+        },
+        "purchase_price": 41593,
+        "id": 16519,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/22863?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 66,
+        "required_level": 60,
+        "sell_price": 7947,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 22863
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 1,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 67961
+          }
+        ],
+        "name": {
+          "it_IT": "Impugnature di Pelle di Drago della Guardia di Sangue",
+          "ru_RU": "Захваты Кровавого стража из драконьей шкуры",
+          "en_GB": "Blood Guard's Dragonhide Grips",
+          "zh_TW": "血衛士的龍皮手套",
+          "ko_KR": "혈투사의 용가죽 장갑",
+          "en_US": "Blood Guard's Dragonhide Grips",
+          "es_MX": "Mandiletes de pellejo de dragón de Guardia de sangre",
+          "pt_BR": "Guantes de Couro de Dragão do Guarda-de-sangue",
+          "es_ES": "Mandiletes de pellejo de dragón de Guardia de sangre",
+          "zh_CN": "血卫士的龙皮护手",
+          "fr_FR": "Poignes de garde de sang en peau de dragon",
+          "de_DE": "Drachenlederhandschutz des Blutgardisten"
+        },
+        "purchase_price": 39737,
+        "id": 22863,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/22864?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 66,
+        "required_level": 60,
+        "sell_price": 8373,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 22864
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 1,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 67964
+          }
+        ],
+        "name": {
+          "it_IT": "Impugnature di Cuoio della Guardia di Sangue",
+          "ru_RU": "Кожаные захваты Кровавого стража",
+          "en_GB": "Blood Guard's Leather Grips",
+          "zh_TW": "血衛士的皮甲手套",
+          "ko_KR": "혈투사의 가죽 손보호구",
+          "en_US": "Blood Guard's Leather Grips",
+          "es_MX": "Mandiletes de cuero de Guardia de sangre",
+          "pt_BR": "Guantes de Couro do Guarda-de-sangue",
+          "es_ES": "Mandiletes de cuero de Guardia de sangre",
+          "zh_CN": "血卫士的皮甲护手",
+          "fr_FR": "Poignes de garde de sang en cuir",
+          "de_DE": "Lederhandschutz des Blutgardisten"
+        },
+        "purchase_price": 41866,
+        "id": 22864,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/23280?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 66,
+        "required_level": 60,
+        "sell_price": 8497,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 23280
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 1,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 67900
+          }
+        ],
+        "name": {
+          "it_IT": "Impugnature di Pelle di Drago del Cavalier Tenente",
+          "ru_RU": "Захваты рыцаря-лейтенанта из драконьей шкуры",
+          "en_GB": "Knight-Lieutenant's Dragonhide Grips",
+          "zh_TW": "中尉騎士的龍皮裹手",
+          "ko_KR": "상급기사의 용가죽 고리장갑",
+          "en_US": "Knight-Lieutenant's Dragonhide Grips",
+          "es_MX": "Mandiletes de pellejo de dragón de Teniente caballero",
+          "pt_BR": "Guantes de Couro de Dragão do Tenente-cavaleiro",
+          "es_ES": "Mandiletes de pellejo de dragón de Teniente caballero",
+          "zh_CN": "骑士中尉的龙皮护手",
+          "fr_FR": "Poignes de chevalier-lieutenant en peau de dragon",
+          "de_DE": "Drachenlederhandschutz des Hauptmanns"
+        },
+        "purchase_price": 42486,
+        "id": 23280,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/23284?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 66,
+        "required_level": 60,
+        "sell_price": 8619,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 23284
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 1,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 67899
+          }
+        ],
+        "name": {
+          "it_IT": "Impugnature di Cuoio del Cavalier Tenente",
+          "ru_RU": "Кожаные захваты рыцаря-лейтенанта",
+          "en_GB": "Knight-Lieutenant's Leather Grips",
+          "zh_TW": "中尉騎士的皮甲裹手",
+          "ko_KR": "상급기사의 가죽 손보호구",
+          "en_US": "Knight-Lieutenant's Leather Grips",
+          "es_MX": "Mandiletes de cuero de Teniente caballero",
+          "pt_BR": "Guantes de Couro do Tenente-cavaleiro",
+          "es_ES": "Mandiletes de cuero de Teniente caballero",
+          "zh_CN": "骑士中尉的皮甲护手",
+          "fr_FR": "Poignes de chevalier-lieutenant en cuir",
+          "de_DE": "Lederhandschutz des Hauptmanns"
+        },
+        "purchase_price": 43099,
+        "id": 23284,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/238326?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 1,
+        "required_level": 1,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Forgiatura",
+            "ru_RU": "Кузнечное дело",
+            "en_GB": "Blacksmithing",
+            "zh_TW": "鍛造",
+            "ko_KR": "대장기술",
+            "en_US": "Blacksmithing",
+            "es_MX": "Herrería",
+            "pt_BR": "Ferraria",
+            "es_ES": "Herrería",
+            "zh_CN": "锻造",
+            "fr_FR": "Forge",
+            "de_DE": "Schmiedekunst"
+          },
+          "id": 4
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 238326
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "ru_RU": "Чертеж: захваты солдата из из Алого ордена",
+          "en_GB": "Plans: Scarlet Soldier's Grips",
+          "zh_TW": "設計圖：血色士兵纏手",
+          "ko_KR": "도면: 붉은십자군 병사의 손장갑",
+          "en_US": "Plans: Scarlet Soldier's Grips",
+          "es_MX": "Diseño: Mandiletes de soldado Escarlata",
+          "pt_BR": "Instruções: Guantes do Soldado Escarlate",
+          "es_ES": "Diseño: mandiletes de soldado Escarlata",
+          "zh_CN": "设计图：血色士兵的护手",
+          "fr_FR": "Plans : poignes de soldat écarlate",
+          "de_DE": "Pläne: Handschützer des scharlachroten Soldaten"
+        },
+        "purchase_price": 0,
+        "id": 238326,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/272440?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 65,
+        "required_level": 60,
+        "sell_price": 16250,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Varie",
+            "ru_RU": "Разное",
+            "en_GB": "Miscellaneous",
+            "zh_TW": "其他",
+            "ko_KR": "기타",
+            "en_US": "Miscellaneous",
+            "es_MX": "Miscelánea",
+            "pt_BR": "Diversos",
+            "es_ES": "Misceláneo",
+            "zh_CN": "其它",
+            "fr_FR": "Divers",
+            "de_DE": "Verschiedenes"
+          },
+          "id": 0
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 272440
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "ru_RU": "Стабилизатор хватки защитника",
+          "en_GB": "Defender's Grip Stabilizer",
+          "zh_TW": "防衛者抓握穩定器",
+          "ko_KR": "파수병의 악력 안정기",
+          "en_US": "Defender's Grip Stabilizer",
+          "es_MX": "Estabilizador de agarre de defensor",
+          "pt_BR": "Estabilizador de Adesão do Defensor",
+          "es_ES": "Estabilizador de agarre de defensor",
+          "zh_CN": "防御者的握把稳定器",
+          "fr_FR": "Stabilisateur de poigne de défense",
+          "de_DE": "Griffstabilisierer des Verteidigers"
+        },
+        "purchase_price": 65000,
+        "id": 272440,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Monile",
+            "ru_RU": "Аксессуар",
+            "en_GB": "Trinket",
+            "zh_TW": "飾品",
+            "ko_KR": "장신구",
+            "en_US": "Trinket",
+            "es_MX": "Abalorio",
+            "pt_BR": "Berloque",
+            "es_ES": "Alhaja",
+            "zh_CN": "饰品",
+            "fr_FR": "Bijou",
+            "de_DE": "Schmuck"
+          },
+          "type": "TRINKET"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/272485?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 60,
+        "required_level": 55,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Maglia",
+            "ru_RU": "Кольчуга",
+            "en_GB": "Mail",
+            "zh_TW": "鎖甲",
+            "ko_KR": "사슬",
+            "en_US": "Mail",
+            "es_MX": "Malla",
+            "pt_BR": "Malha",
+            "es_ES": "Mallas",
+            "zh_CN": "锁甲",
+            "fr_FR": "Mailles",
+            "de_DE": "Schwere Rüstung"
+          },
+          "id": 3
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 272485
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 67981
+          }
+        ],
+        "name": {
+          "ru_RU": "Первоклассные клепаные захваты",
+          "en_GB": "Premier Linked Grips",
+          "zh_TW": "頂尖鎖鏈之握",
+          "ko_KR": "최고급 사슬매듭 손보호구",
+          "en_US": "Premier Linked Grips",
+          "es_MX": "Mandiletes de eslabones superiores",
+          "pt_BR": "Guantes Articulados de Primeira",
+          "es_ES": "Mandiletes de eslabones de gran calidad",
+          "zh_CN": "精锐锁链护手",
+          "fr_FR": "Poignes de qualité rivetées",
+          "de_DE": "Erstklassiger Verbundhandschutz"
+        },
+        "purchase_price": 0,
+        "id": 272485,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/272614?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 60,
+        "required_level": 55,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Cuoio",
+            "ru_RU": "Кожа",
+            "en_GB": "Leather",
+            "zh_TW": "皮甲",
+            "ko_KR": "가죽",
+            "en_US": "Leather",
+            "es_MX": "Cuero",
+            "pt_BR": "Couro",
+            "es_ES": "Cuero",
+            "zh_CN": "皮甲",
+            "fr_FR": "Cuir",
+            "de_DE": "Leder"
+          },
+          "id": 2
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 272614
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 67961
+          }
+        ],
+        "name": {
+          "ru_RU": "Первоклассные захваты из драконьей шкуры",
+          "en_GB": "Premier Dragonhide Grips",
+          "zh_TW": "頂尖龍皮之握",
+          "ko_KR": "최고급 용가죽 손장갑",
+          "en_US": "Premier Dragonhide Grips",
+          "es_MX": "Mandiletes de pellejo de dragón superior",
+          "pt_BR": "Guantes de Couro de Dragão de Primeira",
+          "es_ES": "Mandiletes de pellejo de dragón de gran calidad",
+          "zh_CN": "精锐龙皮护手",
+          "fr_FR": "Poignes de qualité en peau de dragon",
+          "de_DE": "Erstklassiger Drachenlederhandschutz"
+        },
+        "purchase_price": 0,
+        "id": 272614,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/272772?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 65,
+        "required_level": 60,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Maglia",
+            "ru_RU": "Кольчуга",
+            "en_GB": "Mail",
+            "zh_TW": "鎖甲",
+            "ko_KR": "사슬",
+            "en_US": "Mail",
+            "es_MX": "Malla",
+            "pt_BR": "Malha",
+            "es_ES": "Mallas",
+            "zh_CN": "锁甲",
+            "fr_FR": "Mailles",
+            "de_DE": "Schwere Rüstung"
+          },
+          "id": 3
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 272772
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Epico",
+            "ru_RU": "Превосходное",
+            "en_GB": "Epic",
+            "zh_TW": "史詩",
+            "ko_KR": "영웅",
+            "en_US": "Epic",
+            "es_MX": "Épico",
+            "pt_BR": "Épico",
+            "es_ES": "Épico",
+            "zh_CN": "史诗",
+            "fr_FR": "Epique",
+            "de_DE": "Episch"
+          },
+          "type": "EPIC"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 67943
+          }
+        ],
+        "name": {
+          "ru_RU": "Первоклассные кольчужные захваты лейтенанта-командора",
+          "en_GB": "Premier Lieutenant Commander's Chainmail Grips",
+          "zh_TW": "頂尖少校鎖鍊之握",
+          "ko_KR": "최고급 부사령관의 쇠사슬갑옷 손장갑",
+          "en_US": "Premier Lieutenant Commander's Chainmail Grips",
+          "es_MX": "Mandiletes de malla de anillas de Teniente coronel superiores",
+          "pt_BR": "Guantes de Malha de Anéis do Tenente-comandante de Primeira",
+          "es_ES": "Mandiletes de malla de anillas de Teniente coronel de gran calidad",
+          "zh_CN": "精锐少校的链甲护手",
+          "fr_FR": "Poignes de qualité de lieutenant-commandant en mailles",
+          "de_DE": "Erstklassiger Kettenpanzerhandschutz des Feldkommandanten"
+        },
+        "purchase_price": 0,
+        "id": 272772,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/273953?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 1,
+        "required_level": 1,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Conciatura",
+            "ru_RU": "Кожевничество",
+            "en_GB": "Leatherworking",
+            "zh_TW": "製皮",
+            "ko_KR": "가죽세공",
+            "en_US": "Leatherworking",
+            "es_MX": "Peletería",
+            "pt_BR": "Couraria",
+            "es_ES": "Peletería",
+            "zh_CN": "制皮",
+            "fr_FR": "Travail du cuir",
+            "de_DE": "Lederverarbeitung"
+          },
+          "id": 1
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 273953
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Epico",
+            "ru_RU": "Превосходное",
+            "en_GB": "Epic",
+            "zh_TW": "史詩",
+            "ko_KR": "영웅",
+            "en_US": "Epic",
+            "es_MX": "Épico",
+            "pt_BR": "Épico",
+            "es_ES": "Épico",
+            "zh_CN": "史诗",
+            "fr_FR": "Epique",
+            "de_DE": "Episch"
+          },
+          "type": "EPIC"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "ru_RU": "Чертеж: захваты хранителя рощи",
+          "en_GB": "Pattern: Grovekeeper Grips",
+          "zh_TW": "圖樣：林地看守者之握",
+          "ko_KR": "도안: 숲지기 손장갑",
+          "en_US": "Pattern: Grovekeeper Grips",
+          "es_MX": "Patrón: mandiletes de guardia de la arboleda",
+          "pt_BR": "Molde: Guantes de Guarda-bosque",
+          "es_ES": "Patrón: mandiletes de guardia de la arboleda",
+          "zh_CN": "图样：丛林守护者裹手",
+          "fr_FR": "Patron : poignes de gardien du bosquet",
+          "de_DE": "Muster: Handschutz des Hainhüters"
+        },
+        "purchase_price": 0,
+        "id": 273953,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/274001?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 1,
+        "required_level": 1,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Conciatura",
+            "ru_RU": "Кожевничество",
+            "en_GB": "Leatherworking",
+            "zh_TW": "製皮",
+            "ko_KR": "가죽세공",
+            "en_US": "Leatherworking",
+            "es_MX": "Peletería",
+            "pt_BR": "Couraria",
+            "es_ES": "Peletería",
+            "zh_CN": "制皮",
+            "fr_FR": "Travail du cuir",
+            "de_DE": "Lederverarbeitung"
+          },
+          "id": 1
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 274001
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Epico",
+            "ru_RU": "Превосходное",
+            "en_GB": "Epic",
+            "zh_TW": "史詩",
+            "ko_KR": "영웅",
+            "en_US": "Epic",
+            "es_MX": "Épico",
+            "pt_BR": "Épico",
+            "es_ES": "Épico",
+            "zh_CN": "史诗",
+            "fr_FR": "Epique",
+            "de_DE": "Episch"
+          },
+          "type": "EPIC"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "ru_RU": "Чертеж: захваты призывателя духов",
+          "en_GB": "Pattern: Spiritcaller Grips",
+          "zh_TW": "圖樣：招魂師之握",
+          "ko_KR": "도안: 영혼소환사의 손장갑",
+          "en_US": "Pattern: Spiritcaller Grips",
+          "es_MX": "Patrón: mandiletes de clamaespíritus",
+          "pt_BR": "Guantes de Evoca-espírito",
+          "es_ES": "Patrón: mandiletes de clamaespíritus",
+          "zh_CN": "图样：唤灵者手甲",
+          "fr_FR": "Patron : poignes de mande-esprit",
+          "de_DE": "Muster: Geistruferhandschutz"
+        },
+        "purchase_price": 0,
+        "id": 274001,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/274177?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 60,
+        "required_level": 55,
+        "sell_price": 0,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Maglia",
+            "ru_RU": "Кольчуга",
+            "en_GB": "Mail",
+            "zh_TW": "鎖甲",
+            "ko_KR": "사슬",
+            "en_US": "Mail",
+            "es_MX": "Malla",
+            "pt_BR": "Malha",
+            "es_ES": "Mallas",
+            "zh_CN": "锁甲",
+            "fr_FR": "Mailles",
+            "de_DE": "Schwere Rüstung"
+          },
+          "id": 3
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 274177
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 140923
+          }
+        ],
+        "name": {
+          "ru_RU": "Первоклассные прессованные захваты",
+          "en_GB": "Premier Flatmail Grips",
+          "zh_TW": "頂尖扁甲之握",
+          "ko_KR": "최고급 평사슬 손장갑",
+          "en_US": "Premier Flatmail Grips",
+          "es_MX": "Mandiletes de malla plana superiores",
+          "pt_BR": "Guantes de Malha Plana de Primeira",
+          "es_ES": "Mandiletes de malla plana de gran calidad",
+          "zh_CN": "精锐平甲护手",
+          "fr_FR": "Poignes de qualité en mailles plates",
+          "de_DE": "Erstklassiger Flachringhandschutz"
+        },
+        "purchase_price": 0,
+        "id": 274177,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/274755?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 55,
+        "required_level": 50,
+        "sell_price": 6191,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Stoffa",
+            "ru_RU": "Ткань",
+            "en_GB": "Cloth",
+            "zh_TW": "布甲",
+            "ko_KR": "천",
+            "en_US": "Cloth",
+            "es_MX": "Tela",
+            "pt_BR": "Tecido",
+            "es_ES": "Tela",
+            "zh_CN": "布甲",
+            "fr_FR": "Tissu",
+            "de_DE": "Stoff"
+          },
+          "id": 1
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 274755
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Pregiato",
+            "ru_RU": "Необычное",
+            "en_GB": "Uncommon",
+            "zh_TW": "優秀",
+            "ko_KR": "고급",
+            "en_US": "Uncommon",
+            "es_MX": "Inusual",
+            "pt_BR": "Incomum",
+            "es_ES": "No común",
+            "zh_CN": "优秀",
+            "fr_FR": "Inhabituel",
+            "de_DE": "Selten"
+          },
+          "type": "UNCOMMON"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 131994
+          }
+        ],
+        "name": {
+          "ru_RU": "Захваты Хитрой Шестеренки",
+          "en_GB": "Steamwheedle Grips",
+          "zh_TW": "熱砂之握",
+          "ko_KR": "스팀휘들 손장갑",
+          "en_US": "Steamwheedle Grips",
+          "es_MX": "Mandiletes de Bonvapor",
+          "pt_BR": "Guantes Bondebico",
+          "es_ES": "Mandiletes Bonvapor",
+          "zh_CN": "热砂港护手",
+          "fr_FR": "Poignes de Gentepression",
+          "de_DE": "Handschutz von Steamwheedle"
+        },
+        "purchase_price": 30955,
+        "id": 274755,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/275598?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 1,
+        "required_level": 1,
+        "sell_price": 18750,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Conciatura",
+            "ru_RU": "Кожевничество",
+            "en_GB": "Leatherworking",
+            "zh_TW": "製皮",
+            "ko_KR": "가죽세공",
+            "en_US": "Leatherworking",
+            "es_MX": "Peletería",
+            "pt_BR": "Couraria",
+            "es_ES": "Peletería",
+            "zh_CN": "制皮",
+            "fr_FR": "Travail du cuir",
+            "de_DE": "Lederverarbeitung"
+          },
+          "id": 1
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 275598
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "ru_RU": "Чертеж: захваты кровореза",
+          "en_GB": "Plans: Goregasher Grips",
+          "zh_TW": "設計圖：碎肉者之握",
+          "ko_KR": "도면: 선혈칼날 손장갑",
+          "en_US": "Plans: Goregasher Grips",
+          "es_MX": "Diseño: mandiletes cortecruento",
+          "pt_BR": "Instruções: Guantes Dilacerantes",
+          "es_ES": "Diseño: mandiletes acuchillavísceras",
+          "zh_CN": "设计图：溅血护手",
+          "fr_FR": "Plans : poignes de sangtaille",
+          "de_DE": "Pläne: Handschutz des Schreckensschlitzers"
+        },
+        "purchase_price": 75000,
+        "id": 275598,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/275601?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 1,
+        "required_level": 1,
+        "sell_price": 18750,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Conciatura",
+            "ru_RU": "Кожевничество",
+            "en_GB": "Leatherworking",
+            "zh_TW": "製皮",
+            "ko_KR": "가죽세공",
+            "en_US": "Leatherworking",
+            "es_MX": "Peletería",
+            "pt_BR": "Couraria",
+            "es_ES": "Peletería",
+            "zh_CN": "制皮",
+            "fr_FR": "Travail du cuir",
+            "de_DE": "Lederverarbeitung"
+          },
+          "id": 1
+        },
+        "is_equippable": false,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 275601
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Ricette",
+            "ru_RU": "Рецепты",
+            "en_GB": "Recipe",
+            "zh_TW": "配方",
+            "ko_KR": "제조법",
+            "en_US": "Recipe",
+            "es_MX": "Receta",
+            "pt_BR": "Receita",
+            "es_ES": "Receta",
+            "zh_CN": "配方",
+            "fr_FR": "Recette",
+            "de_DE": "Rezept"
+          },
+          "id": 9
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "name": {
+          "ru_RU": "Чертеж: захваты хозяина кладки",
+          "en_GB": "Plans: Clutchlord's Grips",
+          "zh_TW": "設計圖：巢窩領主之握",
+          "ko_KR": "도면: 무리군주의 손장갑",
+          "en_US": "Plans: Clutchlord's Grips",
+          "es_MX": "Diseño: mandiletes de señor de la nidada",
+          "pt_BR": "Instruções: Guantes do Senhor da Garra",
+          "es_ES": "Diseño: mandiletes de señor del nido",
+          "zh_CN": "设计图：巢主护手",
+          "fr_FR": "Plans : poignes de couverain",
+          "de_DE": "Pläne: Handschutz des Gelegefürsten"
+        },
+        "purchase_price": 75000,
+        "id": 275601,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Non equipaggiabile",
+            "ru_RU": "Неэкипируемое",
+            "en_GB": "Non-equippable",
+            "zh_TW": "無法裝備",
+            "ko_KR": "착용 불가",
+            "en_US": "Non-equippable",
+            "es_MX": "No equipable",
+            "pt_BR": "Não equipável",
+            "es_ES": "No se puede equipar",
+            "zh_CN": "无法装备",
+            "fr_FR": "Objet hors équipement",
+            "de_DE": "Nicht anlegbar"
+          },
+          "type": "NON_EQUIP"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/275622?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 58,
+        "required_level": 53,
+        "sell_price": 15752,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Piastre",
+            "ru_RU": "Латы",
+            "en_GB": "Plate",
+            "zh_TW": "鎧甲",
+            "ko_KR": "판금",
+            "en_US": "Plate",
+            "es_MX": "Placas",
+            "pt_BR": "Placas",
+            "es_ES": "Placas",
+            "zh_CN": "板甲",
+            "fr_FR": "Plaques",
+            "de_DE": "Platte"
+          },
+          "id": 4
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 275622
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 132046
+          }
+        ],
+        "name": {
+          "ru_RU": "Захваты кровореза",
+          "en_GB": "Goregasher Grips",
+          "zh_TW": "碎肉者之握",
+          "ko_KR": "선혈칼날 손장갑",
+          "en_US": "Goregasher Grips",
+          "es_MX": "Mandiletes cortecruento",
+          "pt_BR": "Guantes Dilacerantes",
+          "es_ES": "Mandiletes acuchillavísceras",
+          "zh_CN": "溅血护手",
+          "fr_FR": "Poignes de sangtaille",
+          "de_DE": "Handschutz des Schreckensschlitzers"
+        },
+        "purchase_price": 78764,
+        "id": 275622,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    },
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/275625?namespace=static-1.60.1_70399-forever-us"
+      },
+      "data": {
+        "level": 58,
+        "required_level": 53,
+        "sell_price": 15927,
+        "item_subclass": {
+          "name": {
+            "it_IT": "Piastre",
+            "ru_RU": "Латы",
+            "en_GB": "Plate",
+            "zh_TW": "鎧甲",
+            "ko_KR": "판금",
+            "en_US": "Plate",
+            "es_MX": "Placas",
+            "pt_BR": "Placas",
+            "es_ES": "Placas",
+            "zh_CN": "板甲",
+            "fr_FR": "Plaques",
+            "de_DE": "Platte"
+          },
+          "id": 4
+        },
+        "is_equippable": true,
+        "purchase_quantity": 1,
+        "media": {
+          "id": 275625
+        },
+        "item_class": {
+          "name": {
+            "it_IT": "Armature",
+            "ru_RU": "Доспехи",
+            "en_GB": "Armor",
+            "zh_TW": "護甲",
+            "ko_KR": "방어구",
+            "en_US": "Armor",
+            "es_MX": "Armadura",
+            "pt_BR": "Armadura",
+            "es_ES": "Armadura",
+            "zh_CN": "护甲",
+            "fr_FR": "Armure",
+            "de_DE": "Rüstung"
+          },
+          "id": 4
+        },
+        "quality": {
+          "name": {
+            "it_IT": "Raro",
+            "ru_RU": "Редкое",
+            "en_GB": "Rare",
+            "zh_TW": "精良",
+            "ko_KR": "희귀",
+            "en_US": "Rare",
+            "es_MX": "Raro",
+            "pt_BR": "Raro",
+            "es_ES": "Raro",
+            "zh_CN": "精良",
+            "fr_FR": "Rare",
+            "de_DE": "Rar"
+          },
+          "type": "RARE"
+        },
+        "max_count": 0,
+        "is_stackable": false,
+        "appearances": [
+          {
+            "id": 132049
+          }
+        ],
+        "name": {
+          "ru_RU": "Захваты хозяина кладки",
+          "en_GB": "Clutchlord's Grips",
+          "zh_TW": "巢窩領主之握",
+          "ko_KR": "무리군주의 손장갑",
+          "en_US": "Clutchlord's Grips",
+          "es_MX": "Mandiletes de señor de la nidada",
+          "pt_BR": "Guantes do Senhor da Garra",
+          "es_ES": "Mandiletes de señor del nido",
+          "zh_CN": "巢主护手",
+          "fr_FR": "Poignes de couverain",
+          "de_DE": "Handschutz des Gelegefürsten"
+        },
+        "purchase_price": 79637,
+        "id": 275625,
+        "inventory_type": {
+          "name": {
+            "it_IT": "Mani",
+            "ru_RU": "Кисти рук",
+            "en_GB": "Hands",
+            "zh_TW": "手",
+            "ko_KR": "손",
+            "en_US": "Hands",
+            "es_MX": "Manos",
+            "pt_BR": "Mãos",
+            "es_ES": "Manos",
+            "zh_CN": "手部",
+            "fr_FR": "Mains",
+            "de_DE": "Hände"
+          },
+          "type": "HAND"
+        }
+      }
+    }
+  ]
+}

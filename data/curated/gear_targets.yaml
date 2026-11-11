@@ -3,8 +3,13 @@
 # https://timesaver.gg/tools/wow-forever/leveling-gear/warrior/protection
 # Copied from the Leveling Playbook doc; update both until the playbook moves into the repo.
 #
-# slot values use the Battle.net equipment slot types (HEAD, NECK, ...), so they can be
-# matched against the API's equipped_items once real samples confirm the shape.
+# slot values are Battle.net equipment slot types (HEAD, NECK, OFF_HAND, FINGER_1...).
+#
+# Item level, armor type and icon come from Battle.net item search by name (ADR 0003).
+# Forever-new items (Hall of Thanes drops) aren't in that search, so add what you know by
+# hand from Wowhead or ForeverDB; every field is optional:
+#   {slot: WAIST, item: Kindlegem Girdle, source: "...", item_level: 22, armor_type: Mail,
+#    armor: 120, stats: {Stamina: 5, Strength: 3}}
 
 brackets:
   - min_level: 15

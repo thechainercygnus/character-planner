@@ -4,6 +4,7 @@ Run locally with: uv run uvicorn character_planner.app:create_app --factory --re
 (--factory means importing this module never reads .env or touches the database.)
 """
 
+import logging
 import time
 from collections.abc import Iterator
 from contextlib import asynccontextmanager
@@ -22,11 +23,28 @@ from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
 from character_planner.config import Settings, get_settings
 from character_planner.curated import GearTargets, load_gear_targets
-from character_planner.db import Snapshot, StoredToken, init_db, latest_by_kind, make_engine
+from character_planner.db import (
+    Snapshot,
+    StoredToken,
+    catalog_by_name,
+    icons_by_id,
+    init_db,
+    latest_by_kind,
+    make_engine,
+)
+from character_planner.items import RefreshResult, refresh_catalog
 from character_planner.summary import build_summary
-from character_planner.views import CharacterView, GearPlan, character_view, gear_plan
+from character_planner.views import (
+    CharacterView,
+    GearPlan,
+    character_view,
+    gear_plan,
+    parse_equipment,
+)
 
 PENDING_STATE_TTL_SECONDS = 600
+
+logger = logging.getLogger(__name__)
 
 
 class ManualSnapshot(BaseModel):
@@ -47,6 +65,12 @@ def get_session(request: Request) -> Iterator[Session]:
 def get_targets(request: Request) -> GearTargets:
     settings: Settings = request.app.state.settings
     return load_gear_targets(settings.curated_dir / "gear_targets.yaml")
+
+
+def equipped_item_ids(session: Session) -> list[int]:
+    equipment = latest_by_kind(session).get("equipment")
+    items = parse_equipment(equipment.payload) if equipment else []
+    return [item.item_id for item in items if item.item_id is not None]
 
 
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -121,8 +145,12 @@ def create_app(
         }
 
     @app.post("/api/sync")
-    def sync(session: SessionDep) -> dict[str, int]:
-        """Pull every endpoint and store each response, failures included."""
+    def sync(session: SessionDep, gear: TargetsDep) -> dict[str, int]:
+        """Pull every endpoint and store each response, failures included.
+
+        Then look up any target items not in the item catalog yet. That step is
+        best-effort: a catalog failure never fails the sync.
+        """
         token = current_token(session)
         if token is None:
             raise HTTPException(401, "Not logged in or token expired; visit /auth/login")
@@ -133,7 +161,28 @@ def create_app(
                 Snapshot(source="api", kind=result.kind, status=result.status, payload=result.body)
             )
         session.commit()
+        try:
+            refresh_catalog(
+                session, settings, gear.item_names(), equipped_item_ids(session), http=http
+            )
+        except httpx.HTTPError:
+            logger.warning("Item catalog refresh failed after sync", exc_info=True)
         return {result.kind: result.status for result in results}
+
+    @app.post("/api/items/refresh")
+    def refresh_items(session: SessionDep, gear: TargetsDep, force: bool = False) -> RefreshResult:
+        """Look up target items and icons. force=true retries everything, found or not."""
+        try:
+            return refresh_catalog(
+                session,
+                settings,
+                gear.item_names(),
+                equipped_item_ids(session),
+                force=force,
+                http=http,
+            )
+        except httpx.HTTPError as error:
+            raise HTTPException(502, f"Battle.net item lookup failed: {error}") from error
 
     @app.post("/api/snapshots/manual", status_code=201)
     def add_manual(entry: ManualSnapshot, session: SessionDep) -> dict[str, int | None]:
@@ -161,15 +210,19 @@ def create_app(
     @app.get("/api/summary.md", response_class=PlainTextResponse)
     def summary(session: SessionDep, gear: TargetsDep) -> str:
         name = f"{settings.character_name} {settings.character_surname}"
-        return build_summary(name, latest_by_kind(session), gear)
+        return build_summary(
+            name, latest_by_kind(session), gear, catalog_by_name(session), icons_by_id(session)
+        )
 
     @app.get("/api/character")
     def character(session: SessionDep) -> CharacterView:
-        return character_view(latest_by_kind(session))
+        return character_view(latest_by_kind(session), icons_by_id(session))
 
     @app.get("/api/gear")
     def gear(session: SessionDep, targets: TargetsDep) -> GearPlan:
-        return gear_plan(latest_by_kind(session), targets)
+        return gear_plan(
+            latest_by_kind(session), targets, catalog_by_name(session), icons_by_id(session)
+        )
 
     # Serve the built frontend (npm run build) from the same origin, after every API
     # route so those win. In development Vite serves it instead and proxies to us.
