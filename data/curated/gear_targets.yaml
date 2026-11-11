@@ -9,7 +9,7 @@
 brackets:
   - min_level: 15
     targets:
-      - {slot: SHIELD, item: Dwarven Defender, source: "Quest: In Defense of the King's Lands (Loch Modan)", priority: 1}
+      - {slot: OFF_HAND, item: Dwarven Defender, source: "Quest: In Defense of the King's Lands (Loch Modan)", priority: 1}
       - {slot: WAIST, item: Kindlegem Girdle, source: "Hall of Thanes - Magmatus", priority: 2}
       - {slot: LEGS, item: Direhammer Leggings, source: "Hall of Thanes - Durgen Dirgehammer", priority: 3}
       - {slot: WRIST, item: Cryptwalker Bracers, source: "Quest: The Restless Dead (Hall of Thanes)", priority: 4}
@@ -35,5 +35,5 @@ brackets:
       - {slot: FINGER_1, item: First Mate Band, source: "Deadmines - Mr. Smite"}
       - {slot: FINGER_2, item: "Slain Baron's Signet", source: "Quest: Abominable Creatures (Ruins of Lordaeron)"}
       - {slot: MAIN_HAND, item: "Butcher's Cleaver", source: "Shadowfang Keep - Razorclaw the Butcher"}
-      - {slot: SHIELD, item: "Kresh's Back", source: "Wailing Caverns - Kresh"}
+      - {slot: OFF_HAND, item: "Kresh's Back", source: "Wailing Caverns - Kresh"}
       - {slot: RANGED, item: Dull Sawblade, source: "Deadmines - Sneed's Shredder"}

@@ -1,0 +1,79 @@
+{
+  "character": {
+    "key": {
+      "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet?namespace=profile-forever-us"
+    },
+    "name": "Brumboldt",
+    "id": 14060175,
+    "surname": "Doomlet",
+    "slug": "brumboldt-doomlet"
+  },
+  "specialization_groups": [
+    {
+      "is_active": true,
+      "specializations": [
+        {
+          "specialization": {
+            "key": {
+              "href": "https://us.api.blizzard.com/data/wow/playable-specialization/257?namespace=static-1.60.1_70399-forever-us"
+            },
+            "name": "Protection",
+            "id": 257
+          },
+          "talents": [
+            {
+              "talent": {
+                "name": "Shield Specialization",
+                "id": 135507
+              },
+              "spell_tooltip": {
+                "spell": {
+                  "name": "Shield Specialization",
+                  "id": 12298
+                },
+                "description": "Increases your chance to Block attacks with your shield by 5% and grants you a 100% chance to generate 5 Rage when you Block.",
+                "cast_time": "Passive",
+                "power_cost": null
+              },
+              "talent_rank": 5
+            },
+            {
+              "talent": {
+                "name": "Anticipation",
+                "id": 135506
+              },
+              "spell_tooltip": {
+                "spell": {
+                  "name": "Anticipation",
+                  "id": 12297
+                },
+                "description": "Increases your Defense Skill by 4.",
+                "cast_time": "Passive",
+                "power_cost": null
+              },
+              "talent_rank": 1
+            },
+            {
+              "talent": {
+                "name": "Improved Revenge",
+                "id": 135500
+              },
+              "spell_tooltip": {
+                "spell": {
+                  "name": "Improved Revenge",
+                  "id": 12797
+                },
+                "description": "Increases damage dealt by your Revenge ability by 60%.",
+                "cast_time": "Passive",
+                "power_cost": null
+              },
+              "talent_rank": 3
+            }
+          ],
+          "specialization_name": "Protection",
+          "spent_points": 9
+        }
+      ]
+    }
+  ]
+}

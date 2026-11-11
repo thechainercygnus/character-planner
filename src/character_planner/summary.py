@@ -1,9 +1,9 @@
 """Markdown character summary, for pasting into a Claude chat.
 
-Field access assumes the retail Profile API shapes (level on the profile,
-equipped_items[].slot.type on equipment). Forever is undocumented, so every read
-is defensive: a missing field shows as unknown instead of failing the summary.
-Tighten these once real samples are in tests/fixtures (ADR 0002).
+Forever responses use the retail Profile API shapes (level on the profile,
+equipped_items[].slot.type on equipment), confirmed by the 2026-11-11 spike; see
+tests/fixtures/forever_*.json. Reads stay defensive because the API is undocumented
+and can change: a missing field shows as unknown instead of failing the summary.
 """
 
 from collections.abc import Mapping

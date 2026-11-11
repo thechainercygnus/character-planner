@@ -1,0 +1,99 @@
+{
+  "id": 14060175,
+  "name": "Brumboldt",
+  "gender": {
+    "type": "MALE",
+    "name": "Male"
+  },
+  "faction": {
+    "type": "ALLIANCE",
+    "name": "Alliance"
+  },
+  "race": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/playable-race/7?namespace=static-1.60.1_70399-forever-us"
+    },
+    "name": "Gnome",
+    "id": 7
+  },
+  "character_class": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/playable-class/1?namespace=static-1.60.1_70399-forever-us"
+    },
+    "name": "Warrior",
+    "id": 1
+  },
+  "guild": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/guild/daves-discount-meats?namespace=profile-forever-us"
+    },
+    "name": "Daves Discount Meats",
+    "id": 670649,
+    "faction": {
+      "type": "ALLIANCE",
+      "name": "Alliance"
+    },
+    "slug": "daves-discount-meats"
+  },
+  "level": 18,
+  "experience": 3101,
+  "achievement_points": 0,
+  "achievements": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/achievements?namespace=profile-forever-us"
+  },
+  "titles": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/titles?namespace=profile-forever-us"
+  },
+  "pvp_summary": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/pvp-summary?namespace=profile-forever-us"
+  },
+  "encounters": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/encounters?namespace=profile-forever-us"
+  },
+  "media": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/character-media?namespace=profile-forever-us"
+  },
+  "last_login_timestamp": 1794422563000,
+  "average_item_level": 9,
+  "equipped_item_level": 9,
+  "specializations": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/specializations?namespace=profile-forever-us"
+  },
+  "statistics": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/statistics?namespace=profile-forever-us"
+  },
+  "mythic_keystone_profile": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/mythic-keystone-profile?namespace=profile-forever-us"
+  },
+  "equipment": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/equipment?namespace=profile-forever-us"
+  },
+  "appearance": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/appearance?namespace=profile-forever-us"
+  },
+  "collections": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/collections?namespace=profile-forever-us"
+  },
+  "reputations": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/reputations?namespace=profile-forever-us"
+  },
+  "quests": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/quests?namespace=profile-forever-us"
+  },
+  "achievements_statistics": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/achievements/statistics?namespace=profile-forever-us"
+  },
+  "professions": {
+    "href": "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet/professions?namespace=profile-forever-us"
+  },
+  "is_remix": false,
+  "surname": "Doomlet",
+  "ruleset": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/ruleset/2?namespace=dynamic-forever-us"
+    },
+    "name": "Normal",
+    "id": 2
+  },
+  "name_search": "Brumboldt Doomlet"
+}

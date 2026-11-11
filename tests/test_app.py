@@ -55,8 +55,8 @@ def test_login_sync_and_summary_end_to_end(client: TestClient) -> None:
     log_in(client)
     assert client.get("/status").json()["logged_in"] is True
 
-    profile = json.loads((FIXTURES / "synthetic_profile.json").read_text(encoding="utf-8"))
-    equipment = json.loads((FIXTURES / "synthetic_equipment.json").read_text(encoding="utf-8"))
+    profile = json.loads((FIXTURES / "forever_profile.json").read_text(encoding="utf-8"))
+    equipment = json.loads((FIXTURES / "forever_equipment.json").read_text(encoding="utf-8"))
     respx.get(BASE).mock(return_value=httpx.Response(200, json=profile))
     respx.get(f"{BASE}/equipment").mock(return_value=httpx.Response(200, json=equipment))
     respx.get(url__startswith=f"{BASE}/").mock(return_value=httpx.Response(404, text="Not Found"))
@@ -69,7 +69,7 @@ def test_login_sync_and_summary_end_to_end(client: TestClient) -> None:
     assert set(latest) == {"profile", "equipment"}  # failures are stored but not "latest"
 
     summary = client.get("/summary.md").text
-    assert "- Level: 15" in summary
+    assert "- Level: 18" in summary
     assert "Kindlegem Girdle" in summary
 
 

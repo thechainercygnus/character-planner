@@ -1,7 +1,0 @@
-{
-  "equipped_items": [
-    {"slot": {"type": "WAIST", "name": "Waist"}, "name": "Flimsy Chain Belt", "quality": {"type": "POOR", "name": "Poor"}},
-    {"slot": {"type": "SHIELD", "name": "Off Hand"}, "name": "Inscribed Buckler", "quality": {"type": "UNCOMMON", "name": "Uncommon"}},
-    {"slot": {"type": "BACK", "name": "Back"}, "name": "Spiritwraith Drape", "quality": {"type": "RARE", "name": "Rare"}}
-  ]
-}
