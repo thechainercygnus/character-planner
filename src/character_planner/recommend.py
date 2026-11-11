@@ -1,0 +1,286 @@
+"""Propose gear from the item pool: the best upgrades in reach for each slot (ADR 0007).
+
+Every pool item the character can use (data/curated/recommend.yaml) is scored with the
+stat weights and compared with what's equipped in each slot it fits. Each slot lists its
+biggest score gains; dungeons are ranked by the upgrades they hold. gear_targets.yaml
+stays the hand-picked plan: items it names are flagged as targets.
+"""
+
+from collections.abc import Mapping
+from pathlib import Path
+
+import yaml
+from pydantic import BaseModel
+
+from character_planner.companion import ATTRIBUTION as COMPANION_ATTRIBUTION
+from character_planner.curated import GearTargets
+from character_planner.pool import PoolItem, PoolSource, PoolView
+from character_planner.scoring import Weights, score
+from character_planner.views import EquippedItem
+
+# The order the recommendations are shown in.
+EQUIPMENT_SLOTS = [
+    "HEAD",
+    "NECK",
+    "SHOULDER",
+    "BACK",
+    "CHEST",
+    "WRIST",
+    "HANDS",
+    "WAIST",
+    "LEGS",
+    "FEET",
+    "FINGER_1",
+    "FINGER_2",
+    "TRINKET_1",
+    "TRINKET_2",
+    "MAIN_HAND",
+    "OFF_HAND",
+    "RANGED",
+]
+PAIRED = {"Finger": ("FINGER_1", "FINGER_2"), "Trinket": ("TRINKET_1", "TRINKET_2")}
+# Forever Companion item slot -> equipment slot (paired slots handled separately).
+SLOT_FOR = {
+    "Head": "HEAD",
+    "Neck": "NECK",
+    "Shoulder": "SHOULDER",
+    "Back": "BACK",
+    "Chest": "CHEST",
+    "Wrist": "WRIST",
+    "Hands": "HANDS",
+    "Waist": "WAIST",
+    "Legs": "LEGS",
+    "Feet": "FEET",
+    "Main Hand": "MAIN_HAND",
+    "One-Hand": "MAIN_HAND",
+    "Two-Hand": "MAIN_HAND",
+    "Off Hand": "OFF_HAND",
+    "Held In Off-hand": "OFF_HAND",
+    "Ranged": "RANGED",
+}
+
+
+class UsageRules(BaseModel):
+    weapon_types: list[str]
+    armor_types: list[str]
+    plate_from_level: int | None = 40
+    two_handers: bool = False
+    off_hand_types: list[str] = ["Shield"]
+    levels_ahead: int = 3
+    per_slot: int = 3
+    exclude_item_ids: list[int] = []
+
+
+class Candidate(BaseModel):
+    item: PoolItem
+    score_gain: float
+    item_level_delta: int | None = None
+    armor_delta: int | None = None
+    stat_deltas: dict[str, int] = {}
+    usable_now: bool  # required level reached
+    is_target: bool = False  # named in gear_targets.yaml
+
+
+class SlotRecommendation(BaseModel):
+    slot: str
+    equipped: EquippedItem | None
+    candidates: list[Candidate]
+
+
+class DungeonValue(BaseModel):
+    dungeon_id: str
+    dungeon: str
+    min_level: int | None
+    max_level: int | None
+    total_gain: float
+    upgrades: list[str]  # "Golemguard Chest (+12.4)"
+
+
+class Recommendations(BaseModel):
+    level: int | None
+    window: tuple[int, int] | None
+    rows: list[SlotRecommendation]
+    dungeons: list[DungeonValue]
+    considered: int  # usable, scored pool items
+    unscored: int  # usable pool items without stat data yet
+    attributions: list[dict[str, str]] = []
+
+
+def load_rules(path: Path) -> UsageRules:
+    with path.open(encoding="utf-8") as handle:
+        return UsageRules.model_validate(yaml.safe_load(handle))
+
+
+def unusable_reason(item: PoolItem, rules: UsageRules, level: int | None) -> str | None:
+    """Why the character can't (or won't) wear this item; None when it's fine."""
+    if item.item_id in rules.exclude_item_ids:
+        return "excluded"
+    slot = item.item_slot
+    if slot is None or (slot not in SLOT_FOR and slot not in PAIRED):
+        return "not equippable"
+    if level is not None and (item.effective_level or 0) > level + rules.levels_ahead:
+        return f"requires level {item.effective_level}"
+    weapon = item.weapon_type
+    # "Miscellaneous" covers jewelry and held-in-off-hand items, not weapons.
+    if weapon not in (None, "Miscellaneous") and weapon not in rules.weapon_types:
+        return f"can't use {weapon}"
+    armor = (item.armor_type or "").lower()
+    if armor == "plate" and (
+        rules.plate_from_level is None or level is None or level < rules.plate_from_level
+    ):
+        return "plate not yet"
+    if armor in ("cloth", "leather", "mail") and armor not in rules.armor_types:
+        return f"not wearing {armor}"
+    if slot == "Two-Hand" and not rules.two_handers:
+        return "two-hander"
+    if SLOT_FOR.get(slot) == "OFF_HAND" and item.weapon_type not in rules.off_hand_types:
+        return "off hand type"
+    return None
+
+
+def has_stat_data(item: PoolItem) -> bool:
+    return item.armor is not None or bool(item.stats) or item.dps is not None
+
+
+def _item_score(weights: Weights, slot: str, item: PoolItem) -> float:
+    return score(weights, slot=slot, armor=item.armor, stats=item.stats, dps=item.dps)
+
+
+def _worn_score(weights: Weights, slot: str, worn: EquippedItem | None) -> float:
+    if worn is None:
+        return 0.0
+    stats = {s.name: s.value for s in worn.stats}
+    return score(weights, slot=slot, armor=worn.armor, stats=stats, dps=worn.dps)
+
+
+def _candidate(
+    slot: str,
+    item: PoolItem,
+    worn: EquippedItem | None,
+    weights: Weights,
+    level: int | None,
+    target_ids: set[int],
+) -> Candidate:
+    worn_stats = {s.name: s.value for s in worn.stats} if worn else {}
+    names = sorted(set(worn_stats) | set(item.stats))
+    stat_deltas = {
+        n: item.stats.get(n, 0) - worn_stats.get(n, 0)
+        for n in names
+        if item.stats.get(n, 0) != worn_stats.get(n, 0)
+    }
+    worn_level = worn.item_level if worn else None
+    worn_armor = worn.armor if worn else None
+    return Candidate(
+        item=item,
+        score_gain=round(_item_score(weights, slot, item) - _worn_score(weights, slot, worn), 2),
+        item_level_delta=(
+            item.item_level - worn_level
+            if item.item_level is not None and worn_level is not None
+            else None
+        ),
+        armor_delta=((item.armor or 0) - (worn_armor or 0) if item.armor or worn_armor else None),
+        stat_deltas=stat_deltas,
+        usable_now=level is None or (item.effective_level or 0) <= level,
+        is_target=item.item_id in target_ids,
+    )
+
+
+def _best(candidates: list[Candidate], count: int, skip: set[int]) -> list[Candidate]:
+    upgrades = [c for c in candidates if c.score_gain > 0 and c.item.item_id not in skip]
+    upgrades.sort(key=lambda c: (-c.score_gain, c.item.name))
+    return upgrades[:count]
+
+
+def recommend(
+    pool: PoolView,
+    equipped: Mapping[str, EquippedItem],
+    weights: Weights,
+    rules: UsageRules,
+    targets: GearTargets | None = None,
+) -> Recommendations:
+    level = pool.level
+    target_ids = set(targets.item_ids()) if targets else set()
+
+    usable = [i for i in pool.items if unusable_reason(i, rules, level) is None]
+    scored = [i for i in usable if has_stat_data(i)]
+
+    by_slot: dict[str, list[Candidate]] = {slot: [] for slot in EQUIPMENT_SLOTS}
+    for item in scored:
+        item_slot = item.item_slot or ""
+        for slot in PAIRED.get(item_slot, (SLOT_FOR.get(item_slot),)):
+            if slot is not None:
+                by_slot[slot].append(
+                    _candidate(slot, item, equipped.get(slot), weights, level, target_ids)
+                )
+
+    picks: dict[str, list[Candidate]] = {}
+    for slot in EQUIPMENT_SLOTS:
+        if slot in picks:
+            continue
+        pair = next((p for p in PAIRED.values() if slot in p), None)
+        if pair is None:
+            picks[slot] = _best(by_slot[slot], rules.per_slot, set())
+            continue
+        # Replace the weaker of the two first, then don't suggest its top pick twice
+        # (most rings and trinkets are unique).
+        weaker, stronger = sorted(pair, key=lambda s: _worn_score(weights, s, equipped.get(s)))
+        picks[weaker] = _best(by_slot[weaker], rules.per_slot, set())
+        first = {picks[weaker][0].item.item_id} if picks[weaker] else set()
+        picks[stronger] = _best(by_slot[stronger], rules.per_slot, first)
+
+    rows = [
+        SlotRecommendation(slot=slot, equipped=equipped.get(slot), candidates=picks[slot])
+        for slot in EQUIPMENT_SLOTS
+    ]
+    uses_companion = bool(pool.items)
+    return Recommendations(
+        level=level,
+        window=pool.window,
+        rows=rows,
+        dungeons=dungeon_values(by_slot),
+        considered=len(scored),
+        unscored=len(usable) - len(scored),
+        attributions=[COMPANION_ATTRIBUTION] if uses_companion else [],
+    )
+
+
+def dungeon_values(by_slot: Mapping[str, list[Candidate]]) -> list[DungeonValue]:
+    """Rank dungeons by the best upgrade they hold for each slot, summed.
+
+    Only upgrades usable now count: a dungeon is worth running for what you can wear.
+    """
+    best: dict[str, dict[str, Candidate]] = {}  # dungeon id -> slot -> best candidate
+    meta: dict[str, PoolSource] = {}
+    for slot, candidates in by_slot.items():
+        for candidate in candidates:
+            if not candidate.usable_now or candidate.score_gain <= 0:
+                continue
+            for source in candidate.item.sources:
+                meta.setdefault(source.dungeon_id, source)
+                slot_best = best.setdefault(source.dungeon_id, {})
+                current = slot_best.get(slot)
+                if current is None or candidate.score_gain > current.score_gain:
+                    slot_best[slot] = candidate
+
+    values = []
+    for dungeon_id, slots in best.items():
+        source = meta[dungeon_id]
+        # The same ring can top both finger slots; count each item once.
+        unique: dict[int, Candidate] = {}
+        for candidate in slots.values():
+            kept = unique.get(candidate.item.item_id)
+            if kept is None or candidate.score_gain > kept.score_gain:
+                unique[candidate.item.item_id] = candidate
+        ranked = sorted(unique.values(), key=lambda c: -c.score_gain)
+        values.append(
+            DungeonValue(
+                dungeon_id=dungeon_id,
+                dungeon=source.dungeon,
+                min_level=source.min_level,
+                max_level=source.max_level,
+                total_gain=round(sum(c.score_gain for c in ranked), 2),
+                upgrades=[f"{c.item.name} (+{c.score_gain:g})" for c in ranked],
+            )
+        )
+    values.sort(key=lambda v: -v.total_gain)
+    return values

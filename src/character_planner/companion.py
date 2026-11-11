@@ -49,7 +49,8 @@ class CompanionInfo(BaseModel):
     item_level: int | None = None
     required_level: int | None = None
     quality: str | None = None  # uppercased to match Blizzard: UNCOMMON, RARE...
-    slot: str | None = None
+    slot: str | None = None  # Head, One-Hand, Held In Off-hand...
+    weapon_type: str | None = None  # Axe, Shield, Wand... (None for armor and jewelry)
     armor_type: str | None = None  # Cloth, Leather, Mail, Plate, or the tooltip's type
     armor: int | None = None
     stats: dict[str, int] = {}
@@ -111,6 +112,7 @@ def parse_item(payload: Any) -> CompanionInfo | None:
         required_level=fields.as_int(fields.get(item, "requiredLevel")),
         quality=quality.upper() if isinstance(quality, str) else None,
         slot=fields.get(item, "slot"),
+        weapon_type=fields.get(item, "weaponType"),
         armor_type=armor_class.capitalize() if isinstance(armor_class, str) else tooltip_armor_type,
         armor=armor,
         stats=stats,

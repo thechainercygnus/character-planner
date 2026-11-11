@@ -43,6 +43,7 @@ from character_planner.pool import (
     refresh_pool,
     resolve_target_ids,
 )
+from character_planner.recommend import Recommendations, UsageRules, load_rules, recommend
 from character_planner.scoring import (
     Weights,
     WeightsView,
@@ -111,12 +112,18 @@ def get_default_weights(request: Request) -> Weights:
     return load_default_weights(settings.curated_dir / "stat_weights.yaml")
 
 
+def get_rules(request: Request) -> UsageRules:
+    settings: Settings = request.app.state.settings
+    return load_rules(settings.curated_dir / "recommend.yaml")
+
+
 class WeightsUpdate(BaseModel):
     weights: dict[str, Annotated[float, Field(ge=-10, le=10, allow_inf_nan=False)]]
 
 
 DefaultWeightsDep = Annotated[Weights, Depends(get_default_weights)]
 TargetsDep = Annotated[GearTargets, Depends(get_targets)]
+RulesDep = Annotated[UsageRules, Depends(get_rules)]
 
 
 def create_app(
@@ -239,6 +246,26 @@ def create_app(
         """Dungeon drops and quest rewards for the character's level window."""
         level, faction = character_context(session)
         return pool_view(session, level, faction)
+
+    @app.get("/api/recommendations")
+    def recommendations(
+        session: SessionDep, targets: TargetsDep, defaults: DefaultWeightsDep, rules: RulesDep
+    ) -> Recommendations:
+        """Best upgrades in reach for each slot, from the item pool (ADR 0007)."""
+        level, faction = character_context(session)
+        icons = icons_by_id(session)
+        equipment = latest_by_kind(session).get("equipment")
+        equipped = {
+            item.slot: item.model_copy(update={"icon_url": icons.get(item.item_id or 0)})
+            for item in parse_equipment(equipment.payload if equipment else None)
+        }
+        return recommend(
+            pool_view(session, level, faction),
+            equipped,
+            current_weights(session, defaults),
+            rules,
+            targets,
+        )
 
     @app.post("/api/snapshots/manual", status_code=201)
     def add_manual(entry: ManualSnapshot, session: SessionDep) -> dict[str, int | None]:

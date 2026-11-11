@@ -27,6 +27,10 @@ export function StatusBar() {
     mutationFn: api.refreshItems,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['gear'] }),
   })
+  const refreshPool = useMutation({
+    mutationFn: api.refreshPool,
+    onSuccess: () => queryClient.invalidateQueries(),
+  })
 
   if (status.isPending) return <div className="status-bar">Checking login…</div>
   if (status.isError) {
@@ -57,6 +61,15 @@ export function StatusBar() {
       >
         {refreshItems.isPending ? 'Looking up items…' : 'Refresh item data'}
       </button>
+      <button
+        type="button"
+        className="secondary"
+        onClick={() => refreshPool.mutate()}
+        disabled={refreshPool.isPending}
+        title="Fetch dungeon drops and quest rewards from Forever Companion (first run takes a few minutes)"
+      >
+        {refreshPool.isPending ? 'Refreshing pool… (can take minutes)' : 'Refresh item pool'}
+      </button>
       {sync.isError && <span className="error">Sync failed: {sync.error.message}</span>}
       {refreshItems.isError && (
         <span className="error">Item lookup failed: {refreshItems.error.message}</span>
@@ -66,6 +79,13 @@ export function StatusBar() {
           Blizzard found {refreshItems.data.found.length}, Forever Companion fetched{' '}
           {refreshItems.data.companion_fetched}
           {refreshItems.data.errors.length > 0 && `, ${refreshItems.data.errors.length} errors`}
+        </span>
+      )}
+      {refreshPool.isError && <span className="error">Pool refresh failed: {refreshPool.error.message}</span>}
+      {refreshPool.data && (
+        <span className="muted">
+          Pool: {refreshPool.data.in_window} items in reach, {refreshPool.data.items_fetched} fetched
+          {refreshPool.data.errors.length > 0 && `, ${refreshPool.data.errors.length} errors`}
         </span>
       )}
       {failed.length > 0 && <span className="warn">Not returned: {failed.join(', ')}</span>}

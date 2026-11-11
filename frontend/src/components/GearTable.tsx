@@ -9,11 +9,11 @@ import {
   type Verdict,
 } from '../api'
 
-function Icon({ url }: { url: string | null }) {
+export function Icon({ url }: { url: string | null }) {
   return url ? <img className="icon" src={url} alt="" width={28} height={28} /> : <span className="icon" />
 }
 
-function ItemName({ item }: { item: EquippedItem }) {
+export function ItemName({ item }: { item: EquippedItem }) {
   const quality = (item.quality ?? 'COMMON').toLowerCase()
   const details = [
     item.item_level !== null ? `ilvl ${item.item_level}` : null,

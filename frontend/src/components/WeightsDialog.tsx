@@ -35,7 +35,10 @@ export function WeightsDialog() {
   const onSaved = (view: WeightsView) => {
     queryClient.setQueryData(['weights'], view)
     setDraft(null)
-    return queryClient.invalidateQueries({ queryKey: ['gear'] })
+    return Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['gear'] }),
+      queryClient.invalidateQueries({ queryKey: ['recommendations'] }),
+    ])
   }
   const save = useMutation({ mutationFn: api.saveWeights, onSuccess: onSaved })
   const reset = useMutation({ mutationFn: api.resetWeights, onSuccess: onSaved })

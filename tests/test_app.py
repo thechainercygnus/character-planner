@@ -166,6 +166,17 @@ def test_pool_refresh_lists_items_and_fills_target_ids(client: TestClient) -> No
     assert ids["Spiritwraith Drape"] == 271097
     assert ids["Kindlegem Girdle"] == 270230  # from the YAML
 
+    # Only Kindlegem Girdle has item details in this test, and it isn't in the pool, so
+    # every usable pool item is unscored; the shape is still complete.
+    recs = client.get("/api/recommendations").json()
+    assert recs["level"] == 18
+    assert len(recs["rows"]) == 17
+    neck = next(row for row in recs["rows"] if row["slot"] == "NECK")
+    assert neck["equipped"] is None
+    off_hand = next(row for row in recs["rows"] if row["slot"] == "OFF_HAND")
+    assert off_hand["equipped"]["name"] == "Burnished Shield"
+    assert recs["considered"] == 0
+
 
 def test_pool_is_empty_before_any_refresh(client: TestClient) -> None:
     assert client.get("/api/pool").json() == {

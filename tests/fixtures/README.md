@@ -17,8 +17,6 @@ match: Forever-new item) and the item media response for Burnished Shield (3655)
 `companion_item_270230.json` is the real Forever Companion `GET /items/270230` response
 (Kindlegem Girdle) from `samples/companion-20261111T200041Z`.
 
-`companion_dungeon_hall_of_thanes.json` stands in for `GET /dungeons/hall-of-thanes`: it is
-built from the spec and the drop table printed on 2026-11-11 (level range and quests
-unknown). Replace it with the real response:
+`companion_dungeon_hall_of_thanes.json` is the real Forever Companion
+`GET /dungeons/hall-of-thanes` response, saved on 2026-11-11 with
 `curl.exe -s https://forevercompanion.io/api/v1/dungeons/hall-of-thanes -o tests/fixtures/companion_dungeon_hall_of_thanes.json`.
-Tests only assert the drop table, so they hold for the real file.

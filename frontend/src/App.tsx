@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from './api'
 import { CharacterHeader, ProfessionsPanel, StatsPanel, TalentsPanel } from './components/CharacterPanels'
 import { GearTable } from './components/GearTable'
+import { Recommendations } from './components/Recommendations'
 import { StatusBar } from './components/StatusBar'
 import { WeightsDialog } from './components/WeightsDialog'
 import './App.css'
@@ -9,6 +10,7 @@ import './App.css'
 export default function App() {
   const character = useQuery({ queryKey: ['character'], queryFn: api.character })
   const gear = useQuery({ queryKey: ['gear'], queryFn: api.gear })
+  const recommendations = useQuery({ queryKey: ['recommendations'], queryFn: api.recommendations })
 
   return (
     <main>
@@ -24,7 +26,11 @@ export default function App() {
       {character.data && character.data.level !== null && (
         <>
           <CharacterHeader character={character.data} />
-          {gear.data && <GearTable plan={gear.data} actions={<WeightsDialog />} />}
+          {recommendations.isError && (
+            <p className="error">Couldn't load recommendations: {recommendations.error.message}</p>
+          )}
+          {recommendations.data && <Recommendations data={recommendations.data} actions={<WeightsDialog />} />}
+          {gear.data && <GearTable plan={gear.data} />}
           <div className="panels">
             {character.data.stats && <StatsPanel stats={character.data.stats} />}
             <TalentsPanel character={character.data} />

@@ -1,0 +1,27 @@
+# Rules for proposing gear from the item pool (ADR 0007): what this character can and
+# wants to wear. Values match Forever Companion's item details (weaponType, armor class).
+#
+# The engine compares every usable pool item against what's equipped, slot by slot, using
+# the stat weights, and lists the best upgrades in reach. gear_targets.yaml stays the
+# hand-picked plan; items it names are marked as your targets in the recommendations.
+
+# Weapon types a Warrior can use. Wands can't be; daggers and fist weapons can.
+weapon_types: [Axe, Mace, Sword, Dagger, Fist Weapon, Polearm, Staff, Bow, Crossbow, Gun, Thrown, Shield]
+
+# Armor classes worn now; plate opens up at plate_from_level.
+armor_types: [cloth, leather, mail]
+plate_from_level: 40
+
+# Tanking with a shield: no two-handers, and only shields in the off hand
+# (not "Held In Off-hand" caster items).
+two_handers: false
+off_hand_types: [Shield]
+
+# Include items you can't equip yet but will within this many levels.
+levels_ahead: 3
+
+# Upgrades listed per equipment slot.
+per_slot: 3
+
+# Pool items never to recommend (e.g. a quest you won't do). Find ids in /api/pool.
+exclude_item_ids: []

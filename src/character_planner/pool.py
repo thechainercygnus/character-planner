@@ -13,7 +13,7 @@ from datetime import timedelta
 from typing import Literal
 
 import httpx
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 from sqlmodel import Session
 
 from character_planner.companion import CompanionInfo, companion_by_id, refresh_companion
@@ -42,6 +42,7 @@ class PoolSource(BaseModel):
     max_level: int | None = None
     detail: str | None = None  # the boss for a drop, the quest for a reward
     choice: bool = False  # a quest reward picked from several
+    quest_min_level: int | None = None  # level needed to pick the quest up
 
 
 class PoolItem(BaseModel):
@@ -51,12 +52,29 @@ class PoolItem(BaseModel):
     quality: str | None = None
     sources: list[PoolSource] = []
     # From GET /items/{id}, once fetched.
+    item_slot: str | None = None  # the item's own slot: One-Hand, Held In Off-hand...
+    weapon_type: str | None = None
     item_level: int | None = None
     required_level: int | None = None
     armor_type: str | None = None
     armor: int | None = None
     stats: dict[str, int] = {}
     dps: float | None = None
+    icon_url: str | None = None
+    wowhead: str | None = None
+
+    @computed_field
+    @property
+    def effective_level(self) -> int | None:
+        """The level this item can be had at: its required level, else (many quest rewards
+        have none) the easiest source's quest pickup level or dungeon minimum."""
+        if self.required_level is not None:
+            return self.required_level
+        levels = [
+            s.quest_min_level if s.quest_min_level is not None else s.min_level
+            for s in self.sources
+        ]
+        return min((lvl for lvl in levels if lvl is not None), default=None)
 
     @property
     def lowest_dungeon_level(self) -> int:
@@ -86,7 +104,11 @@ def _can_take(quest_faction: str, faction: str | None) -> bool:
 
 
 def _source(
-    dungeon: Dungeon, kind: Literal["drop", "quest"], detail: str | None, choice: bool = False
+    dungeon: Dungeon,
+    kind: Literal["drop", "quest"],
+    detail: str | None,
+    choice: bool = False,
+    quest_min_level: int | None = None,
 ) -> PoolSource:
     return PoolSource(
         kind=kind,
@@ -96,6 +118,7 @@ def _source(
         max_level=dungeon.max_level,
         detail=detail,
         choice=choice,
+        quest_min_level=quest_min_level,
     )
 
 
@@ -123,7 +146,9 @@ def build_pool(dungeons: Iterable[Dungeon], faction: str | None = None) -> dict[
             )
         for reward in dungeon.rewards:
             if _can_take(reward.faction, faction):
-                quest = _source(dungeon, "quest", reward.quest, reward.choice)
+                quest = _source(
+                    dungeon, "quest", reward.quest, reward.choice, reward.min_level or reward.level
+                )
                 add(reward.item_id, reward.name, quest, None, None)
     return pool
 
@@ -153,6 +178,10 @@ def with_details(item: PoolItem, info: CompanionInfo | None) -> PoolItem:
         update={
             # Quest rewards carry no slot in the dungeon data; the item details do.
             "slot": item.slot or slot_key(info.slot),
+            "item_slot": info.slot,
+            "weapon_type": info.weapon_type,
+            "icon_url": info.icon_url,
+            "wowhead": info.wowhead,
             "item_level": info.item_level,
             "required_level": info.required_level,
             "armor_type": info.armor_type,

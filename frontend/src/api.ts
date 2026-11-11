@@ -163,6 +163,86 @@ export interface RefreshResult {
   companion_not_found: number[]
 }
 
+export interface PoolSource {
+  kind: 'drop' | 'quest'
+  dungeon_id: string
+  dungeon: string
+  min_level: number | null
+  max_level: number | null
+  /** The boss for a drop, the quest for a reward. */
+  detail: string | null
+  choice: boolean
+  quest_min_level: number | null
+}
+
+/** A dungeon drop or quest reward from the item pool (pool.py). */
+export interface PoolItem {
+  item_id: number
+  name: string
+  slot: string | null
+  quality: Quality | null
+  sources: PoolSource[]
+  item_slot: string | null
+  weapon_type: string | null
+  item_level: number | null
+  required_level: number | null
+  /** Required level, or for items without one the quest pickup / dungeon minimum level. */
+  effective_level: number | null
+  armor_type: string | null
+  armor: number | null
+  stats: Record<string, number>
+  dps: number | null
+  icon_url: string | null
+  wowhead: string | null
+}
+
+export interface Candidate {
+  item: PoolItem
+  score_gain: number
+  item_level_delta: number | null
+  armor_delta: number | null
+  stat_deltas: Record<string, number>
+  /** False when the item needs a few more levels. */
+  usable_now: boolean
+  /** Named in gear_targets.yaml. */
+  is_target: boolean
+}
+
+export interface SlotRecommendation {
+  slot: string
+  equipped: EquippedItem | null
+  candidates: Candidate[]
+}
+
+export interface DungeonValue {
+  dungeon_id: string
+  dungeon: string
+  min_level: number | null
+  max_level: number | null
+  total_gain: number
+  upgrades: string[]
+}
+
+export interface Recommendations {
+  level: number | null
+  window: [number, number] | null
+  rows: SlotRecommendation[]
+  dungeons: DungeonValue[]
+  considered: number
+  unscored: number
+  attributions: Attribution[]
+}
+
+export interface PoolRefresh {
+  dungeons_listed: number
+  dungeons_fetched: number
+  pool_size: number
+  in_window: number
+  items_fetched: number
+  items_not_found: number[]
+  errors: string[]
+}
+
 export class ApiError extends Error {
   readonly status: number
 
@@ -201,6 +281,8 @@ export const api = {
       body: JSON.stringify({ weights }),
     }),
   resetWeights: () => request<WeightsView>('/api/weights', { method: 'DELETE' }),
+  recommendations: () => request<Recommendations>('/api/recommendations'),
+  refreshPool: () => request<PoolRefresh>('/api/pool/refresh', { method: 'POST' }),
 }
 
 /** Battle.net slot types (MAIN_HAND) as people read them (Main Hand). */
