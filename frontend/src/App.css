@@ -1,0 +1,172 @@
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+h1,
+h2 {
+  margin: 0 0 0.5rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+}
+
+section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.muted {
+  color: var(--muted);
+  font-weight: normal;
+}
+
+.error {
+  color: var(--error);
+}
+
+.warn {
+  color: var(--warn);
+}
+
+/* Status bar */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+  color: var(--muted);
+}
+
+button,
+.button {
+  background: var(--accent);
+  color: #1a1a1a;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* Header */
+.character-header {
+  margin-bottom: 1rem;
+}
+
+.character-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* Gear table */
+table.gear {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table.gear th,
+table.gear td {
+  text-align: left;
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+table.gear th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+table.gear tr.reached td {
+  color: var(--ok);
+}
+
+.item small {
+  display: block;
+  color: var(--muted);
+}
+
+.quality-poor {
+  color: var(--q-poor);
+}
+.quality-common {
+  color: var(--q-common);
+}
+.quality-uncommon {
+  color: var(--q-uncommon);
+}
+.quality-rare {
+  color: var(--q-rare);
+}
+.quality-epic {
+  color: var(--q-epic);
+}
+.quality-legendary {
+  color: var(--q-legendary);
+}
+
+/* Lower panels */
+.panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.panels section {
+  margin-bottom: 0;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 1.5rem;
+  margin: 0;
+}
+
+.stats div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.stats dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.professions,
+.talents {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.professions li {
+  display: grid;
+  grid-template-columns: 7rem 1fr 4rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.2rem 0;
+}
+
+.professions progress {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.talents li {
+  padding: 0.2rem 0;
+}
