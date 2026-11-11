@@ -32,6 +32,25 @@ class ManualSnapshot(BaseModel):
     payload: Any
 
 
+# Dependencies live at module level so their Annotated aliases are real type aliases.
+# Each app keeps its own engine and settings on app.state (set in create_app), which is
+# how tests get an isolated database.
+
+
+def get_session(request: Request) -> Iterator[Session]:
+    with Session(request.app.state.engine) as session:
+        yield session
+
+
+def get_targets(request: Request) -> GearTargets:
+    settings: Settings = request.app.state.settings
+    return load_gear_targets(settings.curated_dir / "gear_targets.yaml")
+
+
+SessionDep = Annotated[Session, Depends(get_session)]
+TargetsDep = Annotated[GearTargets, Depends(get_targets)]
+
+
 def create_app(
     settings: Settings | None = None,
     engine: Engine | None = None,
@@ -48,16 +67,8 @@ def create_app(
         yield
 
     app = FastAPI(title="Character Planner", lifespan=lifespan)
-
-    def get_session() -> Iterator[Session]:
-        with Session(engine) as session:
-            yield session
-
-    def get_targets() -> GearTargets:
-        return load_gear_targets(settings.curated_dir / "gear_targets.yaml")
-
-    SessionDep = Annotated[Session, Depends(get_session)]
-    TargetsDep = Annotated[GearTargets, Depends(get_targets)]
+    app.state.settings = settings
+    app.state.engine = engine
 
     def current_token(session: Session) -> oauth.Token | None:
         stored = session.get(StoredToken, 1)
