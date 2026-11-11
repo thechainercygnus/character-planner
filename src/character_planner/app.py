@@ -54,6 +54,15 @@ from character_planner.scoring import (
     save_weights,
 )
 from character_planner.summary import build_summary
+from character_planner.talents import (
+    TalentPlan,
+    TalentPlanView,
+    compare,
+    current_plan,
+    load_default_plan,
+    reset_plan,
+    save_plan,
+)
 from character_planner.views import (
     CharacterView,
     GearPlan,
@@ -62,6 +71,7 @@ from character_planner.views import (
     character_view,
     gear_plan,
     parse_equipment,
+    parse_specialization,
 )
 
 PENDING_STATE_TTL_SECONDS = 600
@@ -113,6 +123,11 @@ def get_default_weights(request: Request) -> Weights:
     return load_default_weights(settings.curated_dir / "stat_weights.yaml")
 
 
+def get_default_plan(request: Request) -> TalentPlan:
+    settings: Settings = request.app.state.settings
+    return load_default_plan(settings.curated_dir / "talent_plan.yaml")
+
+
 def get_rules(request: Request) -> UsageRules:
     settings: Settings = request.app.state.settings
     return load_rules(settings.curated_dir / "recommend.yaml")
@@ -125,6 +140,7 @@ class WeightsUpdate(BaseModel):
 DefaultWeightsDep = Annotated[Weights, Depends(get_default_weights)]
 TargetsDep = Annotated[GearTargets, Depends(get_targets)]
 RulesDep = Annotated[UsageRules, Depends(get_rules)]
+DefaultPlanDep = Annotated[TalentPlan, Depends(get_default_plan)]
 
 
 def create_app(
@@ -353,6 +369,36 @@ def create_app(
         """Go back to the defaults in data/curated/stat_weights.yaml."""
         reset_weights(session)
         return weights_view(session, defaults)
+
+    def talents_view(session: Session, default: TalentPlan) -> TalentPlanView:
+        latest = latest_by_kind(session)
+        profile, specs = latest.get("profile"), latest.get("specializations")
+        plan = current_plan(session, default)
+        return compare(
+            plan,
+            parse_specialization(specs.payload if specs else None),
+            character_level(profile.payload if profile else None),
+            customised=plan != default,
+        )
+
+    @app.get("/api/talents")
+    def get_talents(session: SessionDep, default: DefaultPlanDep) -> TalentPlanView:
+        """The talent plan compared with the synced talents (ADR 0009)."""
+        return talents_view(session, default)
+
+    @app.put("/api/talents/plan")
+    def put_talent_plan(
+        plan: TalentPlan, session: SessionDep, default: DefaultPlanDep
+    ) -> TalentPlanView:
+        """Replace the talent plan."""
+        save_plan(session, plan)
+        return talents_view(session, default)
+
+    @app.delete("/api/talents/plan")
+    def delete_talent_plan(session: SessionDep, default: DefaultPlanDep) -> TalentPlanView:
+        """Go back to data/curated/talent_plan.yaml."""
+        reset_plan(session)
+        return talents_view(session, default)
 
     # Serve the built frontend (npm run build) from the same origin, after every API
     # route so those win. In development Vite serves it instead and proxies to us.

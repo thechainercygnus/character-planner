@@ -51,6 +51,7 @@ Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `n
 - `src/character_planner/dungeons.py`: Forever Companion dungeons: drop tables and quest rewards (ADR 0006)
 - `src/character_planner/pool.py`: item pool built from dungeon data, level window, target id resolution (ADR 0006)
 - `src/character_planner/progress.py`: progress over time rebuilt from snapshots: points, gear changes, level-ups (ADR 0008)
+- `src/character_planner/talents.py`: hand-entered talent plan compared with synced talents (ADR 0009); default in `data/curated/talent_plan.yaml`
 - `src/character_planner/recommend.py`: best upgrades per slot and dungeons worth running, from the pool (ADR 0007); rules in `data/curated/recommend.yaml`
 - `src/character_planner/fields.py`: defensive JSON readers used by all parsers
 - `src/character_planner/views.py`: the only code that reads API response shapes; typed views for the frontend

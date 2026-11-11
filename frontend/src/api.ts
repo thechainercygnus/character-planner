@@ -287,6 +287,45 @@ export interface Progress {
   level_ups: LevelUp[]
 }
 
+export interface PlanStep {
+  talent: string
+  rank: number
+}
+
+export interface TalentPlan {
+  spec: string
+  steps: PlanStep[]
+}
+
+export interface StepStatus {
+  talent: string
+  /** Target rank after this step. */
+  rank: number
+  /** Points this step adds. */
+  points: number
+  current: number
+  state: 'done' | 'partial' | 'pending'
+  first_point: number
+  /** Level at which this step's last point can be spent. */
+  level: number
+}
+
+/** The talent plan compared with the synced talents (talents.py, ADR 0009). */
+export interface TalentPlanView {
+  /** The plan as stored, for editing. */
+  plan: TalentPlan
+  spec: string
+  current_spec: string | null
+  level: number | null
+  available: number | null
+  spent: number | null
+  planned_points: number
+  steps: StepStatus[]
+  next: { talent: string; rank: number; level: number } | null
+  off_plan: { talent: string; current: number; planned: number }[]
+  customised: boolean
+}
+
 export class ApiError extends Error {
   readonly status: number
 
@@ -327,6 +366,14 @@ export const api = {
   resetWeights: () => request<WeightsView>('/api/weights', { method: 'DELETE' }),
   recommendations: () => request<Recommendations>('/api/recommendations'),
   progress: () => request<Progress>('/api/progress'),
+  talents: () => request<TalentPlanView>('/api/talents'),
+  saveTalentPlan: (plan: TalentPlan) =>
+    request<TalentPlanView>('/api/talents/plan', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(plan),
+    }),
+  resetTalentPlan: () => request<TalentPlanView>('/api/talents/plan', { method: 'DELETE' }),
   refreshPool: () => request<PoolRefresh>('/api/pool/refresh', { method: 'POST' }),
 }
 

@@ -662,3 +662,60 @@ button.expand {
   color: var(--ok);
   font-weight: 600;
 }
+
+/* Talent plan */
+.next-talent {
+  font-size: 1.05rem;
+}
+
+.off-plan ul {
+  margin: 0 0 0.75rem;
+}
+
+.talent-steps {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  columns: 2 280px;
+  column-gap: 2rem;
+}
+
+.talent-step {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr auto;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--border);
+  break-inside: avoid;
+}
+
+.talent-step.done .step-mark {
+  color: var(--ok);
+}
+
+.talent-step.partial .step-mark {
+  color: var(--warn);
+}
+
+.talent-step.pending {
+  color: var(--muted);
+}
+
+.plan-rows {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
+.plan-rows li {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.plan-rows input:first-child {
+  flex: 1;
+}
+
+.plan-rows input[type='number'] {
+  width: 4rem;
+}

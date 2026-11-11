@@ -190,6 +190,38 @@ def test_pool_is_empty_before_any_refresh(client: TestClient) -> None:
     }
 
 
+@respx.mock
+def test_talent_plan_can_be_edited_and_reset(client: TestClient) -> None:
+    log_in(client)
+    mock_character_api()
+    mock_battlenet()  # a sync also refreshes item data
+    client.post("/api/sync")
+
+    view = client.get("/api/talents").json()
+    assert (view["level"], view["available"], view["spent"]) == (18, 9, 9)
+    assert view["next"] is None  # the shipped plan is the synced build
+    assert view["customised"] is False
+
+    extended = {
+        "spec": "Protection",
+        "steps": [
+            {"talent": "Shield Specialization", "rank": 5},
+            {"talent": "Anticipation", "rank": 1},
+            {"talent": "Improved Revenge", "rank": 3},
+            {"talent": "Deflection", "rank": 5},
+        ],
+    }
+    view = client.put("/api/talents/plan", json=extended).json()
+    assert view["customised"] is True
+    assert view["next"] == {"talent": "Deflection", "rank": 1, "level": 19}
+    assert client.get("/api/talents").json()["planned_points"] == 14
+
+    bad = {"spec": "Protection", "steps": [{"talent": " ", "rank": 0}]}
+    assert client.put("/api/talents/plan", json=bad).status_code == 422
+
+    assert client.delete("/api/talents/plan").json()["customised"] is False
+
+
 def test_reads_are_empty_before_any_sync(client: TestClient) -> None:
     assert client.get("/api/character").json()["level"] is None
     assert client.get("/api/gear").json()["rows"] == []
