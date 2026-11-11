@@ -55,9 +55,29 @@ class BlizzardClient:
         if self._own_http:
             self._http.close()
 
-    def _get(self, kind: str, path: str) -> ApiResult:
+    def get(
+        self,
+        kind: str,
+        path: str,
+        namespace: str | None = None,
+        params: dict[str, str] | None = None,
+    ) -> ApiResult:
+        """GET any API path. Defaults to the profile namespace."""
+        return self._get(kind, path, namespace, params)
+
+    def _get(
+        self,
+        kind: str,
+        path: str,
+        namespace: str | None = None,
+        extra: dict[str, str] | None = None,
+    ) -> ApiResult:
         url = f"{self._settings.api_base_url}{path}"
-        params = {"namespace": self._settings.profile_namespace, "locale": "en_US"}
+        params = {
+            "namespace": namespace or self._settings.profile_namespace,
+            "locale": "en_US",
+            **(extra or {}),
+        }
         response = self._http.get(url, params=params, headers=self._headers)
         try:
             body: Any = response.json()

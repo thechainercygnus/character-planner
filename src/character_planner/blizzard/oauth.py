@@ -47,19 +47,29 @@ def authorize_url(settings: Settings, state: str) -> str:
 
 
 def exchange_code(settings: Settings, code: str, client: httpx.Client | None = None) -> Token:
-    """Swap the callback's one-time code for an access token."""
+    """Swap the callback's one-time code for a user access token."""
+    data = {
+        "grant_type": "authorization_code",
+        "code": code,
+        "redirect_uri": settings.bnet_redirect_uri,
+        "scope": SCOPE,
+    }
+    return _request_token(settings, data, client)
+
+
+def client_credentials(settings: Settings, client: httpx.Client | None = None) -> Token:
+    """App-only token for public game data (items, professions). No browser login."""
+    return _request_token(settings, {"grant_type": "client_credentials"}, client)
+
+
+def _request_token(settings: Settings, data: dict[str, str], client: httpx.Client | None) -> Token:
     own_client = client is None
     http = client or httpx.Client(timeout=15)
     try:
         response = http.post(
             TOKEN_URL,
             auth=(settings.bnet_client_id, settings.bnet_client_secret.get_secret_value()),
-            data={
-                "grant_type": "authorization_code",
-                "code": code,
-                "redirect_uri": settings.bnet_redirect_uri,
-                "scope": SCOPE,
-            },
+            data=data,
         )
         response.raise_for_status()
         body = response.json()
