@@ -1,0 +1,7 @@
+{
+  "name": "Brumboldt",
+  "level": 15,
+  "race": {"name": "Gnome"},
+  "character_class": {"name": "Warrior"},
+  "faction": {"type": "ALLIANCE", "name": "Alliance"}
+}

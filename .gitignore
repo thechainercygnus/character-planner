@@ -1,0 +1,22 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Tool caches
+.pytest_cache/
+.ruff_cache/
+.pyright/
+
+# Secrets and local config
+.env
+
+# Local data: the SQLite database and raw API dumps hold personal character data
+data/*.db
+samples/
