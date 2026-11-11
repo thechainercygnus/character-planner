@@ -333,10 +333,93 @@ button.secondary {
   flex-wrap: wrap;
 }
 
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+button.tab {
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+}
+
+button.tab:hover {
+  color: var(--text);
+}
+
+button.tab.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+.tab-count {
+  margin-left: 0.4rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--border);
+  color: var(--text);
+  font-size: 0.75rem;
+  font-weight: normal;
+}
+
+/* Status bar menu */
+details.menu {
+  position: relative;
+}
+
+details.menu > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+}
+
+details.menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.menu-items {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.4rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-width: 12rem;
+}
+
+.menu-items button {
+  text-align: left;
+}
+
 /* Recommendations */
 h3 {
   font-size: 0.95rem;
-  margin: 0.75rem 0 0.25rem;
+  margin: 0;
+}
+
+h4 {
+  margin: 0 0 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .tag {
@@ -355,32 +438,112 @@ h3 {
   color: var(--warn);
 }
 
-.dungeon-values {
-  margin: 0 0 1rem;
-  padding-left: 1.4rem;
+tr.upgrade-row {
+  cursor: pointer;
 }
 
-.dungeon-values li {
-  margin-bottom: 0.35rem;
+tr.upgrade-row:hover td,
+tr.upgrade-row.open td {
+  background: rgb(255 255 255 / 3%);
 }
 
-.dungeon-values small {
-  display: block;
+tr.upgrade-row.open td {
+  border-bottom: none;
 }
 
-.more-candidates {
-  margin-top: 0.4rem;
-  font-size: 0.9rem;
+.expand-cell {
+  text-align: right;
+  width: 4rem;
 }
 
-.more-candidates summary {
-  color: var(--muted);
+button.expand {
+  background: transparent;
+  color: var(--text);
+  border: none;
+  padding: 0.1rem 0.3rem;
+  font-weight: normal;
+}
+
+.upgrade-details-row td {
+  background: rgb(255 255 255 / 3%);
+}
+
+.upgrade-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem 1.5rem;
+  padding: 0.25rem 0 0.5rem;
 }
 
 .other-candidate {
   display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.no-upgrades {
+  margin: 0.75rem 0 0;
+}
+
+/* Dungeon cards */
+.dungeon-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.dungeon-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  background: var(--bg);
+}
+
+.dungeon-card header {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-top: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.dungeon-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dungeon-card li {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr auto;
+  grid-template-areas:
+    'slot item gain'
+    'slot source gain';
+  align-items: center;
+  column-gap: 0.5rem;
+  padding: 0.3rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.dungeon-card .slot-label {
+  grid-area: slot;
+  font-size: 0.85rem;
+}
+
+.dungeon-card .item-cell {
+  grid-area: item;
+}
+
+.dungeon-card .upgrade-source {
+  grid-area: source;
+  font-size: 0.8rem;
+  padding-left: 2.2rem;
+}
+
+.dungeon-card .gain {
+  grid-area: gain;
+  color: var(--ok);
+  font-weight: 600;
 }

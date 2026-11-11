@@ -52,24 +52,33 @@ export function StatusBar() {
           Log in with Battle.net
         </a>
       )}
-      <button
-        type="button"
-        className="secondary"
-        onClick={() => refreshItems.mutate()}
-        disabled={refreshItems.isPending}
-        title="Look up every gear target in Battle.net item data again"
-      >
-        {refreshItems.isPending ? 'Looking up items…' : 'Refresh item data'}
-      </button>
-      <button
-        type="button"
-        className="secondary"
-        onClick={() => refreshPool.mutate()}
-        disabled={refreshPool.isPending}
-        title="Fetch dungeon drops and quest rewards from Forever Companion (first run takes a few minutes)"
-      >
-        {refreshPool.isPending ? 'Refreshing pool… (can take minutes)' : 'Refresh item pool'}
-      </button>
+      <details className="menu">
+        <summary aria-label="More actions" title="More actions">
+          ⋯
+        </summary>
+        <div className="menu-items">
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => refreshItems.mutate()}
+            disabled={refreshItems.isPending}
+            title="Look up every gear target in Battle.net item data again"
+          >
+            Refresh item data
+          </button>
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => refreshPool.mutate()}
+            disabled={refreshPool.isPending}
+            title="Fetch dungeon drops and quest rewards from Forever Companion (first run takes a few minutes)"
+          >
+            Refresh item pool
+          </button>
+        </div>
+      </details>
+      {refreshItems.isPending && <span className="muted">Looking up items…</span>}
+      {refreshPool.isPending && <span className="muted">Refreshing item pool… (can take a few minutes)</span>}
       {sync.isError && <span className="error">Sync failed: {sync.error.message}</span>}
       {refreshItems.isError && (
         <span className="error">Item lookup failed: {refreshItems.error.message}</span>

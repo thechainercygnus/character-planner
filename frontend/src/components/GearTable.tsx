@@ -13,14 +13,15 @@ export function Icon({ url }: { url: string | null }) {
   return url ? <img className="icon" src={url} alt="" width={28} height={28} /> : <span className="icon" />
 }
 
-export function ItemName({ item }: { item: EquippedItem }) {
+/** An equipped item; `compact` leaves out the detail line. */
+export function ItemName({ item, compact = false }: { item: EquippedItem; compact?: boolean }) {
   const quality = (item.quality ?? 'COMMON').toLowerCase()
   const details = [
     item.item_level !== null ? `ilvl ${item.item_level}` : null,
     item.armor_type,
     item.armor ? `${item.armor} armor` : null,
     ...item.stats.map((stat) => `+${stat.value} ${stat.name}`),
-  ].filter(Boolean)
+  ].filter((part) => !compact && Boolean(part))
 
   return (
     <div className="item-cell">

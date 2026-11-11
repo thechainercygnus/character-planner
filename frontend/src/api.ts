@@ -64,7 +64,9 @@ export interface CharacterView {
   race: string | null
   character_class: string | null
   guild: string | null
+  /** Average item level of the gear worn, computed by the backend (the API's counts empty slots). */
   equipped_item_level: number | null
+  gear_slots_filled: number
   captured_at: string | null
   stats: Stats | null
   professions: Profession[]
@@ -214,13 +216,22 @@ export interface SlotRecommendation {
   candidates: Candidate[]
 }
 
+export interface DungeonUpgrade {
+  slot: string
+  item: PoolItem
+  score_gain: number
+  /** How this dungeon gives it: a boss drop or a quest. */
+  source: PoolSource
+}
+
 export interface DungeonValue {
   dungeon_id: string
   dungeon: string
   min_level: number | null
   max_level: number | null
   total_gain: number
-  upgrades: string[]
+  /** Biggest gain first. */
+  upgrades: DungeonUpgrade[]
 }
 
 export interface Recommendations {

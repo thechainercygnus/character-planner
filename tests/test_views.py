@@ -72,6 +72,9 @@ def test_character_view_combines_snapshots() -> None:
     assert view.race == "Gnome"
     assert view.character_class == "Warrior"
     assert len(view.equipment) == 14
+    # 12 gear pieces (shirt and ammo don't count), 175 item levels: 14.6. The API's own
+    # equipped_item_level (9) counts empty slots.
+    assert (view.equipped_item_level, view.gear_slots_filled) == (14.6, 12)
 
 
 # --- gear verdicts ------------------------------------------------------------------------

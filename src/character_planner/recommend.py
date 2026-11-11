@@ -68,6 +68,8 @@ class UsageRules(BaseModel):
     off_hand_types: list[str] = ["Shield"]
     levels_ahead: int = 3
     per_slot: int = 3
+    # Gains at or below this are sidegrades, not worth listing (same band as gear targets).
+    min_gain: float = 1.0
     exclude_item_ids: list[int] = []
 
 
@@ -87,13 +89,20 @@ class SlotRecommendation(BaseModel):
     candidates: list[Candidate]
 
 
+class DungeonUpgrade(BaseModel):
+    slot: str
+    item: PoolItem
+    score_gain: float
+    source: PoolSource  # how this dungeon gives it: boss drop or quest
+
+
 class DungeonValue(BaseModel):
     dungeon_id: str
     dungeon: str
     min_level: int | None
     max_level: int | None
     total_gain: float
-    upgrades: list[str]  # "Golemguard Chest (+12.4)"
+    upgrades: list[DungeonUpgrade]  # biggest gain first
 
 
 class Recommendations(BaseModel):
@@ -185,8 +194,10 @@ def _candidate(
     )
 
 
-def _best(candidates: list[Candidate], count: int, skip: set[int]) -> list[Candidate]:
-    upgrades = [c for c in candidates if c.score_gain > 0 and c.item.item_id not in skip]
+def _best(
+    candidates: list[Candidate], count: int, skip: set[int], min_gain: float
+) -> list[Candidate]:
+    upgrades = [c for c in candidates if c.score_gain > min_gain and c.item.item_id not in skip]
     upgrades.sort(key=lambda c: (-c.score_gain, c.item.name))
     return upgrades[:count]
 
@@ -219,14 +230,14 @@ def recommend(
             continue
         pair = next((p for p in PAIRED.values() if slot in p), None)
         if pair is None:
-            picks[slot] = _best(by_slot[slot], rules.per_slot, set())
+            picks[slot] = _best(by_slot[slot], rules.per_slot, set(), rules.min_gain)
             continue
         # Replace the weaker of the two first, then don't suggest its top pick twice
         # (most rings and trinkets are unique).
         weaker, stronger = sorted(pair, key=lambda s: _worn_score(weights, s, equipped.get(s)))
-        picks[weaker] = _best(by_slot[weaker], rules.per_slot, set())
+        picks[weaker] = _best(by_slot[weaker], rules.per_slot, set(), rules.min_gain)
         first = {picks[weaker][0].item.item_id} if picks[weaker] else set()
-        picks[stronger] = _best(by_slot[stronger], rules.per_slot, first)
+        picks[stronger] = _best(by_slot[stronger], rules.per_slot, first, rules.min_gain)
 
     rows = [
         SlotRecommendation(slot=slot, equipped=equipped.get(slot), candidates=picks[slot])
@@ -237,49 +248,57 @@ def recommend(
         level=level,
         window=pool.window,
         rows=rows,
-        dungeons=dungeon_values(by_slot),
+        dungeons=dungeon_values(by_slot, rules.min_gain),
         considered=len(scored),
         unscored=len(usable) - len(scored),
         attributions=[COMPANION_ATTRIBUTION] if uses_companion else [],
     )
 
 
-def dungeon_values(by_slot: Mapping[str, list[Candidate]]) -> list[DungeonValue]:
+def dungeon_values(
+    by_slot: Mapping[str, list[Candidate]], min_gain: float = 0.0
+) -> list[DungeonValue]:
     """Rank dungeons by the best upgrade they hold for each slot, summed.
 
     Only upgrades usable now count: a dungeon is worth running for what you can wear.
     """
-    best: dict[str, dict[str, Candidate]] = {}  # dungeon id -> slot -> best candidate
+    # dungeon id -> slot -> best upgrade there
+    best: dict[str, dict[str, DungeonUpgrade]] = {}
     meta: dict[str, PoolSource] = {}
     for slot, candidates in by_slot.items():
         for candidate in candidates:
-            if not candidate.usable_now or candidate.score_gain <= 0:
+            if not candidate.usable_now or candidate.score_gain <= min_gain:
                 continue
             for source in candidate.item.sources:
                 meta.setdefault(source.dungeon_id, source)
                 slot_best = best.setdefault(source.dungeon_id, {})
                 current = slot_best.get(slot)
                 if current is None or candidate.score_gain > current.score_gain:
-                    slot_best[slot] = candidate
+                    slot_best[slot] = DungeonUpgrade(
+                        slot=slot,
+                        item=candidate.item,
+                        score_gain=candidate.score_gain,
+                        source=source,
+                    )
 
     values = []
     for dungeon_id, slots in best.items():
         source = meta[dungeon_id]
         # The same ring can top both finger slots; count each item once.
-        unique: dict[int, Candidate] = {}
-        for candidate in slots.values():
-            kept = unique.get(candidate.item.item_id)
-            if kept is None or candidate.score_gain > kept.score_gain:
-                unique[candidate.item.item_id] = candidate
-        ranked = sorted(unique.values(), key=lambda c: -c.score_gain)
+        unique: dict[int, DungeonUpgrade] = {}
+        for upgrade in slots.values():
+            kept = unique.get(upgrade.item.item_id)
+            if kept is None or upgrade.score_gain > kept.score_gain:
+                unique[upgrade.item.item_id] = upgrade
+        ranked = sorted(unique.values(), key=lambda u: (-u.score_gain, u.item.name))
         values.append(
             DungeonValue(
                 dungeon_id=dungeon_id,
                 dungeon=source.dungeon,
                 min_level=source.min_level,
                 max_level=source.max_level,
-                total_gain=round(sum(c.score_gain for c in ranked), 2),
-                upgrades=[f"{c.item.name} (+{c.score_gain:g})" for c in ranked],
+                total_gain=round(sum(u.score_gain for u in ranked), 2),
+                upgrades=ranked,
             )
         )
     values.sort(key=lambda v: -v.total_gain)

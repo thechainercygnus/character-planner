@@ -1,4 +1,5 @@
-import type { CharacterView, Profession, Stats } from '../api'
+import { slotLabel, type CharacterView, type EquippedItem, type Profession, type Stats } from '../api'
+import { ItemName } from './GearTable'
 
 export function CharacterHeader({ character }: { character: CharacterView }) {
   const fullName = [character.name, character.surname].filter(Boolean).join(' ')
@@ -12,7 +13,13 @@ export function CharacterHeader({ character }: { character: CharacterView }) {
       <p>
         Level {character.level ?? '?'} {who}
         {character.guild && <> · &lt;{character.guild}&gt;</>}
-        {character.equipped_item_level !== null && <> · item level {character.equipped_item_level}</>}
+        {character.equipped_item_level !== null && (
+          <span title={`Average of the ${character.gear_slots_filled} gear slots filled (of 17)`}>
+            {' '}
+            · item level {character.equipped_item_level.toFixed(1)}{' '}
+            <span className="muted">({character.gear_slots_filled}/17 slots)</span>
+          </span>
+        )}
       </p>
     </header>
   )
@@ -98,6 +105,29 @@ export function TalentsPanel({ character }: { character: CharacterView }) {
           </li>
         ))}
       </ul>
+    </section>
+  )
+}
+
+const HIDDEN_SLOTS = new Set(['SHIRT', 'TABARD', 'AMMO'])
+
+export function EquipmentPanel({ equipment }: { equipment: EquippedItem[] }) {
+  const gear = equipment.filter((item) => !HIDDEN_SLOTS.has(item.slot))
+  return (
+    <section>
+      <h2>Equipped</h2>
+      <table className="gear">
+        <tbody>
+          {gear.map((item) => (
+            <tr key={item.slot}>
+              <td>{slotLabel(item.slot)}</td>
+              <td>
+                <ItemName item={item} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </section>
   )
 }

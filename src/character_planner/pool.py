@@ -67,11 +67,12 @@ class PoolItem(BaseModel):
     @property
     def effective_level(self) -> int | None:
         """The level this item can be had at: its required level, else (many quest rewards
-        have none) the easiest source's quest pickup level or dungeon minimum."""
+        have none) the easiest source's level. A dungeon quest needs both its pickup level
+        and the dungeon, so it counts the higher of the two."""
         if self.required_level is not None:
             return self.required_level
         levels = [
-            s.quest_min_level if s.quest_min_level is not None else s.min_level
+            max((lvl for lvl in (s.quest_min_level, s.min_level) if lvl is not None), default=None)
             for s in self.sources
         ]
         return min((lvl for lvl in levels if lvl is not None), default=None)

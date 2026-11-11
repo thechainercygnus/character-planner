@@ -1,7 +1,7 @@
 # Default stat weights for scoring gear: Protection Warrior, leveling and 5-player dungeons.
 # An item's score is the sum of (stat value x weight). A target's score gain is its score
 # minus the equipped item's. Weights are starting heuristics, not sims: tune them in the
-# app (Recommended upgrades > Stat weights); edits are saved in the database and these values
+# app (Upgrades tab > Stat weights); edits are saved in the database and these values
 # come back with "Reset". Stat names match tooltip text ("+5 Stamina" -> Stamina).
 #
 # Reasoning, per point, with Stamina as the yardstick:

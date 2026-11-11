@@ -22,13 +22,22 @@ especially for slots left empty (neck, shoulders, a second ring, trinkets).
   lists the biggest score gains over what's equipped, `per_slot` per slot.
   - Rings and trinkets fill the weaker of their two slots first. The stronger slot
     doesn't repeat the weaker slot's top pick.
-  - Items a few levels out are listed but flagged as not wearable yet.
+  - Items a few levels out are listed but flagged as not wearable yet. An item without a
+    required level uses its source's level instead. For a dungeon quest, that's the
+    higher of the quest's pickup level and the dungeon's minimum, since the quest is
+    done inside the dungeon.
+  - Gains at or below `min_gain` (1.0) count as sidegrades and aren't listed.
 - Dungeons are ranked by the sum of the best upgrade they hold for each slot. Only
   items wearable now count, and an item counts once.
 - `gear_targets.yaml` stays as the hand-picked plan. Items it names are flagged
   "your target" in the recommendations.
-- `GET /api/recommendations` serves this. The frontend shows it above the gear targets,
-  with the stat weights editor and a "Refresh item pool" button.
+- `GET /api/recommendations` serves this. The frontend splits the page into four tabs:
+  - **Upgrades:** compact rows that expand for details.
+  - **Dungeons:** one card per dungeon.
+  - **Plan:** `gear_targets.yaml`.
+  - **Character:** equipped gear, stats, talents and professions.
+
+  The selected tab is kept in the URL hash.
 
 ## Consequences
 

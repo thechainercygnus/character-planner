@@ -28,7 +28,7 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Build the item pool (dungeon drops + quest rewards) | `uv run character-planner-pool` or `POST /api/pool/refresh` |
 | Item pool for your level window (JSON) | `/api/pool` |
 | Best upgrades per slot + dungeons worth running | `/api/recommendations` (rules in `data/curated/recommend.yaml`) |
-| Stat weights for scoring | `GET`/`PUT`/`DELETE /api/weights` (or the **Stat weights** button on Recommended upgrades) |
+| Stat weights for scoring | `GET`/`PUT`/`DELETE /api/weights` (or the **Stat weights** button on the Upgrades and Plan tabs) |
 | API docs | http://localhost:8000/docs |
 
 ## Develop

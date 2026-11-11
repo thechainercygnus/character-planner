@@ -11,6 +11,7 @@ from character_planner.curated import GearTargets
 from character_planner.db import CatalogItem, Snapshot
 from character_planner.scoring import Weights
 from character_planner.views import (
+    GEAR_SLOTS,
     EquippedItem,
     GearRow,
     character_level,
@@ -83,7 +84,10 @@ def build_summary(
     if view.guild:
         lines.append(f"- Guild: {view.guild}")
     if view.equipped_item_level is not None:
-        lines.append(f"- Equipped item level: {view.equipped_item_level}")
+        lines.append(
+            f"- Equipped item level: {view.equipped_item_level} "
+            f"({view.gear_slots_filled}/{len(GEAR_SLOTS)} slots filled)"
+        )
     if view.captured_at:
         lines.append(f"- Data as of: {view.captured_at:%Y-%m-%d %H:%M} UTC")
     lines.append(f"- Snapshots: {', '.join(sorted(latest))}")

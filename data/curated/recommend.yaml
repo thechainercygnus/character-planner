@@ -23,5 +23,8 @@ levels_ahead: 3
 # Upgrades listed per equipment slot.
 per_slot: 3
 
+# Score gains at or below this are sidegrades and aren't listed.
+min_gain: 1.0
+
 # Pool items never to recommend (e.g. a quest you won't do). Find ids in /api/pool.
 exclude_item_ids: []

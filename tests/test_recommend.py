@@ -86,6 +86,10 @@ def test_items_without_a_required_level_use_their_quest_or_dungeon_level() -> No
     buckler = item(20, "Off Hand", weapon_type="Shield", required_level=None, sources=[bfd_quest])
     assert buckler.effective_level == 27
     assert unusable_reason(buckler, RULES, 18) == "requires level 27"
+    # Pickable at 18, but the quest is done inside a 24+ dungeon: the dungeon decides.
+    early_pickup = bfd_quest.model_copy(update={"quest_min_level": 18})
+    buckler = buckler.model_copy(update={"sources": [early_pickup]})
+    assert buckler.effective_level == 24
 
     drop = PoolSource(kind="drop", dungeon_id="sfk", dungeon="SFK", min_level=20, max_level=30)
     cape = item(21, "Back", required_level=None, sources=[drop], stats={"Stamina": 4})
@@ -124,6 +128,16 @@ def test_ranks_upgrades_per_slot_by_score_gain() -> None:
     assert (kindlegem.armor_delta, kindlegem.stat_deltas) == (27, {"Stamina": 7})
     assert kindlegem.item_level_delta == 4
     assert result.considered == 4
+
+
+def test_gains_within_the_sidegrade_band_are_not_listed() -> None:
+    pool = view(item(1, "Trinket", stats={"Spirit": 1}), item(2, "Trinket", stats={"Stamina": 1}))
+    weights = Weights(weights=WEIGHTS.weights | {"Spirit": 0.05})
+    rows = {r.slot: r for r in recommend(pool, {}, weights, RULES).rows}
+    assert rows["TRINKET_1"].candidates == []  # +0.05 and +1.0 are both sidegrades
+    loose = RULES.model_copy(update={"min_gain": 0.0})
+    rows = {r.slot: r for r in recommend(pool, {}, weights, loose).rows}
+    assert [c.item.item_id for c in rows["TRINKET_1"].candidates] == [2, 1]
 
 
 def test_empty_slot_takes_any_scored_item_and_counts_unscored() -> None:
@@ -176,8 +190,12 @@ def test_ranks_dungeons_by_usable_upgrades() -> None:
         ("Hall of Thanes", 10.0),
         ("The Deadmines", 9.0),  # the level-20 cape doesn't count yet; the ring counts once
     ]
-    assert dungeons[0].upgrades == ["Item 1 (+7)", "Item 2 (+3)"]
-    assert dungeons[1].upgrades == ["Item 3 (+5)", "Item 5 (+4)"]
+    assert [(u.item.name, u.slot, u.score_gain) for u in dungeons[0].upgrades] == [
+        ("Item 1", "WAIST", 7.0),
+        ("Item 2", "BACK", 3.0),
+    ]
+    assert [u.item.item_id for u in dungeons[1].upgrades] == [3, 5]
+    assert dungeons[1].upgrades[0].source.dungeon == "The Deadmines"
 
 
 def test_rules_file_loads() -> None:

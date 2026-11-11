@@ -89,7 +89,10 @@ class CharacterView(BaseModel):
     race: str | None = None
     character_class: str | None = None
     guild: str | None = None
-    equipped_item_level: int | None = None
+    # Average item level of the gear worn (not shirt, tabard or ammo), computed here: the
+    # API's equipped_item_level counts empty slots too.
+    equipped_item_level: float | None = None
+    gear_slots_filled: int = 0
     captured_at: datetime | None = None
     stats: Stats | None = None
     professions: list[Profession] = []
@@ -155,6 +158,36 @@ class GearPlan(BaseModel):
 
 def character_level(profile: Any) -> int | None:
     return _int(_get(profile, "level"))
+
+
+# The 17 slots that hold gear with stats (not SHIRT, TABARD or AMMO).
+GEAR_SLOTS = frozenset(
+    {
+        "HEAD",
+        "NECK",
+        "SHOULDER",
+        "BACK",
+        "CHEST",
+        "WRIST",
+        "HANDS",
+        "WAIST",
+        "LEGS",
+        "FEET",
+        "FINGER_1",
+        "FINGER_2",
+        "TRINKET_1",
+        "TRINKET_2",
+        "MAIN_HAND",
+        "OFF_HAND",
+        "RANGED",
+    }
+)
+
+
+def average_item_level(equipment: list[EquippedItem]) -> float | None:
+    """Mean item level of the gear worn, one decimal; None with nothing worn."""
+    levels = [i.item_level for i in equipment if i.slot in GEAR_SLOTS and i.item_level is not None]
+    return round(sum(levels) / len(levels), 1) if levels else None
 
 
 def character_faction(profile: Any) -> str | None:
@@ -271,6 +304,7 @@ def character_view(
 ) -> CharacterView:
     icons = icons or {}
     profile = _payload(latest, "profile")
+    equipment = parse_equipment(_payload(latest, "equipment"))
     return CharacterView(
         name=_name(_get(profile, "name")),
         surname=_name(_get(profile, "surname")),
@@ -278,14 +312,14 @@ def character_view(
         race=_name(_get(profile, "race", "name")),
         character_class=_name(_get(profile, "character_class", "name")),
         guild=_name(_get(profile, "guild", "name")),
-        equipped_item_level=_int(_get(profile, "equipped_item_level")),
+        equipped_item_level=average_item_level(equipment),
+        gear_slots_filled=sum(1 for item in equipment if item.slot in GEAR_SLOTS),
         captured_at=max((s.captured_at for s in latest.values()), default=None),
         stats=parse_stats(_payload(latest, "statistics")),
         professions=parse_professions(_payload(latest, "professions")),
         specialization=parse_specialization(_payload(latest, "specializations")),
         equipment=[
-            item.model_copy(update={"icon_url": icons.get(item.item_id or 0)})
-            for item in parse_equipment(_payload(latest, "equipment"))
+            item.model_copy(update={"icon_url": icons.get(item.item_id or 0)}) for item in equipment
         ],
     )
 
