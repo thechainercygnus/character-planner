@@ -7,6 +7,9 @@ on:
 
 permissions:
   contents: read
+  # gitleaks-action lists a pull request's commits to scan them; without this the
+  # secret-scan job fails on every PR with "Resource not accessible by integration".
+  pull-requests: read
 
 jobs:
   check:
