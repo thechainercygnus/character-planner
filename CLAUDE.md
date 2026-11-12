@@ -76,7 +76,7 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 
 - `src/character_planner/blizzard/`: OAuth and the API client (raw JSON in, status always reported)
 - `src/character_planner/db.py`: SQLModel tables (`Snapshot`, `StoredToken`)
-- `src/character_planner/curated.py` + `data/curated/*.yaml`: hand-maintained targets and default stat weights
+- `src/character_planner/curated.py` + `data/curated/*.yaml`: hand-maintained defaults (targets, stat weights, rules); edits made in the app live in the database
 - `src/character_planner/scoring.py`: gear scores from editable stat weights (ADR 0005) in named presets (ADR 0013); shipped presets in `data/curated/stat_weights.yaml` and `weight_presets.yaml`
 - `src/character_planner/items.py`: item catalog (Battle.net item search + icons), cached in SQLite (ADR 0003)
 - `src/character_planner/companion.py`: Forever Companion source, GET /items/{id} only (ADR 0004); spec in `docs/vendor/`
@@ -86,7 +86,8 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/talents.py`: hand-entered talent plan compared with synced talents (ADR 0009); default in `data/curated/talent_plan.yaml`
 - `src/character_planner/enchants.py`: enchant catalog from Blizzard recipe data and per-slot enchant advice (ADR 0010); gaps filled in `data/curated/enchants.yaml`
 - `src/character_planner/recommend.py`: best upgrades per slot and dungeons worth running, from the pool (ADR 0007); rules in `data/curated/recommend.yaml`
-- `src/character_planner/choices.py`: items pinned as targets or dismissed in the app, on top of the YAML defaults (ADR 0012)
+- `src/character_planner/choices.py`: items dismissed in the app, on top of `exclude_item_ids` (ADR 0012)
+- `src/character_planner/targets.py`: gear targets edited in the app and pins from the Upgrades tab; `gear_targets.yaml` is the default (ADR 0014)
 - `src/character_planner/fields.py`: defensive JSON readers used by all parsers
 - `src/character_planner/views.py`: the only code that reads API response shapes; typed views for the frontend
 - `src/character_planner/summary.py`: Markdown rendering of those views, for pasting into a chat
