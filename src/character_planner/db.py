@@ -8,7 +8,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import JSON, Column
+from sqlalchemy import JSON, Column, event
 from sqlalchemy.engine import Engine
 from sqlmodel import Field, Session, SQLModel, col, create_engine, desc, select
 
@@ -108,10 +108,27 @@ def icons_by_id(session: Session) -> dict[int, str]:
     return {row.item_id: row.url for row in session.exec(select(ItemIcon)).all() if row.url}
 
 
+# How long a SQLite connection waits for another process's write lock (the app and the
+# worker share one file, ADR 0011) before raising "database is locked".
+SQLITE_BUSY_TIMEOUT_MS = 10_000
+
+
 def make_engine(database_url: str) -> Engine:
-    if database_url.startswith("sqlite:///"):
-        Path(database_url.removeprefix("sqlite:///")).parent.mkdir(parents=True, exist_ok=True)
-    return create_engine(database_url, connect_args={"check_same_thread": False})
+    if not database_url.startswith("sqlite:///"):
+        return create_engine(database_url)
+    Path(database_url.removeprefix("sqlite:///")).parent.mkdir(parents=True, exist_ok=True)
+    engine = create_engine(database_url, connect_args={"check_same_thread": False})
+
+    @event.listens_for(engine, "connect")
+    def _sqlite_pragmas(connection: Any, _record: Any) -> None:
+        # WAL lets the API read while the worker writes; NORMAL sync is safe with WAL.
+        cursor = connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute(f"PRAGMA busy_timeout={SQLITE_BUSY_TIMEOUT_MS}")
+        cursor.execute("PRAGMA synchronous=NORMAL")
+        cursor.close()
+
+    return engine
 
 
 def init_db(engine: Engine) -> None:

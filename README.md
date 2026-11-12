@@ -34,6 +34,12 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Talent plan vs synced talents (next point, off-plan points) | `/api/talents`, plan in `data/curated/talent_plan.yaml` or edit it in the app |
 | Stat weights for scoring | `GET`/`PUT`/`DELETE /api/weights` (or the **Stat weights** button on the Upgrades and Plan tabs) |
 | API docs | http://localhost:8000/docs |
+| Run scheduled syncs and pool refreshes | `uv run character-planner-worker` (`--once` to run them now) |
+
+## Deploy
+
+Docker compose runs the app and the scheduled worker, optionally served over Tailscale.
+See [docs/deploy.md](docs/deploy.md) and [ADR 0011](docs/adr/0011-docker-compose-with-a-worker.md).
 
 ## Develop
 
@@ -43,4 +49,4 @@ uv run pyright
 uv run pytest
 ```
 
-CI runs the same checks plus a gitleaks secret scan.
+CI runs the same checks plus a gitleaks secret scan and a Docker build with a smoke test.

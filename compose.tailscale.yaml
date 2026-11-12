@@ -1,0 +1,29 @@
+# Serve the app over HTTPS on your tailnet, as https://<TS_HOSTNAME>.<tailnet>.ts.net
+# Tailscale provides the certificate; nothing is published on the host's ports.
+#
+#   docker compose -f compose.yaml -f compose.tailscale.yaml up -d --build
+#
+# Needs TS_AUTHKEY in .env for the first start (see docs/deploy.md).
+
+services:
+  tailscale:
+    image: tailscale/tailscale:stable
+    hostname: ${TS_HOSTNAME:-character-planner}
+    environment:
+      TS_AUTHKEY: ${TS_AUTHKEY:-}
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_SERVE_CONFIG: /config/serve.json
+    volumes:
+      - tailscale-state:/var/lib/tailscale
+      - ./deploy/tailscale:/config:ro
+    restart: unless-stopped
+
+  app:
+    # Share the sidecar's network: Tailscale serve proxies to 127.0.0.1:8000.
+    network_mode: service:tailscale
+    ports: !reset []
+    depends_on:
+      - tailscale
+
+volumes:
+  tailscale-state:

@@ -27,6 +27,8 @@ Probe static item endpoints: `uv run character-planner-probe-items` (app-only to
 Look up Forever Companion items by id: `uv run character-planner-probe-companion --ids 270200-270260`.
 Build the item pool with progress: `uv run character-planner-pool` (first run takes a few minutes).
 Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `npm run dev`.
+Run scheduled jobs once: `uv run character-planner-worker --once` (sync, then pool refresh).
+Deploy (Docker): `docker compose up -d --build`; over Tailscale add `-f compose.tailscale.yaml`. See `docs/deploy.md`.
 
 ## Rules
 
@@ -48,7 +50,7 @@ Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `n
   without an issue). Branch from an up-to-date `main`. Never commit or push to `main`.
 - Open a pull request for every branch. Use `Closes #<issue>` when it completes the issue
   and `Refs #<issue>` when it's part of one.
-- CI must pass before merging: the `check`, `frontend` and `secret-scan` jobs. A red
+- CI must pass before merging: the `check`, `frontend`, `docker` and `secret-scan` jobs. A red
   job is a blocker, even if it looks unrelated; fix it or say why in the PR.
 - Remote Control sessions run in their own git worktree. Stay inside it: don't edit
   files in another checkout of this repo.
@@ -72,4 +74,6 @@ Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `n
 - `src/character_planner/fields.py`: defensive JSON readers used by all parsers
 - `src/character_planner/views.py`: the only code that reads API response shapes; typed views for the frontend
 - `src/character_planner/summary.py`: Markdown rendering of those views, for pasting into a chat
+- `src/character_planner/jobs.py`: sync and pool refresh, shared by the API and the worker
+- `src/character_planner/worker.py`: scheduled jobs beside the API (ADR 0011); `Dockerfile`, `compose*.yaml` and `docs/deploy.md` deploy both
 - `src/character_planner/app.py`: FastAPI routes, built by `create_app()`. Data routes live under `/api`, login under `/auth`; a built frontend in `frontend/dist` is served at `/`

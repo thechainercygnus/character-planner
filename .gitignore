@@ -19,4 +19,5 @@ wheels/
 
 # Local data: the SQLite database and raw API dumps hold personal character data
 data/*.db
+data/*.db-*
 samples/

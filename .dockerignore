@@ -1,0 +1,16 @@
+# Keep secrets, personal data and local build output out of the image build context.
+.git
+.env
+.env.*
+samples/
+data/*.db
+data/*.db-*
+.venv/
+**/node_modules/
+frontend/dist/
+**/__pycache__/
+.pytest_cache/
+.ruff_cache/
+.claude/
+tests/
+docs/
