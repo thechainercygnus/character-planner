@@ -11,6 +11,7 @@ function target(slot: string, item: string, overrides: Partial<GearTarget> = {})
     item,
     source: 'Somewhere',
     priority: null,
+    pinned: false,
     item_id: null,
     item_level: null,
     armor_type: null,
@@ -66,14 +67,15 @@ describe('TargetsEditor', () => {
     fireEvent.click(screen.getByText('Add target'))
     fireEvent.change(screen.getByLabelText('Bracket 1 target 2 slot'), { target: { value: 'NECK' } })
     fireEvent.change(screen.getByLabelText('Bracket 1 target 2 item'), { target: { value: 'Locket' } })
+    fireEvent.click(screen.getAllByLabelText('Pinned')[1])
     fireEvent.click(screen.getByText('Save'))
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/targets', expect.objectContaining({ method: 'PUT' })))
     const saved = savedBody(fetchMock)
     expect(saved.brackets[0].min_level).toBe(15)
-    expect(saved.brackets[0].targets.map((t) => [t.slot, t.item, t.item_id, t.armor])).toEqual([
-      ['BACK', 'Old Cape', 7, 20],
-      ['NECK', 'Locket', null, null],
+    expect(saved.brackets[0].targets.map((t) => [t.slot, t.item, t.item_id, t.armor, t.pinned])).toEqual([
+      ['BACK', 'Old Cape', 7, 20, false],
+      ['NECK', 'Locket', null, null, true],
     ])
   })
 

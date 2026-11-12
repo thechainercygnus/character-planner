@@ -38,9 +38,15 @@ export function ChoiceButtons({ candidate, slot }: { candidate: Candidate; slot:
         <button type="button" className="link" disabled={pending} onClick={() => unpin.mutate(itemId)}>
           Unpin
         </button>
-      ) : candidate.is_target ? null : ( // a target for a later bracket
-        <button type="button" className="link" disabled={pending} onClick={() => pin.mutate({ itemId, slot })}>
-          Make target
+      ) : (
+        <button
+          type="button"
+          className="link"
+          disabled={pending}
+          title="Always list it here until you wear it"
+          onClick={() => pin.mutate({ itemId, slot })}
+        >
+          {candidate.is_target ? 'Pin' : 'Make target'}
         </button>
       )}
       <button

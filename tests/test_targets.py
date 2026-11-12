@@ -9,7 +9,6 @@ from character_planner.targets import (
     current_targets,
     is_customised,
     pin_target,
-    pinned_ids,
     reset_targets,
     save_targets,
     source_text,
@@ -62,14 +61,19 @@ def test_pins_go_into_the_bracket_for_the_level() -> None:
     pinned = pin_target(DEFAULT, pool_item(5, DROP, QUEST), "FINGER_2", level=18)
     added = pinned.brackets[0].targets[-1]
     assert (added.slot, added.item, added.item_id, added.priority) == ("FINGER_2", "Item 5", 5, 2)
+    assert added.pinned
     assert (
         added.source
         == "The Deadmines - Edwin VanCleef; Quest: The Defias Brotherhood (The Deadmines)"
     )
     assert DEFAULT.brackets[0].targets[-1].item_id == 1  # the input isn't changed
     assert pin_target(pinned, pool_item(5), "FINGER_2", level=18) == pinned  # once
-    assert pinned_ids(pinned, 18) == {1, 5}
-    assert pinned_ids(pinned, 22) == {2}
+    assert pinned.pinned_ids() == {5}  # YAML targets aren't pinned
+
+
+def test_pinning_a_target_already_in_the_bracket_marks_it() -> None:
+    pinned = pin_target(DEFAULT, pool_item(1), "WAIST", level=18)
+    assert [(t.item_id, t.pinned) for t in pinned.brackets[0].targets] == [(1, True)]
 
 
 def test_a_pin_below_every_bracket_starts_one_at_the_level() -> None:
@@ -78,12 +82,14 @@ def test_a_pin_below_every_bracket_starts_one_at_the_level() -> None:
     assert [t.item_id for t in pinned.brackets[0].targets] == [5]
 
 
-def test_unpin_removes_from_the_current_bracket_only() -> None:
-    assert unpin_target(DEFAULT, 2, level=18) is None  # a level-20 target
-    unpinned = unpin_target(DEFAULT, 1, level=18)
+def test_unpin_takes_the_pin_off_and_keeps_the_target() -> None:
+    assert unpin_target(DEFAULT, 1) is None  # not pinned
+    pinned = pin_target(DEFAULT, pool_item(1), "WAIST", level=18)  # a YAML target
+    assert unpin_target(pinned, 1) == DEFAULT
+    added = pin_target(DEFAULT, pool_item(5), "BACK", level=22)  # into the level-20 bracket
+    unpinned = unpin_target(added, 5)
     assert unpinned is not None
-    assert unpinned.brackets[0].targets == []
-    assert unpinned.brackets[1] == DEFAULT.brackets[1]
+    assert [(t.item_id, t.pinned) for t in unpinned.brackets[1].targets] == [(2, False), (5, False)]
 
 
 def test_old_target_choices_are_taken_once(engine: Engine) -> None:

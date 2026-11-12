@@ -448,7 +448,7 @@ def create_app(
 
     @app.post("/api/targets/pins")
     def post_pin(pin: Pin, session: SessionDep, gear: TargetsDep) -> GearTargets:
-        """Add a pool item to the targets for the character's level ("Make target")."""
+        """Pin a pool item as a target for the character's level ("Make target")."""
         level, faction = character_context(session)
         item = next(
             (i for i in pool_view(session, None, faction).items if i.item_id == pin.item_id), None
@@ -465,10 +465,10 @@ def create_app(
     def delete_pin(
         item_id: Annotated[int, FastAPIPath(gt=0)], session: SessionDep, gear: TargetsDep
     ) -> GearTargets:
-        """Remove an item from the targets for the character's level ("Unpin")."""
-        unpinned = unpin_target(gear, item_id, character_context(session)[0])
+        """Take the pin off a target ("Unpin"); it stays a target."""
+        unpinned = unpin_target(gear, item_id)
         if unpinned is None:
-            raise HTTPException(404, f"Item {item_id} isn't a target for this level")
+            raise HTTPException(404, f"Item {item_id} isn't a pinned target")
         save_targets(session, unpinned)
         return targets_changed(session)
 

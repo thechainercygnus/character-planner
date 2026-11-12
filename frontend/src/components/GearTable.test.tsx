@@ -26,6 +26,7 @@ function target(slot: string, item: string): GearTarget {
     item,
     source: 'Hall of Thanes',
     priority: null,
+    pinned: false,
     item_id: null,
     item_level: null,
     armor_type: null,

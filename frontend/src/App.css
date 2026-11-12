@@ -816,9 +816,16 @@ button.link {
   margin-bottom: 0.4rem;
 }
 
-.target-rows input {
+.target-rows input:not([type='checkbox']) {
   flex: 1 1 12rem;
   min-width: 0;
+}
+
+.pin-toggle {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .targets-dialog input,

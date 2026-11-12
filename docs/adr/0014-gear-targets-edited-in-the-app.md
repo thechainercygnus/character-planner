@@ -18,23 +18,29 @@ two lists of targets with different behaviour.
   `GET /api/targets` keeps its shape. Saving sorts brackets by level and sets each target's
   priority from its position. Slots must be equipment slots, levels 1–80, one bracket per
   level, and item names can't be blank.
-- **Pins:** "Make target" (`POST /api/targets/pins {item_id, slot}`) adds a pool item to the
-  bracket for the character's level, with the pool's name and source. If no bracket starts
-  at or below the level, one is added at it. "Unpin" (`DELETE /api/targets/pins/{item_id}`)
-  removes it from that bracket.
-- **Pinned now means "a target in the current bracket".** Those items are always listed on
-  the Upgrades tab until worn, whether they came from the YAML or the app. Targets in other
-  brackets are only tagged. `ItemChoice` keeps dismissals only. Pins stored under ADR 0012
-  move into the current bracket at startup when the pool knows their slot, and are dropped
-  with a warning otherwise.
-- **Plan tab:** an "Edit targets" dialog adds, removes and reorders targets and brackets.
-  Item names autocomplete from the pool, which fills in the item id and source.
-  `GearPlan.targets_customised` drives the "customised" mark.
+- **Pins are targets with `pinned: true`.** "Make target" (`POST /api/targets/pins
+  {item_id, slot}`) adds a pool item to the bracket for the character's level, pinned,
+  with the pool's name and source. If no bracket starts at or below the level, one is
+  added at it. An item that's already a target there ("Pin" on Upgrades) just gets the
+  mark.
+- **Unpin only takes the mark off.** "Unpin" (`DELETE /api/targets/pins/{item_id}`)
+  unpins the item in whichever bracket it's in. It stays a target; the editor removes
+  targets.
+- **Only pinned targets are always listed** on the Upgrades tab, in any bracket, until
+  worn. Other targets, including all of the YAML's, are only tagged. Upgrades stays a tool
+  for finding gear you didn't know about, plus the few items you chose to keep in view.
+  The Plan tab is where the whole plan, and stale targets, show.
+- **Choices:** `ItemChoice` keeps dismissals only. Pins stored under ADR 0012 move into the
+  current bracket at startup when the pool knows their slot, and are dropped with a
+  warning otherwise.
+- **Plan tab:** an "Edit targets" dialog adds, removes and reorders targets and brackets,
+  and has a "Pinned" checkbox per target. Item names autocomplete from the pool, which
+  fills in the item id and source. `GearPlan.targets_customised` drives the "customised"
+  mark.
 
 ## Consequences
 
-- The current bracket's YAML targets now always show on Upgrades, even when they score
-  below what's worn. That's deliberate: it shows when a plan has gone stale.
+- Moving up a bracket doesn't change what Upgrades always lists; only pins do.
 - Hand-entered item facts (stats, armor) are kept through edits, but the editor doesn't
   show them; they stay a YAML feature.
 - #14 makes the stored targets per character.

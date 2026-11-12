@@ -77,9 +77,10 @@ describe('Recommendations', () => {
     renderRecommendations()
     fireEvent.click(screen.getByRole('button', { name: 'Show details for Waist' }))
 
-    // The girdle is already a target from gear_targets.yaml: only Later Belt can be pinned.
+    // The girdle is already a target from gear_targets.yaml: it offers Pin, not Make target.
     const [laterBeltTarget, ...others] = screen.getAllByRole('button', { name: 'Make target' })
     expect(others).toEqual([])
+    expect(screen.getAllByRole('button', { name: 'Pin' })).toHaveLength(1)
     fireEvent.click(laterBeltTarget)
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith('/api/targets/pins', expect.objectContaining({ method: 'POST' })),

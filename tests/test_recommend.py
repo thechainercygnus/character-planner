@@ -221,21 +221,15 @@ def test_dismissed_items_are_never_suggested() -> None:
     assert next(r for r in recs.rows if r.slot == "BACK").candidates == []
 
 
-def targets_for(slot: str, *ids: int, min_level: int = 15) -> GearTargets:
-    """A bracket of targets for one slot: pinned when it's the character's bracket."""
-    return GearTargets(
-        brackets=[
-            Bracket(
-                min_level=min_level,
-                targets=[
-                    GearTarget(slot=slot, item=f"Item {i}", source="x", item_id=i) for i in ids
-                ],
-            )
-        ]
-    )
+def targets_for(slot: str, *ids: int, pinned: bool = True) -> GearTargets:
+    """A bracket of targets for one slot, pinned unless said otherwise."""
+    targets = [
+        GearTarget(slot=slot, item=f"Item {i}", source="x", item_id=i, pinned=pinned) for i in ids
+    ]
+    return GearTargets(brackets=[Bracket(min_level=15, targets=targets)])
 
 
-def test_current_bracket_targets_are_pinned_and_always_listed() -> None:
+def test_pinned_targets_are_always_listed() -> None:
     equipped = {"BACK": worn("BACK", stats=[ItemStat(name="Stamina", value=4)])}
     pool = view(
         item(1, "Back", stats={"Stamina": 9}),
@@ -257,11 +251,15 @@ def test_current_bracket_targets_are_pinned_and_always_listed() -> None:
     ]
 
 
-def test_targets_for_a_later_bracket_are_flagged_but_not_pinned() -> None:
+def test_targets_that_are_not_pinned_are_only_tagged() -> None:
     pool = view(*(item(i, "Back", stats={"Stamina": 10 - i}) for i in range(1, 6)))
-    targets = targets_for("BACK", 5, min_level=20)  # level 18: not this bracket yet
+    targets = targets_for("BACK", 2, 5, pinned=False)  # from the YAML
     back = next(r for r in recommend(pool, {}, WEIGHTS, RULES, targets).rows if r.slot == "BACK")
-    assert [c.item.item_id for c in back.candidates] == [1, 2, 3]
+    assert [(c.item.item_id, c.is_target, c.pinned) for c in back.candidates] == [
+        (1, False, False),
+        (2, True, False),
+        (3, False, False),
+    ]
 
 
 def test_pinned_items_already_worn_or_dismissed_are_not_listed() -> None:

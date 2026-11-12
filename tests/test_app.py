@@ -437,6 +437,7 @@ def test_pinning_adds_pool_items_to_the_current_bracket(client: TestClient) -> N
         5193,
     )
     assert "Deadmines" in cape["source"]
+    assert cape["pinned"] is True
     # Pinning again changes nothing.
     again = client.post("/api/targets/pins", json={"item_id": 5193, "slot": "BACK"}).json()
     assert again == pinned
@@ -447,7 +448,8 @@ def test_pinning_adds_pool_items_to_the_current_bracket(client: TestClient) -> N
     assert bad_slot.status_code == 422
 
     unpinned = client.delete("/api/targets/pins/5193").json()
-    assert 5193 not in [t.get("item_id") for t in unpinned["brackets"][0]["targets"]]
+    cape = next(t for t in unpinned["brackets"][0]["targets"] if t["item_id"] == 5193)
+    assert cape["pinned"] is False  # still a target; remove it in the editor
     assert client.delete("/api/targets/pins/5193").status_code == 404
 
 

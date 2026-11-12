@@ -93,6 +93,8 @@ export interface GearTarget {
   item: string
   source: string
   priority: number | null
+  /** Pinned with Make target: always listed on the Upgrades tab until worn (ADR 0014). */
+  pinned: boolean
   item_id: number | null
   item_level: number | null
   armor_type: string | null
@@ -257,7 +259,7 @@ export interface Candidate {
   usable_now: boolean
   /** A gear target in any bracket. */
   is_target: boolean
-  /** A target for the current bracket: listed even when it isn't a top pick. */
+  /** A pinned target: listed even when it isn't a top pick. */
   pinned: boolean
 }
 

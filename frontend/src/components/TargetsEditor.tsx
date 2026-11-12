@@ -31,6 +31,7 @@ function blankTarget(): GearTarget {
     item: '',
     source: '',
     priority: null,
+    pinned: false,
     item_id: null,
     item_level: null,
     armor_type: null,
@@ -128,7 +129,8 @@ export function TargetsEditor({ customised }: { customised: boolean }) {
           </header>
           <p className="muted">
             Each bracket applies from its level until the next one. Order sets priority. Names from the item pool fill
-            in the item id and source; <strong>Make target</strong> on the Upgrades tab adds to your current bracket.
+            in the item id and source. Pinned targets are always listed on the Upgrades tab until worn;{' '}
+            <strong>Make target</strong> there adds a pinned one to your current bracket.
           </p>
           {targets.isPending && <p className="muted">Loading targets…</p>}
           {targets.isError && <p className="error">Couldn't load targets: {targets.error.message}</p>}
@@ -189,6 +191,14 @@ export function TargetsEditor({ customised }: { customised: boolean }) {
                       value={target.source}
                       onChange={(event) => setTarget(b, t, { source: event.target.value })}
                     />
+                    <label className="pin-toggle" title="Always list it on the Upgrades tab until worn">
+                      <input
+                        type="checkbox"
+                        checked={target.pinned}
+                        onChange={(event) => setTarget(b, t, { pinned: event.target.checked })}
+                      />{' '}
+                      Pinned
+                    </label>
                     <button
                       type="button"
                       className="secondary"

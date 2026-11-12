@@ -2,7 +2,8 @@
 
 data/curated/gear_targets.yaml is the default. Edits made on the Plan tab, and items
 pinned on the Upgrades tab, are saved as a whole edited copy in the database, which wins
-until it's reset. Pins go into the bracket for the character's level, so there's one list.
+until it's reset. Pins are targets marked pinned, added to the bracket for the
+character's level, so there's one list; only pinned targets are always listed on Upgrades.
 """
 
 from typing import Annotated
@@ -28,6 +29,7 @@ class EditedTarget(BaseModel):
     source: Annotated[str, Field(max_length=200)] = ""
     item_id: Annotated[int, Field(gt=0)] | None = None
     priority: int | None = None
+    pinned: bool = False
     item_level: int | None = None
     armor_type: str | None = None
     armor: int | None = None
@@ -103,12 +105,15 @@ def _bracket_for(targets: GearTargets, level: int | None) -> int:
 
 
 def pin_target(targets: GearTargets, item: PoolItem, slot: str, level: int | None) -> GearTargets:
-    """Add a pool item to the current bracket. Already there: unchanged."""
+    """Pin a pool item: mark it pinned where it's already a target in the current
+    bracket, or add it there as a pinned target."""
     if slot not in EQUIPMENT_SLOTS:
         raise TargetsError(f"Unknown slot {slot}")
     targets = targets.model_copy(deep=True)
     bracket = targets.brackets[_bracket_for(targets, level)]
-    if any(t.item_id == item.item_id for t in bracket.targets):
+    existing = next((t for t in bracket.targets if t.item_id == item.item_id), None)
+    if existing is not None:
+        existing.pinned = True
         return targets
     bracket.targets.append(
         GearTarget(
@@ -117,26 +122,20 @@ def pin_target(targets: GearTargets, item: PoolItem, slot: str, level: int | Non
             item_id=item.item_id,
             source="; ".join(source_text(s) for s in item.sources),
             priority=len(bracket.targets) + 1,
+            pinned=True,
         )
     )
     return targets
 
 
-def unpin_target(targets: GearTargets, item_id: int, level: int | None) -> GearTargets | None:
-    """Remove an item from the current bracket; None when it isn't there."""
-    current = targets.for_level(level or 1)
-    if current is None or not any(t.item_id == item_id for t in current.targets):
+def unpin_target(targets: GearTargets, item_id: int) -> GearTargets | None:
+    """Take the pin off an item, in whichever bracket; it stays a target (remove it in the
+    editor). None when it isn't pinned."""
+    if item_id not in targets.pinned_ids():
         return None
-    brackets = [
-        b.model_copy(update={"targets": [t for t in b.targets if t.item_id != item_id]})
-        if b.min_level == current.min_level
-        else b
-        for b in targets.brackets
-    ]
-    return GearTargets(brackets=brackets)
-
-
-def pinned_ids(targets: GearTargets, level: int | None) -> set[int]:
-    """Targets for the character's level: always listed on the Upgrades tab."""
-    current = targets.for_level(level) if level is not None else None
-    return {t.item_id for t in current.targets if t.item_id is not None} if current else set()
+    targets = targets.model_copy(deep=True)
+    for bracket in targets.brackets:
+        for target in bracket.targets:
+            if target.item_id == item_id:
+                target.pinned = False
+    return targets
