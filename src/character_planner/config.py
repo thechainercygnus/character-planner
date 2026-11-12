@@ -33,6 +33,11 @@ class Settings(BaseSettings):
     # under its 120 requests/min limit. Tests set 0.
     companion_request_pause: float = 0.55
 
+    # The worker's schedule (worker.py, ADR 0011). A sync needs a login from the last 24h.
+    sync_every_hours: float = 6
+    pool_every_hours: float = 24
+    worker_poll_seconds: float = 60
+
     @property
     def api_base_url(self) -> str:
         return f"https://{self.bnet_region}.api.blizzard.com"

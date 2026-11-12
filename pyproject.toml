@@ -19,6 +19,7 @@ character-planner-probe-items = "character_planner.probe_items:main"
 character-planner-probe-companion = "character_planner.probe_companion:main"
 character-planner-pool = "character_planner.pool_cli:main"
 character-planner-probe-recipes = "character_planner.probe_recipes:main"
+character-planner-worker = "character_planner.worker:main"
 
 [dependency-groups]
 dev = [
