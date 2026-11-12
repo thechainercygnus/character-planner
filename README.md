@@ -33,7 +33,8 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Pin an item as a target, or never suggest it | `GET /api/choices`, `PUT`/`DELETE /api/choices/{item_id}` (or the links in an expanded Upgrades row) |
 | Progress over time (one point per sync, gear changes, level-ups) | `/api/progress` |
 | Talent plan vs synced talents (next point, off-plan points) | `/api/talents`, plan in `data/curated/talent_plan.yaml` or edit it in the app |
-| Stat weights for scoring | `GET`/`PUT`/`DELETE /api/weights` (or the **Stat weights** button on the Upgrades and Plan tabs) |
+| Stat weights for scoring | `GET`/`PUT`/`DELETE /api/weights` for the active preset (or the **Stat weights** button on the Upgrades and Plan tabs) |
+| Weight presets (Leveling tank, Dungeon tank, Solo DPS, your own) | `PUT /api/weights/active`, `POST /api/weights/presets`, `PATCH`/`DELETE /api/weights/presets/{key}` |
 | API docs | http://localhost:8000/docs |
 | Run scheduled syncs and pool refreshes | `uv run character-planner-worker` (`--once` to run them now) |
 
