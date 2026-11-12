@@ -71,6 +71,7 @@ Deploy (Docker): `docker compose up -d --build`; over Tailscale add `-f compose.
 - `src/character_planner/talents.py`: hand-entered talent plan compared with synced talents (ADR 0009); default in `data/curated/talent_plan.yaml`
 - `src/character_planner/enchants.py`: enchant catalog from Blizzard recipe data and per-slot enchant advice (ADR 0010); gaps filled in `data/curated/enchants.yaml`
 - `src/character_planner/recommend.py`: best upgrades per slot and dungeons worth running, from the pool (ADR 0007); rules in `data/curated/recommend.yaml`
+- `src/character_planner/choices.py`: items pinned as targets or dismissed in the app, on top of the YAML defaults (ADR 0012)
 - `src/character_planner/fields.py`: defensive JSON readers used by all parsers
 - `src/character_planner/views.py`: the only code that reads API response shapes; typed views for the frontend
 - `src/character_planner/summary.py`: Markdown rendering of those views, for pasting into a chat
