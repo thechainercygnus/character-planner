@@ -33,7 +33,17 @@ from character_planner.db import (
     latest_by_kind,
     make_engine,
 )
-from character_planner.enchants import EnchantOption, RecipeRefresh, catalog, refresh_enchant_data
+from character_planner.enchants import (
+    EnchantAdvice,
+    EnchantData,
+    EnchantOption,
+    RecipeRefresh,
+    advise,
+    catalog,
+    equipped_effects,
+    load_enchant_data,
+    refresh_enchant_data,
+)
 from character_planner.items import RefreshResult, refresh_item_sources
 from character_planner.jobs import (
     NotLoggedIn,
@@ -70,10 +80,12 @@ from character_planner.talents import (
 )
 from character_planner.views import (
     CharacterView,
+    EquippedItem,
     GearPlan,
     character_level,
     character_view,
     gear_plan,
+    known_recipe_ids,
     parse_equipment,
     parse_specialization,
 )
@@ -121,6 +133,16 @@ def get_rules(request: Request) -> UsageRules:
     return load_rules(settings.curated_dir / "recommend.yaml")
 
 
+def get_enchant_data(request: Request) -> EnchantData:
+    settings: Settings = request.app.state.settings
+    return load_enchant_data(settings.curated_dir / "enchants.yaml")
+
+
+def equipped_items(session: Session) -> dict[str, EquippedItem]:
+    equipment = latest_by_kind(session).get("equipment")
+    return {item.slot: item for item in parse_equipment(equipment.payload if equipment else None)}
+
+
 class WeightsUpdate(BaseModel):
     weights: dict[str, Annotated[float, Field(ge=-10, le=10, allow_inf_nan=False)]]
 
@@ -129,6 +151,7 @@ DefaultWeightsDep = Annotated[Weights, Depends(get_default_weights)]
 TargetsDep = Annotated[GearTargets, Depends(get_targets)]
 RulesDep = Annotated[UsageRules, Depends(get_rules)]
 DefaultPlanDep = Annotated[TalentPlan, Depends(get_default_plan)]
+EnchantDataDep = Annotated[EnchantData, Depends(get_enchant_data)]
 
 
 def create_app(
@@ -228,9 +251,40 @@ def create_app(
         return refresh_enchant_data(session, settings, force=force, http=http)
 
     @app.get("/api/enchants")
-    def enchant_catalog(session: SessionDep, include_sod: bool = False) -> list[EnchantOption]:
+    def enchant_catalog(
+        session: SessionDep, data: EnchantDataDep, include_sod: bool = False
+    ) -> list[EnchantOption]:
         """Every enchant recipe that maps to a gear slot, with parsed effects."""
-        return catalog(session, companion_by_id(session), include_sod=include_sod)
+        return catalog(
+            session,
+            companion_by_id(session),
+            include_sod=include_sod,
+            data=data,
+            equipped_effects=equipped_effects(equipped_items(session).values()),
+        )
+
+    @app.get("/api/enchants/recommendations")
+    def enchant_recommendations(
+        session: SessionDep, data: EnchantDataDep, defaults: DefaultWeightsDep, rules: RulesDep
+    ) -> EnchantAdvice:
+        """Best enchants in reach per slot, against the one on now (ADR 0010)."""
+        equipped = equipped_items(session)
+        professions = latest_by_kind(session).get("professions")
+        options = catalog(
+            session,
+            companion_by_id(session),
+            data=data,
+            equipped_effects=equipped_effects(equipped.values()),
+        )
+        return advise(
+            options,
+            equipped,
+            current_weights(session, defaults),
+            rules,
+            character_context(session)[0],
+            known_recipe_ids(professions.payload if professions else None),
+            data,
+        )
 
     @app.get("/api/pool")
     def item_pool(session: SessionDep) -> PoolView:

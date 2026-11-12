@@ -12,7 +12,9 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
    with redirect URI `http://localhost:8000/auth/callback`.
 2. `cp .env.example .env` and fill in the client ID and secret.
 3. `uv sync`
-4. `uv run pre-commit install`
+4. `cd frontend && npm ci` (the frontend's tools, also used by the pre-commit hooks)
+5. `uv run pre-commit install`: every commit then runs ruff, pyright and pytest, and the
+   frontend's lint, typecheck and tests when frontend files change.
 
 ## Use
 

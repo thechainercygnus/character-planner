@@ -39,6 +39,7 @@ export function WeightsDialog() {
       queryClient.invalidateQueries({ queryKey: ['gear'] }),
       queryClient.invalidateQueries({ queryKey: ['recommendations'] }),
       queryClient.invalidateQueries({ queryKey: ['progress'] }), // gear score uses the weights
+      queryClient.invalidateQueries({ queryKey: ['enchants'] }),
     ])
   }
   const save = useMutation({ mutationFn: api.saveWeights, onSuccess: onSaved })

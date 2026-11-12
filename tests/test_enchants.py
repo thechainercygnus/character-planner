@@ -13,14 +13,26 @@ from character_planner.config import Settings
 from character_planner.db import RecipeData
 from character_planner.enchants import (
     WEAPON_DAMAGE,
+    EnchantData,
+    EnchantOption,
+    Reagent,
+    advise,
     catalog,
+    enchant_score,
+    equipped_effects,
+    estimate_level,
+    fits,
+    load_enchant_data,
     parse_effects,
     parse_recipe,
     reagent_and_crafted_ids,
     refresh_recipes,
 )
+from character_planner.recommend import load_rules
+from character_planner.scoring import load_default_weights
+from character_planner.views import Enchantment, EquippedItem, known_recipe_ids, parse_equipment
 
-from .conftest import FIXTURES
+from .conftest import FIXTURES, REPO_ROOT
 
 # Real Forever responses from the 2026-11-12 recipe probe, trimmed to 12 recipes.
 TIER: dict[str, Any] = json.loads(
@@ -168,3 +180,160 @@ def test_refresh_stores_enchant_recipes_and_skips_fresh_ones(
     assert again.recipes_fetched == 0  # cached for 30 days
     assert recipes.call_count == 12
     assert len(stored) == 12
+
+
+# --- curated data, crafted items and recommendations (ADR 0010) ------------------------
+
+DATA = load_enchant_data(REPO_ROOT / "data" / "curated" / "enchants.yaml")
+WEIGHTS = load_default_weights(REPO_ROOT / "data" / "curated" / "stat_weights.yaml")
+RULES = load_rules(REPO_ROOT / "data" / "curated" / "recommend.yaml")
+# The real Crude Scope recipe (2421) from the 2026-11-12 refresh: no description, a
+# crafted item (4405) and reagents with no level band (tubes, bolts, Malachite).
+CRUDE_SCOPE: dict[str, Any] = json.loads(
+    (FIXTURES / "blizzard_recipe_crude_scope.json").read_text(encoding="utf-8")
+)
+
+
+def equipment() -> dict[str, EquippedItem]:
+    raw = json.loads((FIXTURES / "forever_equipment.json").read_text(encoding="utf-8"))
+    return {item.slot: item for item in parse_equipment(raw)}
+
+
+def known() -> set[int]:
+    raw = json.loads((FIXTURES / "forever_professions.json").read_text(encoding="utf-8"))
+    return known_recipe_ids(raw)
+
+
+def scope_option(data: EnchantData = DATA) -> EnchantOption:
+    parsed = parse_recipe(CRUDE_SCOPE, "Engineering", "Scopes", {}, data)
+    assert parsed is not None
+    return parsed
+
+
+def options() -> list[EnchantOption]:
+    """The fixture's enchanting recipes (no Season of Discovery) and the Crude Scope,
+    with the curated material bands applied."""
+    enchanting = [
+        parse_recipe(payload, "Enchanting", CATEGORY[int(key)], {}, DATA)
+        for key, payload in RECIPES.items()
+    ]
+    return [o for o in enchanting if o and not o.season_of_discovery] + [scope_option()]
+
+
+def test_equipped_stat_enchant_text_is_parsed() -> None:
+    # The FEET enchant's display string in the 2026-11-11 equipment sync.
+    assert parse_effects("Enchanted: Stamina +3") == {"Stamina": 3}
+
+
+def test_curated_material_bands_set_the_level_estimate() -> None:
+    dust = [Reagent(item_id=10940, name="Strange Dust", quantity=1)]
+    companion = {10940: CompanionInfo(item_id=10940, item_level=60)}
+    assert estimate_level(dust, companion, DATA.reagent_levels) == 1  # the band wins
+    soul = [Reagent(item_id=11083, name="Soul Dust", quantity=1)]
+    assert estimate_level(soul, {}, DATA.reagent_levels) == 21
+    assert estimate_level(soul, {}) is None
+
+
+def test_crafted_item_effects_come_from_the_equipment_then_the_curated_list() -> None:
+    learned = equipped_effects(equipment().values())
+    assert learned == {4405: {WEAPON_DAMAGE: 1}}  # "Enchanted: Scope (+1 Damage)"
+
+    from_gear = parse_recipe(CRUDE_SCOPE, "Engineering", "Scopes", {}, None, learned)
+    assert from_gear is not None
+    assert (from_gear.effects, from_gear.effects_source) == ({WEAPON_DAMAGE: 1}, "equipped")
+    curated = scope_option()
+    assert (curated.effects_source, curated.slots, curated.crafted_item_id) == (
+        "curated",
+        ["RANGED"],
+        4405,
+    )
+    unknown = scope_option(EnchantData())
+    assert (unknown.effects, unknown.effects_source) == ({}, None)
+
+
+def test_known_recipes_come_from_the_professions_snapshot() -> None:
+    assert 2421 in known()  # Crude Scope, Engineering
+    assert known_recipe_ids(None) == set()
+
+
+def test_weapon_damage_scores_as_dps_for_the_weapon_speed() -> None:
+    # +2 damage on a 2.0 speed weapon is +1 DPS.
+    assert enchant_score(WEIGHTS, "MAIN_HAND", {WEAPON_DAMAGE: 2}, 2.0) == WEIGHTS.of("Weapon DPS")
+    assert enchant_score(WEIGHTS, "RANGED", {WEAPON_DAMAGE: 2}, 2.0) == WEIGHTS.of("Ranged DPS")
+    assert enchant_score(WEIGHTS, "MAIN_HAND", {WEAPON_DAMAGE: 2}, None) == 0
+    assert enchant_score(WEIGHTS, "WRIST", {"Stamina": 3, "Defense": 3}, None) == 6.0
+
+
+def test_fits_checks_shields_two_handers_and_ranged_types() -> None:
+    gear = equipment()
+    block, impact, striking = option(7528), option(4368), option(4367)
+    assert fits(block, "OFF_HAND", gear["OFF_HAND"], RULES)  # Burnished Shield
+    orb = gear["OFF_HAND"].model_copy(update={"armor_type": "Miscellaneous"})
+    assert not fits(block, "OFF_HAND", orb, RULES)
+    assert not fits(impact, "MAIN_HAND", gear["MAIN_HAND"], RULES)  # tanks don't use 2H
+    assert fits(striking, "MAIN_HAND", gear["MAIN_HAND"], RULES)
+    assert fits(scope_option(), "RANGED", gear["RANGED"], RULES)  # Rough Boomstick, a Gun
+    thrown = gear["RANGED"].model_copy(update={"armor_type": "Thrown"})
+    assert not fits(scope_option(), "RANGED", thrown, RULES)
+
+
+def test_advice_ranks_enchants_against_the_one_on_now() -> None:
+    advice = advise(options(), equipment(), WEIGHTS, RULES, 18, known(), DATA)
+    rows = {r.slot: r for r in advice.rows}
+    assert list(rows) == ["BACK", "CHEST", "WRIST", "FEET", "MAIN_HAND", "OFF_HAND", "RANGED"]
+
+    chest = rows["CHEST"]  # Minor Stats (+1 all: 2.15) beats Inferior Stamina (+2: 2.0)
+    assert [p.option.name for p in chest.picks] == [
+        "Enchant Chest - Minor Stats",
+        "Enchant Chest - Inferior Stamina",
+    ]
+    assert chest.current is None and not chest.current_is_weaker
+
+    # The Boomstick already has the Crude Scope: nothing better to list.
+    ranged = rows["RANGED"]
+    assert ranged.current is not None and ranged.current.effects == {WEAPON_DAMAGE: 1}
+    assert ranged.picks == [] and not ranged.current_is_weaker
+
+    # Two-handed Minor Impact never reaches a one-handed tank.
+    assert [p.option.name for p in rows["MAIN_HAND"].picks] == ["Enchant Weapon - Minor Striking"]
+    # Lesser Block (Vision Dust: 31) and Minor Speed (Lesser Nether Essence: 36) are past
+    # level 18 + 3; Recovery is in reach but a proc, with nothing to weigh.
+    assert rows["OFF_HAND"].picks == []
+    assert advice.unscored == 1
+    assert advice.recipes == 12
+
+
+def test_advice_flags_a_weaker_enchant_and_makeable_recipes() -> None:
+    gear = equipment()
+    gear["FEET"] = gear["FEET"].model_copy(
+        update={"enchantments": [Enchantment(text="Enchanted: Stamina +1", kind="PERMANENT")]}
+    )
+    advice = advise(options(), gear, WEIGHTS, RULES, 18, known(), DATA)
+    feet = next(r for r in advice.rows if r.slot == "FEET")
+    assert feet.current is not None and feet.current.score == 1.0
+    assert feet.current_is_weaker
+    assert [(p.option.name, p.score_gain, p.can_make) for p in feet.picks] == [
+        ("Enchant Boots - Minor Stamina", 2.0, False)
+    ]
+
+
+def test_advice_gates_by_the_level_estimate_unless_the_recipe_is_known() -> None:
+    too_high = option(4293).model_copy(update={"estimated_level": 30})
+    no_estimate = option(4402).model_copy(update={"estimated_level": None})
+    scope = scope_option().model_copy(update={"estimated_level": None})
+    gear = equipment()
+    gear["RANGED"] = gear["RANGED"].model_copy(update={"enchantments": []})
+    advice = advise([too_high, no_estimate, scope], gear, WEIGHTS, RULES, 18, known(), DATA)
+    rows = {r.slot: r for r in advice.rows}
+    assert rows["WRIST"].picks == []  # 30 is past level 18 + 3 levels ahead
+    assert rows["FEET"].picks == [] and advice.unknown_level == 1
+    picked = rows["RANGED"].picks[0]  # no estimate, but Engineering knows the recipe
+    assert (picked.option.name, picked.can_make, picked.usable_now) == ("Crude Scope", True, True)
+
+
+def test_empty_slots_are_listed_without_picks() -> None:
+    gear = equipment()
+    del gear["BACK"]
+    advice = advise(options(), gear, WEIGHTS, RULES, 18, known(), DATA)
+    back = next(r for r in advice.rows if r.slot == "BACK")
+    assert (back.item, back.picks) == (None, [])
