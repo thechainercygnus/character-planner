@@ -315,6 +315,44 @@ def test_weights_api_rejects_bad_values(client: TestClient) -> None:
     assert client.put("/api/weights", json={"weights": {"": 1}}).status_code == 422
 
 
+def test_weight_presets_switch_save_rename_and_delete(client: TestClient) -> None:
+    view = client.get("/api/weights").json()
+    assert view["preset"] == "leveling-tank"
+    assert [p["name"] for p in view["presets"]] == ["Leveling tank", "Dungeon tank", "Solo DPS"]
+
+    solo = client.put("/api/weights/active", json={"key": "solo-dps"}).json()
+    assert (solo["preset"], solo["weights"]["Strength"]) == ("solo-dps", 1.0)
+    assert client.put("/api/weights/active", json={"key": "nope"}).status_code == 404
+
+    # Save as copies the active preset when no weights are given, then switches to it.
+    response = client.post("/api/weights/presets", json={"name": "Mine"})
+    assert response.status_code == 201
+    mine = response.json()
+    assert (mine["preset"], mine["weights"]) == ("mine", solo["weights"])
+    duplicate = client.post("/api/weights/presets", json={"name": "mine"})
+    assert duplicate.status_code == 400
+    assert "already a preset" in duplicate.json()["detail"]
+    assert client.delete("/api/weights").status_code == 400  # nothing to reset to
+
+    renamed = client.patch("/api/weights/presets/mine", json={"name": "Questing"}).json()
+    assert renamed["presets"][-1]["name"] == "Questing"
+    assert client.patch("/api/weights/presets/solo-dps", json={"name": "X"}).status_code == 400
+
+    after = client.delete("/api/weights/presets/mine").json()
+    assert after["preset"] == "leveling-tank"
+    assert client.delete("/api/weights/presets/mine").status_code == 404
+
+
+def test_presets_change_the_scores(client: TestClient) -> None:
+    client.post(
+        "/api/snapshots/manual", json={"kind": "equipment", "payload": fixture("equipment")}
+    )
+    progress_tank = client.get("/api/progress").json()
+    client.put("/api/weights/active", json={"key": "solo-dps"})
+    progress_dps = client.get("/api/progress").json()
+    assert progress_tank["points"][-1]["gear_score"] != progress_dps["points"][-1]["gear_score"]
+
+
 def test_items_can_be_pinned_dismissed_and_cleared(client: TestClient) -> None:
     assert client.get("/api/choices").json() == []
 

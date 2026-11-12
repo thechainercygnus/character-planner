@@ -77,7 +77,7 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/blizzard/`: OAuth and the API client (raw JSON in, status always reported)
 - `src/character_planner/db.py`: SQLModel tables (`Snapshot`, `StoredToken`)
 - `src/character_planner/curated.py` + `data/curated/*.yaml`: hand-maintained targets and default stat weights
-- `src/character_planner/scoring.py`: gear scores from editable stat weights (ADR 0005)
+- `src/character_planner/scoring.py`: gear scores from editable stat weights (ADR 0005) in named presets (ADR 0013); shipped presets in `data/curated/stat_weights.yaml` and `weight_presets.yaml`
 - `src/character_planner/items.py`: item catalog (Battle.net item search + icons), cached in SQLite (ADR 0003)
 - `src/character_planner/companion.py`: Forever Companion source, GET /items/{id} only (ADR 0004); spec in `docs/vendor/`
 - `src/character_planner/dungeons.py`: Forever Companion dungeons: drop tables and quest rewards (ADR 0006)

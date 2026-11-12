@@ -1,0 +1,47 @@
+# Stat weight presets shipped beside "Leveling tank" (stat_weights.yaml), ADR 0013.
+# Pick one in the app (Stat weights > Preset); edits to a shipped preset are saved in the
+# database and "Reset" brings these values back. Stats a preset leaves out take the
+# Leveling tank weight. Same scale as stat_weights.yaml: Stamina 1.0 is the yardstick for
+# the tanks. Starting heuristics, not sims.
+
+presets:
+  # Dungeon tank: groups bring the damage, so mitigation and threat lead.
+  # - Defense 1.5: fewer crits taken plus avoidance; it matters more against elites.
+  # - Armor 0.12, Agility 0.7: physical mitigation and dodge count for more against bosses.
+  # - Strength 0.6: block value and threat.
+  # - Weapon DPS 1.2: threat still matters, but less than staying alive.
+  # - Ranged DPS 0.3: pulling with a gun or bow.
+  # - Spirit 0: regeneration happens between pulls anyway.
+  - key: dungeon-tank
+    name: Dungeon tank
+    weights:
+      Stamina: 1.0
+      Armor: 0.12
+      Agility: 0.7
+      Strength: 0.6
+      Defense: 1.5
+      Attack Power: 0.25
+      Weapon DPS: 1.2
+      Ranged DPS: 0.3
+      Spirit: 0.0
+
+  # Solo DPS: questing in Arms or Fury, where kill speed is the goal.
+  # Scaled so Strength, the main damage stat, is 1.0.
+  # - Weapon DPS 3.0: white damage and weapon-based abilities dominate.
+  # - Attack Power 0.5: Strength gives 2 attack power, so one AP is half a Strength.
+  # - Agility 0.6: crit for rage, and a little armor.
+  # - Stamina 0.5: enough health to finish the pull; less than for a tank.
+  # - Armor 0.03, Defense 0.1: mitigation matters little when things die fast.
+  # - Spirit 0.1: health regeneration between pulls.
+  - key: solo-dps
+    name: Solo DPS
+    weights:
+      Strength: 1.0
+      Agility: 0.6
+      Stamina: 0.5
+      Attack Power: 0.5
+      Armor: 0.03
+      Defense: 0.1
+      Weapon DPS: 3.0
+      Ranged DPS: 0.2
+      Spirit: 0.1

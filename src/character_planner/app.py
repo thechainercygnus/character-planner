@@ -6,7 +6,7 @@ Run locally with: uv run uvicorn character_planner.app:create_app --factory --re
 
 import logging
 import time
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import asynccontextmanager
 from dataclasses import asdict
 from typing import Annotated, Any
@@ -70,12 +70,20 @@ from character_planner.pool import (
 from character_planner.progress import Progress, progress
 from character_planner.recommend import Recommendations, UsageRules, load_rules, recommend
 from character_planner.scoring import (
-    Weights,
+    PresetError,
+    ShippedPresets,
+    UnknownPreset,
     WeightsView,
+    activate,
+    create_preset,
     current_weights,
-    load_default_weights,
+    delete_preset,
+    load_shipped_presets,
+    migrate_stored_weights,
+    rename_preset,
     reset_weights,
     save_weights,
+    weights_view,
 )
 from character_planner.summary import build_summary
 from character_planner.talents import (
@@ -127,9 +135,9 @@ def get_targets(request: Request, session: SessionDep) -> GearTargets:
     return gear_targets(session, request.app.state.settings)
 
 
-def get_default_weights(request: Request) -> Weights:
+def get_presets(request: Request) -> ShippedPresets:
     settings: Settings = request.app.state.settings
-    return load_default_weights(settings.curated_dir / "stat_weights.yaml")
+    return load_shipped_presets(settings.curated_dir)
 
 
 def get_default_plan(request: Request) -> TalentPlan:
@@ -157,11 +165,34 @@ class ChoiceUpdate(BaseModel):
     name: Annotated[str, Field(min_length=1, max_length=120)]
 
 
+Weight = Annotated[float, Field(ge=-10, le=10, allow_inf_nan=False)]
+
+
 class WeightsUpdate(BaseModel):
-    weights: dict[str, Annotated[float, Field(ge=-10, le=10, allow_inf_nan=False)]]
+    weights: dict[str, Weight]
 
 
-DefaultWeightsDep = Annotated[Weights, Depends(get_default_weights)]
+class NewPreset(BaseModel):
+    name: str
+    # The weights to save; leave out to copy the active preset.
+    weights: dict[str, Weight] = {}
+
+
+class PresetRename(BaseModel):
+    name: str
+
+
+class PresetChoice(BaseModel):
+    key: str
+
+
+def clean_weights(update: WeightsUpdate | NewPreset) -> dict[str, float]:
+    if any(not name.strip() or len(name.strip()) > 40 for name in update.weights):
+        raise HTTPException(422, "Stat names must be 1-40 characters")
+    return {name.strip(): value for name, value in update.weights.items()}
+
+
+PresetsDep = Annotated[ShippedPresets, Depends(get_presets)]
 TargetsDep = Annotated[GearTargets, Depends(get_targets)]
 RulesDep = Annotated[UsageRules, Depends(get_rules)]
 DefaultPlanDep = Annotated[TalentPlan, Depends(get_default_plan)]
@@ -181,6 +212,9 @@ def create_app(
     @asynccontextmanager
     async def lifespan(_: FastAPI):
         init_db(engine)
+        with Session(engine) as session:
+            if migrate_stored_weights(session):
+                logger.info("Moved saved stat weights into the Leveling tank preset")
         yield
 
     app = FastAPI(title="Character Planner", lifespan=lifespan)
@@ -279,7 +313,7 @@ def create_app(
 
     @app.get("/api/enchants/recommendations")
     def enchant_recommendations(
-        session: SessionDep, data: EnchantDataDep, defaults: DefaultWeightsDep, rules: RulesDep
+        session: SessionDep, data: EnchantDataDep, presets: PresetsDep, rules: RulesDep
     ) -> EnchantAdvice:
         """Best enchants in reach per slot, against the one on now (ADR 0010)."""
         equipped = equipped_items(session)
@@ -293,7 +327,7 @@ def create_app(
         return advise(
             options,
             equipped,
-            current_weights(session, defaults),
+            current_weights(session, presets),
             rules,
             character_context(session)[0],
             known_recipe_ids(professions.payload if professions else None),
@@ -307,13 +341,13 @@ def create_app(
         return pool_view(session, level, faction)
 
     @app.get("/api/progress")
-    def progress_over_time(session: SessionDep, defaults: DefaultWeightsDep) -> Progress:
+    def progress_over_time(session: SessionDep, presets: PresetsDep) -> Progress:
         """One point per sync, plus gear changes and level-ups (ADR 0008)."""
-        return progress(session, current_weights(session, defaults))
+        return progress(session, current_weights(session, presets))
 
     @app.get("/api/recommendations")
     def recommendations(
-        session: SessionDep, targets: TargetsDep, defaults: DefaultWeightsDep, rules: RulesDep
+        session: SessionDep, targets: TargetsDep, presets: PresetsDep, rules: RulesDep
     ) -> Recommendations:
         """Best upgrades in reach for each slot, from the item pool (ADR 0007)."""
         level, faction = character_context(session)
@@ -326,7 +360,7 @@ def create_app(
         return recommend(
             pool_view(session, level, faction),
             equipped,
-            current_weights(session, defaults),
+            current_weights(session, presets),
             rules,
             targets,
             stored_choices(session),
@@ -378,7 +412,7 @@ def create_app(
         return gear
 
     @app.get("/api/summary.md", response_class=PlainTextResponse)
-    def summary(session: SessionDep, gear: TargetsDep, defaults: DefaultWeightsDep) -> str:
+    def summary(session: SessionDep, gear: TargetsDep, presets: PresetsDep) -> str:
         name = f"{settings.character_name} {settings.character_surname}"
         return build_summary(
             name,
@@ -387,7 +421,7 @@ def create_app(
             catalog_by_name(session),
             icons_by_id(session),
             companion_by_id(session),
-            current_weights(session, defaults),
+            current_weights(session, presets),
         )
 
     @app.get("/api/character")
@@ -395,45 +429,70 @@ def create_app(
         return character_view(latest_by_kind(session), icons_by_id(session))
 
     @app.get("/api/gear")
-    def gear(session: SessionDep, targets: TargetsDep, defaults: DefaultWeightsDep) -> GearPlan:
+    def gear(session: SessionDep, targets: TargetsDep, presets: PresetsDep) -> GearPlan:
         return gear_plan(
             latest_by_kind(session),
             targets,
             catalog_by_name(session),
             icons_by_id(session),
             companion_by_id(session),
-            current_weights(session, defaults),
+            current_weights(session, presets),
         )
 
-    def weights_view(session: Session, defaults: Weights) -> WeightsView:
-        current = current_weights(session, defaults)
-        return WeightsView(
-            weights=current.weights,
-            defaults=defaults.weights,
-            customised=current.weights != defaults.weights,
-        )
+    def preset_errors(action: Callable[[], object]) -> None:
+        try:
+            action()
+        except UnknownPreset as error:
+            raise HTTPException(404, f"No preset {error}") from error
+        except PresetError as error:
+            raise HTTPException(400, str(error)) from error
 
     @app.get("/api/weights")
-    def get_weights(session: SessionDep, defaults: DefaultWeightsDep) -> WeightsView:
-        """Stat weights used to score gear, and the shipped defaults."""
-        return weights_view(session, defaults)
+    def get_weights(session: SessionDep, presets: PresetsDep) -> WeightsView:
+        """The active preset's weights, its defaults and every preset (ADR 0013)."""
+        return weights_view(session, presets)
 
     @app.put("/api/weights")
-    def put_weights(
-        update: WeightsUpdate, session: SessionDep, defaults: DefaultWeightsDep
-    ) -> WeightsView:
-        """Replace the weights. Stats left out fall back to their default weight."""
-        names = [name.strip() for name in update.weights]
-        if any(not name or len(name) > 40 for name in names):
-            raise HTTPException(422, "Stat names must be 1-40 characters")
-        save_weights(session, {name.strip(): value for name, value in update.weights.items()})
-        return weights_view(session, defaults)
+    def put_weights(update: WeightsUpdate, session: SessionDep, presets: PresetsDep) -> WeightsView:
+        """Replace the active preset's weights. Stats left out fall back to their default."""
+        weights = clean_weights(update)
+        save_weights(session, presets, weights)
+        return weights_view(session, presets)
 
     @app.delete("/api/weights")
-    def delete_weights(session: SessionDep, defaults: DefaultWeightsDep) -> WeightsView:
-        """Go back to the defaults in data/curated/stat_weights.yaml."""
-        reset_weights(session)
-        return weights_view(session, defaults)
+    def delete_weights(session: SessionDep, presets: PresetsDep) -> WeightsView:
+        """Reset the active shipped preset to its curated file."""
+        preset_errors(lambda: reset_weights(session, presets))
+        return weights_view(session, presets)
+
+    @app.put("/api/weights/active")
+    def put_active_preset(
+        choice: PresetChoice, session: SessionDep, presets: PresetsDep
+    ) -> WeightsView:
+        """Switch presets: every score uses the active one."""
+        preset_errors(lambda: activate(session, presets, choice.key))
+        return weights_view(session, presets)
+
+    @app.post("/api/weights/presets", status_code=201)
+    def post_preset(new: NewPreset, session: SessionDep, presets: PresetsDep) -> WeightsView:
+        """Save weights as a preset of your own ("Save as") and switch to it."""
+        weights = clean_weights(new) if new.weights else current_weights(session, presets).weights
+        preset_errors(lambda: create_preset(session, presets, new.name, weights))
+        return weights_view(session, presets)
+
+    @app.patch("/api/weights/presets/{key}")
+    def patch_preset(
+        key: str, rename: PresetRename, session: SessionDep, presets: PresetsDep
+    ) -> WeightsView:
+        """Rename a preset of your own."""
+        preset_errors(lambda: rename_preset(session, presets, key, rename.name))
+        return weights_view(session, presets)
+
+    @app.delete("/api/weights/presets/{key}")
+    def delete_weight_preset(key: str, session: SessionDep, presets: PresetsDep) -> WeightsView:
+        """Delete a preset of your own; if it was active, Leveling tank takes over."""
+        preset_errors(lambda: delete_preset(session, presets, key))
+        return weights_view(session, presets)
 
     def talents_view(session: Session, default: TalentPlan) -> TalentPlanView:
         latest = latest_by_kind(session)
