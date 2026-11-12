@@ -10,13 +10,15 @@ snapshots, and compares them to hand-curated targets in `data/curated/`.
 
 ## Commands
 
-All tooling runs through uv. Run the full check before calling any change done:
+All tooling runs through uv. Run the full check, backend and frontend, before calling any
+change done or pushing:
 
 ```
 uv sync
 uv run ruff check --fix && uv run ruff format
 uv run pyright
 uv run pytest
+cd frontend && npm run lint && npm run typecheck && npm test
 ```
 
 Run the app: `uv run uvicorn character_planner.app:create_app --factory --reload`
@@ -39,6 +41,19 @@ Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `n
 - Record decisions with lasting consequences as a new ADR in `docs/adr/`, numbered,
   short and terse.
 - Keep changes small and on a branch; one concern per commit, imperative commit subjects.
+
+## Workflow
+
+- One branch per issue, named `feature/<issue>-<slug>` (or `fix/<slug>` for small fixes
+  without an issue). Branch from an up-to-date `main`. Never commit or push to `main`.
+- Open a pull request for every branch. Use `Closes #<issue>` when it completes the issue
+  and `Refs #<issue>` when it's part of one.
+- CI must pass before merging: the `check`, `frontend` and `secret-scan` jobs. A red
+  job is a blocker, even if it looks unrelated; fix it or say why in the PR.
+- Remote Control sessions run in their own git worktree. Stay inside it: don't edit
+  files in another checkout of this repo.
+- Commits and pushes need the user's go-ahead. Stop at a ready-to-review PR; the user
+  merges.
 
 ## Layout
 
