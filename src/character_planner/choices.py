@@ -1,8 +1,8 @@
-"""Items pinned as targets or dismissed from the Upgrades tab (ADR 0012).
+"""Items dismissed from the Upgrades tab (ADR 0012).
 
-The curated files stay the defaults: gear_targets.yaml names targets and
-recommend.yaml's exclude_item_ids hides items. Choices made in the app are stored in
-the database and add to both.
+recommend.yaml's exclude_item_ids stays the default; items dismissed in the app are
+stored in the database and add to it. Pinned targets used to live here too; they're gear
+targets now (ADR 0014), and migrate_target_choices moves old ones across.
 """
 
 from datetime import datetime
@@ -13,7 +13,7 @@ from sqlmodel import Session, col, select
 
 from character_planner.db import ItemChoice, utcnow
 
-ChoiceKind = Literal["target", "dismissed"]
+ChoiceKind = Literal["dismissed"]
 
 
 class ItemChoiceView(BaseModel):
@@ -24,9 +24,8 @@ class ItemChoiceView(BaseModel):
 
 
 class Choices(BaseModel):
-    """Item ids by choice, as the recommendation engine takes them."""
+    """Dismissed item ids, as the recommendation engine takes them."""
 
-    targets: set[int] = set()
     dismissed: set[int] = set()
 
 
@@ -38,21 +37,32 @@ def list_choices(session: Session) -> list[ItemChoiceView]:
     return [
         ItemChoiceView.model_validate(r, from_attributes=True)
         for r in rows
-        if r.choice in ("target", "dismissed")
+        if r.choice == "dismissed"
     ]
 
 
 def stored_choices(session: Session) -> Choices:
-    choices = Choices()
-    for row in list_choices(session):
-        (choices.targets if row.choice == "target" else choices.dismissed).add(row.item_id)
-    return choices
+    return Choices(dismissed={row.item_id for row in list_choices(session)})
 
 
 def set_choice(session: Session, item_id: int, name: str, choice: ChoiceKind) -> None:
-    """Pin or dismiss an item. An item has one choice: a new one replaces the old."""
+    """Dismiss an item."""
     session.merge(ItemChoice(item_id=item_id, choice=choice, name=name, created_at=utcnow()))
     session.commit()
+
+
+def take_target_choices(session: Session) -> list[int]:
+    """Remove pins stored before ADR 0014 and return their item ids, oldest first."""
+    rows = session.exec(
+        select(ItemChoice)
+        .where(col(ItemChoice.choice) == "target")
+        .order_by(col(ItemChoice.created_at))
+    ).all()
+    ids = [row.item_id for row in rows]
+    for row in rows:
+        session.delete(row)
+    session.commit()
+    return ids
 
 
 def clear_choice(session: Session, item_id: int) -> bool:

@@ -77,15 +77,17 @@ describe('Recommendations', () => {
     renderRecommendations()
     fireEvent.click(screen.getByRole('button', { name: 'Show details for Waist' }))
 
-    // The girdle is already a target from gear_targets.yaml: only Later Belt can be pinned.
+    // The girdle is already a target from gear_targets.yaml: it offers Pin, not Make target.
     const [laterBeltTarget, ...others] = screen.getAllByRole('button', { name: 'Make target' })
     expect(others).toEqual([])
+    expect(screen.getAllByRole('button', { name: 'Pin' })).toHaveLength(1)
     fireEvent.click(laterBeltTarget)
     await waitFor(() =>
-      expect(fetchMock).toHaveBeenCalledWith('/api/choices/2', expect.objectContaining({ method: 'PUT' })),
+      expect(fetchMock).toHaveBeenCalledWith('/api/targets/pins', expect.objectContaining({ method: 'POST' })),
     )
-    const put = fetchMock.mock.calls.find(([path]) => path === '/api/choices/2')!
-    expect(JSON.parse(String(put[1]?.body))).toEqual({ choice: 'target', name: 'Later Belt' })
+    const post = fetchMock.mock.calls.find(([path]) => path === '/api/targets/pins')!
+    // Pinned into the row's slot (ADR 0014).
+    expect(JSON.parse(String(post[1]?.body))).toEqual({ item_id: 2, slot: 'WAIST' })
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Never suggest' })[0])
     await waitFor(() => {
@@ -112,16 +114,15 @@ describe('Recommendations', () => {
     expect(screen.getByText('-1.5').className).toContain('verdict-sidegrade')
     fireEvent.click(screen.getByRole('button', { name: 'Unpin' }))
     await waitFor(() =>
-      expect(fetchMock).toHaveBeenCalledWith('/api/choices/2', expect.objectContaining({ method: 'DELETE' })),
+      expect(fetchMock).toHaveBeenCalledWith('/api/targets/pins/2', expect.objectContaining({ method: 'DELETE' })),
     )
   })
 
   it('lists items never to suggest, with an undo', async () => {
-    const fetchMock = stubFetch([hidden, { ...hidden, item_id: 1, name: 'Pinned', choice: 'target' }])
+    const fetchMock = stubFetch([hidden])
     renderRecommendations()
 
     expect(await screen.findByText('Never suggested')).toBeTruthy()
-    expect(screen.queryByText('Pinned')).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'Suggest Cape of the Brotherhood again' }))
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith('/api/choices/5193', expect.objectContaining({ method: 'DELETE' })),

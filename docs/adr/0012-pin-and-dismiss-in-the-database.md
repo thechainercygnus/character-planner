@@ -1,6 +1,6 @@
 # 0012: Pin and dismiss recommendations, stored in the database
 
-Status: accepted (2026-11-12)
+Status: accepted (2026-11-12). Pins superseded by ADR 0014: they're gear targets now.
 
 ## Context
 

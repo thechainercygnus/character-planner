@@ -9,9 +9,11 @@ from fastapi.testclient import TestClient
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
+from character_planner import jobs
 from character_planner.app import create_app
 from character_planner.blizzard import oauth
 from character_planner.config import Settings
+from character_planner.db import CompanionItem, ItemChoice
 
 from .conftest import FIXTURES
 from .test_dungeons import mock_companion_dungeons
@@ -353,24 +355,102 @@ def test_presets_change_the_scores(client: TestClient) -> None:
     assert progress_tank["points"][-1]["gear_score"] != progress_dps["points"][-1]["gear_score"]
 
 
-def test_items_can_be_pinned_dismissed_and_cleared(client: TestClient) -> None:
+def test_items_can_be_dismissed_and_suggested_again(client: TestClient) -> None:
     assert client.get("/api/choices").json() == []
 
-    client.put("/api/choices/270230", json={"choice": "target", "name": "Kindlegem Girdle"})
+    client.put("/api/choices/270230", json={"choice": "dismissed", "name": "Kindlegem Girdle"})
     choices = client.put("/api/choices/5193", json={"choice": "dismissed", "name": " Cape "}).json()
     assert [(c["item_id"], c["choice"], c["name"]) for c in choices] == [
         (5193, "dismissed", "Cape"),
-        (270230, "target", "Kindlegem Girdle"),
+        (270230, "dismissed", "Kindlegem Girdle"),
     ]
-
-    # A new choice replaces the old one for the same item.
-    choices = client.put("/api/choices/5193", json={"choice": "target", "name": "Cape"}).json()
-    assert {c["item_id"]: c["choice"] for c in choices} == {5193: "target", 270230: "target"}
+    # Pins are gear targets now (ADR 0014), not choices.
+    target = {"choice": "target", "name": "Cape"}
+    assert client.put("/api/choices/5193", json=target).status_code == 422
 
     assert [c["item_id"] for c in client.delete("/api/choices/5193").json()] == [270230]
     assert client.delete("/api/choices/5193").status_code == 404
     # The recommendations still build with choices stored and no pool.
     assert client.get("/api/recommendations").status_code == 200
+
+
+def test_gear_targets_can_be_edited_and_reset(client: TestClient) -> None:
+    default = client.get("/api/targets").json()
+    assert client.get("/api/gear").json()["targets_customised"] is False
+
+    edited = {
+        "brackets": [
+            {
+                "min_level": 20,
+                "targets": [
+                    {"slot": "BACK", "item": " Cape of the Brotherhood ", "item_id": 5193},
+                    {"slot": "CHEST", "item": "Tunic of Westfall", "source": "Quest"},
+                ],
+            },
+            {"min_level": 10, "targets": [{"slot": "WAIST", "item": "Kindlegem Girdle"}]},
+        ]
+    }
+    saved = client.put("/api/targets", json=edited).json()
+    assert [b["min_level"] for b in saved["brackets"]] == [10, 20]  # sorted by level
+    later = saved["brackets"][1]["targets"]
+    assert [(t["item"], t["priority"]) for t in later] == [
+        ("Cape of the Brotherhood", 1),
+        ("Tunic of Westfall", 2),
+    ]
+    assert client.get("/api/targets").json() == saved
+    assert client.get("/api/gear").json()["targets_customised"] is True
+
+    assert client.delete("/api/targets").json() == default
+    assert client.get("/api/gear").json()["targets_customised"] is False
+
+
+@pytest.mark.parametrize(
+    "brackets",
+    [
+        [{"min_level": 10, "targets": [{"slot": "TABARD", "item": "x"}]}],
+        [{"min_level": 10, "targets": [{"slot": "BACK", "item": ""}]}],
+        [{"min_level": 0, "targets": []}],
+        [{"min_level": 10, "targets": []}, {"min_level": 10, "targets": []}],
+    ],
+)
+def test_gear_target_edits_are_validated(client: TestClient, brackets: list[object]) -> None:
+    assert client.put("/api/targets", json={"brackets": brackets}).status_code == 422
+    assert client.get("/api/gear").json()["targets_customised"] is False
+
+
+@respx.mock
+def test_pinning_adds_pool_items_to_the_current_bracket(client: TestClient) -> None:
+    log_in(client)
+    mock_character_api()
+    mock_battlenet()
+    client.post("/api/sync")  # level 18: the level-15 bracket
+    mock_companion_dungeons()
+    client.post("/api/pool/refresh")
+
+    pinned = client.post("/api/targets/pins", json={"item_id": 5193, "slot": "BACK"}).json()
+    bracket = pinned["brackets"][0]
+    assert bracket["min_level"] == 15
+    cape = bracket["targets"][-1]
+    assert (cape["slot"], cape["item"], cape["item_id"]) == (
+        "BACK",
+        "Cape of the Brotherhood",
+        5193,
+    )
+    assert "Deadmines" in cape["source"]
+    assert cape["pinned"] is True
+    # Pinning again changes nothing.
+    again = client.post("/api/targets/pins", json={"item_id": 5193, "slot": "BACK"}).json()
+    assert again == pinned
+
+    unknown = client.post("/api/targets/pins", json={"item_id": 999999, "slot": "BACK"})
+    assert unknown.status_code == 404
+    bad_slot = client.post("/api/targets/pins", json={"item_id": 5193, "slot": "TABARD"})
+    assert bad_slot.status_code == 422
+
+    unpinned = client.delete("/api/targets/pins/5193").json()
+    cape = next(t for t in unpinned["brackets"][0]["targets"] if t["item_id"] == 5193)
+    assert cape["pinned"] is False  # still a target; remove it in the editor
+    assert client.delete("/api/targets/pins/5193").status_code == 404
 
 
 @pytest.mark.parametrize(
@@ -385,3 +465,28 @@ def test_items_can_be_pinned_dismissed_and_cleared(client: TestClient) -> None:
 def test_choices_are_validated(client: TestClient, path: str, body: dict[str, str]) -> None:
     assert client.put(path, json=body).status_code == 422
     assert client.get("/api/choices").json() == []
+
+
+@respx.mock
+def test_items_pinned_before_targets_were_editable_move_into_them(
+    client: TestClient, settings: Settings, engine: Engine
+) -> None:
+    log_in(client)
+    mock_character_api()
+    mock_battlenet()
+    client.post("/api/sync")
+    mock_companion_dungeons()
+    client.post("/api/pool/refresh")
+    with Session(engine) as session:
+        # The pin's slot comes from Companion details; borrow the girdle's for the cape.
+        details = json.loads((FIXTURES / "companion_item_270230.json").read_text("utf-8"))
+        session.merge(CompanionItem(item_id=5193, found=True, payload=details))
+        session.add(ItemChoice(item_id=5193, choice="target", name="Cape of the Brotherhood"))
+        session.add(ItemChoice(item_id=999999, choice="target", name="Not in the pool"))
+        session.commit()
+        assert jobs.migrate_target_choices(session, settings) == 1
+        assert jobs.migrate_target_choices(session, settings) == 0
+
+    targets = client.get("/api/targets").json()["brackets"][0]["targets"]
+    assert [(t["slot"], t["item_id"]) for t in targets][-1] == ("WAIST", 5193)
+    assert client.get("/api/gear").json()["targets_customised"] is True

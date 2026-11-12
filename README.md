@@ -30,7 +30,9 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Build the item pool (dungeon drops + quest rewards) | `uv run character-planner-pool` or `POST /api/pool/refresh` |
 | Item pool for your level window (JSON) | `/api/pool` |
 | Best upgrades per slot + dungeons worth running | `/api/recommendations` (rules in `data/curated/recommend.yaml`) |
-| Pin an item as a target, or never suggest it | `GET /api/choices`, `PUT`/`DELETE /api/choices/{item_id}` (or the links in an expanded Upgrades row) |
+| Edit gear targets (YAML is the default) | `PUT`/`DELETE /api/targets` (or **Edit targets** on the Plan tab) |
+| Pin an item as a target for your level | `POST /api/targets/pins`, `DELETE /api/targets/pins/{item_id}` (or **Make target** in an expanded Upgrades row) |
+| Never suggest an item | `GET /api/choices`, `PUT`/`DELETE /api/choices/{item_id}` (or **Never suggest**) |
 | Progress over time (one point per sync, gear changes, level-ups) | `/api/progress` |
 | Talent plan vs synced talents (next point, off-plan points) | `/api/talents`, plan in `data/curated/talent_plan.yaml` or edit it in the app |
 | Stat weights for scoring | `GET`/`PUT`/`DELETE /api/weights` for the active preset (or the **Stat weights** button on the Upgrades and Plan tabs) |

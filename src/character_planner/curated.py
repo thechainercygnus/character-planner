@@ -11,6 +11,9 @@ class GearTarget(BaseModel):
     item: str
     source: str
     priority: int | None = None
+    # Pinned with "Make target" on the Upgrades tab (ADR 0014): always listed there until
+    # worn, whatever its rank. Targets from the YAML aren't pinned; they're only tagged.
+    pinned: bool = False
 
     # The item's id: the reliable key for Forever Companion lookups (ADR 0004).
     item_id: int | None = None
@@ -53,6 +56,15 @@ class GearTargets(BaseModel):
         """Hand-entered item ids across all brackets, deduplicated."""
         ids = (t.item_id for b in self.brackets for t in b.targets if t.item_id is not None)
         return list(dict.fromkeys(ids))
+
+    def pinned_ids(self) -> set[int]:
+        """Item ids of pinned targets, in any bracket."""
+        return {
+            t.item_id
+            for b in self.brackets
+            for t in b.targets
+            if t.pinned and t.item_id is not None
+        }
 
     def item_names(self) -> list[str]:
         """Every target item name across all brackets, deduplicated, in file order."""

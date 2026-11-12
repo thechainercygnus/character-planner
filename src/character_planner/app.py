@@ -95,6 +95,15 @@ from character_planner.talents import (
     reset_plan,
     save_plan,
 )
+from character_planner.targets import (
+    EditedTargets,
+    TargetsError,
+    pin_target,
+    reset_targets,
+    save_targets,
+    unpin_target,
+)
+from character_planner.targets import is_customised as targets_customised
 from character_planner.views import (
     CharacterView,
     EquippedItem,
@@ -160,6 +169,11 @@ def equipped_items(session: Session) -> dict[str, EquippedItem]:
     return {item.slot: item for item in parse_equipment(equipment.payload if equipment else None)}
 
 
+class Pin(BaseModel):
+    item_id: Annotated[int, Field(gt=0)]
+    slot: str
+
+
 class ChoiceUpdate(BaseModel):
     choice: ChoiceKind
     name: Annotated[str, Field(min_length=1, max_length=120)]
@@ -215,6 +229,8 @@ def create_app(
         with Session(engine) as session:
             if migrate_stored_weights(session):
                 logger.info("Moved saved stat weights into the Leveling tank preset")
+            if moved := jobs.migrate_target_choices(session, settings):
+                logger.info("Moved %d pinned items into the gear targets", moved)
         yield
 
     app = FastAPI(title="Character Planner", lifespan=lifespan)
@@ -368,14 +384,14 @@ def create_app(
 
     @app.get("/api/choices")
     def get_choices(session: SessionDep) -> list[ItemChoiceView]:
-        """Items pinned as targets or dismissed in the app, newest first (ADR 0012)."""
+        """Items dismissed in the app, newest first (ADR 0012)."""
         return list_choices(session)
 
     @app.put("/api/choices/{item_id}")
     def put_choice(
         item_id: Annotated[int, FastAPIPath(gt=0)], update: ChoiceUpdate, session: SessionDep
     ) -> list[ItemChoiceView]:
-        """Pin an item as a target or dismiss it; replaces any earlier choice for it."""
+        """Dismiss an item: never suggest it. Pinning is POST /api/targets/pins."""
         set_choice(session, item_id, update.name.strip() or str(item_id), update.choice)
         return list_choices(session)
 
@@ -383,7 +399,7 @@ def create_app(
     def delete_choice(
         item_id: Annotated[int, FastAPIPath(gt=0)], session: SessionDep
     ) -> list[ItemChoiceView]:
-        """Unpin or un-dismiss an item."""
+        """Suggest a dismissed item again."""
         if not clear_choice(session, item_id):
             raise HTTPException(404, f"No choice stored for item {item_id}")
         return list_choices(session)
@@ -409,7 +425,52 @@ def create_app(
 
     @app.get("/api/targets")
     def targets(gear: TargetsDep) -> GearTargets:
+        """The gear targets in use: edited in the app, or gear_targets.yaml (ADR 0014)."""
         return gear
+
+    def targets_changed(session: Session) -> GearTargets:
+        return jobs.gear_targets(session, settings)
+
+    @app.put("/api/targets")
+    def put_targets(edited: EditedTargets, session: SessionDep) -> GearTargets:
+        """Replace the gear targets. Priority follows each bracket's order."""
+        try:
+            save_targets(session, edited.to_targets())
+        except TargetsError as error:
+            raise HTTPException(422, str(error)) from error
+        return targets_changed(session)
+
+    @app.delete("/api/targets")
+    def delete_targets(session: SessionDep) -> GearTargets:
+        """Go back to data/curated/gear_targets.yaml."""
+        reset_targets(session)
+        return targets_changed(session)
+
+    @app.post("/api/targets/pins")
+    def post_pin(pin: Pin, session: SessionDep, gear: TargetsDep) -> GearTargets:
+        """Pin a pool item as a target for the character's level ("Make target")."""
+        level, faction = character_context(session)
+        item = next(
+            (i for i in pool_view(session, None, faction).items if i.item_id == pin.item_id), None
+        )
+        if item is None:
+            raise HTTPException(404, f"Item {pin.item_id} isn't in the item pool")
+        try:
+            save_targets(session, pin_target(gear, item, pin.slot, level))
+        except TargetsError as error:
+            raise HTTPException(422, str(error)) from error
+        return targets_changed(session)
+
+    @app.delete("/api/targets/pins/{item_id}")
+    def delete_pin(
+        item_id: Annotated[int, FastAPIPath(gt=0)], session: SessionDep, gear: TargetsDep
+    ) -> GearTargets:
+        """Take the pin off a target ("Unpin"); it stays a target."""
+        unpinned = unpin_target(gear, item_id)
+        if unpinned is None:
+            raise HTTPException(404, f"Item {item_id} isn't a pinned target")
+        save_targets(session, unpinned)
+        return targets_changed(session)
 
     @app.get("/api/summary.md", response_class=PlainTextResponse)
     def summary(session: SessionDep, gear: TargetsDep, presets: PresetsDep) -> str:
@@ -430,7 +491,7 @@ def create_app(
 
     @app.get("/api/gear")
     def gear(session: SessionDep, targets: TargetsDep, presets: PresetsDep) -> GearPlan:
-        return gear_plan(
+        plan = gear_plan(
             latest_by_kind(session),
             targets,
             catalog_by_name(session),
@@ -438,6 +499,7 @@ def create_app(
             companion_by_id(session),
             current_weights(session, presets),
         )
+        return plan.model_copy(update={"targets_customised": targets_customised(session)})
 
     def preset_errors(action: Callable[[], object]) -> None:
         try:

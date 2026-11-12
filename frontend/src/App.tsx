@@ -14,6 +14,7 @@ import { Recommendations } from './components/Recommendations'
 import { StatusBar } from './components/StatusBar'
 import { TalentPlanPanel } from './components/TalentPlan'
 import { TabBar } from './components/Tabs'
+import { TargetsEditor } from './components/TargetsEditor'
 import { useHashTab, type Tab } from './useHashTab'
 import { WeightsDialog } from './components/WeightsDialog'
 import './App.css'
@@ -79,7 +80,17 @@ export default function App() {
             </>
           )}
 
-          {tab === 'plan' && gear.data && <GearTable plan={gear.data} actions={<WeightsDialog />} />}
+          {tab === 'plan' && gear.data && (
+            <GearTable
+              plan={gear.data}
+              actions={
+                <div className="heading-actions">
+                  <TargetsEditor customised={gear.data.targets_customised} />
+                  <WeightsDialog />
+                </div>
+              }
+            />
+          )}
 
           {tab === 'progress' && (
             <>

@@ -26,6 +26,7 @@ function target(slot: string, item: string): GearTarget {
     item,
     source: 'Hall of Thanes',
     priority: null,
+    pinned: false,
     item_id: null,
     item_level: null,
     armor_type: null,
@@ -123,6 +124,7 @@ const plan: GearPlan = {
   next_bracket_size: 15,
   rows: [downgrade, unknown, manualUpgrade],
   attributions: [],
+  targets_customised: false,
 }
 
 describe('GearTable', () => {

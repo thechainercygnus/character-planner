@@ -1,43 +1,59 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { api, type Candidate, type ItemChoice } from '../api'
+import { api, type Candidate } from '../api'
 
-/** Pin, unpin, dismiss and un-dismiss items; refreshes the lists that use them (ADR 0012). */
+/**
+ * Pin and unpin targets (ADR 0014) and dismiss items (ADR 0012), then refresh what
+ * shows them: the upgrades, the Plan tab and the target editor.
+ */
 function useItemChoices() {
   const queryClient = useQueryClient()
-  const onSuccess = (choices: ItemChoice[]) => {
-    queryClient.setQueryData(['choices'], choices)
-    return queryClient.invalidateQueries({ queryKey: ['recommendations'] })
+  const onSuccess = () =>
+    Promise.all(
+      ['recommendations', 'gear', 'targets', 'choices'].map((key) =>
+        queryClient.invalidateQueries({ queryKey: [key] }),
+      ),
+    )
+  const pin = useMutation({ mutationFn: api.pinTarget, onSuccess })
+  const unpin = useMutation({ mutationFn: api.unpinTarget, onSuccess })
+  const dismiss = useMutation({ mutationFn: api.setChoice, onSuccess })
+  const undismiss = useMutation({ mutationFn: api.clearChoice, onSuccess })
+  const all = [pin, unpin, dismiss, undismiss]
+  return {
+    pin,
+    unpin,
+    dismiss,
+    undismiss,
+    pending: all.some((m) => m.isPending),
+    error: all.find((m) => m.isError)?.error,
   }
-  const set = useMutation({ mutationFn: api.setChoice, onSuccess })
-  const clear = useMutation({ mutationFn: api.clearChoice, onSuccess })
-  return { set, clear, pending: set.isPending || clear.isPending, error: set.error ?? clear.error }
 }
 
-/** "Make target" / "Unpin" and "Never suggest" for one recommended item. */
-export function ChoiceButtons({ candidate }: { candidate: Candidate }) {
-  const { set, clear, pending, error } = useItemChoices()
+/** "Make target" / "Unpin" and "Never suggest" for one recommended item in a slot. */
+export function ChoiceButtons({ candidate, slot }: { candidate: Candidate; slot: string }) {
+  const { pin, unpin, dismiss, pending, error } = useItemChoices()
   const { item_id: itemId, name } = candidate.item
   return (
     <div className="choice-buttons">
       {candidate.pinned ? (
-        <button type="button" className="link" disabled={pending} onClick={() => clear.mutate(itemId)}>
+        <button type="button" className="link" disabled={pending} onClick={() => unpin.mutate(itemId)}>
           Unpin
         </button>
-      ) : candidate.is_target ? null : ( // already a target in gear_targets.yaml
+      ) : (
         <button
           type="button"
           className="link"
           disabled={pending}
-          onClick={() => set.mutate({ itemId, name, choice: 'target' })}
+          title="Always list it here until you wear it"
+          onClick={() => pin.mutate({ itemId, slot })}
         >
-          Make target
+          {candidate.is_target ? 'Pin' : 'Make target'}
         </button>
       )}
       <button
         type="button"
         className="link"
         disabled={pending}
-        onClick={() => set.mutate({ itemId, name, choice: 'dismissed' })}
+        onClick={() => dismiss.mutate({ itemId, name, choice: 'dismissed' })}
       >
         Never suggest
       </button>
@@ -49,7 +65,7 @@ export function ChoiceButtons({ candidate }: { candidate: Candidate }) {
 /** Items hidden with "Never suggest", each with an undo. Nothing when there are none. */
 export function DismissedItems() {
   const choices = useQuery({ queryKey: ['choices'], queryFn: api.choices })
-  const { clear, pending, error } = useItemChoices()
+  const { undismiss, pending, error } = useItemChoices()
   const dismissed = (choices.data ?? []).filter((choice) => choice.choice === 'dismissed')
   if (choices.isError) return <p className="error">Couldn't load hidden items: {choices.error.message}</p>
   if (dismissed.length === 0) return null
@@ -66,7 +82,7 @@ export function DismissedItems() {
               className="link"
               disabled={pending}
               aria-label={`Suggest ${choice.name} again`}
-              onClick={() => clear.mutate(choice.item_id)}
+              onClick={() => undismiss.mutate(choice.item_id)}
             >
               Undo
             </button>
