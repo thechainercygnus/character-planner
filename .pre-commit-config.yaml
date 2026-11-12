@@ -25,3 +25,23 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+      # Frontend: the same checks as CI's frontend job, only when frontend files change.
+      # Needs `npm ci` in frontend/ once.
+      - id: frontend-lint
+        name: frontend lint (oxlint)
+        entry: npm --prefix frontend run lint
+        language: system
+        files: ^frontend/
+        pass_filenames: false
+      - id: frontend-typecheck
+        name: frontend typecheck (tsc)
+        entry: npm --prefix frontend run typecheck
+        language: system
+        files: ^frontend/
+        pass_filenames: false
+      - id: frontend-test
+        name: frontend tests (vitest)
+        entry: npm --prefix frontend test
+        language: system
+        files: ^frontend/
+        pass_filenames: false
