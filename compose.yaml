@@ -1,0 +1,36 @@
+# Character Planner on one host: the API and the scheduled worker sharing a SQLite volume.
+# See docs/deploy.md and ADR 0011. Add compose.tailscale.yaml to serve it on your tailnet.
+#
+#   docker compose up -d --build
+
+name: character-planner
+
+x-planner: &planner
+  build: .
+  image: character-planner:latest
+  env_file: .env  # Battle.net client and redirect URI; never committed
+  environment:
+    DATABASE_URL: sqlite:////data/character-planner.db
+    POST_LOGIN_REDIRECT: /
+  volumes:
+    - planner-data:/data
+  restart: unless-stopped
+
+services:
+  app:
+    <<: *planner
+    # Local-only by default. PLANNER_BIND=0.0.0.0 exposes it to the LAN.
+    ports:
+      - "${PLANNER_BIND:-127.0.0.1}:${PLANNER_PORT:-8000}:8000"
+
+  worker:
+    <<: *planner
+    command: ["character-planner-worker"]
+    healthcheck:
+      disable: true  # the image's check is the API's
+    depends_on:
+      app:
+        condition: service_healthy  # the API creates the tables first
+
+volumes:
+  planner-data:
