@@ -2,6 +2,7 @@ from typing import Any
 
 import pytest
 
+from character_planner.choices import Choices
 from character_planner.curated import Bracket, GearTarget, GearTargets
 from character_planner.pool import PoolItem, PoolSource, PoolView
 from character_planner.recommend import (
@@ -202,3 +203,66 @@ def test_rules_file_loads() -> None:
     assert isinstance(RULES, UsageRules)
     assert "Wand" not in RULES.weapon_types
     assert RULES.two_handers is False
+
+
+def test_dismissed_items_are_never_suggested() -> None:
+    deadmines = source("the-deadmines", "The Deadmines")
+    pool = view(
+        item(1, "Back", stats={"Stamina": 5}),
+        item(2, "Back", stats={"Stamina": 3}, sources=[deadmines]),
+    )
+    recs = recommend(pool, {}, WEIGHTS, RULES, choices=Choices(dismissed={1}))
+    back = next(r for r in recs.rows if r.slot == "BACK")
+    assert [c.item.item_id for c in back.candidates] == [2]
+    assert [d.dungeon for d in recs.dungeons] == ["The Deadmines"]
+    # The curated exclusions still apply alongside.
+    rules = RULES.model_copy(update={"exclude_item_ids": [2]})
+    recs = recommend(pool, {}, WEIGHTS, rules, choices=Choices(dismissed={1}))
+    assert next(r for r in recs.rows if r.slot == "BACK").candidates == []
+
+
+def test_pinned_items_are_targets_and_always_listed() -> None:
+    equipped = {"BACK": worn("BACK", stats=[ItemStat(name="Stamina", value=4)])}
+    pool = view(
+        item(1, "Back", stats={"Stamina": 9}),
+        item(2, "Back", stats={"Stamina": 8}),
+        item(3, "Back", stats={"Stamina": 7}),
+        item(4, "Back", stats={"Stamina": 6}),  # 4th best: below per_slot
+        item(5, "Back", stats={"Stamina": 4}),  # a sidegrade: below min_gain
+    )
+    choices = Choices(targets={4, 5})
+    back = next(
+        r
+        for r in recommend(pool, equipped, WEIGHTS, RULES, choices=choices).rows
+        if r.slot == "BACK"
+    )
+    assert [(c.item.item_id, c.is_target, c.pinned) for c in back.candidates] == [
+        (1, False, False),
+        (2, False, False),
+        (3, False, False),
+        (4, True, True),
+        (5, True, True),
+    ]
+
+
+def test_pinned_items_already_worn_or_dismissed_are_not_listed() -> None:
+    equipped = {"BACK": worn("BACK", item_id=1, stats=[ItemStat(name="Stamina", value=4)])}
+    pool = view(item(1, "Back", stats={"Stamina": 4}), item(2, "Back", stats={"Stamina": 2}))
+    choices = Choices(targets={1, 2}, dismissed={2})
+    back = next(
+        r
+        for r in recommend(pool, equipped, WEIGHTS, RULES, choices=choices).rows
+        if r.slot == "BACK"
+    )
+    assert back.candidates == []
+
+
+def test_a_pinned_ring_is_listed_in_one_finger_slot() -> None:
+    equipped = {"FINGER_1": worn("FINGER_1", stats=[ItemStat(name="Stamina", value=2)])}
+    pool = view(item(1, "Finger", stats={"Stamina": 6}), item(2, "Finger", stats={"Stamina": 1}))
+    rows = {
+        r.slot: r
+        for r in recommend(pool, equipped, WEIGHTS, RULES, choices=Choices(targets={2})).rows
+    }
+    assert [c.item.item_id for c in rows["FINGER_2"].candidates] == [1, 2]
+    assert rows["FINGER_1"].candidates == []

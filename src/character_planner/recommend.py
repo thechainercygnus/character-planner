@@ -4,6 +4,9 @@ Every pool item the character can use (data/curated/recommend.yaml) is scored wi
 stat weights and compared with what's equipped in each slot it fits. Each slot lists its
 biggest score gains; dungeons are ranked by the upgrades they hold. gear_targets.yaml
 stays the hand-picked plan: items it names are flagged as targets.
+
+Items pinned or dismissed in the app (ADR 0012) add to the curated files: a pinned item
+is a target that's always listed for its slot, and a dismissed one is never suggested.
 """
 
 from collections.abc import Mapping
@@ -12,6 +15,7 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel
 
+from character_planner.choices import Choices
 from character_planner.companion import ATTRIBUTION as COMPANION_ATTRIBUTION
 from character_planner.curated import GearTargets
 from character_planner.pool import PoolItem, PoolSource, PoolView
@@ -80,7 +84,8 @@ class Candidate(BaseModel):
     armor_delta: int | None = None
     stat_deltas: dict[str, int] = {}
     usable_now: bool  # required level reached
-    is_target: bool = False  # named in gear_targets.yaml
+    is_target: bool = False  # named in gear_targets.yaml or pinned in the app
+    pinned: bool = False  # pinned in the app; listed even when it isn't a top pick
 
 
 class SlotRecommendation(BaseModel):
@@ -169,6 +174,7 @@ def _candidate(
     weights: Weights,
     level: int | None,
     target_ids: set[int],
+    pinned_ids: set[int],
 ) -> Candidate:
     worn_stats = {s.name: s.value for s in worn.stats} if worn else {}
     names = sorted(set(worn_stats) | set(item.stats))
@@ -190,16 +196,24 @@ def _candidate(
         armor_delta=((item.armor or 0) - (worn_armor or 0) if item.armor or worn_armor else None),
         stat_deltas=stat_deltas,
         usable_now=level is None or (item.effective_level or 0) <= level,
-        is_target=item.item_id in target_ids,
+        is_target=item.item_id in target_ids or item.item_id in pinned_ids,
+        pinned=item.item_id in pinned_ids,
     )
 
 
+def _rank(c: Candidate) -> tuple[float, str]:
+    return (-c.score_gain, c.item.name)
+
+
 def _best(
-    candidates: list[Candidate], count: int, skip: set[int], min_gain: float
+    candidates: list[Candidate], count: int, skip: set[int], min_gain: float, worn: set[int]
 ) -> list[Candidate]:
-    upgrades = [c for c in candidates if c.score_gain > min_gain and c.item.item_id not in skip]
-    upgrades.sort(key=lambda c: (-c.score_gain, c.item.name))
-    return upgrades[:count]
+    """The top upgrades, plus any pinned item not already worn, best first."""
+    open_ = [c for c in candidates if c.item.item_id not in skip]
+    top = sorted((c for c in open_ if c.score_gain > min_gain), key=_rank)[:count]
+    shown = {c.item.item_id for c in top}
+    pinned = [c for c in open_ if c.pinned and c.item.item_id not in shown | worn]
+    return sorted(top + pinned, key=_rank)
 
 
 def recommend(
@@ -208,9 +222,16 @@ def recommend(
     weights: Weights,
     rules: UsageRules,
     targets: GearTargets | None = None,
+    choices: Choices | None = None,
 ) -> Recommendations:
     level = pool.level
+    choices = choices or Choices()
     target_ids = set(targets.item_ids()) if targets else set()
+    pinned_ids = choices.targets - choices.dismissed
+    rules = rules.model_copy(
+        update={"exclude_item_ids": sorted(set(rules.exclude_item_ids) | choices.dismissed)}
+    )
+    worn = {item.item_id for item in equipped.values() if item.item_id is not None}
 
     usable = [i for i in pool.items if unusable_reason(i, rules, level) is None]
     scored = [i for i in usable if has_stat_data(i)]
@@ -221,7 +242,9 @@ def recommend(
         for slot in PAIRED.get(item_slot, (SLOT_FOR.get(item_slot),)):
             if slot is not None:
                 by_slot[slot].append(
-                    _candidate(slot, item, equipped.get(slot), weights, level, target_ids)
+                    _candidate(
+                        slot, item, equipped.get(slot), weights, level, target_ids, pinned_ids
+                    )
                 )
 
     picks: dict[str, list[Candidate]] = {}
@@ -230,14 +253,18 @@ def recommend(
             continue
         pair = next((p for p in PAIRED.values() if slot in p), None)
         if pair is None:
-            picks[slot] = _best(by_slot[slot], rules.per_slot, set(), rules.min_gain)
+            picks[slot] = _best(by_slot[slot], rules.per_slot, set(), rules.min_gain, worn)
             continue
         # Replace the weaker of the two first, then don't suggest its top pick twice
         # (most rings and trinkets are unique).
         weaker, stronger = sorted(pair, key=lambda s: _worn_score(weights, s, equipped.get(s)))
-        picks[weaker] = _best(by_slot[weaker], rules.per_slot, set(), rules.min_gain)
+        picks[weaker] = _best(by_slot[weaker], rules.per_slot, set(), rules.min_gain, worn)
         first = {picks[weaker][0].item.item_id} if picks[weaker] else set()
-        picks[stronger] = _best(by_slot[stronger], rules.per_slot, first, rules.min_gain)
+        # A pinned ring or trinket is listed once, in the slot it would replace first.
+        shown_pinned = {c.item.item_id for c in picks[weaker] if c.pinned}
+        picks[stronger] = _best(
+            by_slot[stronger], rules.per_slot, first | shown_pinned, rules.min_gain, worn
+        )
 
     rows = [
         SlotRecommendation(slot=slot, equipped=equipped.get(slot), candidates=picks[slot])
