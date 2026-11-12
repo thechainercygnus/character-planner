@@ -719,3 +719,7 @@ button.expand {
 .plan-rows input[type='number'] {
   width: 4rem;
 }
+
+.enchant {
+  color: var(--enchant, #4ade80);
+}

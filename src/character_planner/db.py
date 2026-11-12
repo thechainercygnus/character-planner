@@ -73,6 +73,17 @@ class CompanionDungeon(SQLModel, table=True):
     fetched_at: datetime = Field(default_factory=utcnow)
 
 
+class RecipeData(SQLModel, table=True):
+    """Raw Blizzard GET /data/wow/recipe/{id} responses for enchant recipes (ADR 0010),
+    with the profession and skill-tier category they were listed under."""
+
+    recipe_id: int = Field(primary_key=True)
+    profession: str
+    category: str
+    payload: Any = Field(sa_column=Column(JSON, nullable=False))
+    fetched_at: datetime = Field(default_factory=utcnow)
+
+
 class StoredTalentPlan(SQLModel, table=True):
     """The talent plan as edited in the app; data/curated/talent_plan.yaml is the default."""
 

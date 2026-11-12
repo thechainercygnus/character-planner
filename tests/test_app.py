@@ -14,6 +14,7 @@ from character_planner.config import Settings
 
 from .conftest import FIXTURES
 from .test_dungeons import mock_companion_dungeons
+from .test_enchants import blizzard
 from .test_items import COMPANION, companion_responder, mock_battlenet
 
 BASE = "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet"
@@ -220,6 +221,27 @@ def test_talent_plan_can_be_edited_and_reset(client: TestClient) -> None:
     assert client.put("/api/talents/plan", json=bad).status_code == 422
 
     assert client.delete("/api/talents/plan").json()["customised"] is False
+
+
+@respx.mock
+def test_enchant_catalog_refreshes_and_lists(client: TestClient) -> None:
+    respx.post(oauth.TOKEN_URL).mock(
+        return_value=httpx.Response(200, json={"access_token": "app", "expires_in": 86399})
+    )
+    respx.get(url__startswith="https://us.api.blizzard.com/data/wow/").mock(side_effect=blizzard)
+    items = respx.get(url__startswith=COMPANION).mock(
+        return_value=httpx.Response(404, json={"error": "Not found"})
+    )
+
+    result = client.post("/api/enchants/refresh").json()
+    assert (result["recipes_fetched"], result["errors"]) == (12, [])
+    assert items.call_count == len(result["items_not_found"]) > 0  # reagents looked up
+
+    listed = client.get("/api/enchants").json()
+    assert len(listed) == 11  # the Season of Discovery recipe is left out by default
+    assert len(client.get("/api/enchants", params={"include_sod": True}).json()) == 12
+    boots = next(o for o in listed if o["name"] == "Enchant Boots - Minor Stamina")
+    assert (boots["slots"], boots["effects"]) == (["FEET"], {"Stamina": 3.0})
 
 
 def test_reads_are_empty_before_any_sync(client: TestClient) -> None:

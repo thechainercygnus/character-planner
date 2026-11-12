@@ -1,0 +1,494 @@
+{
+  "4290": {
+    "id": 4290,
+    "name": "Enchant Chest - Inferior Stamina",
+    "description": "Permanently enchant a piece of chest armor so that it increases the Stamina of the wearer by 2.",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/recipe/4290?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 4290
+    },
+    "reagents": [
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/10940?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Strange Dust",
+          "id": 10940
+        },
+        "quantity": 1
+      }
+    ],
+    "crafted_quantity": {
+      "value": 2.0
+    }
+  },
+  "4293": {
+    "id": 4293,
+    "name": "Enchant Bracer - Minor Deflect",
+    "description": "Permanently enchant bracers so that the defense skill of the wearer is increased by 3.",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/recipe/4293?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 4293
+    },
+    "reagents": [
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/10938?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Lesser Magic Essence",
+          "id": 10938
+        },
+        "quantity": 1
+      }
+    ],
+    "crafted_quantity": {
+      "value": 1.0
+    }
+  },
+  "4300": {
+    "id": 4300,
+    "name": "Enchant Cloak - Minor Resistance",
+    "description": "Permanently enchant a cloak so that it increases the resistance to all schools of magic by 2.",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/recipe/4300?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 4300
+    },
+    "reagents": [
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/10940?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Strange Dust",
+          "id": 10940
+        },
+        "quantity": 1
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/10938?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Lesser Magic Essence",
+          "id": 10938
+        },
+        "quantity": 1
+      }
+    ],
+    "crafted_quantity": {
+      "value": 1.0
+    }
+  },
+  "4367": {
+    "id": 4367,
+    "name": "Enchant Weapon - Minor Striking",
+    "description": "Permanently enchant a Melee Weapon to do 1 additional point of damage.",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/recipe/4367?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 4367
+    },
+    "reagents": [
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/10940?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Strange Dust",
+          "id": 10940
+        },
+        "quantity": 1
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/10938?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Lesser Magic Essence",
+          "id": 10938
+        },
+        "quantity": 1
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/10978?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Small Glimmering Shard",
+          "id": 10978
+        },
+        "quantity": 1
+      }
+    ],
+    "crafted_quantity": {
+      "value": 1.0
+    }
+  },
+  "4368": {
+    "id": 4368,
+    "name": "Enchant 2H Weapon - Minor Impact",
+    "description": "Permanently enchant a Two-Handed Melee Weapon to do 4 additional points of damage.",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/recipe/4368?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 4368
+    },
+    "reagents": [
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/10940?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Strange Dust",
+          "id": 10940
+        },
+        "quantity": 1
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/10978?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Small Glimmering Shard",
+          "id": 10978
+        },
+        "quantity": 1
+      }
+    ],
+    "crafted_quantity": {
+      "value": 1.0
+    }
+  },
+  "4402": {
+    "id": 4402,
+    "name": "Enchant Boots - Minor Stamina",
+    "description": "Permanently enchant a pair of boots so they increase the wearer's Stamina by 3.",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/recipe/4402?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 4402
+    },
+    "reagents": [
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/10940?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Strange Dust",
+          "id": 10940
+        },
+        "quantity": 4
+      }
+    ],
+    "crafted_quantity": {
+      "value": 1.0
+    }
+  },
+  "7377": {
+    "id": 7377,
+    "name": "Enchant Cloak - Lesser Protection",
+    "description": "Permanently enchant a cloak to increase armor by 20.",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/recipe/7377?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 7377
+    },
+    "reagents": [
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/10940?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Strange Dust",
+          "id": 10940
+        },
+        "quantity": 3
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/10978?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Small Glimmering Shard",
+          "id": 10978
+        },
+        "quantity": 1
+      }
+    ],
+    "crafted_quantity": {
+      "value": 1.0
+    }
+  },
+  "7501": {
+    "id": 7501,
+    "name": "Enchant Chest - Minor Stats",
+    "description": "Permanently enchant a piece of chest armor to grant +1 to all stats.",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/recipe/7501?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 7501
+    },
+    "reagents": [
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/10998?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Lesser Astral Essence",
+          "id": 10998
+        },
+        "quantity": 1
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/11083?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Soul Dust",
+          "id": 11083
+        },
+        "quantity": 1
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/11084?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Large Glimmering Shard",
+          "id": 11084
+        },
+        "quantity": 1
+      }
+    ],
+    "crafted_quantity": {
+      "value": 1.0
+    }
+  },
+  "7528": {
+    "id": 7528,
+    "name": "Enchant Shield - Lesser Block",
+    "description": "Permanently enchant a shield to give +2% chance to block.",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/recipe/7528?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 7528
+    },
+    "reagents": [
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/11135?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Greater Mystic Essence",
+          "id": 11135
+        },
+        "quantity": 1
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/11137?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Vision Dust",
+          "id": 11137
+        },
+        "quantity": 1
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/11139?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Large Glowing Shard",
+          "id": 11139
+        },
+        "quantity": 1
+      }
+    ],
+    "crafted_quantity": {
+      "value": 1.0
+    }
+  },
+  "7669": {
+    "id": 7669,
+    "name": "Enchant Boots - Minor Speed",
+    "description": "Permanently enchant boots to increase movement speed by 4%.",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/recipe/7669?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 7669
+    },
+    "reagents": [
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/11177?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Small Radiant Shard",
+          "id": 11177
+        },
+        "quantity": 1
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/7909?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Aquamarine",
+          "id": 7909
+        },
+        "quantity": 1
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/11174?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Lesser Nether Essence",
+          "id": 11174
+        },
+        "quantity": 1
+      }
+    ],
+    "crafted_quantity": {
+      "value": 1.0
+    }
+  },
+  "51763": {
+    "id": 51763,
+    "name": "Enchant Bracer - Agility",
+    "description": "Permanently enchant bracers to increase Agility by 9.",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/recipe/51763?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 51763
+    },
+    "reagents": [
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/20725?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Nexus Crystal",
+          "id": 20725
+        },
+        "quantity": 2
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/16204?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Illusion Dust",
+          "id": 16204
+        },
+        "quantity": 10
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/16203?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Greater Eternal Essence",
+          "id": 16203
+        },
+        "quantity": 2
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/7082?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Essence of Air",
+          "id": 7082
+        },
+        "quantity": 2
+      }
+    ],
+    "crafted_quantity": {
+      "value": 1.0
+    }
+  },
+  "54407": {
+    "id": 54407,
+    "name": "Enchant Weapon - Recovery",
+    "description": "Permanently enchant a Melee Weapon to trigger Recovery when you are Parried or Dodged, healing you for 5% of your maximum health. Cannot occur more often than once every 10 sec.",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/recipe/54407?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 54407
+    },
+    "reagents": [
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/11083?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Soul Dust",
+          "id": 11083
+        },
+        "quantity": 6
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/11084?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Large Glimmering Shard",
+          "id": 11084
+        },
+        "quantity": 4
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/11082?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Greater Astral Essence",
+          "id": 11082
+        },
+        "quantity": 6
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/249391?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Pyrite",
+          "id": 249391
+        },
+        "quantity": 4
+      },
+      {
+        "reagent": {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/item/2775?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Silver Ore",
+          "id": 2775
+        },
+        "quantity": 4
+      }
+    ],
+    "crafted_quantity": {
+      "value": 10.0
+    }
+  }
+}

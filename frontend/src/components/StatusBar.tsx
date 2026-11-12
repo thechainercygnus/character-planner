@@ -27,6 +27,10 @@ export function StatusBar() {
     mutationFn: api.refreshItems,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['gear'] }),
   })
+  const refreshEnchants = useMutation({
+    mutationFn: api.refreshEnchants,
+    onSuccess: () => queryClient.invalidateQueries(),
+  })
   const refreshPool = useMutation({
     mutationFn: api.refreshPool,
     onSuccess: () => queryClient.invalidateQueries(),
@@ -75,10 +79,29 @@ export function StatusBar() {
           >
             Refresh item pool
           </button>
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => refreshEnchants.mutate()}
+            disabled={refreshEnchants.isPending}
+            title="Fetch enchant recipes from Battle.net and their reagents from Forever Companion"
+          >
+            Refresh enchant data
+          </button>
         </div>
       </details>
       {refreshItems.isPending && <span className="muted">Looking up items…</span>}
       {refreshPool.isPending && <span className="muted">Refreshing item pool… (can take a few minutes)</span>}
+      {refreshEnchants.isPending && <span className="muted">Fetching enchant data… (first run takes a few minutes)</span>}
+      {refreshEnchants.isError && (
+        <span className="error">Enchant refresh failed: {refreshEnchants.error.message}</span>
+      )}
+      {refreshEnchants.data && (
+        <span className="muted">
+          Enchants: {refreshEnchants.data.recipes_listed} recipes, {refreshEnchants.data.recipes_fetched} fetched
+          {refreshEnchants.data.errors.length > 0 && `, ${refreshEnchants.data.errors.length} errors`}
+        </span>
+      )}
       {sync.isError && <span className="error">Sync failed: {sync.error.message}</span>}
       {refreshItems.isError && (
         <span className="error">Item lookup failed: {refreshItems.error.message}</span>
