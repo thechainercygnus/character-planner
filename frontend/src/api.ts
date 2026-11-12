@@ -164,10 +164,25 @@ export interface Status {
 
 export type SyncResult = Record<string, number>
 
+/** A stat weight preset (scoring.py PresetSummary, ADR 0013). */
+export interface PresetSummary {
+  key: string
+  name: string
+  /** From the curated files: can be reset, not renamed or deleted. */
+  shipped: boolean
+  /** A shipped preset with edits saved in the app. */
+  customised: boolean
+}
+
+/** The active preset's weights, its defaults and every preset. */
 export interface WeightsView {
   weights: Record<string, number>
+  /** What Reset restores; equal to weights for a preset of your own. */
   defaults: Record<string, number>
   customised: boolean
+  /** Active preset key. */
+  preset: string
+  presets: PresetSummary[]
 }
 
 export interface RefreshResult {
@@ -463,6 +478,26 @@ export const api = {
       body: JSON.stringify({ weights }),
     }),
   resetWeights: () => request<WeightsView>('/api/weights', { method: 'DELETE' }),
+  activatePreset: (key: string) =>
+    request<WeightsView>('/api/weights/active', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key }),
+    }),
+  createPreset: ({ name, weights }: { name: string; weights: Record<string, number> }) =>
+    request<WeightsView>('/api/weights/presets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, weights }),
+    }),
+  renamePreset: ({ key, name }: { key: string; name: string }) =>
+    request<WeightsView>(`/api/weights/presets/${encodeURIComponent(key)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    }),
+  deletePreset: (key: string) =>
+    request<WeightsView>(`/api/weights/presets/${encodeURIComponent(key)}`, { method: 'DELETE' }),
   recommendations: () => request<Recommendations>('/api/recommendations'),
   choices: () => request<ItemChoice[]>('/api/choices'),
   setChoice: ({ itemId, name, choice }: { itemId: number; name: string; choice: ChoiceKind }) =>
