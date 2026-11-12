@@ -37,7 +37,7 @@ function RowDetails({ row, best }: { row: SlotRecommendation; best: Candidate })
         <h4>Best upgrade</h4>
         <PoolItemName item={best.item} showDetails showSources />
         <Changes candidate={best} />
-        <ChoiceButtons candidate={best} />
+        <ChoiceButtons candidate={best} slot={row.slot} />
       </div>
       {others.length > 0 && (
         <div>
@@ -52,7 +52,7 @@ function RowDetails({ row, best }: { row: SlotRecommendation; best: Candidate })
                   showDetails
                   showSources
                 />
-                <ChoiceButtons candidate={candidate} />
+                <ChoiceButtons candidate={candidate} slot={row.slot} />
               </div>
               <GainBadge candidate={candidate} />
             </div>

@@ -138,7 +138,15 @@ export function VerdictBadge({ row }: { row: GearRow }) {
 /** `actions` renders on the right of the section heading (e.g. the stat weights button). */
 export function GearTable({ plan, actions }: { plan: GearPlan; actions?: ReactNode }) {
   if (plan.bracket_min_level === null) {
-    return <p className="muted">No gear targets for this level yet.</p>
+    return (
+      <section>
+        <div className="section-heading">
+          <h2>Gear targets</h2>
+          {actions}
+        </div>
+        <p className="muted">No gear targets for this level yet. Add a bracket with Edit targets.</p>
+      </section>
+    )
   }
 
   const upgrades = plan.rows.filter((row) => row.verdict === 'upgrade').length
@@ -170,8 +178,9 @@ export function GearTable({ plan, actions }: { plan: GearPlan; actions?: ReactNo
           </tr>
         </thead>
         <tbody>
-          {plan.rows.map((row) => (
-            <tr key={row.slot} className={`row-${row.verdict}`}>
+          {plan.rows.map((row, index) => (
+            // Two targets can share a slot (a pin beside a planned item).
+            <tr key={`${row.slot}-${row.target.item_id ?? row.target.item}-${index}`} className={`row-${row.verdict}`}>
               <td>{slotLabel(row.slot)}</td>
               <td>{row.equipped ? <ItemName item={row.equipped} /> : <span className="muted">empty</span>}</td>
               <td>

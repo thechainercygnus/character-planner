@@ -780,3 +780,59 @@ button.link {
 .enchant-pick + .enchant-pick {
   margin-top: 0.35rem;
 }
+
+/* Gear target editor (ADR 0014) */
+.targets-dialog {
+  width: min(960px, calc(100vw - 2rem));
+}
+
+.target-bracket {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 0 0 0.9rem;
+  padding: 0.5rem 0.9rem 0.7rem;
+}
+
+.target-bracket legend {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0 0.4rem;
+}
+
+.target-bracket legend input {
+  width: 4rem;
+}
+
+.target-rows {
+  margin: 0.4rem 0;
+  padding-left: 1.5rem;
+}
+
+.target-rows li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.target-rows input {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.targets-dialog input,
+.targets-dialog select {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.25rem 0.4rem;
+  font: inherit;
+}
+
+.heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

@@ -123,6 +123,7 @@ const plan: GearPlan = {
   next_bracket_size: 15,
   rows: [downgrade, unknown, manualUpgrade],
   attributions: [],
+  targets_customised: false,
 }
 
 describe('GearTable', () => {

@@ -100,6 +100,16 @@ export interface GearTarget {
   stats: Record<string, number>
 }
 
+export interface Bracket {
+  min_level: number
+  targets: GearTarget[]
+}
+
+/** Gear targets by level bracket: edited in the app, or gear_targets.yaml (ADR 0014). */
+export interface GearTargets {
+  brackets: Bracket[]
+}
+
 export type SourceName = 'blizzard' | 'companion' | 'manual'
 
 /** What's known about a target item, merged from Blizzard, Forever Companion and gear_targets.yaml. */
@@ -152,6 +162,8 @@ export interface GearPlan {
   next_bracket_size: number
   rows: GearRow[]
   attributions: Attribution[]
+  /** Targets edited in the app rather than gear_targets.yaml. */
+  targets_customised: boolean
 }
 
 export interface Status {
@@ -206,6 +218,14 @@ export interface PoolSource {
   quest_min_level: number | null
 }
 
+/** Pool items for the character's level window (pool.py PoolView). */
+export interface PoolView {
+  level: number | null
+  faction: string | null
+  window: [number, number] | null
+  items: PoolItem[]
+}
+
 /** A dungeon drop or quest reward from the item pool (pool.py). */
 export interface PoolItem {
   item_id: number
@@ -235,15 +255,15 @@ export interface Candidate {
   stat_deltas: Record<string, number>
   /** False when the item needs a few more levels. */
   usable_now: boolean
-  /** Named in gear_targets.yaml or pinned in the app. */
+  /** A gear target in any bracket. */
   is_target: boolean
-  /** Pinned in the app: listed even when it isn't a top pick. */
+  /** A target for the current bracket: listed even when it isn't a top pick. */
   pinned: boolean
 }
 
-export type ChoiceKind = 'target' | 'dismissed'
+export type ChoiceKind = 'dismissed'
 
-/** An item pinned or dismissed on the Upgrades tab (choices.py ItemChoiceView). */
+/** An item dismissed on the Upgrades tab (choices.py ItemChoiceView). */
 export interface ItemChoice {
   item_id: number
   name: string
@@ -506,6 +526,22 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ choice, name }),
     }),
+  pool: () => request<PoolView>('/api/pool'),
+  targets: () => request<GearTargets>('/api/targets'),
+  saveTargets: (targets: GearTargets) =>
+    request<GearTargets>('/api/targets', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(targets),
+    }),
+  resetTargets: () => request<GearTargets>('/api/targets', { method: 'DELETE' }),
+  pinTarget: ({ itemId, slot }: { itemId: number; slot: string }) =>
+    request<GearTargets>('/api/targets/pins', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item_id: itemId, slot }),
+    }),
+  unpinTarget: (itemId: number) => request<GearTargets>(`/api/targets/pins/${itemId}`, { method: 'DELETE' }),
   clearChoice: (itemId: number) => request<ItemChoice[]>(`/api/choices/${itemId}`, { method: 'DELETE' }),
   progress: () => request<Progress>('/api/progress'),
   talents: () => request<TalentPlanView>('/api/talents'),
@@ -527,6 +563,27 @@ export function parseUtc(timestamp: string): Date {
 }
 
 /** Battle.net slot types (MAIN_HAND) as people read them (Main Hand). */
+/** Battle.net equipment slots in display order (recommend.py EQUIPMENT_SLOTS). */
+export const EQUIPMENT_SLOTS = [
+  'HEAD',
+  'NECK',
+  'SHOULDER',
+  'BACK',
+  'CHEST',
+  'WRIST',
+  'HANDS',
+  'WAIST',
+  'LEGS',
+  'FEET',
+  'FINGER_1',
+  'FINGER_2',
+  'TRINKET_1',
+  'TRINKET_2',
+  'MAIN_HAND',
+  'OFF_HAND',
+  'RANGED',
+] as const
+
 export function slotLabel(slot: string): string {
   return slot
     .toLowerCase()
