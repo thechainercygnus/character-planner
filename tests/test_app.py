@@ -7,6 +7,7 @@ import pytest
 import respx
 from fastapi.testclient import TestClient
 from sqlalchemy.engine import Engine
+from sqlmodel import Session
 
 from character_planner.app import create_app
 from character_planner.blizzard import oauth
@@ -15,6 +16,7 @@ from character_planner.config import Settings
 from .conftest import FIXTURES
 from .test_dungeons import mock_companion_dungeons
 from .test_enchants import blizzard
+from .test_enchants import store as store_recipes
 from .test_items import COMPANION, companion_responder, mock_battlenet
 
 BASE = "https://us.api.blizzard.com/profile/wow/character/brumboldt-doomlet"
@@ -242,6 +244,29 @@ def test_enchant_catalog_refreshes_and_lists(client: TestClient) -> None:
     assert len(client.get("/api/enchants", params={"include_sod": True}).json()) == 12
     boots = next(o for o in listed if o["name"] == "Enchant Boots - Minor Stamina")
     assert (boots["slots"], boots["effects"]) == (["FEET"], {"Stamina": 3.0})
+
+
+def test_enchant_recommendations_from_snapshots_and_recipes(
+    client: TestClient, engine: Engine
+) -> None:
+    empty = client.get("/api/enchants/recommendations").json()
+    assert (empty["recipes"], empty["rows"]) == (0, [])  # before an enchant refresh
+
+    for kind in ("profile", "equipment", "professions"):
+        client.post("/api/snapshots/manual", json={"kind": kind, "payload": fixture(kind)})
+    with Session(engine) as session:
+        store_recipes(session)
+
+    advice = client.get("/api/enchants/recommendations").json()
+    assert (advice["level"], advice["recipes"]) == (18, 11)  # Season of Discovery left out
+    rows = {r["slot"]: r for r in advice["rows"]}
+    assert [p["option"]["name"] for p in rows["CHEST"]["picks"]] == [
+        "Enchant Chest - Minor Stats",
+        "Enchant Chest - Inferior Stamina",
+    ]
+    assert rows["CHEST"]["item"] == "Ironheart Chain"
+    ranged = rows["RANGED"]  # the scope recipe isn't in this catalog, but the enchant is read
+    assert ranged["current"]["text"] == "Enchanted: Scope (+1 Damage)"
 
 
 def test_reads_are_empty_before_any_sync(client: TestClient) -> None:

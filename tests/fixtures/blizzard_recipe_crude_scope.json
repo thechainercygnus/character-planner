@@ -1,0 +1,52 @@
+{
+  "id": 2421,
+  "name": "Crude Scope",
+  "media": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/media/recipe/2421?namespace=static-1.60.1_70399-forever-us"
+    },
+    "id": 2421
+  },
+  "crafted_item": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/item/4405?namespace=static-1.60.1_70399-forever-us"
+    },
+    "name": "Crude Scope",
+    "id": 4405
+  },
+  "reagents": [
+    {
+      "reagent": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/item/4361?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Copper Tube",
+        "id": 4361
+      },
+      "quantity": 1
+    },
+    {
+      "reagent": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/item/774?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Malachite",
+        "id": 774
+      },
+      "quantity": 1
+    },
+    {
+      "reagent": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/item/4359?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Handful of Copper Bolts",
+        "id": 4359
+      },
+      "quantity": 1
+    }
+  ],
+  "crafted_quantity": {
+    "value": 1.0
+  }
+}

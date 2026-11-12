@@ -300,6 +300,18 @@ def parse_professions(professions: Any) -> list[Profession]:
     return parsed
 
 
+def known_recipe_ids(professions: Any) -> set[int]:
+    """Recipe ids the character knows, from every profession tier."""
+    ids: set[int] = set()
+    for group in ("primaries", "secondaries"):
+        for entry in _get(professions, group) or []:
+            for tier in _get(entry, "tiers") or []:
+                for recipe in _get(tier, "known_recipes") or []:
+                    if (recipe_id := _int(_get(recipe, "id"))) is not None:
+                        ids.add(recipe_id)
+    return ids
+
+
 def parse_specialization(specializations: Any) -> Specialization | None:
     groups = _get(specializations, "specialization_groups") or []
     active = next((g for g in groups if _get(g, "is_active")), None)
