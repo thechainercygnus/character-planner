@@ -1,4 +1,4 @@
-import type { Candidate, PoolItem, PoolSource, Recommendations } from '../api'
+import type { Candidate, EnchantAdvice, EnchantOption, PoolItem, PoolSource, Recommendations } from '../api'
 
 export const hallDrop: PoolSource = {
   kind: 'drop',
@@ -99,4 +99,113 @@ export const recommendations: Recommendations = {
   considered: 2,
   unscored: 5,
   attributions: [],
+}
+
+function enchantOption(overrides: Partial<EnchantOption> & Pick<EnchantOption, 'recipe_id' | 'name'>): EnchantOption {
+  return {
+    profession: 'Enchanting',
+    category: 'Bracer Enchants',
+    slots: ['WRIST'],
+    two_handed: false,
+    shield_only: false,
+    text: null,
+    effects: {},
+    effects_source: 'description',
+    temporary: false,
+    crafted_item_id: null,
+    season_of_discovery: false,
+    estimated_level: 1,
+    ...overrides,
+  }
+}
+
+/** Shaped like GET /api/enchants/recommendations for the 2026-11-11 gear. */
+export const enchantAdvice: EnchantAdvice = {
+  level: 19,
+  recipes: 204,
+  considered: 35,
+  unscored: 16,
+  unknown_level: 3,
+  rows: [
+    {
+      slot: 'WRIST',
+      item: 'Cryptwalker Bracers',
+      current: null,
+      current_is_weaker: false,
+      picks: [
+        {
+          option: enchantOption({
+            recipe_id: 7510,
+            name: 'Enchant Bracer - Stamina',
+            effects: { Stamina: 5 },
+            estimated_level: 21,
+          }),
+          score: 5,
+          score_gain: 5,
+          usable_now: false,
+          can_make: false,
+        },
+        {
+          option: enchantOption({
+            recipe_id: 4293,
+            name: 'Enchant Bracer - Minor Deflect',
+            text: 'Permanently enchant bracers so the defense skill of the wearer is increased by 3.',
+            effects: { Defense: 3 },
+          }),
+          score: 3,
+          score_gain: 3,
+          usable_now: true,
+          can_make: false,
+        },
+      ],
+    },
+    {
+      slot: 'FEET',
+      item: "Greaves of the People's Militia",
+      current: { text: 'Enchanted: Stamina +3', effects: { Stamina: 3 }, score: 3 },
+      current_is_weaker: true,
+      picks: [
+        {
+          option: enchantOption({
+            recipe_id: 7508,
+            name: 'Enchant Boots - Lesser Stamina',
+            category: 'Boots Enchants',
+            slots: ['FEET'],
+            effects: { Stamina: 4 },
+            estimated_level: 21,
+          }),
+          score: 4,
+          score_gain: 1,
+          usable_now: false,
+          can_make: false,
+        },
+      ],
+    },
+    {
+      slot: 'RANGED',
+      item: 'Calibrated Blunderbuss',
+      current: null,
+      current_is_weaker: false,
+      picks: [
+        {
+          option: enchantOption({
+            recipe_id: 2421,
+            name: 'Crude Scope',
+            profession: 'Engineering',
+            category: 'Scopes',
+            slots: ['RANGED'],
+            effects: { 'Weapon Damage': 1 },
+            effects_source: 'curated',
+            crafted_item_id: 4405,
+            estimated_level: null,
+          }),
+          score: 0.09,
+          score_gain: 0.09,
+          usable_now: true,
+          can_make: true,
+        },
+      ],
+    },
+    { slot: 'NECK', item: null, current: null, current_is_weaker: false, picks: [] },
+  ],
 }

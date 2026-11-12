@@ -350,6 +350,69 @@ export interface RecipeRefresh {
   errors: string[]
 }
 
+/** An enchant recipe from the catalog (enchants.py EnchantOption). */
+export interface EnchantOption {
+  recipe_id: number
+  name: string
+  /** Enchanting, Engineering, Leatherworking, Blacksmithing. */
+  profession: string
+  category: string
+  slots: string[]
+  two_handed: boolean
+  shield_only: boolean
+  /** The in-game description, when the recipe has one. */
+  text: string | null
+  /** Stat name -> value; "Weapon Damage" is flat damage per hit. */
+  effects: Record<string, number>
+  effects_source: 'description' | 'curated' | 'equipped' | null
+  temporary: boolean
+  crafted_item_id: number | null
+  season_of_discovery: boolean
+  /** From the reagents' material levels; an estimate. */
+  estimated_level: number | null
+}
+
+export interface CurrentEnchant {
+  text: string
+  effects: Record<string, number>
+  score: number
+}
+
+export interface EnchantPick {
+  option: EnchantOption
+  score: number
+  /** Over the enchant on now, or over nothing. */
+  score_gain: number
+  /** False when the estimated level is a few levels away. */
+  usable_now: boolean
+  /** The character knows the recipe. */
+  can_make: boolean
+}
+
+export interface SlotEnchants {
+  slot: string
+  /** Equipped item name; null when the slot is empty. */
+  item: string | null
+  current: CurrentEnchant | null
+  /** Biggest gain first. */
+  picks: EnchantPick[]
+  /** An enchant is on and something better is in reach. */
+  current_is_weaker: boolean
+}
+
+/** GET /api/enchants/recommendations (enchants.py, ADR 0010). */
+export interface EnchantAdvice {
+  level: number | null
+  /** Catalog size; 0 until enchant data is refreshed. */
+  recipes: number
+  rows: SlotEnchants[]
+  considered: number
+  /** In reach but nothing to weigh: procs, or scopes and kits without known effects. */
+  unscored: number
+  /** No level estimate, so left out. */
+  unknown_level: number
+}
+
 export class ApiError extends Error {
   readonly status: number
 
@@ -400,6 +463,7 @@ export const api = {
   resetTalentPlan: () => request<TalentPlanView>('/api/talents/plan', { method: 'DELETE' }),
   refreshPool: () => request<PoolRefresh>('/api/pool/refresh', { method: 'POST' }),
   refreshEnchants: () => request<RecipeRefresh>('/api/enchants/refresh', { method: 'POST' }),
+  enchants: () => request<EnchantAdvice>('/api/enchants/recommendations'),
 }
 
 /** Backend timestamps are UTC without an offset; mark them as UTC before parsing. */
