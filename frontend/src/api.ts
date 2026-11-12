@@ -220,8 +220,20 @@ export interface Candidate {
   stat_deltas: Record<string, number>
   /** False when the item needs a few more levels. */
   usable_now: boolean
-  /** Named in gear_targets.yaml. */
+  /** Named in gear_targets.yaml or pinned in the app. */
   is_target: boolean
+  /** Pinned in the app: listed even when it isn't a top pick. */
+  pinned: boolean
+}
+
+export type ChoiceKind = 'target' | 'dismissed'
+
+/** An item pinned or dismissed on the Upgrades tab (choices.py ItemChoiceView). */
+export interface ItemChoice {
+  item_id: number
+  name: string
+  choice: ChoiceKind
+  created_at: string
 }
 
 export interface SlotRecommendation {
@@ -452,6 +464,14 @@ export const api = {
     }),
   resetWeights: () => request<WeightsView>('/api/weights', { method: 'DELETE' }),
   recommendations: () => request<Recommendations>('/api/recommendations'),
+  choices: () => request<ItemChoice[]>('/api/choices'),
+  setChoice: ({ itemId, name, choice }: { itemId: number; name: string; choice: ChoiceKind }) =>
+    request<ItemChoice[]>(`/api/choices/${itemId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ choice, name }),
+    }),
+  clearChoice: (itemId: number) => request<ItemChoice[]>(`/api/choices/${itemId}`, { method: 'DELETE' }),
   progress: () => request<Progress>('/api/progress'),
   talents: () => request<TalentPlanView>('/api/talents'),
   saveTalentPlan: (plan: TalentPlan) =>

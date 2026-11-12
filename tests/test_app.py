@@ -313,3 +313,37 @@ def test_weights_api_edit_and_reset(client: TestClient) -> None:
 def test_weights_api_rejects_bad_values(client: TestClient) -> None:
     assert client.put("/api/weights", json={"weights": {"Stamina": 99}}).status_code == 422
     assert client.put("/api/weights", json={"weights": {"": 1}}).status_code == 422
+
+
+def test_items_can_be_pinned_dismissed_and_cleared(client: TestClient) -> None:
+    assert client.get("/api/choices").json() == []
+
+    client.put("/api/choices/270230", json={"choice": "target", "name": "Kindlegem Girdle"})
+    choices = client.put("/api/choices/5193", json={"choice": "dismissed", "name": " Cape "}).json()
+    assert [(c["item_id"], c["choice"], c["name"]) for c in choices] == [
+        (5193, "dismissed", "Cape"),
+        (270230, "target", "Kindlegem Girdle"),
+    ]
+
+    # A new choice replaces the old one for the same item.
+    choices = client.put("/api/choices/5193", json={"choice": "target", "name": "Cape"}).json()
+    assert {c["item_id"]: c["choice"] for c in choices} == {5193: "target", 270230: "target"}
+
+    assert [c["item_id"] for c in client.delete("/api/choices/5193").json()] == [270230]
+    assert client.delete("/api/choices/5193").status_code == 404
+    # The recommendations still build with choices stored and no pool.
+    assert client.get("/api/recommendations").status_code == 200
+
+
+@pytest.mark.parametrize(
+    ("path", "body"),
+    [
+        ("/api/choices/1", {"choice": "maybe", "name": "x"}),
+        ("/api/choices/1", {"choice": "target", "name": ""}),
+        ("/api/choices/1", {"choice": "target", "name": "x" * 121}),
+        ("/api/choices/0", {"choice": "target", "name": "x"}),
+    ],
+)
+def test_choices_are_validated(client: TestClient, path: str, body: dict[str, str]) -> None:
+    assert client.put(path, json=body).status_code == 422
+    assert client.get("/api/choices").json() == []

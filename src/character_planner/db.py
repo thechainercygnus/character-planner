@@ -100,6 +100,18 @@ class StoredWeights(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=utcnow)
 
 
+class ItemChoice(SQLModel, table=True):
+    """An item pinned as a target or dismissed from the Upgrades tab (ADR 0012).
+
+    One row per item. The curated YAML files stay the defaults; these add to them.
+    """
+
+    item_id: int = Field(primary_key=True)
+    choice: str  # "target" or "dismissed"
+    name: str  # kept so a dismissed item can be listed after it leaves the pool
+    created_at: datetime = Field(default_factory=utcnow)
+
+
 def catalog_by_name(session: Session) -> dict[str, CatalogItem]:
     return {row.name_key: row for row in session.exec(select(CatalogItem)).all()}
 

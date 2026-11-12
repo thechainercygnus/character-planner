@@ -13,6 +13,7 @@ from typing import Annotated, Any
 
 import httpx
 from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Path as FastAPIPath
 from fastapi.responses import PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -21,6 +22,14 @@ from sqlmodel import Session
 
 from character_planner import jobs
 from character_planner.blizzard import oauth
+from character_planner.choices import (
+    ChoiceKind,
+    ItemChoiceView,
+    clear_choice,
+    list_choices,
+    set_choice,
+    stored_choices,
+)
 from character_planner.companion import companion_by_id
 from character_planner.config import Settings, get_settings
 from character_planner.curated import GearTargets
@@ -141,6 +150,11 @@ def get_enchant_data(request: Request) -> EnchantData:
 def equipped_items(session: Session) -> dict[str, EquippedItem]:
     equipment = latest_by_kind(session).get("equipment")
     return {item.slot: item for item in parse_equipment(equipment.payload if equipment else None)}
+
+
+class ChoiceUpdate(BaseModel):
+    choice: ChoiceKind
+    name: Annotated[str, Field(min_length=1, max_length=120)]
 
 
 class WeightsUpdate(BaseModel):
@@ -315,7 +329,30 @@ def create_app(
             current_weights(session, defaults),
             rules,
             targets,
+            stored_choices(session),
         )
+
+    @app.get("/api/choices")
+    def get_choices(session: SessionDep) -> list[ItemChoiceView]:
+        """Items pinned as targets or dismissed in the app, newest first (ADR 0012)."""
+        return list_choices(session)
+
+    @app.put("/api/choices/{item_id}")
+    def put_choice(
+        item_id: Annotated[int, FastAPIPath(gt=0)], update: ChoiceUpdate, session: SessionDep
+    ) -> list[ItemChoiceView]:
+        """Pin an item as a target or dismiss it; replaces any earlier choice for it."""
+        set_choice(session, item_id, update.name.strip() or str(item_id), update.choice)
+        return list_choices(session)
+
+    @app.delete("/api/choices/{item_id}")
+    def delete_choice(
+        item_id: Annotated[int, FastAPIPath(gt=0)], session: SessionDep
+    ) -> list[ItemChoiceView]:
+        """Unpin or un-dismiss an item."""
+        if not clear_choice(session, item_id):
+            raise HTTPException(404, f"No choice stored for item {item_id}")
+        return list_choices(session)
 
     @app.post("/api/snapshots/manual", status_code=201)
     def add_manual(entry: ManualSnapshot, session: SessionDep) -> dict[str, int | None]:
