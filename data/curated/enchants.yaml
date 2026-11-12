@@ -1,0 +1,48 @@
+# Hand-maintained enchant data (ADR 0010). The enchant list itself comes from Blizzard's
+# Forever recipe data (POST /api/enchants/refresh); this file fills the gaps it leaves.
+
+# When an enchant comes within reach, estimated from its materials: the level from which
+# a material is commonly found (disenchanting gear of that item level, or mining). An
+# enchant's estimate is the highest of its materials'. Bands are Classic's disenchanting
+# and mining tables; Forever may differ, so correct any that look wrong in game.
+# Forever Companion has almost none of these materials (5 of 146 reagents, 2026-11-12).
+reagent_levels:
+  10940: 1   # Strange Dust (item level 1-20)
+  10938: 1   # Lesser Magic Essence (1-10)
+  10939: 11  # Greater Magic Essence (11-15)
+  10998: 16  # Lesser Astral Essence (16-20)
+  10978: 11  # Small Glimmering Shard (11-15, rare quality)
+  11083: 21  # Soul Dust (21-30)
+  11082: 21  # Greater Astral Essence (21-25)
+  11084: 16  # Large Glimmering Shard (16-20, rare)
+  11134: 26  # Lesser Mystic Essence (26-30)
+  11138: 21  # Small Glowing Shard (21-25, rare)
+  11137: 31  # Vision Dust (31-40)
+  11135: 31  # Greater Mystic Essence (31-35)
+  11139: 26  # Large Glowing Shard (26-30, rare)
+  11174: 36  # Lesser Nether Essence (36-40)
+  11177: 31  # Small Radiant Shard (31-35, rare)
+  11176: 41  # Dream Dust (41-50)
+  11175: 41  # Greater Nether Essence (41-45)
+  11178: 36  # Large Radiant Shard (36-40, rare)
+  16202: 46  # Lesser Eternal Essence (46-50)
+  14343: 41  # Small Brilliant Shard (41-45, rare)
+  16204: 51  # Illusion Dust (51-60)
+  16203: 51  # Greater Eternal Essence (51-60)
+  14344: 46  # Large Brilliant Shard (46+, rare)
+  20725: 51  # Nexus Crystal (epic, 51+)
+  2835: 1    # Rough Stone (copper)
+  2836: 10   # Coarse Stone (tin)
+  2838: 25   # Heavy Stone (iron)
+  7912: 35   # Solid Stone (mithril)
+  12365: 45  # Dense Stone (thorium)
+
+# Effects of items that enchant gear (scopes, armor kits). Their recipes carry no effect
+# text and neither Blizzard nor Forever Companion serves these items, so each entry here
+# is copied from the game. Effects of enchants you have equipped are also read from the
+# equipment snapshot and take precedence. Keys are the crafted item's id.
+crafted_effects:
+  4405: {Weapon Damage: 1}  # Crude Scope: "Enchanted: Scope (+1 Damage)" on the Rough Boomstick
+
+# Enchants listed per slot.
+per_slot: 3

@@ -7,6 +7,7 @@ import {
   StatsPanel,
 } from './components/CharacterPanels'
 import { Dungeons } from './components/Dungeons'
+import { Enchants } from './components/Enchants'
 import { GearTable } from './components/GearTable'
 import { Progress } from './components/Progress'
 import { Recommendations } from './components/Recommendations'
@@ -34,6 +35,7 @@ export default function App() {
   const recommendations = useQuery({ queryKey: ['recommendations'], queryFn: api.recommendations })
   const talents = useQuery({ queryKey: ['talents'], queryFn: api.talents, enabled: tab === 'character' })
   const progress = useQuery({ queryKey: ['progress'], queryFn: api.progress, enabled: tab === 'progress' })
+  const enchants = useQuery({ queryKey: ['enchants'], queryFn: api.enchants, enabled: tab === 'upgrades' })
 
   const upgradeSlots = recommendations.data?.rows.filter((row) => row.candidates.length > 0).length
   const recommendationsError = recommendations.isError && (
@@ -65,6 +67,8 @@ export default function App() {
             <>
               {recommendationsError}
               {recommendations.data && <Recommendations data={recommendations.data} actions={<WeightsDialog />} />}
+              {enchants.isError && <p className="error">Couldn't load enchants: {enchants.error.message}</p>}
+              {enchants.data && <Enchants data={enchants.data} />}
             </>
           )}
 

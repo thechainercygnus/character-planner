@@ -8,18 +8,24 @@ are crafted items whose effect is on the item; those are listed with their craft
 id and get effects once item data has them.
 
 Recipes have no skill or level requirement in the API. The level an enchant comes within
-reach is *estimated* from its reagents: the highest Forever Companion item level among
-them (Strange Dust, Lesser Magic Essence...). Season of Discovery recipes are in the data
-but excluded unless a setting includes them.
+reach is *estimated* from its reagents: the highest level among them, from the material
+bands in data/curated/enchants.yaml (Strange Dust 1, Soul Dust 21...) or Forever
+Companion's item level. Season of Discovery recipes are in the data but excluded unless
+a setting includes them.
+
+Scopes and armor kits are items whose effect no source serves; their effects come from
+data/curated/enchants.yaml and from enchants seen on the character's own gear.
 """
 
 import re
 import time
 from collections.abc import Iterable, Mapping
 from datetime import timedelta
-from typing import Any
+from pathlib import Path
+from typing import Any, Literal
 
 import httpx
+import yaml
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
@@ -29,6 +35,9 @@ from character_planner.blizzard.client import BlizzardClient
 from character_planner.companion import CompanionInfo, as_utc, refresh_companion
 from character_planner.config import Settings
 from character_planner.db import RecipeData, utcnow
+from character_planner.recommend import EQUIPMENT_SLOTS, UsageRules
+from character_planner.scoring import RANGED_DPS, WEAPON_DPS, Weights
+from character_planner.views import EquippedItem
 
 # Professions that put permanent or temporary enchants on gear.
 PROFESSIONS = ("Enchanting", "Engineering", "Leatherworking", "Blacksmithing")
@@ -57,7 +66,10 @@ CATEGORY_SLOTS: dict[str, tuple[str, ...]] = {
     "amulet enchants": ("NECK",),
     "scopes": ("RANGED",),
     "weapon stones": ("MAIN_HAND",),
+    "armor kits": ("CHEST", "LEGS", "HANDS", "FEET"),
 }
+# Categories whose enchants wear off (sharpening stones, weightstones).
+TEMPORARY_CATEGORIES = ("weapon stones",)
 # Season of Discovery recipes sit in one category; their slot comes from the name.
 NAME_SLOTS: dict[str, tuple[str, ...]] = {
     "enchant bracer": ("WRIST",),
@@ -77,6 +89,22 @@ class Reagent(BaseModel):
     quantity: int
 
 
+class EnchantData(BaseModel):
+    """data/curated/enchants.yaml."""
+
+    reagent_levels: dict[int, int] = {}
+    crafted_effects: dict[int, dict[str, float]] = {}
+    per_slot: int = 3
+
+
+def load_enchant_data(path: Path) -> EnchantData:
+    with path.open(encoding="utf-8") as handle:
+        return EnchantData.model_validate(yaml.safe_load(handle) or {})
+
+
+EffectsSource = Literal["description", "curated", "equipped"]
+
+
 class EnchantOption(BaseModel):
     recipe_id: int
     name: str
@@ -87,6 +115,8 @@ class EnchantOption(BaseModel):
     shield_only: bool = False  # shield enchants (not held-in-off-hand items)
     text: str | None  # the in-game description
     effects: dict[str, float]  # parsed from text; empty for procs and utility
+    effects_source: EffectsSource | None = None
+    temporary: bool = False  # wears off (weapon stones)
     reagents: list[Reagent]
     crafted_item_id: int | None = None  # scopes, kits, stones: the effect is on this item
     season_of_discovery: bool = False
@@ -103,6 +133,7 @@ _PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (re.compile(rf"(?:wearer's|bearer's) {_STAT} by {_N}"), "stat_n"),
     (re.compile(rf"the {_STAT} of the (?:wearer|bearer) by {_N}"), "stat_n"),
     (re.compile(rf"increase {_STAT} by {_N}"), "stat_n"),
+    (re.compile(rf"enchanted: {_STAT} \+{_N}\b"), "stat_n"),  # equipped: "Stamina +3"
     (re.compile(rf"(?:add|give) {_N} (?:to )?{_STAT}\b"), "n_stat"),
     (
         re.compile(rf"\+{_N} defense|defense skill of the (?:wearer|bearer) is increased by {_N}"),
@@ -183,17 +214,30 @@ def _slots(name: str, category: str) -> tuple[str, ...]:
     return ()
 
 
-def estimate_level(reagents: Iterable[Reagent], items: Mapping[int, CompanionInfo]) -> int | None:
-    levels = [
-        info.item_level
-        for r in reagents
-        if (info := items.get(r.item_id)) is not None and info.item_level is not None
-    ]
+def estimate_level(
+    reagents: Iterable[Reagent],
+    items: Mapping[int, CompanionInfo],
+    reagent_levels: Mapping[int, int] | None = None,
+) -> int | None:
+    """The highest level among the reagents: curated material bands, else Forever
+    Companion's item level. None when no reagent has either."""
+    bands = reagent_levels or {}
+    levels: list[int] = []
+    for r in reagents:
+        if r.item_id in bands:
+            levels.append(bands[r.item_id])
+        elif (info := items.get(r.item_id)) is not None and info.item_level is not None:
+            levels.append(info.item_level)
     return max(levels, default=None)
 
 
 def parse_recipe(
-    payload: Any, profession: str, category: str, items: Mapping[int, CompanionInfo]
+    payload: Any,
+    profession: str,
+    category: str,
+    items: Mapping[int, CompanionInfo],
+    data: EnchantData | None = None,
+    equipped_effects: Mapping[int, dict[str, float]] | None = None,
 ) -> EnchantOption | None:
     recipe_id = fields.as_int(fields.get(payload, "id"))
     name = fields.name(fields.get(payload, "name"))
@@ -211,6 +255,15 @@ def parse_recipe(
     text = fields.get(payload, "description")
     text = text.strip() if isinstance(text, str) else None
     lowered = name.lower()
+    crafted_item_id = fields.as_int(fields.get(payload, "crafted_item", "id"))
+    effects = parse_effects(text)
+    source: EffectsSource | None = "description" if effects else None
+    data = data or EnchantData()
+    if not effects and crafted_item_id is not None:
+        if crafted_item_id in (equipped_effects or {}):
+            effects, source = dict((equipped_effects or {})[crafted_item_id]), "equipped"
+        elif crafted_item_id in data.crafted_effects:
+            effects, source = dict(data.crafted_effects[crafted_item_id]), "curated"
     return EnchantOption(
         recipe_id=recipe_id,
         name=name,
@@ -220,21 +273,30 @@ def parse_recipe(
         two_handed="two-handed" in category.lower() or lowered.startswith("enchant 2h"),
         shield_only="shield" in category.lower() or lowered.startswith("enchant shield"),
         text=text,
-        effects=parse_effects(text),
+        effects=effects,
+        effects_source=source,
+        temporary=category.lower() in TEMPORARY_CATEGORIES,
         reagents=reagents,
-        crafted_item_id=fields.as_int(fields.get(payload, "crafted_item", "id")),
+        crafted_item_id=crafted_item_id,
         season_of_discovery=category.lower() == SEASON_OF_DISCOVERY,
-        estimated_level=estimate_level(reagents, items),
+        estimated_level=estimate_level(reagents, items, data.reagent_levels),
     )
 
 
 def catalog(
-    session: Session, items: Mapping[int, CompanionInfo], *, include_sod: bool = False
+    session: Session,
+    items: Mapping[int, CompanionInfo],
+    *,
+    include_sod: bool = False,
+    data: EnchantData | None = None,
+    equipped_effects: Mapping[int, dict[str, float]] | None = None,
 ) -> list[EnchantOption]:
     """Every stored enchant recipe that maps to a gear slot."""
     options = []
     for row in session.exec(select(RecipeData)).all():
-        option = parse_recipe(row.payload, row.profession, row.category, items)
+        option = parse_recipe(
+            row.payload, row.profession, row.category, items, data, equipped_effects
+        )
         if option is None or not option.slots:
             continue
         if option.season_of_discovery and not include_sod:
@@ -369,3 +431,173 @@ def refresh_enchant_data(
     outcome.items_not_found = items.not_found
     outcome.errors += [f"Forever Companion {e}" for e in items.errors]
     return outcome
+
+
+# --- recommendations -------------------------------------------------------------------
+
+# Ranged slots take scopes only on these weapon types.
+SCOPE_WEAPONS = ("Bow", "Gun", "Crossbow")
+
+
+class CurrentEnchant(BaseModel):
+    text: str  # "Enchanted: Stamina +3"
+    effects: dict[str, float]
+    score: float
+
+
+class EnchantPick(BaseModel):
+    option: EnchantOption
+    score: float
+    score_gain: float  # over the current enchant (or none)
+    usable_now: bool  # estimated level reached
+    can_make: bool  # the character knows the recipe
+
+
+class SlotEnchants(BaseModel):
+    slot: str
+    item: str | None  # equipped item name; None when the slot is empty
+    current: CurrentEnchant | None
+    picks: list[EnchantPick]  # biggest gain first
+    current_is_weaker: bool  # an enchant on and something better in reach
+
+
+class EnchantAdvice(BaseModel):
+    level: int | None
+    recipes: int  # catalog size; 0 means enchant data hasn't been refreshed
+    rows: list[SlotEnchants]  # slots that take an enchant, in equipment order
+    considered: int  # options scored for some slot
+    unscored: int  # options in reach whose effect has no stat (procs, unknown items)
+    unknown_level: int  # options with no level estimate, left out
+
+
+def equipped_effects(equipment: Iterable[EquippedItem]) -> dict[int, dict[str, float]]:
+    """Effects of enchants on the character's gear, keyed by the item that applied them
+    ("Enchanted: Scope (+1 Damage)" from Crude Scope). Real game text, so it wins over
+    the curated list."""
+    learned: dict[int, dict[str, float]] = {}
+    for item in equipment:
+        for enchant in item.enchantments:
+            if enchant.source_item_id is not None and (effects := parse_effects(enchant.text)):
+                learned[enchant.source_item_id] = effects
+    return learned
+
+
+def enchant_score(
+    weights: Weights, slot: str, effects: Mapping[str, float], speed: float | None
+) -> float:
+    """Stats x weights. Flat weapon damage counts as damage / weapon speed DPS."""
+    total = 0.0
+    for stat, value in effects.items():
+        if stat == WEAPON_DAMAGE:
+            if speed:
+                total += value / speed * weights.of(RANGED_DPS if slot == "RANGED" else WEAPON_DPS)
+        else:
+            total += value * weights.of(stat)
+    return round(total, 2)
+
+
+def fits(option: EnchantOption, slot: str, worn: EquippedItem, rules: UsageRules) -> bool:
+    """Whether this enchant can go on the item worn in this slot."""
+    if slot not in option.slots or option.temporary:
+        return False
+    if option.two_handed and not rules.two_handers:
+        return False
+    if slot == "OFF_HAND" and option.shield_only != (worn.armor_type == "Shield"):
+        return False
+    return slot != "RANGED" or worn.armor_type in SCOPE_WEAPONS
+
+
+def _current(
+    worn: EquippedItem, slot: str, weights: Weights, crafted: Mapping[int, dict[str, float]]
+) -> CurrentEnchant | None:
+    permanent = [e for e in worn.enchantments if e.kind in (None, "PERMANENT")]
+    if not permanent:
+        return None
+    enchant = permanent[0]
+    effects = parse_effects(enchant.text) or dict(crafted.get(enchant.source_item_id or 0, {}))
+    return CurrentEnchant(
+        text=enchant.text,
+        effects=effects,
+        score=enchant_score(weights, slot, effects, worn.attack_speed),
+    )
+
+
+def advise(
+    options: list[EnchantOption],
+    equipped: Mapping[str, EquippedItem],
+    weights: Weights,
+    rules: UsageRules,
+    level: int | None,
+    known_recipes: set[int],
+    data: EnchantData,
+) -> EnchantAdvice:
+    """The best enchants in reach per slot, scored against the one on now (ADR 0010)."""
+    crafted = {**data.crafted_effects, **equipped_effects(equipped.values())}
+    # Slots some enchant fits, plus any slot that has one on now.
+    enchantable = [
+        s
+        for s in EQUIPMENT_SLOTS
+        if any(s in o.slots for o in options) or (s in equipped and equipped[s].enchantments)
+    ]
+    considered: set[int] = set()
+    unscored: set[int] = set()
+    unknown: set[int] = set()
+    rows: list[SlotEnchants] = []
+    for slot in enchantable:
+        worn = equipped.get(slot)
+        if worn is None:
+            rows.append(
+                SlotEnchants(slot=slot, item=None, current=None, picks=[], current_is_weaker=False)
+            )
+            continue
+        current = _current(worn, slot, weights, crafted)
+        baseline = current.score if current else 0.0
+        picks: list[EnchantPick] = []
+        for option in options:
+            if not fits(option, slot, worn, rules):
+                continue
+            can_make = option.recipe_id in known_recipes
+            estimate = option.estimated_level
+            # A recipe the character knows is in reach, whatever the estimate says.
+            if estimate is None and not can_make:
+                unknown.add(option.recipe_id)
+                continue
+            too_high = (
+                level is not None and estimate is not None and estimate > level + rules.levels_ahead
+            )
+            if too_high and not can_make:
+                continue
+            if not option.effects:
+                unscored.add(option.recipe_id)
+                continue
+            considered.add(option.recipe_id)
+            value = enchant_score(weights, slot, option.effects, worn.attack_speed)
+            if value - baseline <= 0:
+                continue
+            picks.append(
+                EnchantPick(
+                    option=option,
+                    score=value,
+                    score_gain=round(value - baseline, 2),
+                    usable_now=can_make or level is None or estimate is None or estimate <= level,
+                    can_make=can_make,
+                )
+            )
+        picks.sort(key=lambda p: (-p.score_gain, not p.can_make, p.option.name))
+        rows.append(
+            SlotEnchants(
+                slot=slot,
+                item=worn.name,
+                current=current,
+                picks=picks[: data.per_slot],
+                current_is_weaker=current is not None and bool(picks),
+            )
+        )
+    return EnchantAdvice(
+        level=level,
+        recipes=len(options),
+        rows=rows,
+        considered=len(considered),
+        unscored=len(unscored),
+        unknown_level=len(unknown),
+    )

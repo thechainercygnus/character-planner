@@ -17,6 +17,9 @@ match: Forever-new item) and the item media response for Burnished Shield (3655)
 `companion_item_270230.json` is the real Forever Companion `GET /items/270230` response
 (Kindlegem Girdle) from `samples/companion-20261111T200041Z`.
 
+`blizzard_recipe_crude_scope.json` is the real Blizzard `GET /data/wow/recipe/2421`
+response (Crude Scope) stored by the enchant refresh on 2026-11-12, with `_links` removed.
+
 `companion_dungeon_hall_of_thanes.json` is the real Forever Companion
 `GET /dungeons/hall-of-thanes` response, saved on 2026-11-11 with
 `curl.exe -s https://forevercompanion.io/api/v1/dungeons/hall-of-thanes -o tests/fixtures/companion_dungeon_hall_of_thanes.json`.
