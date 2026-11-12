@@ -57,6 +57,21 @@ Deploy (Docker): `docker compose up -d --build`; over Tailscale add `-f compose.
 - Commits and pushes need the user's go-ahead. Stop at a ready-to-review PR; the user
   merges.
 
+## Roadmap
+
+Issue #25 (label `roadmap`) is the work order. Read it before choosing what to do next,
+and keep it true as you go: edit its body with `gh issue edit 25 --body-file <file>`.
+
+- Pick the first unchecked item under "Now" or "Next" that isn't parked or marked as the
+  user's own task.
+- When you open a PR for an item, note the PR number on its line. When it merges, check
+  the box and say what's left, if anything, before the issue can close.
+- When an issue closes, move its line to "Done".
+- New issues go on the roadmap in the right place, with a one-line reason if it isn't the end.
+- Reorder only when the user asks, or propose a change and wait for their answer.
+- Keep the existing sections and their order. Write each item as `#<n> <title>` plus a
+  short note. Don't change items you didn't work on.
+
 ## Layout
 
 - `src/character_planner/blizzard/`: OAuth and the API client (raw JSON in, status always reported)
