@@ -1,0 +1,95 @@
+"""Work the API and the worker share: syncing the character and refreshing static data.
+
+The API runs these when you press a button; the worker (worker.py, ADR 0011) runs them on
+a schedule. Each takes a session and settings, so neither caller owns the logic.
+"""
+
+import logging
+
+import httpx
+from sqlmodel import Session
+
+from character_planner.blizzard import oauth
+from character_planner.blizzard.client import BlizzardClient
+from character_planner.config import Settings
+from character_planner.curated import GearTargets, load_gear_targets
+from character_planner.db import Snapshot, StoredToken, latest_by_kind
+from character_planner.dungeons import stored_dungeons
+from character_planner.items import refresh_item_sources
+from character_planner.pool import PoolRefresh, build_pool, refresh_pool, resolve_target_ids
+from character_planner.views import character_faction, character_level, parse_equipment
+
+logger = logging.getLogger(__name__)
+
+
+class NotLoggedIn(Exception):
+    """No stored user token, or it has expired. Battle.net issues no refresh token for
+    the authorization code flow, so only logging in again fixes it."""
+
+
+def current_token(session: Session) -> oauth.Token | None:
+    stored = session.get(StoredToken, 1)
+    if stored is None:
+        return None
+    token = oauth.Token(stored.access_token, stored.expires_at, stored.scope)
+    return None if token.expired else token
+
+
+def character_context(session: Session) -> tuple[int | None, str | None]:
+    """Level and faction from the latest profile snapshot."""
+    profile = latest_by_kind(session).get("profile")
+    payload = profile.payload if profile else None
+    return character_level(payload), character_faction(payload)
+
+
+def equipped_item_ids(session: Session) -> list[int]:
+    equipment = latest_by_kind(session).get("equipment")
+    items = parse_equipment(equipment.payload) if equipment else []
+    return [item.item_id for item in items if item.item_id is not None]
+
+
+def gear_targets(session: Session, settings: Settings) -> GearTargets:
+    """gear_targets.yaml, with item ids filled in from the item pool where it has them."""
+    targets = load_gear_targets(settings.curated_dir / "gear_targets.yaml")
+    pool = build_pool(stored_dungeons(session), character_context(session)[1])
+    return resolve_target_ids(targets, pool)
+
+
+def sync_character(
+    session: Session, settings: Settings, http: httpx.Client | None = None
+) -> dict[str, int]:
+    """Pull every character endpoint and store each response, failures included.
+
+    Then look up any target items not in the item catalog yet. That step is best-effort:
+    a catalog failure never fails the sync. Raises NotLoggedIn without a valid token.
+    """
+    token = current_token(session)
+    if token is None:
+        raise NotLoggedIn("Not logged in or token expired; visit /auth/login")
+    with BlizzardClient(settings, token, http=http) as client:
+        results = client.all_character_data()
+    for result in results:
+        session.add(
+            Snapshot(source="api", kind=result.kind, status=result.status, payload=result.body)
+        )
+    session.commit()
+    targets = gear_targets(session, settings)
+    items = refresh_item_sources(session, settings, targets, equipped_item_ids(session), http=http)
+    for error in items.errors:
+        logger.warning("Item data refresh after sync: %s", error)
+    return {result.kind: result.status for result in results}
+
+
+def refresh_item_pool(
+    session: Session, settings: Settings, *, force: bool = False, http: httpx.Client | None = None
+) -> PoolRefresh:
+    """Dungeon drop tables and quest rewards, then item details for the level window."""
+    level, faction = character_context(session)
+    return refresh_pool(
+        session,
+        level=level,
+        faction=faction,
+        force=force,
+        http=http,
+        pause=settings.companion_request_pause,
+    )

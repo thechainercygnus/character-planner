@@ -19,11 +19,11 @@ from pydantic import BaseModel, Field
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
+from character_planner import jobs
 from character_planner.blizzard import oauth
-from character_planner.blizzard.client import BlizzardClient
 from character_planner.companion import companion_by_id
 from character_planner.config import Settings, get_settings
-from character_planner.curated import GearTargets, load_gear_targets
+from character_planner.curated import GearTargets
 from character_planner.db import (
     Snapshot,
     StoredToken,
@@ -33,16 +33,20 @@ from character_planner.db import (
     latest_by_kind,
     make_engine,
 )
-from character_planner.dungeons import stored_dungeons
 from character_planner.enchants import EnchantOption, RecipeRefresh, catalog, refresh_enchant_data
 from character_planner.items import RefreshResult, refresh_item_sources
+from character_planner.jobs import (
+    NotLoggedIn,
+    character_context,
+    current_token,
+    equipped_item_ids,
+    gear_targets,
+    sync_character,
+)
 from character_planner.pool import (
     PoolRefresh,
     PoolView,
-    build_pool,
     pool_view,
-    refresh_pool,
-    resolve_target_ids,
 )
 from character_planner.progress import Progress, progress
 from character_planner.recommend import Recommendations, UsageRules, load_rules, recommend
@@ -67,7 +71,6 @@ from character_planner.talents import (
 from character_planner.views import (
     CharacterView,
     GearPlan,
-    character_faction,
     character_level,
     character_view,
     gear_plan,
@@ -100,23 +103,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 def get_targets(request: Request, session: SessionDep) -> GearTargets:
     """gear_targets.yaml, with item ids filled in from the item pool where it has them."""
-    settings: Settings = request.app.state.settings
-    targets = load_gear_targets(settings.curated_dir / "gear_targets.yaml")
-    pool = build_pool(stored_dungeons(session), character_context(session)[1])
-    return resolve_target_ids(targets, pool)
-
-
-def character_context(session: Session) -> tuple[int | None, str | None]:
-    """Level and faction from the latest profile snapshot."""
-    profile = latest_by_kind(session).get("profile")
-    payload = profile.payload if profile else None
-    return character_level(payload), character_faction(payload)
-
-
-def equipped_item_ids(session: Session) -> list[int]:
-    equipment = latest_by_kind(session).get("equipment")
-    items = parse_equipment(equipment.payload) if equipment else []
-    return [item.item_id for item in items if item.item_id is not None]
+    return gear_targets(session, request.app.state.settings)
 
 
 def get_default_weights(request: Request) -> Weights:
@@ -163,13 +150,6 @@ def create_app(
     app.state.settings = settings
     app.state.engine = engine
 
-    def current_token(session: Session) -> oauth.Token | None:
-        stored = session.get(StoredToken, 1)
-        if stored is None:
-            return None
-        token = oauth.Token(stored.access_token, stored.expires_at, stored.scope)
-        return None if token.expired else token
-
     @app.get("/api/healthz")
     def healthz() -> dict[str, str]:
         return {"status": "ok"}
@@ -212,26 +192,16 @@ def create_app(
         }
 
     @app.post("/api/sync")
-    def sync(session: SessionDep, gear: TargetsDep) -> dict[str, int]:
+    def sync(session: SessionDep) -> dict[str, int]:
         """Pull every endpoint and store each response, failures included.
 
         Then look up any target items not in the item catalog yet. That step is
         best-effort: a catalog failure never fails the sync.
         """
-        token = current_token(session)
-        if token is None:
-            raise HTTPException(401, "Not logged in or token expired; visit /auth/login")
-        with BlizzardClient(settings, token, http=http) as client:
-            results = client.all_character_data()
-        for result in results:
-            session.add(
-                Snapshot(source="api", kind=result.kind, status=result.status, payload=result.body)
-            )
-        session.commit()
-        items = refresh_item_sources(session, settings, gear, equipped_item_ids(session), http=http)
-        for error in items.errors:
-            logger.warning("Item data refresh after sync: %s", error)
-        return {result.kind: result.status for result in results}
+        try:
+            return sync_character(session, settings, http=http)
+        except NotLoggedIn as error:
+            raise HTTPException(401, str(error)) from error
 
     @app.post("/api/items/refresh")
     def refresh_items(session: SessionDep, gear: TargetsDep, force: bool = False) -> RefreshResult:
@@ -249,15 +219,7 @@ def create_app(
         window. The first run takes a few minutes (paced under Forever Companion's rate
         limit); `uv run character-planner-pool` does the same with progress output.
         """
-        level, faction = character_context(session)
-        return refresh_pool(
-            session,
-            level=level,
-            faction=faction,
-            force=force,
-            http=http,
-            pause=settings.companion_request_pause,
-        )
+        return jobs.refresh_item_pool(session, settings, force=force, http=http)
 
     @app.post("/api/enchants/refresh")
     def refresh_enchants(session: SessionDep, force: bool = False) -> RecipeRefresh:
