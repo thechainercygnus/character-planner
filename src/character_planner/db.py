@@ -93,11 +93,33 @@ class StoredTalentPlan(SQLModel, table=True):
 
 
 class StoredWeights(SQLModel, table=True):
-    """Stat weights edited in the app (ADR 0005). One row, id 1; none means defaults."""
+    """Stat weights edited in the app before presets (ADR 0005). Read once at startup,
+    moved into a Leveling tank WeightPreset, then deleted (ADR 0013)."""
 
     id: int = Field(default=1, primary_key=True)
     weights: Any = Field(sa_column=Column(JSON, nullable=False))
     updated_at: datetime = Field(default_factory=utcnow)
+
+
+class WeightPreset(SQLModel, table=True):
+    """A stat weight preset saved in the app (ADR 0013).
+
+    shipped=True rows are edits to a preset from the curated files (same key); deleting
+    the row resets it. shipped=False rows are the user's own presets.
+    """
+
+    key: str = Field(primary_key=True)
+    name: str
+    shipped: bool = False
+    weights: Any = Field(sa_column=Column(JSON, nullable=False))
+    updated_at: datetime = Field(default_factory=utcnow)
+
+
+class ActiveWeightPreset(SQLModel, table=True):
+    """Which preset scores everything. One row, id 1; none means Leveling tank."""
+
+    id: int = Field(default=1, primary_key=True)
+    key: str
 
 
 class ItemChoice(SQLModel, table=True):

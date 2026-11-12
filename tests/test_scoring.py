@@ -1,14 +1,31 @@
+from collections.abc import Callable
+
+import pytest
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
 from character_planner.config import Settings
+from character_planner.db import ActiveWeightPreset, StoredWeights
 from character_planner.scoring import (
+    LEVELING,
+    Preset,
+    PresetError,
+    ShippedPresets,
+    UnknownPreset,
     Weights,
+    activate,
+    active_key,
+    create_preset,
     current_weights,
+    delete_preset,
     load_default_weights,
+    load_shipped_presets,
+    migrate_stored_weights,
+    rename_preset,
     reset_weights,
     save_weights,
     score,
+    weights_view,
 )
 
 WEIGHTS = Weights(
@@ -35,12 +52,118 @@ def test_default_weights_file_loads(settings: Settings) -> None:
     assert defaults.of("Armor") > 0
 
 
-def test_saved_weights_override_defaults_until_reset(engine: Engine) -> None:
+SHIPPED = ShippedPresets(
+    presets=[
+        Preset(key=LEVELING, name="Leveling tank", weights={"Stamina": 1.0, "Armor": 0.1}),
+        Preset(key="solo-dps", name="Solo DPS", weights={"Stamina": 0.5, "Armor": 0.03}),
+    ]
+)
+
+
+def test_shipped_presets_load_with_leveling_tank_first(settings: Settings) -> None:
+    shipped = load_shipped_presets(settings.curated_dir)
+    assert [p.key for p in shipped.presets] == [LEVELING, "dungeon-tank", "solo-dps"]
+    base = load_default_weights(settings.curated_dir / "stat_weights.yaml")
+    assert shipped.base == base
+    solo = shipped.get("solo-dps")
+    assert solo is not None and solo.weights["Strength"] == 1.0
+    # Stats a preset leaves out take the Leveling tank weight.
+    assert solo.weights["Fire Resistance"] == base.of("Fire Resistance")
+
+
+def test_leveling_tank_is_active_by_default_and_edits_win_until_reset(engine: Engine) -> None:
     with Session(engine) as session:
-        assert current_weights(session, WEIGHTS) == WEIGHTS
-        save_weights(session, {"Stamina": 3.0})
-        merged = current_weights(session, WEIGHTS)
-        assert merged.of("Stamina") == 3.0
-        assert merged.of("Armor") == 0.1  # not saved: default
-        reset_weights(session)
-        assert current_weights(session, WEIGHTS) == WEIGHTS
+        assert current_weights(session, SHIPPED) == SHIPPED.base
+        save_weights(session, SHIPPED, {"Stamina": 3.0})
+        merged = current_weights(session, SHIPPED)
+        assert (merged.of("Stamina"), merged.of("Armor")) == (3.0, 0.1)  # Armor: default
+        view = weights_view(session, SHIPPED)
+        assert view.customised and view.defaults == {"Stamina": 1.0, "Armor": 0.1}
+        assert [(p.key, p.customised) for p in view.presets] == [
+            (LEVELING, True),
+            ("solo-dps", False),
+        ]
+        reset_weights(session, SHIPPED)
+        assert current_weights(session, SHIPPED) == SHIPPED.base
+
+
+def test_switching_presets_keeps_each_ones_edits(engine: Engine) -> None:
+    with Session(engine) as session:
+        save_weights(session, SHIPPED, {"Stamina": 3.0})
+        activate(session, SHIPPED, "solo-dps")
+        assert current_weights(session, SHIPPED).of("Stamina") == 0.5
+        activate(session, SHIPPED, LEVELING)
+        assert current_weights(session, SHIPPED).of("Stamina") == 3.0
+        with pytest.raises(UnknownPreset):
+            activate(session, SHIPPED, "nope")
+
+
+def test_own_presets_can_be_saved_renamed_and_deleted(engine: Engine) -> None:
+    with Session(engine) as session:
+        key = create_preset(session, SHIPPED, "  Raid   tank ", {"Stamina": 2.0})
+        assert key == "raid-tank"
+        view = weights_view(session, SHIPPED)
+        assert view.preset == "raid-tank"
+        assert view.weights == {"Stamina": 2.0, "Armor": 0.1}  # missing stats: Leveling tank
+        assert not view.customised
+        assert view.presets[-1].model_dump() == {
+            "key": "raid-tank",
+            "name": "Raid tank",
+            "shipped": False,
+            "customised": False,
+        }
+        # Edits replace its weights; there's nothing to reset to.
+        save_weights(session, SHIPPED, {"Stamina": 2.5})
+        assert current_weights(session, SHIPPED).of("Stamina") == 2.5
+        with pytest.raises(PresetError):
+            reset_weights(session, SHIPPED)
+
+        assert create_preset(session, SHIPPED, "Raid tank!", {}) == "raid-tank-2"
+        rename_preset(session, SHIPPED, "raid-tank-2", "Off tank")
+        names = [p.name for p in weights_view(session, SHIPPED).presets]
+        assert names == ["Leveling tank", "Solo DPS", "Off tank", "Raid tank"]  # yours: by name
+
+        delete_preset(session, SHIPPED, "raid-tank-2")  # the active one
+        assert weights_view(session, SHIPPED).preset == LEVELING
+        assert [p.key for p in weights_view(session, SHIPPED).presets] == [
+            LEVELING,
+            "solo-dps",
+            "raid-tank",
+        ]
+
+
+@pytest.mark.parametrize(
+    ("action", "error"),
+    [
+        (lambda s: create_preset(s, SHIPPED, "solo dps", {}), PresetError),  # name taken
+        (lambda s: create_preset(s, SHIPPED, " ", {}), PresetError),
+        (lambda s: create_preset(s, SHIPPED, "x" * 41, {}), PresetError),
+        (lambda s: rename_preset(s, SHIPPED, "solo-dps", "Mine"), PresetError),
+        (lambda s: delete_preset(s, SHIPPED, LEVELING), PresetError),
+        (lambda s: rename_preset(s, SHIPPED, "nope", "Mine"), UnknownPreset),
+        (lambda s: delete_preset(s, SHIPPED, "nope"), UnknownPreset),
+    ],
+)
+def test_preset_requests_that_cannot_be_done(
+    engine: Engine, action: Callable[[Session], object], error: type[Exception]
+) -> None:
+    with Session(engine) as session, pytest.raises(error):
+        action(session)
+
+
+def test_a_deleted_active_preset_falls_back_to_leveling_tank(engine: Engine) -> None:
+    with Session(engine) as session:
+        session.add(ActiveWeightPreset(id=1, key="gone"))
+        session.commit()
+        assert active_key(session, SHIPPED) == LEVELING
+
+
+def test_weights_saved_before_presets_move_into_leveling_tank(engine: Engine) -> None:
+    with Session(engine) as session:
+        assert not migrate_stored_weights(session)
+        session.add(StoredWeights(id=1, weights={"Stamina": 4.0}))
+        session.commit()
+        assert migrate_stored_weights(session)
+        assert session.get(StoredWeights, 1) is None
+        assert current_weights(session, SHIPPED).of("Stamina") == 4.0
+        assert not migrate_stored_weights(session)  # once

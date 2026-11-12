@@ -1,4 +1,5 @@
 # Default stat weights for scoring gear: Protection Warrior, leveling and 5-player dungeons.
+# This is the "Leveling tank" preset; weight_presets.yaml ships the others (ADR 0013).
 # An item's score is the sum of (stat value x weight). A target's score gain is its score
 # minus the equipped item's. Weights are starting heuristics, not sims: tune them in the
 # app (Upgrades tab > Stat weights); edits are saved in the database and these values
