@@ -52,3 +52,18 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t character-planner:ci .
+      - name: Smoke test the API, the built frontend and the worker
+        run: |
+          docker run -d --name planner -p 8000:8000 character-planner:ci
+          for _ in $(seq 1 30); do curl -fs http://127.0.0.1:8000/api/healthz && break; sleep 1; done
+          curl -fs http://127.0.0.1:8000/api/healthz
+          curl -fs http://127.0.0.1:8000/ | grep -q 'id="root"'
+          docker run --rm character-planner:ci character-planner-worker --once
+      - if: failure()
+        run: docker logs planner
