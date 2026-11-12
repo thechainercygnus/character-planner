@@ -723,3 +723,7 @@ button.expand {
 .enchant {
   color: var(--enchant, #4ade80);
 }
+
+.enchant-pick + .enchant-pick {
+  margin-top: 0.35rem;
+}
