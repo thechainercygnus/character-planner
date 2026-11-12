@@ -1,0 +1,17 @@
+# Target talent build, in the order points should be spent (ADR 0009).
+#
+# Each step raises one talent to a rank. A talent can appear in several steps
+# (Deflection 2 early, 5 later). Points count from level 10, one per level.
+#
+# Forever's tree differs from Classic and no API gives it, so this is hand-entered.
+# It starts as the 9 points spent at level 18 (from the synced specializations);
+# extend it with the build you're following, here or in the app
+# (Character tab > Talents > Edit plan). Names must match the in-game talent names.
+spec: Protection
+steps:
+  - talent: Shield Specialization
+    rank: 5
+  - talent: Anticipation
+    rank: 1
+  - talent: Improved Revenge
+    rank: 3

@@ -73,6 +73,14 @@ class CompanionDungeon(SQLModel, table=True):
     fetched_at: datetime = Field(default_factory=utcnow)
 
 
+class StoredTalentPlan(SQLModel, table=True):
+    """The talent plan as edited in the app; data/curated/talent_plan.yaml is the default."""
+
+    id: int = Field(default=1, primary_key=True)
+    plan: Any = Field(sa_column=Column(JSON, nullable=False))
+    updated_at: datetime = Field(default_factory=utcnow)
+
+
 class StoredWeights(SQLModel, table=True):
     """Stat weights edited in the app (ADR 0005). One row, id 1; none means defaults."""
 

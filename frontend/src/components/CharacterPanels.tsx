@@ -90,25 +90,6 @@ export function ProfessionsPanel({ professions }: { professions: Profession[] })
   )
 }
 
-export function TalentsPanel({ character }: { character: CharacterView }) {
-  const spec = character.specialization
-  if (!spec) return null
-  return (
-    <section>
-      <h2>
-        Talents <span className="muted">{spec.spent_points ?? '?'} points in {spec.name}</span>
-      </h2>
-      <ul className="talents">
-        {spec.talents.map((talent) => (
-          <li key={talent.name} title={talent.description ?? undefined}>
-            {talent.name} <span className="muted">rank {talent.rank ?? '?'}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  )
-}
-
 const HIDDEN_SLOTS = new Set(['SHIRT', 'TABARD', 'AMMO'])
 
 export function EquipmentPanel({ equipment }: { equipment: EquippedItem[] }) {

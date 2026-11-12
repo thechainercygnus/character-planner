@@ -5,13 +5,13 @@ import {
   EquipmentPanel,
   ProfessionsPanel,
   StatsPanel,
-  TalentsPanel,
 } from './components/CharacterPanels'
 import { Dungeons } from './components/Dungeons'
 import { GearTable } from './components/GearTable'
 import { Progress } from './components/Progress'
 import { Recommendations } from './components/Recommendations'
 import { StatusBar } from './components/StatusBar'
+import { TalentPlanPanel } from './components/TalentPlan'
 import { TabBar } from './components/Tabs'
 import { useHashTab, type Tab } from './useHashTab'
 import { WeightsDialog } from './components/WeightsDialog'
@@ -32,6 +32,7 @@ export default function App() {
   const character = useQuery({ queryKey: ['character'], queryFn: api.character })
   const gear = useQuery({ queryKey: ['gear'], queryFn: api.gear })
   const recommendations = useQuery({ queryKey: ['recommendations'], queryFn: api.recommendations })
+  const talents = useQuery({ queryKey: ['talents'], queryFn: api.talents, enabled: tab === 'character' })
   const progress = useQuery({ queryKey: ['progress'], queryFn: api.progress, enabled: tab === 'progress' })
 
   const upgradeSlots = recommendations.data?.rows.filter((row) => row.candidates.length > 0).length
@@ -85,10 +86,11 @@ export default function App() {
 
           {tab === 'character' && (
             <>
+              {talents.isError && <p className="error">Couldn't load the talent plan: {talents.error.message}</p>}
+              {talents.data && <TalentPlanPanel view={talents.data} />}
               <EquipmentPanel equipment={character.data.equipment} />
               <div className="panels">
                 {character.data.stats && <StatsPanel stats={character.data.stats} />}
-                <TalentsPanel character={character.data} />
                 {character.data.professions.length > 0 && (
                   <ProfessionsPanel professions={character.data.professions} />
                 )}
