@@ -487,6 +487,40 @@ button.expand {
   margin: 0.75rem 0 0;
 }
 
+/* Pin / dismiss (ADR 0012) */
+button.link {
+  background: transparent;
+  color: var(--accent);
+  border: none;
+  padding: 0;
+  font-size: 0.85rem;
+  font-weight: normal;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.choice-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.9rem;
+  margin-top: 0.3rem;
+}
+
+.dismissed {
+  margin-top: 1rem;
+}
+
+.dismissed h3 {
+  margin: 0 0 0.3rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.dismissed ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
 /* Dungeon cards */
 .dungeon-cards {
   display: grid;

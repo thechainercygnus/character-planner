@@ -53,6 +53,7 @@ export function candidate(item: PoolItem, gain: number, overrides: Partial<Candi
     stat_deltas: { Stamina: 7 },
     usable_now: true,
     is_target: false,
+    pinned: false,
     ...overrides,
   }
 }

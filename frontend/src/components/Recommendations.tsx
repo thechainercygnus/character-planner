@@ -2,11 +2,15 @@ import { useState, type ReactNode } from 'react'
 import { slotLabel, type Candidate, type Recommendations as RecommendationsData, type SlotRecommendation } from '../api'
 import { ItemName } from './GearTable'
 import { signed } from '../format'
+import { ChoiceButtons, DismissedItems } from './ItemChoices'
 import { Attributions, PoolItemName } from './PoolItems'
 
 function GainBadge({ candidate }: { candidate: Candidate }) {
   return (
-    <span className="badge verdict-upgrade" title="Weighted stat score vs what you wear">
+    <span
+      className={`badge ${candidate.score_gain > 0 ? 'verdict-upgrade' : 'verdict-sidegrade'}`}
+      title="Weighted stat score vs what you wear"
+    >
       {signed(candidate.score_gain, 1)}
     </span>
   )
@@ -33,19 +37,23 @@ function RowDetails({ row, best }: { row: SlotRecommendation; best: Candidate })
         <h4>Best upgrade</h4>
         <PoolItemName item={best.item} showDetails showSources />
         <Changes candidate={best} />
+        <ChoiceButtons candidate={best} />
       </div>
       {others.length > 0 && (
         <div>
           <h4>Other options</h4>
           {others.map((candidate) => (
             <div key={candidate.item.item_id} className="other-candidate">
-              <PoolItemName
-                item={candidate.item}
-                isTarget={candidate.is_target}
-                usableNow={candidate.usable_now}
-                showDetails
-                showSources
-              />
+              <div>
+                <PoolItemName
+                  item={candidate.item}
+                  isTarget={candidate.is_target}
+                  usableNow={candidate.usable_now}
+                  showDetails
+                  showSources
+                />
+                <ChoiceButtons candidate={candidate} />
+              </div>
               <GainBadge candidate={candidate} />
             </div>
           ))}
@@ -131,7 +139,8 @@ export function Recommendations({ data, actions }: { data: RecommendationsData; 
           <p className="muted">
             {withUpgrades.length} of {data.rows.length} slots have an upgrade in reach, from {data.considered} usable
             items
-            {data.unscored > 0 && ` (${data.unscored} more without stats yet)`}. Click a row for details.
+            {data.unscored > 0 && ` (${data.unscored} more without stats yet)`}. Click a row for details, to pin an
+            item as your target or to stop suggesting it.
           </p>
           <table className="gear upgrades">
             <thead>
@@ -154,6 +163,7 @@ export function Recommendations({ data, actions }: { data: RecommendationsData; 
               No upgrades in reach: {without.map((row) => slotLabel(row.slot)).join(', ')}
             </p>
           )}
+          <DismissedItems />
         </>
       )}
 

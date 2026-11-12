@@ -1,11 +1,43 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
-import { recommendations } from '../test/fixtures'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import type { ItemChoice, Recommendations as RecommendationsData } from '../api'
+import { candidate, girdle, laterBelt, recommendations } from '../test/fixtures'
 import { Recommendations } from './Recommendations'
 
+const hidden: ItemChoice = {
+  item_id: 5193,
+  name: 'Cape of the Brotherhood',
+  choice: 'dismissed',
+  created_at: '2026-11-12T10:00:00',
+}
+
+/** fetch stub: GET /api/choices answers `choices`; writes answer with an empty list. */
+function stubFetch(choices: ItemChoice[] = []) {
+  const fetchMock = vi.fn(async (_path: string, init?: RequestInit) =>
+    Response.json(init?.method ? [] : choices),
+  )
+  vi.stubGlobal('fetch', fetchMock)
+  return fetchMock
+}
+
+function renderRecommendations(data: RecommendationsData = recommendations) {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+  return render(
+    <QueryClientProvider client={client}>
+      <Recommendations data={data} />
+    </QueryClientProvider>,
+  )
+}
+
 describe('Recommendations', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
   it('shows one compact row per slot with an upgrade', () => {
-    render(<Recommendations data={recommendations} />)
+    stubFetch()
+    renderRecommendations()
 
     expect(screen.getByText('1 of 3 slots have an upgrade in reach', { exact: false })).toBeTruthy()
     expect(screen.getByText('(5 more without stats yet)', { exact: false })).toBeTruthy()
@@ -18,13 +50,15 @@ describe('Recommendations', () => {
   })
 
   it('lists slots without upgrades on one line', () => {
-    render(<Recommendations data={recommendations} />)
+    stubFetch()
+    renderRecommendations()
 
     expect(screen.getByText('No upgrades in reach: Neck, Trinket 2')).toBeTruthy()
   })
 
   it('opens a row to show sources, changes and other options', () => {
-    render(<Recommendations data={recommendations} />)
+    stubFetch()
+    renderRecommendations()
 
     fireEvent.click(screen.getByRole('button', { name: 'Show details for Waist' }))
 
@@ -38,8 +72,65 @@ describe('Recommendations', () => {
     expect(screen.queryByText('Later Belt')).toBeNull()
   })
 
+  it('pins an item as a target and dismisses another', async () => {
+    const fetchMock = stubFetch()
+    renderRecommendations()
+    fireEvent.click(screen.getByRole('button', { name: 'Show details for Waist' }))
+
+    // The girdle is already a target from gear_targets.yaml: only Later Belt can be pinned.
+    const [laterBeltTarget, ...others] = screen.getAllByRole('button', { name: 'Make target' })
+    expect(others).toEqual([])
+    fireEvent.click(laterBeltTarget)
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith('/api/choices/2', expect.objectContaining({ method: 'PUT' })),
+    )
+    const put = fetchMock.mock.calls.find(([path]) => path === '/api/choices/2')!
+    expect(JSON.parse(String(put[1]?.body))).toEqual({ choice: 'target', name: 'Later Belt' })
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Never suggest' })[0])
+    await waitFor(() => {
+      const call = fetchMock.mock.calls.find(([path]) => path === '/api/choices/270230')
+      expect(JSON.parse(String(call?.[1]?.body))).toEqual({ choice: 'dismissed', name: 'Kindlegem Girdle' })
+    })
+  })
+
+  it('unpins a pinned item', async () => {
+    const fetchMock = stubFetch()
+    const pinned = {
+      ...recommendations,
+      rows: [
+        {
+          slot: 'WAIST',
+          equipped: null,
+          candidates: [candidate(girdle, 9.7), candidate(laterBelt, -1.5, { is_target: true, pinned: true })],
+        },
+      ],
+    }
+    renderRecommendations(pinned)
+    fireEvent.click(screen.getByRole('button', { name: 'Show details for Waist' }))
+
+    expect(screen.getByText('-1.5').className).toContain('verdict-sidegrade')
+    fireEvent.click(screen.getByRole('button', { name: 'Unpin' }))
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith('/api/choices/2', expect.objectContaining({ method: 'DELETE' })),
+    )
+  })
+
+  it('lists items never to suggest, with an undo', async () => {
+    const fetchMock = stubFetch([hidden, { ...hidden, item_id: 1, name: 'Pinned', choice: 'target' }])
+    renderRecommendations()
+
+    expect(await screen.findByText('Never suggested')).toBeTruthy()
+    expect(screen.queryByText('Pinned')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Suggest Cape of the Brotherhood again' }))
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith('/api/choices/5193', expect.objectContaining({ method: 'DELETE' })),
+    )
+  })
+
   it('explains how to build the pool when it is empty', () => {
-    render(<Recommendations data={{ ...recommendations, rows: [], dungeons: [], considered: 0, unscored: 0 }} />)
+    stubFetch()
+    renderRecommendations({ ...recommendations, rows: [], dungeons: [], considered: 0, unscored: 0 })
 
     expect(screen.getByText('No item pool yet.', { exact: false })).toBeTruthy()
   })
