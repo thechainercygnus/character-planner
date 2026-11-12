@@ -279,3 +279,15 @@ def test_without_weights_verdicts_use_item_level() -> None:
     target = GearTarget(slot="WAIST", item="Kindlegem Girdle", source="?", item_id=270230)
     row = gear_plan(_latest(), _targets(target), companion=_companion()).rows[0]
     assert (row.score_delta, row.verdict_basis) == (None, "item_level")
+
+
+def test_equipment_reads_enchantments_and_weapon_speed() -> None:
+    items = {i.slot: i for i in parse_equipment(payload("equipment"))}
+    (scope,) = items["RANGED"].enchantments
+    assert scope.text == "Enchanted: Scope (+1 Damage)"
+    assert (scope.source_item, scope.source_item_id) == ("Crude Scope", 4405)
+    assert (scope.enchantment_id, scope.kind) == (30, "PERMANENT")
+    assert items["RANGED"].attack_speed == 2.3
+    assert items["MAIN_HAND"].attack_speed == 2.1
+    assert items["CHEST"].enchantments == []
+    assert items["CHEST"].attack_speed is None

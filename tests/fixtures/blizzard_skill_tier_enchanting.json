@@ -1,0 +1,144 @@
+{
+  "id": 2940,
+  "name": "Enchanting",
+  "minimum_skill_level": 1,
+  "maximum_skill_level": 75,
+  "categories": [
+    {
+      "name": "Bracer Enchants",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/4293?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Enchant Bracer - Minor Deflect",
+          "id": 4293
+        }
+      ]
+    },
+    {
+      "name": "Chest Enchants",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/4290?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Enchant Chest - Inferior Stamina",
+          "id": 4290
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/7501?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Enchant Chest - Minor Stats",
+          "id": 7501
+        }
+      ]
+    },
+    {
+      "name": "Cloak Enchants",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/4300?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Enchant Cloak - Minor Resistance",
+          "id": 4300
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/7377?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Enchant Cloak - Lesser Protection",
+          "id": 7377
+        }
+      ]
+    },
+    {
+      "name": "Weapon Enchants",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/4367?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Enchant Weapon - Minor Striking",
+          "id": 4367
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/54407?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Enchant Weapon - Recovery",
+          "id": 54407
+        }
+      ]
+    },
+    {
+      "name": "Two-Handed Weapon Enchants",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/4368?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Enchant 2H Weapon - Minor Impact",
+          "id": 4368
+        }
+      ]
+    },
+    {
+      "name": "Boots Enchants",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/4402?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Enchant Boots - Minor Stamina",
+          "id": 4402
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/7669?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Enchant Boots - Minor Speed",
+          "id": 7669
+        }
+      ]
+    },
+    {
+      "name": "Shield Enchants",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/7528?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Enchant Shield - Lesser Block",
+          "id": 7528
+        }
+      ]
+    },
+    {
+      "name": "SEASON OF DISCOVERY",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/51763?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Enchant Bracer - Agility",
+          "id": 51763
+        }
+      ]
+    },
+    {
+      "name": "Reagents",
+      "recipes": [
+        {
+          "key": {
+            "href": "x"
+          },
+          "name": "Runed Copper Rod",
+          "id": 7421
+        }
+      ]
+    }
+  ]
+}

@@ -34,6 +34,7 @@ from character_planner.db import (
     make_engine,
 )
 from character_planner.dungeons import stored_dungeons
+from character_planner.enchants import EnchantOption, RecipeRefresh, catalog, refresh_enchant_data
 from character_planner.items import RefreshResult, refresh_item_sources
 from character_planner.pool import (
     PoolRefresh,
@@ -257,6 +258,17 @@ def create_app(
             http=http,
             pause=settings.companion_request_pause,
         )
+
+    @app.post("/api/enchants/refresh")
+    def refresh_enchants(session: SessionDep, force: bool = False) -> RecipeRefresh:
+        """Enchant recipes from Blizzard's profession data, plus their reagents and crafted
+        items from Forever Companion (ADR 0010)."""
+        return refresh_enchant_data(session, settings, force=force, http=http)
+
+    @app.get("/api/enchants")
+    def enchant_catalog(session: SessionDep, include_sod: bool = False) -> list[EnchantOption]:
+        """Every enchant recipe that maps to a gear slot, with parsed effects."""
+        return catalog(session, companion_by_id(session), include_sod=include_sod)
 
     @app.get("/api/pool")
     def item_pool(session: SessionDep) -> PoolView:

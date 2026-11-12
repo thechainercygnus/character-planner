@@ -19,7 +19,21 @@ export interface EquippedItem {
   armor: number | null
   stats: ItemStat[]
   dps: number | null
+  /** Seconds; weapons only. */
+  attack_speed?: number | null
+  enchantments?: Enchantment[]
   icon_url: string | null
+}
+
+/** An enchant on an equipped item (views.py Enchantment). */
+export interface Enchantment {
+  /** As the game shows it: "Enchanted: Scope (+1 Damage)". */
+  text: string
+  enchantment_id: number | null
+  source_item: string | null
+  source_item_id: number | null
+  /** PERMANENT; temporary kinds not seen yet. */
+  kind: string | null
 }
 
 export interface Stats {
@@ -326,6 +340,16 @@ export interface TalentPlanView {
   customised: boolean
 }
 
+/** POST /api/enchants/refresh (enchants.py). */
+export interface RecipeRefresh {
+  professions: string[]
+  recipes_listed: number
+  recipes_fetched: number
+  items_fetched: number
+  items_not_found: number[]
+  errors: string[]
+}
+
 export class ApiError extends Error {
   readonly status: number
 
@@ -375,6 +399,7 @@ export const api = {
     }),
   resetTalentPlan: () => request<TalentPlanView>('/api/talents/plan', { method: 'DELETE' }),
   refreshPool: () => request<PoolRefresh>('/api/pool/refresh', { method: 'POST' }),
+  refreshEnchants: () => request<RecipeRefresh>('/api/enchants/refresh', { method: 'POST' }),
 }
 
 /** Backend timestamps are UTC without an offset; mark them as UTC before parsing. */

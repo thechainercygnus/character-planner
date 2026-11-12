@@ -33,6 +33,16 @@ class ItemStat(BaseModel):
     value: int
 
 
+class Enchantment(BaseModel):
+    """An enchant on an equipped item, as the equipment endpoint reports it."""
+
+    text: str  # "Enchanted: Scope (+1 Damage)"
+    enchantment_id: int | None = None
+    source_item: str | None = None  # "Crude Scope"
+    source_item_id: int | None = None
+    kind: str | None = None  # enchantment_slot.type: PERMANENT (others not seen yet)
+
+
 class EquippedItem(BaseModel):
     slot: str
     name: str
@@ -44,6 +54,8 @@ class EquippedItem(BaseModel):
     armor: int | None = None
     stats: list[ItemStat] = []
     dps: float | None = None
+    attack_speed: float | None = None  # seconds; weapons only
+    enchantments: list[Enchantment] = []
     icon_url: str | None = None
 
 
@@ -222,9 +234,30 @@ def parse_equipment(equipment: Any) -> list[EquippedItem]:
                 armor=_int(_get(item, "armor", "value")),
                 stats=stats,
                 dps=_float(_get(item, "weapon", "dps", "value")),
+                attack_speed=_seconds(_get(item, "weapon", "attack_speed", "value")),
+                enchantments=parse_enchantments(_get(item, "enchantments")),
             )
         )
     return parsed
+
+
+def _seconds(milliseconds: Any) -> float | None:
+    value = _float(milliseconds)
+    return round(value / 1000, 3) if value is not None else None
+
+
+def parse_enchantments(enchantments: Any) -> list[Enchantment]:
+    return [
+        Enchantment(
+            text=text,
+            enchantment_id=_int(_get(e, "enchantment_id")),
+            source_item=_name(_get(e, "source_item", "name")),
+            source_item_id=_int(_get(e, "source_item", "id")),
+            kind=_get(e, "enchantment_slot", "type"),
+        )
+        for e in (enchantments if isinstance(enchantments, list) else [])
+        if (text := _name(_get(e, "display_string")))
+    ]
 
 
 def parse_stats(statistics: Any) -> Stats | None:

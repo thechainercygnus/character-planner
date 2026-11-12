@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import type { EquippedItem, GearPlan, GearRow, GearTarget } from '../api'
-import { GearTable } from './GearTable'
+import { GearTable, ItemName } from './GearTable'
 
 const shield: EquippedItem = {
   slot: 'OFF_HAND',
@@ -176,5 +176,40 @@ describe('GearTable', () => {
   it('handles levels with no bracket', () => {
     render(<GearTable plan={{ ...plan, bracket_min_level: null, rows: [] }} />)
     expect(screen.getByText(/No gear targets for this level/)).toBeTruthy()
+  })
+})
+
+describe('ItemName', () => {
+  const boomstick: EquippedItem = {
+    slot: 'RANGED',
+    name: 'Rough Boomstick',
+    item_id: 2508,
+    quality: 'COMMON',
+    quality_name: 'Common',
+    item_level: 10,
+    armor_type: 'Gun',
+    armor: null,
+    stats: [],
+    dps: 4.1,
+    icon_url: null,
+    enchantments: [
+      {
+        text: 'Enchanted: Scope (+1 Damage)',
+        enchantment_id: 30,
+        source_item: 'Crude Scope',
+        source_item_id: 4405,
+        kind: 'PERMANENT',
+      },
+    ],
+  }
+
+  it('shows enchants under the item', () => {
+    render(<ItemName item={boomstick} />)
+    expect(screen.getByText('✦ Scope (+1 Damage)')).toBeTruthy()
+  })
+
+  it('leaves enchants out when compact', () => {
+    render(<ItemName item={boomstick} compact />)
+    expect(screen.queryByText('✦ Scope (+1 Damage)')).toBeNull()
   })
 })

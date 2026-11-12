@@ -22,6 +22,7 @@ export function ItemName({ item, compact = false }: { item: EquippedItem; compac
     item.armor ? `${item.armor} armor` : null,
     ...item.stats.map((stat) => `+${stat.value} ${stat.name}`),
   ].filter((part) => !compact && Boolean(part))
+  const enchants = (item.enchantments ?? []).map((e) => e.text.replace(/^Enchanted: /, ''))
 
   return (
     <div className="item-cell">
@@ -29,6 +30,7 @@ export function ItemName({ item, compact = false }: { item: EquippedItem; compac
       <span className={`item quality-${quality}`}>
         {item.name}
         {details.length > 0 && <small>{details.join(' · ')}</small>}
+        {!compact && enchants.length > 0 && <small className="enchant">✦ {enchants.join(' · ')}</small>}
       </span>
     </div>
   )
