@@ -11,6 +11,7 @@ from character_planner import jobs, worker
 from character_planner.blizzard import oauth
 from character_planner.config import Settings
 from character_planner.db import Snapshot, StoredToken
+from character_planner.pool import PoolRefresh
 
 from .test_app import mock_character_api
 
@@ -97,7 +98,7 @@ def test_scheduled_sync_is_skipped_without_a_valid_login(
         with pytest.raises(jobs.NotLoggedIn):
             jobs.sync_character(session, settings)
         outcome = worker.sync_job(session, settings, None)
-    assert outcome.startswith("skipped: the login has expired")
+    assert outcome.startswith("skipped: no valid login")
 
 
 @respx.mock
@@ -119,6 +120,30 @@ def test_scheduled_sync_stores_snapshots_with_the_stored_login(
     assert served <= kinds
     # Endpoints the mock doesn't serve (404) are stored and named as failed.
     assert outcome == f"synced {len(kinds)} endpoints, failed: {', '.join(sorted(kinds - served))}"
+
+
+@respx.mock  # no routes: any request would fail the test
+def test_pool_refresh_waits_for_a_synced_level(engine: Engine, settings: Settings) -> None:
+    with Session(engine) as session, httpx.Client() as http:
+        assert worker.pool_job(session, settings, http) == "skipped: no synced level yet"
+
+
+def test_pool_refresh_runs_once_a_level_is_synced(
+    engine: Engine, settings: Settings, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    levels: list[int | None] = []
+
+    def fake_refresh(session: Session, _settings: Settings, **_: object) -> PoolRefresh:
+        levels.append(jobs.character_context(session)[0])
+        return PoolRefresh(pool_size=120, in_window=40, items_fetched=3)
+
+    monkeypatch.setattr(jobs, "refresh_item_pool", fake_refresh)
+    with Session(engine) as session:
+        session.add(Snapshot(source="api", kind="profile", status=200, payload={"level": 19}))
+        session.commit()
+        outcome = worker.pool_job(session, settings, None)
+    assert levels == [19]
+    assert outcome == "pool 120 items (40 in window), 3 item details fetched"
 
 
 def test_once_runs_every_job_and_exits(settings: Settings, monkeypatch: pytest.MonkeyPatch) -> None:

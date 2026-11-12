@@ -34,7 +34,7 @@ def sync_job(session: Session, settings: Settings, http: httpx.Client | None) ->
     try:
         statuses = jobs.sync_character(session, settings, http=http)
     except jobs.NotLoggedIn:
-        return "skipped: the login has expired; log in again to resume scheduled syncs"
+        return "skipped: no valid login (none yet, or it expired); log in to resume syncs"
     failed = sorted(kind for kind, status in statuses.items() if status != 200)
     return f"synced {len(statuses)} endpoints" + (
         f", failed: {', '.join(failed)}" if failed else ""
@@ -42,6 +42,10 @@ def sync_job(session: Session, settings: Settings, http: httpx.Client | None) ->
 
 
 def pool_job(session: Session, settings: Settings, http: httpx.Client | None) -> str:
+    # Without a level the refresh would fetch the whole pool: hundreds of requests for
+    # items far outside the window. Wait for the first sync instead.
+    if jobs.character_context(session)[0] is None:
+        return "skipped: no synced level yet"
     result = jobs.refresh_item_pool(session, settings, http=http)
     errors = f", {len(result.errors)} errors" if result.errors else ""
     return (
@@ -106,6 +110,8 @@ def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
     )
+    # httpx logs every request URL at INFO; keep the log to job outcomes.
+    logging.getLogger("httpx").setLevel(logging.WARNING)
 
     settings = get_settings()
     engine = make_engine(settings.database_url)
