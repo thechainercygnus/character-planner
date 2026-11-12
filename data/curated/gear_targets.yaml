@@ -1,4 +1,6 @@
 # Gear targets per level bracket, Alliance Protection Warrior.
+# The default: targets edited in the app (Plan tab > Edit targets, or Make target on the
+# Upgrades tab) are saved in the database and win until Reset (ADR 0014).
 # Source: Timesaver's WoW Forever leveling gear list
 # https://timesaver.gg/tools/wow-forever/leveling-gear/warrior/protection
 # Copied from the Leveling Playbook doc; update both until the playbook moves into the repo.

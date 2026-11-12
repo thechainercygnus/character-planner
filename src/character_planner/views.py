@@ -163,6 +163,7 @@ class GearPlan(BaseModel):
     next_bracket_size: int
     rows: list[GearRow]
     attributions: list[dict[str, str]] = []  # credits the data sources require
+    targets_customised: bool = False  # edited in the app, not gear_targets.yaml (ADR 0014)
 
 
 # --- parsers ----------------------------------------------------------------------------

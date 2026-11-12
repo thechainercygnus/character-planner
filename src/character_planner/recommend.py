@@ -5,8 +5,9 @@ stat weights and compared with what's equipped in each slot it fits. Each slot l
 biggest score gains; dungeons are ranked by the upgrades they hold. gear_targets.yaml
 stays the hand-picked plan: items it names are flagged as targets.
 
-Items pinned or dismissed in the app (ADR 0012) add to the curated files: a pinned item
-is a target that's always listed for its slot, and a dismissed one is never suggested.
+Targets for the character's current bracket (ADR 0014; pinned from the Upgrades tab or
+edited on the Plan tab) are always listed for their slot until worn. Items dismissed in
+the app (ADR 0012) join exclude_item_ids and are never suggested.
 """
 
 from collections.abc import Mapping
@@ -84,8 +85,8 @@ class Candidate(BaseModel):
     armor_delta: int | None = None
     stat_deltas: dict[str, int] = {}
     usable_now: bool  # required level reached
-    is_target: bool = False  # named in gear_targets.yaml or pinned in the app
-    pinned: bool = False  # pinned in the app; listed even when it isn't a top pick
+    is_target: bool = False  # a gear target in any bracket
+    pinned: bool = False  # a target for the current bracket: listed even below the top picks
 
 
 class SlotRecommendation(BaseModel):
@@ -227,7 +228,9 @@ def recommend(
     level = pool.level
     choices = choices or Choices()
     target_ids = set(targets.item_ids()) if targets else set()
-    pinned_ids = choices.targets - choices.dismissed
+    current = targets.for_level(level) if targets and level is not None else None
+    pinned_ids = {t.item_id for t in current.targets if t.item_id} if current else set()
+    pinned_ids -= choices.dismissed
     rules = rules.model_copy(
         update={"exclude_item_ids": sorted(set(rules.exclude_item_ids) | choices.dismissed)}
     )

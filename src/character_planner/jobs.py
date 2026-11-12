@@ -11,12 +11,22 @@ from sqlmodel import Session
 
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
+from character_planner.choices import take_target_choices
 from character_planner.config import Settings
 from character_planner.curated import GearTargets, load_gear_targets
 from character_planner.db import Snapshot, StoredToken, latest_by_kind
 from character_planner.dungeons import stored_dungeons
 from character_planner.items import refresh_item_sources
-from character_planner.pool import PoolRefresh, build_pool, refresh_pool, resolve_target_ids
+from character_planner.pool import (
+    PoolItem,
+    PoolRefresh,
+    build_pool,
+    pool_view,
+    refresh_pool,
+    resolve_target_ids,
+)
+from character_planner.recommend import PAIRED, SLOT_FOR
+from character_planner.targets import current_targets, pin_target, save_targets
 from character_planner.views import character_faction, character_level, parse_equipment
 
 logger = logging.getLogger(__name__)
@@ -48,11 +58,42 @@ def equipped_item_ids(session: Session) -> list[int]:
     return [item.item_id for item in items if item.item_id is not None]
 
 
+def default_targets(settings: Settings) -> GearTargets:
+    return load_gear_targets(settings.curated_dir / "gear_targets.yaml")
+
+
 def gear_targets(session: Session, settings: Settings) -> GearTargets:
-    """gear_targets.yaml, with item ids filled in from the item pool where it has them."""
-    targets = load_gear_targets(settings.curated_dir / "gear_targets.yaml")
+    """The edited targets, or gear_targets.yaml (ADR 0014), with item ids filled in from
+    the item pool where it has them."""
+    targets = current_targets(session, default_targets(settings))
     pool = build_pool(stored_dungeons(session), character_context(session)[1])
     return resolve_target_ids(targets, pool)
+
+
+def pool_slot(item: PoolItem) -> str | None:
+    """The equipment slot an item would go in (the first of a ring or trinket pair)."""
+    slot = item.item_slot or ""
+    return PAIRED[slot][0] if slot in PAIRED else SLOT_FOR.get(slot)
+
+
+def migrate_target_choices(session: Session, settings: Settings) -> int:
+    """Move items pinned before ADR 0014 into the current bracket's targets."""
+    ids = take_target_choices(session)
+    if not ids:
+        return 0
+    level, faction = character_context(session)
+    pool = {item.item_id: item for item in pool_view(session, None, faction).items}
+    targets, moved = gear_targets(session, settings), 0
+    for item_id in ids:
+        item = pool.get(item_id)
+        slot = pool_slot(item) if item else None
+        if item is None or slot is None:
+            logger.warning("Dropped pinned item %s: it's not in the item pool", item_id)
+            continue
+        targets, moved = pin_target(targets, item, slot, level), moved + 1
+    if moved:
+        save_targets(session, targets)
+    return moved
 
 
 def sync_character(

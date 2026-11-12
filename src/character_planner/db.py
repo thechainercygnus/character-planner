@@ -92,6 +92,15 @@ class StoredTalentPlan(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=utcnow)
 
 
+class StoredGearTargets(SQLModel, table=True):
+    """Gear targets edited in the app (ADR 0014); data/curated/gear_targets.yaml is the
+    default. One row, id 1; none means the YAML."""
+
+    id: int = Field(default=1, primary_key=True)
+    targets: Any = Field(sa_column=Column(JSON, nullable=False))
+    updated_at: datetime = Field(default_factory=utcnow)
+
+
 class StoredWeights(SQLModel, table=True):
     """Stat weights edited in the app before presets (ADR 0005). Read once at startup,
     moved into a Leveling tank WeightPreset, then deleted (ADR 0013)."""

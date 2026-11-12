@@ -221,7 +221,21 @@ def test_dismissed_items_are_never_suggested() -> None:
     assert next(r for r in recs.rows if r.slot == "BACK").candidates == []
 
 
-def test_pinned_items_are_targets_and_always_listed() -> None:
+def targets_for(slot: str, *ids: int, min_level: int = 15) -> GearTargets:
+    """A bracket of targets for one slot: pinned when it's the character's bracket."""
+    return GearTargets(
+        brackets=[
+            Bracket(
+                min_level=min_level,
+                targets=[
+                    GearTarget(slot=slot, item=f"Item {i}", source="x", item_id=i) for i in ids
+                ],
+            )
+        ]
+    )
+
+
+def test_current_bracket_targets_are_pinned_and_always_listed() -> None:
     equipped = {"BACK": worn("BACK", stats=[ItemStat(name="Stamina", value=4)])}
     pool = view(
         item(1, "Back", stats={"Stamina": 9}),
@@ -230,11 +244,9 @@ def test_pinned_items_are_targets_and_always_listed() -> None:
         item(4, "Back", stats={"Stamina": 6}),  # 4th best: below per_slot
         item(5, "Back", stats={"Stamina": 4}),  # a sidegrade: below min_gain
     )
-    choices = Choices(targets={4, 5})
+    targets = targets_for("BACK", 4, 5)
     back = next(
-        r
-        for r in recommend(pool, equipped, WEIGHTS, RULES, choices=choices).rows
-        if r.slot == "BACK"
+        r for r in recommend(pool, equipped, WEIGHTS, RULES, targets).rows if r.slot == "BACK"
     )
     assert [(c.item.item_id, c.is_target, c.pinned) for c in back.candidates] == [
         (1, False, False),
@@ -245,24 +257,26 @@ def test_pinned_items_are_targets_and_always_listed() -> None:
     ]
 
 
+def test_targets_for_a_later_bracket_are_flagged_but_not_pinned() -> None:
+    pool = view(*(item(i, "Back", stats={"Stamina": 10 - i}) for i in range(1, 6)))
+    targets = targets_for("BACK", 5, min_level=20)  # level 18: not this bracket yet
+    back = next(r for r in recommend(pool, {}, WEIGHTS, RULES, targets).rows if r.slot == "BACK")
+    assert [c.item.item_id for c in back.candidates] == [1, 2, 3]
+
+
 def test_pinned_items_already_worn_or_dismissed_are_not_listed() -> None:
     equipped = {"BACK": worn("BACK", item_id=1, stats=[ItemStat(name="Stamina", value=4)])}
     pool = view(item(1, "Back", stats={"Stamina": 4}), item(2, "Back", stats={"Stamina": 2}))
-    choices = Choices(targets={1, 2}, dismissed={2})
-    back = next(
-        r
-        for r in recommend(pool, equipped, WEIGHTS, RULES, choices=choices).rows
-        if r.slot == "BACK"
+    recs = recommend(
+        pool, equipped, WEIGHTS, RULES, targets_for("BACK", 1, 2), Choices(dismissed={2})
     )
-    assert back.candidates == []
+    assert next(r for r in recs.rows if r.slot == "BACK").candidates == []
 
 
 def test_a_pinned_ring_is_listed_in_one_finger_slot() -> None:
     equipped = {"FINGER_1": worn("FINGER_1", stats=[ItemStat(name="Stamina", value=2)])}
     pool = view(item(1, "Finger", stats={"Stamina": 6}), item(2, "Finger", stats={"Stamina": 1}))
-    rows = {
-        r.slot: r
-        for r in recommend(pool, equipped, WEIGHTS, RULES, choices=Choices(targets={2})).rows
-    }
+    targets = targets_for("FINGER_2", 2)
+    rows = {r.slot: r for r in recommend(pool, equipped, WEIGHTS, RULES, targets).rows}
     assert [c.item.item_id for c in rows["FINGER_2"].candidates] == [1, 2]
     assert rows["FINGER_1"].candidates == []
