@@ -236,7 +236,8 @@ def refresh_talent_trees(
 
         parsed = stored_tree(session, class_name)
         spells = [n.spell_id for _, n in (parsed.nodes().values() if parsed else []) if n.spell_id]
-        known = {row.spell_id for row in session.exec(select(SpellIcon)).all()}
+        # Spells without an icon yet are tried again: a failed lookup may have been a blip.
+        known = {row.spell_id for row in session.exec(select(SpellIcon)).all() if row.url}
         wanted = [s for s in dict.fromkeys(spells) if s not in known]
         job = JobLog(logger, "Talent icons", len(wanted))
         for number, spell_id in enumerate(wanted, start=1):

@@ -227,6 +227,21 @@ def test_refresh_stores_the_trees_and_icons(engine: Engine, settings: Settings) 
 
 
 @respx.mock
+def test_icons_not_found_are_tried_again_and_found_ones_are_not(
+    engine: Engine, settings: Settings
+) -> None:
+    mock_blizzard_talents()
+    media = respx.get(url__startswith=f"{API}/media/spell/")
+    media.mock(return_value=httpx.Response(503))
+    with Session(engine) as session:
+        assert refresh_talent_trees(session, settings, "Warlock").icons == 0
+        media.mock(return_value=httpx.Response(200, json=fixture("spell_media_18182.json")))
+        assert refresh_talent_trees(session, settings, "Warlock").icons == 52
+        assert refresh_talent_trees(session, settings, "Warlock").icons == 0  # nothing left
+    assert media.call_count == 52 * 2
+
+
+@respx.mock
 def test_a_class_without_a_tree_is_reported(engine: Engine, settings: Settings) -> None:
     mock_blizzard_talents()
     with Session(engine) as session:
