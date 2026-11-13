@@ -89,7 +89,9 @@ Tokens, the client secret and OAuth codes are always replaced by `[redacted]`.
 
 ## 3. Log in and sync
 
-Open the app, choose **Log in**, then **Sync now**. The worker picks up from there.
+Open the app, choose **Log in**, then **Sync now**. The worker picks up from there. On a
+new instance, the first sync also loads the item pool and enchant data in the background
+(a few minutes; the status bar says so), so there's nothing else to click (ADR 0024).
 
 Battle.net gives no refresh token, so each login lasts 24 hours. While it's valid the
 worker syncs every `SYNC_EVERY_HOURS`; after that its log says
