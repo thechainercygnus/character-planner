@@ -1,0 +1,48 @@
+{
+  "data": {
+    "questId": 1100,
+    "type": "elite",
+    "name": "Lonebrow's Journal",
+    "level": 34,
+    "minLevel": 29,
+    "faction": "alliance",
+    "classes": null,
+    "xp": null,
+    "xpEstimated": false,
+    "classicXp": 1350,
+    "dungeon": null,
+    "zone": "Thousand Needles",
+    "giver": null,
+    "location": null,
+    "objective": null,
+    "rewards": {
+      "items": [],
+      "choice": false
+    },
+    "prerequisites": null,
+    "confidence": null,
+    "verified": null,
+    "wowhead": "https://www.wowhead.com/forever/quest=1100",
+    "url": "https://forevercompanion.io/elite-quests"
+  },
+  "meta": {
+    "updatedAt": "2026-11-13T18:03:35.333+00:00",
+    "version": "v1",
+    "docs": "https://forevercompanion.io/developers",
+    "attribution": "Data from Forever Companion (https://forevercompanion.io), gathered from ForeverChanges, Wowhead and Zockify and checked in game by players. Please link back. Fan-made, not affiliated with Blizzard Entertainment.",
+    "sources": [
+      {
+        "name": "ForeverChanges",
+        "url": "https://foreverchanges.pro"
+      },
+      {
+        "name": "Wowhead",
+        "url": "https://www.wowhead.com/forever"
+      },
+      {
+        "name": "Zockify",
+        "url": "https://www.zockify.com/forever/"
+      }
+    ]
+  }
+}

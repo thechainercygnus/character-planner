@@ -26,6 +26,13 @@ from character_planner.dungeons import (
     refresh_dungeons,
     stored_dungeons,
 )
+from character_planner.quests import (
+    QuestStep,
+    chain_level,
+    chain_steps,
+    refresh_quests,
+    stored_quests,
+)
 
 # Dungeons this far below / above the character's level are in the window.
 LEVELS_BELOW = 3
@@ -43,6 +50,16 @@ class PoolSource(BaseModel):
     detail: str | None = None  # the boss for a drop, the quest for a reward
     choice: bool = False  # a quest reward picked from several
     quest_min_level: int | None = None  # level needed to pick the quest up
+    quest: QuestStep | None = None  # the reward's quest, described (#7)
+    # The quests to do before it, earliest first; each step's quests side by side (#7).
+    chain: list[list[QuestStep]] = []
+
+    @property
+    def start_level(self) -> int | None:
+        """The level this source opens at: a dungeon quest needs its pickup level, the
+        dungeon and every earlier quest in its chain, so the highest of them."""
+        levels = (self.quest_min_level, self.min_level, chain_level(self.chain))
+        return max((lvl for lvl in levels if lvl is not None), default=None)
 
 
 class PoolItem(BaseModel):
@@ -67,14 +84,10 @@ class PoolItem(BaseModel):
     @property
     def effective_level(self) -> int | None:
         """The level this item can be had at: its required level, else (many quest rewards
-        have none) the easiest source's level. A dungeon quest needs both its pickup level
-        and the dungeon, so it counts the higher of the two."""
+        have none) the easiest source's level (PoolSource.start_level)."""
         if self.required_level is not None:
             return self.required_level
-        levels = [
-            max((lvl for lvl in (s.quest_min_level, s.min_level) if lvl is not None), default=None)
-            for s in self.sources
-        ]
+        levels = [s.start_level for s in self.sources]
         return min((lvl for lvl in levels if lvl is not None), default=None)
 
     @property
@@ -90,6 +103,7 @@ class PoolRefresh(BaseModel):
     in_window: int = 0
     items_fetched: int = 0
     items_not_found: list[int] = []
+    quests_fetched: int = 0
     errors: list[str] = []
 
 
@@ -110,6 +124,8 @@ def _source(
     detail: str | None,
     choice: bool = False,
     quest_min_level: int | None = None,
+    quest: QuestStep | None = None,
+    chain: list[list[QuestStep]] | None = None,
 ) -> PoolSource:
     return PoolSource(
         kind=kind,
@@ -120,11 +136,36 @@ def _source(
         detail=detail,
         choice=choice,
         quest_min_level=quest_min_level,
+        quest=quest,
+        chain=chain or [],
     )
 
 
-def build_pool(dungeons: Iterable[Dungeon], faction: str | None = None) -> dict[int, PoolItem]:
-    """Every drop, and every quest reward this faction can take, keyed by item id."""
+def known_quests(
+    dungeons: Iterable[Dungeon], fetched: Mapping[int, QuestStep] | None = None
+) -> dict[int, QuestStep]:
+    """Every quest Forever Companion describes: those fetched by id (chain steps outside
+    dungeons, #7), and the dungeons' own."""
+    known = dict(fetched or {})
+    for dungeon in dungeons:
+        for quest in dungeon.quests:
+            if quest.quest_id is not None:
+                known[quest.quest_id] = quest
+    return known
+
+
+def build_pool(
+    dungeons: Iterable[Dungeon],
+    faction: str | None = None,
+    quests: Mapping[int, QuestStep] | None = None,
+) -> dict[int, PoolItem]:
+    """Every drop, and every quest reward this faction can take, keyed by item id.
+
+    quests: chain steps fetched by id (quests.stored_quests); steps that are dungeon
+    quests are described from the dungeons themselves.
+    """
+    dungeons = list(dungeons)
+    known = known_quests(dungeons, quests)
     pool: dict[int, PoolItem] = {}
 
     def add(
@@ -148,7 +189,13 @@ def build_pool(dungeons: Iterable[Dungeon], faction: str | None = None) -> dict[
         for reward in dungeon.rewards:
             if _can_take(reward.faction, faction):
                 quest = _source(
-                    dungeon, "quest", reward.quest, reward.choice, reward.min_level or reward.level
+                    dungeon,
+                    "quest",
+                    reward.quest,
+                    reward.choice,
+                    reward.min_level or reward.level,
+                    known.get(reward.quest_id) if reward.quest_id is not None else None,
+                    chain_steps(reward.prerequisites, known),
                 )
                 add(reward.item_id, reward.name, quest, None, None)
     return pool
@@ -165,6 +212,20 @@ def in_window(item: PoolItem, window: tuple[int, int]) -> bool:
         (s.min_level is None or s.min_level <= high) and (s.max_level is None or s.max_level >= low)
         for s in item.sources
     )
+
+
+def undescribed_steps(dungeons: Iterable[Dungeon], items: Iterable[PoolItem]) -> list[int]:
+    """Chain step ids of these items' quests that no dungeon describes: the ones to look
+    up by id."""
+    known = known_quests(dungeons)
+    return [
+        quest.quest_id
+        for item in items
+        for source in item.sources
+        for step in source.chain
+        for quest in step
+        if quest.quest_id is not None and quest.quest_id not in known
+    ]
 
 
 def slot_key(slot: str | None) -> str | None:
@@ -196,7 +257,7 @@ def with_details(item: PoolItem, info: CompanionInfo | None) -> PoolItem:
 
 def pool_view(session: Session, level: int | None, faction: str | None) -> PoolView:
     """Pool items in the level window (all of them without a level), with item details."""
-    pool = build_pool(stored_dungeons(session), faction)
+    pool = build_pool(stored_dungeons(session), faction, stored_quests(session))
     window = level_window(level) if level is not None else None
     details = companion_by_id(session)
     items = [
@@ -218,7 +279,8 @@ def refresh_pool(
     pause: float = REQUEST_PAUSE,
     progress: Progress | None = None,
 ) -> PoolRefresh:
-    """Refresh dungeon data, then fetch details for pool items in the level window.
+    """Refresh dungeon data, then fetch details for pool items in the level window, and
+    the quest chain steps their quests need that no dungeon describes (#7).
 
     The first run is a few hundred requests paced under the rate limit (a few minutes);
     later runs only fetch what's stale.
@@ -227,7 +289,8 @@ def refresh_pool(
     client = http or new_client()
     try:
         dungeons = refresh_dungeons(session, client, force=force, pause=pause, progress=progress)
-        pool = build_pool(stored_dungeons(session), faction)
+        stored = stored_dungeons(session)
+        pool = build_pool(stored, faction)
         window = level_window(level) if level is not None else None
         wanted = [i for i in pool.values() if window is None or in_window(i, window)]
         items = refresh_companion(
@@ -236,6 +299,14 @@ def refresh_pool(
             force=force,
             http=client,
             max_age=POOL_ITEM_MAX_AGE,
+            pause=pause,
+            progress=progress,
+        )
+        quests = refresh_quests(
+            session,
+            undescribed_steps(stored, wanted),
+            force=force,
+            http=client,
             pause=pause,
             progress=progress,
         )
@@ -249,7 +320,10 @@ def refresh_pool(
         in_window=len(wanted),
         items_fetched=len(items.fetched),
         items_not_found=items.not_found,
-        errors=[f"Forever Companion {e}" for e in [*dungeons.errors, *items.errors]],
+        quests_fetched=len(quests.fetched),
+        errors=[
+            f"Forever Companion {e}" for e in [*dungeons.errors, *items.errors, *quests.errors]
+        ],
     )
 
 

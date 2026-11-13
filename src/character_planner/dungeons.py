@@ -21,6 +21,7 @@ from character_planner import fields
 from character_planner.companion import BASE_URL, USER_AGENT, as_utc
 from character_planner.db import CompanionDungeon, save_now, utcnow
 from character_planner.logs import JobLog
+from character_planner.quests import ChainRefs, QuestStep, parse_prerequisites, parse_quest
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +49,8 @@ class QuestReward(BaseModel):
     min_level: int | None = None
     faction: str = "both"  # alliance, horde or both
     choice: bool = False  # one of several rewards to pick from
+    # The quests to do first, earliest first: (quest id, name) side by side per step (#7).
+    prerequisites: ChainRefs = []
 
 
 class Dungeon(BaseModel):
@@ -58,6 +61,8 @@ class Dungeon(BaseModel):
     status: str | None = None  # launch or announced
     loot: list[Loot] = []
     rewards: list[QuestReward] = []
+    # Every quest it lists, described: chain steps found here need no request (#7).
+    quests: list[QuestStep] = []
 
 
 @dataclass
@@ -109,10 +114,14 @@ def parse_dungeon(payload: Any) -> Dungeon | None:
     ]
 
     rewards: list[QuestReward] = []
+    quests: list[QuestStep] = []
     for quest in fields.get(data, "quests") or []:
         quest_name = fields.get(quest, "name")
         if not isinstance(quest_name, str):
             continue
+        if (step := parse_quest(quest)) is not None:
+            quests.append(step)
+        prerequisites = parse_prerequisites(fields.get(quest, "prerequisites"))
         faction = fields.get(quest, "faction")
         for item in fields.get(quest, "rewards", "items") or []:
             item_id = fields.as_int(fields.get(item, "id"))
@@ -128,6 +137,7 @@ def parse_dungeon(payload: Any) -> Dungeon | None:
                     min_level=fields.as_int(fields.get(quest, "minLevel")),
                     faction=faction if isinstance(faction, str) else "both",
                     choice=fields.get(quest, "rewards", "choice") is True,
+                    prerequisites=prerequisites,
                 )
             )
 
@@ -139,6 +149,7 @@ def parse_dungeon(payload: Any) -> Dungeon | None:
         status=fields.get(data, "status"),
         loot=loot,
         rewards=rewards,
+        quests=quests,
     )
 
 

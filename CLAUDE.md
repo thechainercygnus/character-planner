@@ -90,6 +90,7 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/companion.py`: Forever Companion source, GET /items/{id} only (ADR 0004); spec in `docs/vendor/`
 - `src/character_planner/dungeons.py`: Forever Companion dungeons: drop tables and quest rewards (ADR 0006)
 - `src/character_planner/pool.py`: item pool built from dungeon data, level window, target id resolution (ADR 0006)
+- `src/character_planner/quests.py`: quest chains for quest rewards; steps no dungeon describes fetched by id, zone quests only named (ADR 0028)
 - `src/character_planner/progress.py`: progress over time rebuilt from snapshots: points, gear changes, level-ups (ADR 0008)
 - `src/character_planner/talents.py`: the talent plan compared with synced talents (ADR 0009), matched by talent id; default in `data/curated/talent_plan.yaml`
 - `src/character_planner/talent_trees.py`: Forever's talent trees from Blizzard's game data, and the plan rules (prerequisites, points per row); the frontend's twin is `frontend/src/talentRules.ts` (ADR 0025)
