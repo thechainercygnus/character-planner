@@ -59,9 +59,18 @@ See [docs/deploy.md](docs/deploy.md) and [ADR 0011](docs/adr/0011-docker-compose
 uv run ruff check --fix && uv run ruff format
 uv run pyright
 uv run pytest
+cd frontend && npm run lint && npm run typecheck && npm test
 ```
 
 CI runs the same checks plus a gitleaks secret scan and a Docker build with a smoke test.
+While the app runs, the API docs are at http://localhost:8000/docs (FastAPI's interactive
+OpenAPI docs).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md): issues first, a branch and pull request per issue,
+tests with every change, and signed-off commits (DCO). What's planned next is on the
+[roadmap (#25)](https://github.com/thechainercygnus/character-planner/issues/25).
 
 ## Security
 
