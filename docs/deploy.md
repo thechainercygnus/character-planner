@@ -124,6 +124,22 @@ data (ADR 0022); the API and the worker start once it has finished. If it fails,
 `docker compose logs migrate` says why, and nothing else starts. Back up the data volume
 before an upgrade (below).
 
+### Or run a published release
+
+Instead of building from a checkout, run an image from GitHub Packages (#61). Set the
+version in `.env`, for example `PLANNER_IMAGE=ghcr.io/thechainercygnus/character-planner:0.2`
+(`0.2` follows the latest 0.2.x; `0.2.1` stays put), then:
+
+```bash
+docker compose -f compose.yaml -f compose.tailscale.yaml pull
+docker compose -f compose.yaml -f compose.tailscale.yaml up -d
+```
+
+Leave out `--build`, or Compose builds from the checkout instead. To upgrade, change the
+version (or pull again for the same `X.Y`) and run both commands again; the migrations run
+as above. Read the release notes first: they call out anything else. To check an image
+before running it, see [releasing.md](releasing.md#verifying-an-image).
+
 ## Back up
 
 The database is one file on the volume:

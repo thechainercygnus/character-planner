@@ -2,12 +2,19 @@
 # See docs/deploy.md and ADR 0011. Add compose.tailscale.yaml to serve it on your tailnet.
 #
 #   docker compose up -d --build
+#
+# Or run a published release instead of building (#61, docs/releasing.md):
+#
+#   PLANNER_IMAGE=ghcr.io/thechainercygnus/character-planner:0.2 docker compose pull
+#   PLANNER_IMAGE=ghcr.io/thechainercygnus/character-planner:0.2 docker compose up -d
+#
+# (or set PLANNER_IMAGE in .env). Without --build, Compose uses the pulled image.
 
 name: character-planner
 
 x-planner: &planner
   build: .
-  image: character-planner:latest
+  image: ${PLANNER_IMAGE:-character-planner:latest}
   env_file: .env  # Battle.net client and redirect URI; never committed
   environment:
     DATABASE_URL: sqlite:////data/character-planner.db
