@@ -38,6 +38,7 @@ Deploy (Docker): `docker compose up -d --build`; over Tailscale add `-f compose.
 - Every behaviour change gets a test. External HTTP is mocked with respx; tests never
   hit the network or read `.env`.
 - Never commit `.env`, `samples/` or `data/*.db`: they hold secrets or personal data.
+- Pin GitHub Actions to a full commit SHA with the version as a comment (`uses: owner/action@<sha> # v1.2.3`), and Docker images by tag and digest. Give each workflow job only the permissions it needs. Dependabot keeps pins current.
 - Check a third-party API against its vendored spec (`docs/vendor/`) before concluding it's broken.
 - Never log or print access tokens or the client secret.
 - Record decisions with lasting consequences as a new ADR in `docs/adr/`, numbered,
