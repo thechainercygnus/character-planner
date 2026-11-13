@@ -35,6 +35,14 @@ Releases are tags. Pushing a tag `vX.Y.Z` that matches `pyproject.toml`'s versio
    image (usually a base image or dependency update), merge, and tag the next patch version.
    A tag that failed isn't reused.
 
+### Test releases
+
+To try a release before making it, tag `vX.Y.Z-rc.N` for the version in `pyproject.toml` (no
+bump needed), for example `v0.1.0-rc.1`:
+- It runs the same workflow and publishes only `X.Y.Z-rc.N`: not `X.Y` or `latest`.
+- Its GitHub release is marked as a pre-release.
+- The final release's notes count from the previous full release, skipping the rc tags.
+
 The first publish creates the package on GitHub as **private**. Make it public once, in
 the package's settings (Package settings, Danger zone, Change visibility), so others can
 pull it without logging in.
