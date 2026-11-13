@@ -244,12 +244,12 @@ To check that an image really comes from this project before running it, see
 
 For anything else, open an
 [issue](https://github.com/thechainercygnus/character-planner/issues) with the relevant log
-lines. Report security problems privately, as [SECURITY.md](../SECURITY.md) explains.
+lines. Report security problems privately, as [SECURITY.md](https://github.com/thechainercygnus/character-planner/blob/main/SECURITY.md) explains.
 
 ## Running from source
 
 To change the code, build the image from your checkout instead: leave `PLANNER_IMAGE`
-unset and use `docker compose up -d --build`. [CONTRIBUTING.md](../CONTRIBUTING.md) covers
+unset and use `docker compose up -d --build`. [CONTRIBUTING.md](https://github.com/thechainercygnus/character-planner/blob/main/CONTRIBUTING.md) covers
 development. If you
 host a modified copy for others, set `SOURCE_URL` to your fork. The AGPL asks you to offer
 your users the source, and the page footer links to it.

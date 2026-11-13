@@ -1,0 +1,24 @@
+# Read the Docs (#104): builds docs/ with Sphinx and MyST-Parser (docs/conf.py).
+# See https://docs.readthedocs.com/platform/stable/config-file/v2.html
+version: 2
+
+build:
+  os: ubuntu-24.04
+  tools:
+    # The project's own version, as in .python-version and the Dockerfile.
+    python: "3.14"
+
+# uv sync from pyproject.toml and uv.lock, so the docs tools are locked like everything
+# else and Dependabot keeps them current. The docs group isn't installed by a plain
+# `uv sync`, so development doesn't carry Sphinx.
+python:
+  install:
+    - method: uv
+      command: sync
+      groups:
+        - docs
+
+sphinx:
+  configuration: docs/conf.py
+  # A broken link or reference fails the build, as it does in CI.
+  fail_on_warning: true
