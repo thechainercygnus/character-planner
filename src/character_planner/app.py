@@ -67,6 +67,7 @@ from character_planner.db import (
     latest_by_kind,
     make_engine,
 )
+from character_planner.dungeons import stored_dungeons
 from character_planner.enchants import (
     EnchantAdvice,
     EnchantData,
@@ -93,6 +94,9 @@ from character_planner.jobs import (
     sync_character,
 )
 from character_planner.logs import ACCESS_LOGGER, configure_logging, request_id, safe_database_url
+from character_planner.lookahead import DEFAULT_LEVELS as DEFAULT_LOOK_AHEAD
+from character_planner.lookahead import MAX_LEVELS as MAX_LOOK_AHEAD
+from character_planner.lookahead import LookAhead, look_ahead
 from character_planner.pool import (
     PoolRefresh,
     PoolView,
@@ -696,9 +700,10 @@ def create_app(
     def character(session: SessionDep) -> CharacterView:
         return character_view(latest_by_kind(session), icons_by_id(session))
 
-    @app.get("/api/gear")
-    def gear(session: SessionDep, targets: TargetsDep, presets: PresetsDep) -> GearPlan:
-        plan = gear_plan(
+    def build_gear_plan(
+        session: Session, targets: GearTargets, presets: ShippedPresets
+    ) -> GearPlan:
+        return gear_plan(
             latest_by_kind(session),
             targets,
             catalog_by_name(session),
@@ -707,7 +712,34 @@ def create_app(
             current_weights(session, presets),
             jobs.item_levels(session),
         )
+
+    @app.get("/api/gear")
+    def gear(session: SessionDep, targets: TargetsDep, presets: PresetsDep) -> GearPlan:
+        plan = build_gear_plan(session, targets, presets)
         return plan.model_copy(update={"targets_customised": targets_customised(session)})
+
+    @app.get("/api/look-ahead")
+    def get_look_ahead(
+        session: SessionDep,
+        targets: TargetsDep,
+        presets: PresetsDep,
+        default_plan: DefaultPlanDep,
+        professions: Annotated[ProfessionData, Depends(get_profession_data)],
+        levels: Annotated[int, Query(ge=1, le=MAX_LOOK_AHEAD)] = DEFAULT_LOOK_AHEAD,
+    ) -> LookAhead:
+        """What each of the next `levels` levels brings (#4): dungeons opening, gear
+        targets, talent points, class quests and profession ranks."""
+        level, faction = jobs.character_context(session)
+        return look_ahead(
+            level,
+            levels,
+            faction=faction,
+            dungeons=stored_dungeons(session),
+            gear=build_gear_plan(session, targets, presets),
+            talents=talents_view(session, default_plan),
+            class_quests=checklist(session),
+            professions=professions_view(session, professions, level),
+        )
 
     def preset_errors(action: Callable[[], object]) -> None:
         try:

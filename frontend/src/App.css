@@ -1127,3 +1127,33 @@ ul.upcoming small {
   margin-left: auto;
   font-variant-numeric: tabular-nums;
 }
+
+.look-ahead-range {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.look-ahead-level ul {
+  margin: 0 0 0.9rem;
+  padding: 0;
+  list-style: none;
+}
+
+.look-ahead-event {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.2rem 0;
+}
+
+.look-ahead-event small {
+  display: block;
+}
+
+.look-ahead-kind {
+  min-width: 5.5rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}

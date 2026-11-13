@@ -2,6 +2,7 @@
 
 A planner for a WoW Forever character. It reads your character from Battle.net and works
 out what to do next:
+- what the next few levels bring;
 - the gear upgrades within reach, from dungeons, quests, rares and your own crafting;
 - the dungeons worth running;
 - the enchants to look for;

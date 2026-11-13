@@ -9,7 +9,7 @@ function useItemChoices() {
   const queryClient = useQueryClient()
   const onSuccess = () =>
     Promise.all(
-      ['recommendations', 'gear', 'targets', 'choices'].map((key) =>
+      ['recommendations', 'gear', 'targets', 'choices', 'look-ahead'].map((key) =>
         queryClient.invalidateQueries({ queryKey: [key] }),
       ),
     )

@@ -8,6 +8,7 @@ import { Enchants } from './components/Enchants'
 import { Footer } from './components/Footer'
 import { GearTable } from './components/GearTable'
 import { Landing } from './components/Landing'
+import { LookAhead } from './components/LookAhead'
 import { ProfessionMilestones } from './components/ProfessionMilestones'
 import { Progress } from './components/Progress'
 import { Recommendations } from './components/Recommendations'
@@ -107,6 +108,7 @@ export default function App() {
 
           {tab === 'plan' && (
             <>
+              <LookAhead />
               {gear.data && (
                 <GearTable
                   plan={gear.data}

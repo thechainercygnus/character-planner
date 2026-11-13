@@ -100,6 +100,7 @@ export function TalentTrees({ tree, view }: { tree: ClassTree; view: TalentPlanV
 
   const onSaved = (saved: TalentPlanView) => {
     queryClient.setQueryData(['talents'], saved)
+    void queryClient.invalidateQueries({ queryKey: ['look-ahead'] })
     setDraft(null)
     setMessage(null)
   }

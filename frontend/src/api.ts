@@ -704,6 +704,30 @@ export class ApiError extends Error {
   }
 }
 
+export type LookAheadKind = 'dungeon' | 'target' | 'talent' | 'class_quest' | 'profession'
+
+/** One thing a coming level brings (lookahead.py LookAheadEvent, #4). */
+export interface LookAheadEvent {
+  kind: LookAheadKind
+  title: string
+  detail: string | null
+  /** An essential class quest. */
+  essential: boolean
+  /** A pinned gear target. */
+  pinned: boolean
+  /** A dungeon not open yet in Forever. */
+  locked: boolean
+  link: string | null
+}
+
+export interface LookAhead {
+  level: number | null
+  /** How far ahead, as asked. */
+  levels: number
+  /** Each coming level with something on it, in order. */
+  groups: { level: number; events: LookAheadEvent[] }[]
+}
+
 /** A trainer rank not reached yet (crafting.py NextRank, #10). */
 export interface NextRank {
   name: string
@@ -865,6 +889,7 @@ export const api = {
     }),
   pool: () => request<PoolView>('/api/pool'),
   professions: () => request<ProfessionsView>('/api/professions'),
+  lookAhead: (levels: number) => request<LookAhead>(`/api/look-ahead?levels=${levels}`),
   classQuests: () => request<ClassQuestChecklist>('/api/class-quests'),
   setClassQuestDone: ({ id, done }: { id: string; done: boolean }) =>
     request<ClassQuestChecklist>(`/api/class-quests/${encodeURIComponent(id)}`, {

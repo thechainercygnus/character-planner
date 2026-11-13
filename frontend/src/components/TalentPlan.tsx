@@ -49,6 +49,7 @@ function PlanEditor({ view }: { view: TalentPlanView }) {
 
   const onSaved = (saved: TalentPlanView) => {
     queryClient.setQueryData(['talents'], saved)
+    void queryClient.invalidateQueries({ queryKey: ['look-ahead'] })
     setDraft(null)
   }
   const save = useMutation({ mutationFn: api.saveTalentPlan, onSuccess: onSaved })
