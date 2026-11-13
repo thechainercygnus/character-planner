@@ -1,8 +1,47 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { api, type GuestQuery } from '../api'
+import { api, type GuestQuery, type Recommendations as RecommendationsData } from '../api'
 import { Dungeons } from './Dungeons'
 import { Recommendations } from './Recommendations'
+
+/**
+ * When the pool has no or partial item data for the guest's level, say so and offer to
+ * fetch it for that level's window only (#48): a few minutes, not the whole pool's ~20.
+ */
+function MissingItemData({ data, level }: { data: RecommendationsData; level: number }) {
+  const queryClient = useQueryClient()
+  const fetchData = useMutation({
+    mutationFn: () => api.refreshPool(level),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['guest-recommendations'] }),
+  })
+  const none = data.considered === 0 && data.unscored === 0
+  if (!none && data.unscored === 0 && !fetchData.isSuccess) return null
+
+  const levels = data.window ? `levels ${data.window[0]}–${data.window[1]}` : `level ${level}`
+  return (
+    <div className="missing-data">
+      {fetchData.isSuccess ? (
+        <p className="muted">
+          Fetched details for {fetchData.data.items_fetched} items for {levels}
+          {fetchData.data.errors.length > 0 && `, with ${fetchData.data.errors.length} errors`}.
+        </p>
+      ) : (
+        <p>
+          {none
+            ? `There's no item data for ${levels} yet.`
+            : `${data.unscored} items for ${levels} have no details yet, so they can't be scored.`}{' '}
+          Fetching them takes a few minutes, paced to stay under Forever Companion's rate limit.
+        </p>
+      )}
+      {!fetchData.isSuccess && (
+        <button type="button" onClick={() => fetchData.mutate()} disabled={fetchData.isPending}>
+          {fetchData.isPending ? `Fetching item data for ${levels}…` : `Fetch item data for ${levels}`}
+        </button>
+      )}
+      {fetchData.isError && <p className="error">Couldn't fetch item data: {fetchData.error.message}</p>}
+    </div>
+  )
+}
 
 /** Guest mode (ADR 0017): pick a class and level, see the best items and dungeons. */
 export function GuestMode() {
@@ -84,6 +123,7 @@ export function GuestMode() {
       {recommendations.isError && <p className="error">Couldn't load items: {recommendations.error.message}</p>}
       {recommendations.data && (
         <>
+          <MissingItemData key={level} data={recommendations.data} level={level} />
           <Recommendations data={recommendations.data} guest />
           <Dungeons data={recommendations.data} />
         </>

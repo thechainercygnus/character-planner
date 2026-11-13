@@ -388,12 +388,17 @@ def create_app(
         )
 
     @app.post("/api/pool/refresh")
-    def refresh_item_pool(session: SessionDep, force: bool = False) -> PoolRefresh:
-        """Refresh dungeon drop tables and quest rewards, then item details for the level
-        window. The first run takes a few minutes (paced under Forever Companion's rate
-        limit); `uv run character-planner-pool` does the same with progress output.
+    def refresh_item_pool(
+        session: SessionDep,
+        force: bool = False,
+        level: Annotated[int | None, Query(ge=1, le=80)] = None,
+    ) -> PoolRefresh:
+        """Refresh dungeon drop tables and quest rewards, then item details for a level
+        window: `level`'s (guest mode asks for its own), else the character's, else the
+        whole pool. The first run takes a few minutes (paced under Forever Companion's
+        rate limit); `uv run character-planner-pool` does the same with progress output.
         """
-        return jobs.refresh_item_pool(session, settings, force=force, http=http)
+        return jobs.refresh_item_pool(session, settings, force=force, http=http, level=level)
 
     @app.post("/api/enchants/refresh")
     def refresh_enchants(session: SessionDep, force: bool = False) -> RecipeRefresh:

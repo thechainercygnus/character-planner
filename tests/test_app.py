@@ -1,4 +1,5 @@
 import json
+import logging
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
@@ -603,3 +604,43 @@ def test_guest_mode_choices_are_validated(client: TestClient, params: dict[str, 
 def test_guest_mode_works_before_any_login_or_pool(client: TestClient) -> None:
     guest = client.get("/api/guest/recommendations", params={"level": 30}).json()
     assert (guest["considered"], guest["unscored"]) == (0, 0)
+
+
+def _requested_item_ids() -> set[int]:
+    prefix = "https://forevercompanion.io/api/v1/items/"
+    return {
+        int(str(call.request.url).removeprefix(prefix))
+        for call in respx.calls
+        if str(call.request.url).startswith(prefix)
+    }
+
+
+@respx.mock
+def test_a_pool_refresh_can_ask_for_a_level_window(
+    client: TestClient, caplog: pytest.LogCaptureFixture
+) -> None:
+    """No character (a fresh install, guest mode): a level keeps the refresh to its window
+    instead of the whole pool (#48)."""
+    mock_companion_dungeons()
+    respx.get(url__startswith="https://forevercompanion.io/api/v1/items/").mock(
+        return_value=httpx.Response(404, json={})
+    )
+    # Level 5's window (2-15) reaches Hall of Thanes (13-18), not the Deadmines (17+).
+    with caplog.at_level(logging.INFO):
+        result = client.post("/api/pool/refresh", params={"level": 5}).json()
+    asked = _requested_item_ids()
+    assert 0 < result["in_window"] < result["pool_size"]
+    assert len(asked) == result["in_window"]
+    assert not asked & {5193, 2041, 2042}  # Deadmines items
+    assert any("level 5 (asked for), window (2, 15)" in r.getMessage() for r in caplog.records)
+
+    # Without a level and with no character: the whole pool, as before.
+    respx.calls.reset()
+    whole = client.post("/api/pool/refresh", params={"force": True}).json()
+    assert whole["in_window"] == whole["pool_size"]
+    assert {5193, 2041} <= _requested_item_ids()
+
+
+@pytest.mark.parametrize("level", [0, 81])
+def test_a_pool_refresh_level_is_bounded(client: TestClient, level: int) -> None:
+    assert client.post("/api/pool/refresh", params={"level": level}).status_code == 422

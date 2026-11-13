@@ -622,7 +622,9 @@ export const api = {
       body: JSON.stringify(plan),
     }),
   resetTalentPlan: () => request<TalentPlanView>('/api/talents/plan', { method: 'DELETE' }),
-  refreshPool: () => request<PoolRefresh>('/api/pool/refresh', { method: 'POST' }),
+  /** With a level, only that level's window (guest mode, #48); else the character's. */
+  refreshPool: (level?: number) =>
+    request<PoolRefresh>(level ? `/api/pool/refresh?level=${level}` : '/api/pool/refresh', { method: 'POST' }),
   refreshEnchants: () => request<RecipeRefresh>('/api/enchants/refresh', { method: 'POST' }),
   enchants: () => request<EnchantAdvice>('/api/enchants/recommendations'),
 }

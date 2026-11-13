@@ -32,7 +32,7 @@ export function StatusBar() {
     onSuccess: () => queryClient.invalidateQueries(),
   })
   const refreshPool = useMutation({
-    mutationFn: api.refreshPool,
+    mutationFn: () => api.refreshPool(),
     onSuccess: () => queryClient.invalidateQueries(),
   })
 
