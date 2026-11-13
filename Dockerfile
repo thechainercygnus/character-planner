@@ -9,7 +9,7 @@ RUN npm ci
 COPY frontend/ ./
 RUN npm run build
 
-FROM python:3.14-slim AS app
+FROM python:3.15-slim AS app
 COPY --from=ghcr.io/astral-sh/uv:0.9.17 /uv /bin/uv
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
