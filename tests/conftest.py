@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -31,7 +32,10 @@ def settings(tmp_path: Path) -> Settings:
 
 
 @pytest.fixture
-def engine(settings: Settings) -> Engine:
+def engine(settings: Settings) -> Iterator[Engine]:
+    # Disposed after the test: SQLite connections left to the garbage collector close
+    # with a ResourceWarning, which fails the run (warnings are errors, #85).
     engine = make_engine(settings.database_url)
     init_db(engine)
-    return engine
+    yield engine
+    engine.dispose()

@@ -182,9 +182,17 @@ def main(argv: list[str] | None = None) -> int:
     settings = get_settings()
     configure_logging(settings, "worker")
     engine = make_engine(settings.database_url)
+    try:
+        return run(engine, settings, once=args.once)
+    finally:
+        engine.dispose()
+
+
+def run(engine: Engine, settings: Settings, *, once: bool) -> int:
+    """The worker loop, or one pass of it with once=True."""
     init_db(engine)
     schedule = default_schedule(settings)
-    if args.once:
+    if once:
         outcomes = run_due(engine, settings, schedule, utcnow())
         with notify.new_client() as discord:
             tick_notifications(engine, settings, discord)

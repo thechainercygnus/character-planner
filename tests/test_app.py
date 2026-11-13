@@ -614,7 +614,7 @@ def test_guest_mode_uses_the_shipped_rules_and_stores_nothing(
         {},
     ],
 )
-def test_guest_mode_choices_are_validated(client: TestClient, params: dict[str, object]) -> None:
+def test_guest_mode_choices_are_validated(client: TestClient, params: dict[str, str | int]) -> None:
     response = client.get("/api/guest/recommendations", params=params)
     assert response.status_code == 422
 

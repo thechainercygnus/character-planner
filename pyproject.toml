@@ -34,6 +34,7 @@ dev = [
     "types-pyyaml>=6.0",
     "pre-commit>=4.0",
     "pytest-cov>=7",
+    "httpx2>=2.16.0",
 ]
 docs = [
     "furo>=2025.12.19",
@@ -83,6 +84,9 @@ venv = ".venv"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
+# Every warning fails the run (#85, OpenSSF Silver's warnings_strict). Ignore one only
+# when it comes from a dependency and can't be fixed here, with a comment saying why.
+filterwarnings = ["error"]
 
 # Coverage (#55): line and branch coverage of the package. CI runs
 # `pytest --cov --cov-report=term --cov-report=xml`; locally, add `--cov` to see it.

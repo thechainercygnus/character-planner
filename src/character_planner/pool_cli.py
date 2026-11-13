@@ -12,9 +12,10 @@ import argparse
 import sys
 from collections import Counter
 
+from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
-from character_planner.config import get_settings
+from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, latest_by_kind, make_engine
 from character_planner.pool import pool_view, refresh_pool
 from character_planner.views import character_faction, character_level
@@ -28,11 +29,19 @@ def main(argv: list[str] | None = None) -> int:
 
     settings = get_settings()
     engine = make_engine(settings.database_url)
+    try:
+        return refresh(engine, settings, level=args.level, force=args.force)
+    finally:
+        engine.dispose()
+
+
+def refresh(engine: Engine, settings: Settings, *, level: int | None, force: bool) -> int:
+    """Refresh the pool and print what happened; 1 when anything failed."""
     init_db(engine)
     with Session(engine) as session:
         profile = latest_by_kind(session).get("profile")
         payload = profile.payload if profile else None
-        level = args.level if args.level is not None else character_level(payload)
+        level = level if level is not None else character_level(payload)
         faction = character_faction(payload)
         print(f"Level {level or 'unknown (whole pool)'}, faction {faction or 'unknown'}")
 
@@ -43,7 +52,7 @@ def main(argv: list[str] | None = None) -> int:
             session,
             level=level,
             faction=faction,
-            force=args.force,
+            force=force,
             pause=settings.companion_request_pause,
             progress=progress,
         )

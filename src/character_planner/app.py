@@ -348,6 +348,7 @@ def create_app(
     if settings is None:
         settings = get_settings()
         configure_logging(settings, "api")
+    owns_engine = engine is None
     engine = engine or make_engine(settings.database_url)
     pending_states: dict[str, float] = {}  # state -> created_at
 
@@ -370,6 +371,8 @@ def create_app(
             if moved := jobs.migrate_target_choices(session, settings):
                 logger.info("Moved %d pinned items into the gear targets", moved)
         yield
+        if owns_engine:  # a caller's engine is the caller's to close
+            engine.dispose()
 
     app = FastAPI(title="Character Planner", lifespan=lifespan)
     app.state.settings = settings

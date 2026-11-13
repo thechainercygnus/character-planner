@@ -12,3 +12,4 @@ def test_sqlite_uses_wal_and_waits_for_locks(tmp_path: Path) -> None:
         assert connection.execute(text("PRAGMA journal_mode")).scalar() == "wal"
         assert connection.execute(text("PRAGMA busy_timeout")).scalar() == SQLITE_BUSY_TIMEOUT_MS
     assert (tmp_path / "nested").is_dir()
+    engine.dispose()
