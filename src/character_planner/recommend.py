@@ -76,7 +76,12 @@ class UsageRules(BaseModel):
     weapon_types: list[str]
     armor_types: list[str]
     plate_from_level: int | None = 40
+    # Hunters and Shamans learn mail at 40, as Warriors and Paladins learn plate (#80).
+    mail_from_level: int | None = None
     two_handers: bool = False
+    # Which weapon types count as two-handers; None: any in weapon_types. A Warlock wields
+    # staves but not two-handed swords.
+    two_hand_types: list[str] | None = None
     off_hand_types: list[str] = ["Shield"]
     levels_ahead: int = 3
     per_slot: int = 3
@@ -158,11 +163,21 @@ def unusable_reason(
         rules.plate_from_level is None or level is None or level < rules.plate_from_level
     ):
         return "plate not yet"
-    if armor in ("cloth", "leather", "mail") and armor not in rules.armor_types:
+    if armor == "mail" and "mail" not in rules.armor_types:
+        if rules.mail_from_level is None:
+            return "not wearing mail"
+        if level is None or level < rules.mail_from_level:
+            return "mail not yet"
+    if armor in ("cloth", "leather") and armor not in rules.armor_types:
         return f"not wearing {armor}"
-    if slot == "Two-Hand" and not rules.two_handers:
-        return "two-hander"
-    if SLOT_FOR.get(slot) == "OFF_HAND" and item.weapon_type not in rules.off_hand_types:
+    if slot == "Two-Hand":
+        if not rules.two_handers:
+            return "two-hander"
+        if rules.two_hand_types is not None and weapon not in rules.two_hand_types:
+            return f"no two-handed {weapon}"
+    # Held-in-off-hand items have the weapon type Miscellaneous, or none at all.
+    off_hand = item.weapon_type or ("Miscellaneous" if slot == "Held In Off-hand" else None)
+    if SLOT_FOR.get(slot) == "OFF_HAND" and off_hand not in rules.off_hand_types:
         return "off hand type"
     return None
 

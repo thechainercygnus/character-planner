@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { RulesView, UsageRules } from '../api'
 import { RulesDialog } from './RulesDialog'
@@ -8,7 +8,9 @@ const rules: UsageRules = {
   weapon_types: ['Axe', 'Sword', 'Shield'],
   armor_types: ['cloth', 'leather', 'mail'],
   plate_from_level: 40,
+  mail_from_level: null,
   two_handers: false,
+  two_hand_types: null,
   off_hand_types: ['Shield'],
   levels_ahead: 3,
   per_slot: 3,
@@ -21,6 +23,7 @@ const view: RulesView = {
   weapon_type_options: ['Axe', 'Sword', 'Wand', 'Shield'],
   armor_type_options: ['cloth', 'leather', 'mail'],
   off_hand_type_options: ['Shield', 'Miscellaneous'],
+  two_hand_type_options: ['Axe', 'Staff', 'Sword'],
 }
 
 function stubFetch(current: RulesView = view) {
@@ -81,6 +84,27 @@ describe('RulesDialog', () => {
       min_gain: 2.5,
     })
     expect(await screen.findByText(/• customised/)).toBeTruthy()
+  })
+
+  it('saves a mail level and which two-handers count', async () => {
+    const fetchMock = stubFetch()
+    await openDialog()
+
+    expect(screen.queryByText('Two-handed weapon types')).toBeNull()
+    fireEvent.click(screen.getByLabelText('Two-handed weapons'))
+    // Any type to begin with; unticking one narrows it.
+    const twoHanders = within(screen.getByRole('group', { name: 'Two-handed weapon types' }))
+    expect((twoHanders.getByLabelText('Sword') as HTMLInputElement).checked).toBe(true)
+    fireEvent.click(twoHanders.getByLabelText('Sword'))
+    fireEvent.click(twoHanders.getByLabelText('Axe'))
+    fireEvent.change(screen.getByLabelText('Mail from level'), { target: { value: '40' } })
+    fireEvent.click(screen.getByText('Save'))
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/rules', expect.objectContaining({ method: 'PUT' })))
+    const saved = putBody(fetchMock)
+    expect(saved.two_handers).toBe(true)
+    expect(saved.mail_from_level).toBe(40)
+    expect(saved.two_hand_types).toEqual(['Staff'])
   })
 
   it('blocks numbers out of range', async () => {

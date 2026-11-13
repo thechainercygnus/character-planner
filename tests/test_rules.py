@@ -83,3 +83,17 @@ def test_numbers_are_bounded(changes: dict[str, object]) -> None:
 
 def test_plate_can_be_turned_off() -> None:
     assert edited(plate_from_level=None).to_rules().plate_from_level is None
+
+
+def test_two_hand_types_are_validated_and_none_means_any() -> None:
+    rules = edited(two_handers=True, two_hand_types=["Staff", "Axe", "Staff"]).to_rules()
+    assert rules.two_hand_types == ["Axe", "Staff"]
+    assert edited(two_hand_types=None).to_rules().two_hand_types is None
+    with pytest.raises(RulesError):
+        edited(two_hand_types=["Wand"]).to_rules()
+
+
+def test_mail_level_is_bounded() -> None:
+    assert edited(mail_from_level=40).to_rules().mail_from_level == 40
+    with pytest.raises(ValueError):
+        edited(mail_from_level=0)
