@@ -24,3 +24,10 @@ samples/
 
 # Sphinx output (docs/conf.py)
 docs/_build/
+
+# Coverage output (#55)
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+frontend/coverage/
