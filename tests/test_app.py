@@ -647,3 +647,34 @@ def test_a_pool_refresh_can_ask_for_a_level_window(
 @pytest.mark.parametrize("level", [0, 81])
 def test_a_pool_refresh_level_is_bounded(client: TestClient, level: int) -> None:
     assert client.post("/api/pool/refresh", params={"level": level}).status_code == 422
+
+
+def test_about_gives_the_footer_its_credits_source_and_version(
+    settings: Settings, engine: Engine
+) -> None:
+    """#43: one footer credits Forever Companion and its sources and links the source."""
+    with TestClient(create_app(settings, engine)) as client:
+        about = client.get("/api/about").json()
+    assert about["source_url"] == "https://github.com/thechainercygnus/character-planner"
+    assert about["version"]
+    assert (about["data"]["name"], about["data"]["url"]) == (
+        "Forever Companion",
+        "https://forevercompanion.io",
+    )
+    assert [s["name"] for s in about["data"]["sources"]] == [
+        "ForeverChanges",
+        "Wowhead",
+        "Zockify",
+    ]
+
+
+def test_a_fork_points_the_source_link_at_itself(settings: Settings, engine: Engine) -> None:
+    fork = settings.model_copy(update={"source_url": "https://git.example.org/me/planner"})
+    with TestClient(create_app(fork, engine)) as client:
+        assert client.get("/api/about").json()["source_url"] == "https://git.example.org/me/planner"
+
+
+@pytest.mark.parametrize("value", ["javascript:alert(1)", "ftp://x", "https://a b", ""])
+def test_the_source_url_must_be_a_web_address(value: str) -> None:
+    with pytest.raises(ValueError, match="SOURCE_URL"):
+        Settings(source_url=value, _env_file=None)  # pyright: ignore[reportCallIssue]

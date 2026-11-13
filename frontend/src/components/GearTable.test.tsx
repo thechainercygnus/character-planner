@@ -158,7 +158,7 @@ describe('GearTable', () => {
     expect(screen.getByText('no item data yet')).toBeTruthy()
   })
 
-  it('shows Forever Companion data: gains, drops, link, conflicts and credit', () => {
+  it('shows Forever Companion data: gains, drops, link and conflicts, crediting it in the footer only', () => {
     const credit = { name: 'Forever Companion', url: 'https://forevercompanion.io', text: 'Item data from Forever Companion.' }
     render(<GearTable plan={{ ...plan, rows: [companionUpgrade], attributions: [credit] }} />)
 
@@ -169,7 +169,8 @@ describe('GearTable', () => {
     expect(screen.getByText('from Forever Companion (3 verified)')).toBeTruthy()
     expect(screen.getByText('Kindlegem Girdle').getAttribute('href')).toBe(companionUpgrade.target_info!.wowhead)
     expect(screen.getByText(/Sources disagree on item level/)).toBeTruthy()
-    expect(screen.getByText('Forever Companion').getAttribute('href')).toBe('https://forevercompanion.io')
+    // The credit is in the page footer now (#43), not under each panel.
+    expect(screen.queryByText('Item data from Forever Companion.')).toBeNull()
   })
 
   it('summarises upgrades and gaps', () => {

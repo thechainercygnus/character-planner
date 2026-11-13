@@ -39,6 +39,13 @@ ATTRIBUTION = {
         "and checked in game by players. Fan-made, not affiliated with Blizzard Entertainment."
     ),
 }
+# Forever Companion's own sources, as its responses list them (meta.sources, seen in
+# tests/fixtures/companion_dungeon_hall_of_thanes.json). The page footer links each (#43).
+SOURCES = [
+    {"name": "ForeverChanges", "url": "https://foreverchanges.pro"},
+    {"name": "Wowhead", "url": "https://www.wowhead.com/forever"},
+    {"name": "Zockify", "url": "https://www.zockify.com/forever/"},
+]
 WOWHEAD_ICON = "https://wow.zamimg.com/images/wow/icons/medium/{icon}.jpg"
 MAX_AGE = timedelta(hours=24)
 

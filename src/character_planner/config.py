@@ -4,7 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import SecretStr
+from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Region = Literal["us", "eu", "kr", "tw"]
@@ -46,6 +46,18 @@ class Settings(BaseSettings):
     log_level: LogLevel = "INFO"
     log_format: Literal["text", "json"] = "text"
     log_dir: Path | None = None
+
+    # The page footer's Source link (#43). The AGPL asks a hosted, modified copy to offer
+    # its users its source: point this at your fork if you change the code.
+    source_url: str = "https://github.com/thechainercygnus/character-planner"
+
+    @field_validator("source_url")
+    @classmethod
+    def _web_address(cls, value: str) -> str:
+        # Shown as a link: only a web address, never javascript: or the like.
+        if not value.startswith(("https://", "http://")) or any(c.isspace() for c in value):
+            raise ValueError("SOURCE_URL must be an http(s) address")
+        return value
 
     @property
     def api_base_url(self) -> str:

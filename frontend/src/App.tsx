@@ -8,6 +8,7 @@ import {
 } from './components/CharacterPanels'
 import { Dungeons } from './components/Dungeons'
 import { Enchants } from './components/Enchants'
+import { Footer } from './components/Footer'
 import { GearTable } from './components/GearTable'
 import { Landing } from './components/Landing'
 import { Progress } from './components/Progress'
@@ -127,6 +128,7 @@ export default function App() {
           )}
         </>
       )}
+      <Footer />
     </main>
   )
 }

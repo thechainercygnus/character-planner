@@ -1,4 +1,4 @@
-import type { Attribution, PoolItem } from '../api'
+import type { PoolItem } from '../api'
 import { itemDetails, sourceText } from '../format'
 import { Icon } from './GearTable'
 
@@ -41,20 +41,5 @@ export function PoolItemName({
         {showSources && <small className="source-line">{item.sources.map(sourceText).join('; ')}</small>}
       </span>
     </div>
-  )
-}
-
-export function Attributions({ credits }: { credits: Attribution[] }) {
-  return (
-    <>
-      {credits.map((credit) => (
-        <p key={credit.url} className="attribution muted">
-          {credit.text}{' '}
-          <a href={credit.url} target="_blank" rel="noreferrer">
-            {credit.name}
-          </a>
-        </p>
-      ))}
-    </>
   )
 }
