@@ -20,7 +20,7 @@ from character_planner.blizzard.client import BlizzardClient
 from character_planner.companion import refresh_companion
 from character_planner.config import Settings
 from character_planner.curated import GearTargets
-from character_planner.db import CatalogItem, ItemIcon, catalog_by_name, utcnow
+from character_planner.db import CatalogItem, ItemIcon, catalog_by_name, save_now, utcnow
 
 SEARCH_PATH = "/data/wow/search/item"
 MAX_SEARCH_PAGES = 3
@@ -128,7 +128,8 @@ def refresh_catalog(
                 outcome.errors.append(f"{item_name}: {error}")
                 continue
             item_id = fields.as_int(fields.get(data, "id")) if data else None
-            session.merge(
+            save_now(
+                session,
                 CatalogItem(
                     name_key=name_key(item_name),
                     name=item_name,
@@ -136,10 +137,9 @@ def refresh_catalog(
                     item_id=item_id,
                     payload=data,
                     fetched_at=utcnow(),
-                )
+                ),
             )
             (outcome.found if data else outcome.missing).append(item_name)
-        session.commit()
 
         catalog_ids = {row.item_id for row in catalog_by_name(session).values() if row.item_id}
         wanted_icons = catalog_ids | set(equipped_item_ids)
@@ -149,9 +149,8 @@ def refresh_catalog(
             media_path = f"/data/wow/media/item/{item_id}"
             result = client.get("item-media", media_path, settings.static_namespace)
             url = icon_url(result.body) if result.ok else None
-            session.merge(ItemIcon(item_id=item_id, url=url, fetched_at=utcnow()))
+            save_now(session, ItemIcon(item_id=item_id, url=url, fetched_at=utcnow()))
             outcome.icons += url is not None
-        session.commit()
 
     return outcome
 

@@ -34,7 +34,7 @@ from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
 from character_planner.companion import CompanionInfo, as_utc, refresh_companion
 from character_planner.config import Settings
-from character_planner.db import RecipeData, utcnow
+from character_planner.db import RecipeData, save_now, utcnow
 from character_planner.recommend import EQUIPMENT_SLOTS, UsageRules
 from character_planner.scoring import RANGED_DPS, WEAPON_DPS, Weights
 from character_planner.views import EquippedItem
@@ -395,17 +395,17 @@ def refresh_recipes(
                         if not recipe.ok:
                             outcome.errors.append(f"recipe {rid}: HTTP {recipe.status}")
                             continue
-                        session.merge(
+                        save_now(
+                            session,
                             RecipeData(
                                 recipe_id=rid,
                                 profession=pname,
                                 category=cname,
                                 payload=recipe.body,
                                 fetched_at=utcnow(),
-                            )
+                            ),
                         )
                         outcome.recipes_fetched += 1
-    session.commit()
     return outcome
 
 

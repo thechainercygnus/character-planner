@@ -23,7 +23,7 @@ from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from character_planner import fields
-from character_planner.db import CompanionItem, utcnow
+from character_planner.db import CompanionItem, save_now, utcnow
 
 BASE_URL = "https://forevercompanion.io/api/v1"
 USER_AGENT = "character-planner/0.1 (personal WoW Forever planner)"
@@ -188,7 +188,7 @@ def refresh_companion(
                 outcome.errors.append(f"{item_id}: rate limited; stopping this batch")
                 break
             if response.status_code == 404:
-                session.merge(CompanionItem(item_id=item_id, found=False, fetched_at=utcnow()))
+                save_now(session, CompanionItem(item_id=item_id, found=False, fetched_at=utcnow()))
                 outcome.not_found.append(item_id)
                 continue
             if response.status_code != 200:
@@ -198,11 +198,11 @@ def refresh_companion(
             if parse_item(body) is None:
                 outcome.errors.append(f"{item_id}: unexpected response shape")
                 continue
-            session.merge(
-                CompanionItem(item_id=item_id, found=True, payload=body, fetched_at=utcnow())
+            save_now(
+                session,
+                CompanionItem(item_id=item_id, found=True, payload=body, fetched_at=utcnow()),
             )
             outcome.fetched.append(item_id)
-        session.commit()
     finally:
         if own_http:
             client.close()
