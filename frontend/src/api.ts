@@ -63,11 +63,22 @@ export interface Talent {
   name: string
   rank: number | null
   description: string | null
+  /** The tree it's in (Protection, Arms...). */
+  tree?: string | null
+}
+
+/** Points in one tree. Blizzard lists only trees with points in them. */
+export interface TreePoints {
+  name: string
+  spent_points: number | null
 }
 
 export interface Specialization {
+  /** The tree with the most points. */
   name: string
+  /** In every tree. */
   spent_points: number | null
+  trees?: TreePoints[]
   talents: Talent[]
 }
 

@@ -1023,3 +1023,24 @@ ul.upcoming small {
 .talent-order ol {
   columns: 2 18rem;
 }
+
+/* The Character tab's read-only talents (#41): one column per tree with points. */
+.talents-spent {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+
+.talents-spent h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+}
+
+.talents-spent ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.snapshot-time {
+  font-size: 0.85rem;
+}
