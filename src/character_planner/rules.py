@@ -52,6 +52,7 @@ class EditedRules(BaseModel):
     two_handers: bool = False
     two_hand_types: list[str] | None = None  # None: any weapon type
     off_hand_types: list[str]
+    dual_wield_from_level: Annotated[int, Field(ge=1, le=80)] | None = None
     levels_ahead: Annotated[int, Field(ge=0, le=20)]
     per_slot: Annotated[int, Field(ge=1, le=10)]
     min_gain: Annotated[float, Field(ge=0, le=100, allow_inf_nan=False)]

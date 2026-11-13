@@ -240,6 +240,8 @@ export interface UsageRules {
   /** Which weapon types count as two-handers; null any. */
   two_hand_types: string[] | null
   off_hand_types: string[]
+  /** Weapons in the off hand count from this level (Dual Wield); null: from the start. */
+  dual_wield_from_level: number | null
   /** Include items this many levels above yours. */
   levels_ahead: number
   per_slot: number

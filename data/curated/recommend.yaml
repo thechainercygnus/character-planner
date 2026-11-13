@@ -18,6 +18,9 @@ plate_from_level: 40
 # (not "Held In Off-hand" caster items).
 two_handers: false
 off_hand_types: [Shield]
+# Warriors learn Dual Wield at 20: weapons added to the off hand in Upgrades settings
+# count from then. Protection keeps shields only (#93 covers other Warrior specs).
+dual_wield_from_level: 20
 
 # Include items you can't equip yet but will within this many levels.
 levels_ahead: 3

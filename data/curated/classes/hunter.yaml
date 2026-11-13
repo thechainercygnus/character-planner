@@ -1,0 +1,60 @@
+# Hunter defaults (#80, ADR 0023): used when the synced character is a Hunter, and in
+# guest mode. Edits made in the app (Upgrades settings, Stat weights, Edit targets, the
+# talent planner) are saved in the database and win until reset.
+
+name: Hunter
+
+# What a Hunter can wear and wield. Proficiencies as in Classic: Forever's own data
+# doesn't list proficiencies, so correct anything here that Forever changed.
+# Values match Forever Companion's item details (weaponType, armor class).
+rules:
+  weapon_types: [Axe, Sword, Dagger, Fist Weapon, Polearm, Staff, Bow, Crossbow, Gun, Thrown]
+  armor_types: [cloth, leather]
+  plate_from_level: null
+  # Mail from 40, as in Classic.
+  mail_from_level: 40
+  # No two-handed maces.
+  two_handers: true
+  two_hand_types: [Axe, Sword, Polearm, Staff]
+  # Dual wielding: a second one-hand weapon in the off hand, once Dual Wield is
+  # learned from the trainer at 20.
+  off_hand_types: [Axe, Sword, Dagger, Fist Weapon]
+  dual_wield_from_level: 20
+
+# Stat weights: rough starting points, not theorycraft. Adjust them in the app.
+# Stat names are as Forever writes them, including equip bonuses ("Equip: +4 Attack Power").
+# The first preset is the default; the others only list what they change.
+# Scaled so Agility, the main damage stat, is 1.0.
+presets:
+  - key: hunter-leveling
+    name: Leveling
+    weights:
+      Agility: 1.0
+      # The bow or gun does the damage; the pet tanks.
+      Ranged DPS: 2.5
+      Attack Power: 0.5
+      Stamina: 0.5
+      Intellect: 0.3
+      Spirit: 0.2
+      Strength: 0.1
+      # Melee weapons mostly carry stats for a Hunter.
+      Weapon DPS: 0.3
+      Armor: 0.03
+      Defense: 0.0
+      Spell Damage: 0.0
+      Spell Power: 0.0
+      Healing: 0.0
+      Fire Resistance: 0.05
+      Frost Resistance: 0.05
+      Nature Resistance: 0.05
+      Shadow Resistance: 0.05
+      Arcane Resistance: 0.05
+  - key: hunter-dungeon
+    name: Dungeon DPS
+    weights:
+      Ranged DPS: 3.0
+      Stamina: 0.3
+      Spirit: 0.0
+
+# No curated gear targets or talent plan yet: build them in the app's editors.
+targets: []

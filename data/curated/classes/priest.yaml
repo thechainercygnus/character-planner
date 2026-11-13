@@ -1,0 +1,65 @@
+# Priest defaults (#80, ADR 0023): used when the synced character is a Priest, and in
+# guest mode. Edits made in the app (Upgrades settings, Stat weights, Edit targets, the
+# talent planner) are saved in the database and win until reset.
+
+name: Priest
+
+# What a Priest can wear and wield. Proficiencies as in Classic: Forever's own data
+# doesn't list proficiencies, so correct anything here that Forever changed.
+# Values match Forever Companion's item details (weaponType, armor class).
+rules:
+  weapon_types: [Dagger, Mace, Staff, Wand]
+  armor_types: [cloth]
+  plate_from_level: null
+  mail_from_level: null
+  # Staves are the only two-handers a Priest can use (no two-handed maces).
+  two_handers: true
+  two_hand_types: [Staff]
+  # Held-in-off-hand items only.
+  off_hand_types: [Miscellaneous]
+
+# Stat weights: rough starting points, not theorycraft. Adjust them in the app.
+# Stat names are as Forever writes them, including equip bonuses ("Equip: +5 Spell Power").
+# The first preset is the default; the others only list what they change.
+presets:
+  # Shadow, or a wand-and-Smite leveler.
+  - key: priest-leveling
+    name: Leveling shadow
+    weights:
+      Spell Damage: 1.0
+      Spell Power: 1.0
+      Shadow Spell Damage: 0.9
+      Holy Spell Damage: 0.2
+      Stamina: 0.6
+      Intellect: 0.5
+      Spirit: 0.6
+      Mana Regeneration: 0.6
+      Health Regeneration: 0.0
+      # Wands do much of a leveling Priest's damage.
+      Ranged DPS: 1.0
+      Weapon DPS: 0.0
+      Healing: 0.3
+      Armor: 0.02
+      Strength: 0.0
+      Agility: 0.0
+      Attack Power: 0.0
+      Fire Resistance: 0.05
+      Frost Resistance: 0.05
+      Nature Resistance: 0.05
+      Shadow Resistance: 0.05
+      Arcane Resistance: 0.05
+  - key: priest-healer
+    name: Dungeon healer
+    weights:
+      Healing: 1.0
+      Spell Power: 0.8
+      Spell Damage: 0.1
+      Shadow Spell Damage: 0.0
+      Intellect: 0.7
+      Spirit: 0.6
+      Mana Regeneration: 1.0
+      Stamina: 0.3
+      Ranged DPS: 0.1
+
+# No curated gear targets or talent plan yet: build them in the app's editors.
+targets: []

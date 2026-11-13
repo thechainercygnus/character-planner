@@ -9,6 +9,7 @@ type Draft = Pick<
 > & {
   plate_from_level: string
   mail_from_level: string
+  dual_wield_from_level: string
   levels_ahead: string
   per_slot: string
   min_gain: string
@@ -19,6 +20,7 @@ function toDraft(rules: UsageRules): Draft {
     ...rules,
     plate_from_level: rules.plate_from_level === null ? '' : String(rules.plate_from_level),
     mail_from_level: rules.mail_from_level === null ? '' : String(rules.mail_from_level),
+    dual_wield_from_level: rules.dual_wield_from_level === null ? '' : String(rules.dual_wield_from_level),
     levels_ahead: String(rules.levels_ahead),
     per_slot: String(rules.per_slot),
     min_gain: String(rules.min_gain),
@@ -36,6 +38,10 @@ function parseDraft(draft: Draft): UsageRules | string {
   if (draft.plate_from_level.trim() !== '' && plate === null) return 'Plate level must be 1 to 80, or blank for never.'
   const mail = draft.mail_from_level.trim() === '' ? null : wholeNumber(draft.mail_from_level, 1, 80)
   if (draft.mail_from_level.trim() !== '' && mail === null) return 'Mail level must be 1 to 80, or blank for never.'
+  const dualWield =
+    draft.dual_wield_from_level.trim() === '' ? null : wholeNumber(draft.dual_wield_from_level, 1, 80)
+  if (draft.dual_wield_from_level.trim() !== '' && dualWield === null)
+    return 'Dual wield level must be 1 to 80, or blank for from the start.'
   const levelsAhead = wholeNumber(draft.levels_ahead, 0, 20)
   if (levelsAhead === null) return 'Levels ahead must be a whole number from 0 to 20.'
   const perSlot = wholeNumber(draft.per_slot, 1, 10)
@@ -51,6 +57,7 @@ function parseDraft(draft: Draft): UsageRules | string {
     two_handers: draft.two_handers,
     two_hand_types: draft.two_hand_types,
     off_hand_types: draft.off_hand_types,
+    dual_wield_from_level: dualWield,
     levels_ahead: levelsAhead,
     per_slot: perSlot,
     min_gain: minGain,
@@ -207,6 +214,17 @@ export function RulesDialog() {
                   placeholder="never"
                   value={shown.mail_from_level}
                   onChange={(event) => change({ mail_from_level: event.target.value })}
+                />
+              </label>
+              <label title="Weapons ticked under Off hand count from this level (Rogues learn Dual Wield at 10, Warriors and Hunters at 20). Shields and held-in-off-hand items don't need it.">
+                Dual wield from level{' '}
+                <input
+                  type="number"
+                  min={1}
+                  max={80}
+                  placeholder="start"
+                  value={shown.dual_wield_from_level}
+                  onChange={(event) => change({ dual_wield_from_level: event.target.value })}
                 />
               </label>
               <label>
