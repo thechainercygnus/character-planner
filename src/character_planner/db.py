@@ -240,8 +240,24 @@ def save_now(session: Session, row: SQLModel) -> None:
     session.commit()
 
 
+MIGRATIONS = Path(__file__).parent / "migrations"
+
+
 def init_db(engine: Engine) -> None:
-    SQLModel.metadata.create_all(engine)
+    """Bring the schema up to date by running the migrations (#60, ADR 0022).
+
+    A new database gets every table; one from before migrations keeps its tables and
+    gains any it's missing (the baseline only creates what doesn't exist), then both
+    take every later migration. Safe to run on every start.
+    """
+    from alembic import command
+    from alembic.config import Config
+
+    config = Config()
+    config.set_main_option("script_location", str(MIGRATIONS))
+    with engine.begin() as connection:
+        config.attributes["connection"] = connection
+        command.upgrade(config, "head")
 
 
 def latest_by_kind(session: Session) -> dict[str, Snapshot]:

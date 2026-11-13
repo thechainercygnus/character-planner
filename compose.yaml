@@ -19,8 +19,19 @@ x-planner: &planner
   restart: unless-stopped
 
 services:
+  # Runs the schema migrations once, before the API and the worker start (ADR 0022).
+  migrate:
+    <<: *planner
+    command: ["character-planner-db", "upgrade"]
+    restart: "no"
+    healthcheck:
+      disable: true
+
   app:
     <<: *planner
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
     # Local-only by default. PLANNER_BIND=0.0.0.0 exposes it to the LAN.
     ports:
       - "${PLANNER_BIND:-127.0.0.1}:${PLANNER_PORT:-8000}:8000"
@@ -31,8 +42,8 @@ services:
     healthcheck:
       disable: true  # the image's check is the API's
     depends_on:
-      app:
-        condition: service_healthy  # the API creates the tables first
+      migrate:
+        condition: service_completed_successfully
 
 volumes:
   planner-data:
