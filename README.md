@@ -1,5 +1,7 @@
 # character-planner
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/thechainercygnus/character-planner/badge)](https://scorecard.dev/viewer/?uri=github.com/thechainercygnus/character-planner)
+
 Planner for a WoW Forever character: pulls data from the Battle.net Profile API, keeps a
 history of snapshots, and compares gear against curated targets: per slot, the one to go for
 at your level and the ones coming up.
