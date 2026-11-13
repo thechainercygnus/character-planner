@@ -146,10 +146,14 @@ export function Recommendations({
       </div>
 
       {empty ? (
-        <p className="muted">
-          No item pool yet. Choose <strong>Refresh item pool</strong> from the ⋯ menu above (the first run takes a
-          few minutes).
-        </p>
+        guest ? (
+          <p className="muted">No item data for this level yet.</p>
+        ) : (
+          <p className="muted">
+            No item pool yet. Choose <strong>Refresh item pool</strong> from the ⋯ menu above (the first run takes
+            a few minutes).
+          </p>
+        )
       ) : (
         <>
           <p className="muted">

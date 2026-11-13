@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { GuestOptions, Status } from '../api'
+import type { GuestOptions, Recommendations, Status } from '../api'
 import { recommendations } from '../test/fixtures'
 import { Landing } from './Landing'
 
@@ -18,11 +18,26 @@ function status(loggedIn: boolean): Status {
   return { character: 'Brumboldt Doomlet', namespace: 'profile-forever-us', logged_in: loggedIn, token_expires_at: null, latest_snapshots: {} }
 }
 
-function stubFetch(loggedIn = false) {
+const noData: Recommendations = { ...recommendations, rows: [], dungeons: [], considered: 0, unscored: 0 }
+
+function stubFetch(loggedIn = false, guestData: Recommendations = recommendations) {
+  let refreshed = false
   const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
     if (url === '/api/status') return Response.json(status(loggedIn))
     if (url === '/api/guest') return Response.json(options)
-    if (url.startsWith('/api/guest/recommendations')) return Response.json(recommendations)
+    if (url.startsWith('/api/guest/recommendations')) return Response.json(refreshed ? recommendations : guestData)
+    if (url.startsWith('/api/pool/refresh') && init?.method === 'POST') {
+      refreshed = true
+      return Response.json({
+        dungeons_listed: 30,
+        dungeons_fetched: 30,
+        pool_size: 1669,
+        in_window: 240,
+        items_fetched: 238,
+        items_not_found: [1, 2],
+        errors: [],
+      })
+    }
     if (url === '/api/sync' && init?.method === 'POST') return Response.json({ profile: 200 })
     return Response.json([])
   })
@@ -104,6 +119,35 @@ describe('Landing', () => {
     fireEvent.change(screen.getByLabelText('Level'), { target: { value: '90' } })
     expect(screen.getByText('Level must be a whole number from 1 to 80.')).toBeTruthy()
     expect(guestCalls(fetchMock).length).toBe(before)
+  })
+
+  it('offers to fetch item data for the chosen level when there is none', async () => {
+    const fetchMock = stubFetch(false, noData)
+    renderLanding()
+
+    expect(await screen.findByText(/There's no item data for levels/)).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: /^Fetch item data for levels/ }))
+
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith('/api/pool/refresh?level=15', expect.objectContaining({ method: 'POST' })),
+    )
+    expect(await screen.findByText(/Fetched details for 238 items/)).toBeTruthy()
+    // The guest results are asked for again, and now have items.
+    expect(await screen.findByText('Best items for your level')).toBeTruthy()
+    expect(screen.queryByText('No item data for this level yet.')).toBeNull()
+  })
+
+  it('says how many items near the level have no details yet', async () => {
+    stubFetch(false, { ...recommendations, unscored: 12 })
+    renderLanding()
+    expect(await screen.findByText(/12 items for levels .* have no details yet/)).toBeTruthy()
+  })
+
+  it('says nothing about item data when every item is scored', async () => {
+    stubFetch(false, { ...recommendations, unscored: 0 })
+    renderLanding()
+    await screen.findByText('Best items for your level')
+    expect(screen.queryByRole('button', { name: /^Fetch item data/ })).toBeNull()
   })
 
   it('links back to the character when there is one', async () => {

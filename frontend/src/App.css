@@ -899,3 +899,13 @@ ul.upcoming small {
 .guest-form input[type='number'] {
   width: 4.5rem;
 }
+
+.missing-data {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  margin: 0 0 0.9rem;
+}
+.missing-data p {
+  margin: 0 0 0.5rem;
+}

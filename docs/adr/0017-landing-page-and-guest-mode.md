@@ -31,5 +31,8 @@ character: only the comparison with worn gear does.
 ## Consequences
 
 - The pool's item details cover the levels it has fetched. On a fresh install with no
-  character, a pool refresh fetches every item, so guest mode works at any level.
+  character, a plain pool refresh fetches every item: about 1,700 requests, around 20
+  minutes (found through ADR 0019's logs). So guest mode checks for missing item data at
+  its level and offers to fetch just that level's window
+  (`POST /api/pool/refresh?level=N`, #48), which takes a few minutes.
 - When #16 adds users, guest mode stays anonymous and read-only.
