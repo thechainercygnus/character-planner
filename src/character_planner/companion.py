@@ -44,6 +44,11 @@ MAX_AGE = timedelta(hours=24)
 
 _ARMOR_LINE = re.compile(r"^(\d+) Armor$")
 _STAT_LINE = re.compile(r"^\+(\d+) ([A-Za-z][A-Za-z ]*)$")
+# Green equip bonuses in the simple form ("Equip: +32 Spell Power", "Equip: +4 Attack Power").
+# Blizzard lists the same bonuses among an equipped item's stats, named the same way
+# ("Attack Power" on Willow Cape of Power), so both sides of a comparison count them.
+# Longer sentences ("Equip: Increases damage and healing done by...") are left out.
+_EQUIP_LINE = re.compile(r"^Equip: \+(\d+) ([A-Za-z][A-Za-z ]*)$")
 _DPS_LINE = re.compile(r"^\(([\d.]+) damage per second\)$")
 
 
@@ -101,6 +106,9 @@ def parse_item(payload: Any) -> CompanionInfo | None:
                 bonus_armor += value
             else:
                 stats[name] = value
+        elif (match := _EQUIP_LINE.match(left.strip())) is not None:
+            name = match.group(2).strip()
+            stats[name] = stats.get(name, 0) + int(match.group(1))
         elif isinstance(right, str) and left == fields.get(item, "slot"):
             tooltip_armor_type = right  # "Waist | Mail", "Off Hand | Shield"
 

@@ -186,9 +186,15 @@ export interface GearPlan {
 }
 
 /** Guest mode (ADR 0017): classes with rules and the shipped weight presets. */
-export interface GuestOptions {
-  classes: { key: string; name: string }[]
+/** A class guest mode offers, with its shipped weight presets (the first is default). */
+export interface GuestClass {
+  key: string
+  name: string
   presets: { key: string; name: string }[]
+}
+
+export interface GuestOptions {
+  classes: GuestClass[]
   factions: string[]
 }
 
@@ -226,7 +232,11 @@ export interface UsageRules {
   armor_types: string[]
   /** Plate counts from this level; null never. */
   plate_from_level: number | null
+  /** Mail from this level (Hunters, Shamans); null never. */
+  mail_from_level: number | null
   two_handers: boolean
+  /** Which weapon types count as two-handers; null any. */
+  two_hand_types: string[] | null
   off_hand_types: string[]
   /** Include items this many levels above yours. */
   levels_ahead: number
@@ -242,6 +252,7 @@ export interface RulesView {
   weapon_type_options: string[]
   armor_type_options: string[]
   off_hand_type_options: string[]
+  two_hand_type_options: string[]
 }
 
 /** Notifications (#12, ADR 0021). */

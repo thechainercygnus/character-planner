@@ -3,8 +3,12 @@ import { useRef, useState } from 'react'
 import { api, type RulesView, type UsageRules } from '../api'
 
 /** Numbers are text while edited; the lists and toggle ride along. */
-type Draft = Pick<UsageRules, 'weapon_types' | 'armor_types' | 'two_handers' | 'off_hand_types'> & {
+type Draft = Pick<
+  UsageRules,
+  'weapon_types' | 'armor_types' | 'two_handers' | 'two_hand_types' | 'off_hand_types'
+> & {
   plate_from_level: string
+  mail_from_level: string
   levels_ahead: string
   per_slot: string
   min_gain: string
@@ -14,6 +18,7 @@ function toDraft(rules: UsageRules): Draft {
   return {
     ...rules,
     plate_from_level: rules.plate_from_level === null ? '' : String(rules.plate_from_level),
+    mail_from_level: rules.mail_from_level === null ? '' : String(rules.mail_from_level),
     levels_ahead: String(rules.levels_ahead),
     per_slot: String(rules.per_slot),
     min_gain: String(rules.min_gain),
@@ -29,6 +34,8 @@ function wholeNumber(text: string, low: number, high: number): number | null {
 function parseDraft(draft: Draft): UsageRules | string {
   const plate = draft.plate_from_level.trim() === '' ? null : wholeNumber(draft.plate_from_level, 1, 80)
   if (draft.plate_from_level.trim() !== '' && plate === null) return 'Plate level must be 1 to 80, or blank for never.'
+  const mail = draft.mail_from_level.trim() === '' ? null : wholeNumber(draft.mail_from_level, 1, 80)
+  if (draft.mail_from_level.trim() !== '' && mail === null) return 'Mail level must be 1 to 80, or blank for never.'
   const levelsAhead = wholeNumber(draft.levels_ahead, 0, 20)
   if (levelsAhead === null) return 'Levels ahead must be a whole number from 0 to 20.'
   const perSlot = wholeNumber(draft.per_slot, 1, 10)
@@ -40,7 +47,9 @@ function parseDraft(draft: Draft): UsageRules | string {
     weapon_types: draft.weapon_types,
     armor_types: draft.armor_types,
     plate_from_level: plate,
+    mail_from_level: mail,
     two_handers: draft.two_handers,
+    two_hand_types: draft.two_hand_types,
     off_hand_types: draft.off_hand_types,
     levels_ahead: levelsAhead,
     per_slot: perSlot,
@@ -157,6 +166,19 @@ export function RulesDialog() {
               chosen={shown.armor_types}
               onChange={(armor_types) => change({ armor_types })}
             />
+            {shown.two_handers && (
+              <TypeChoices
+                legend="Two-handed weapon types"
+                options={view.two_hand_type_options}
+                // null means any: show every type as chosen.
+                chosen={shown.two_hand_types ?? view.two_hand_type_options}
+                onChange={(chosen) =>
+                  change({
+                    two_hand_types: chosen.length === view.two_hand_type_options.length ? null : chosen,
+                  })
+                }
+              />
+            )}
             <TypeChoices
               legend="Off hand"
               options={view.off_hand_type_options}
@@ -174,6 +196,17 @@ export function RulesDialog() {
                   placeholder="never"
                   value={shown.plate_from_level}
                   onChange={(event) => change({ plate_from_level: event.target.value })}
+                />
+              </label>
+              <label title="For classes that learn mail at 40 (Hunters, Shamans)">
+                Mail from level{' '}
+                <input
+                  type="number"
+                  min={1}
+                  max={80}
+                  placeholder="never"
+                  value={shown.mail_from_level}
+                  onChange={(event) => change({ mail_from_level: event.target.value })}
                 />
               </label>
               <label>

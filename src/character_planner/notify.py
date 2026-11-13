@@ -279,16 +279,18 @@ def character_digest(session: Session, settings: Settings) -> tuple[Digest, list
     """The digest now, and the alert-worthy upgrades as text lines, best first."""
     from character_planner import jobs  # jobs calls after_sync: import here, not on load
     from character_planner.choices import stored_choices
+    from character_planner.classes import current_defaults
     from character_planner.companion import companion_by_id
     from character_planner.db import catalog_by_name, icons_by_id, latest_by_kind
     from character_planner.pool import pool_view
-    from character_planner.recommend import load_rules, recommend
+    from character_planner.recommend import recommend
     from character_planner.rules import current_rules
-    from character_planner.scoring import current_weights, load_shipped_presets
+    from character_planner.scoring import current_weights
     from character_planner.views import character_level, gear_plan, parse_equipment
 
     latest = latest_by_kind(session)
-    weights = current_weights(session, load_shipped_presets(settings.curated_dir))
+    defaults = current_defaults(session, settings.curated_dir)
+    weights = current_weights(session, defaults.presets)
     targets = jobs.gear_targets(session, settings)
     plan = gear_plan(
         latest,
@@ -302,7 +304,7 @@ def character_digest(session: Session, settings: Settings) -> tuple[Digest, list
     level, faction = jobs.character_context(session)
     equipment = latest.get("equipment")
     equipped = {i.slot: i for i in parse_equipment(equipment.payload if equipment else None)}
-    rules = current_rules(session, load_rules(settings.curated_dir / "recommend.yaml"))
+    rules = current_rules(session, defaults.rules)
     recs = recommend(
         pool_view(session, level, faction),
         equipped,

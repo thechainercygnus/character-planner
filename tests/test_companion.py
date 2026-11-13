@@ -115,3 +115,30 @@ def test_refresh_stops_at_rate_limit(engine: Engine) -> None:
 
     assert "rate limited" in outcome.errors[0]
     assert not later.called
+
+
+def test_equip_bonuses_count_as_stats() -> None:
+    """Forever writes most equip bonuses as "Equip: +N Stat" (item 270228's tooltip has
+    "Equip: +18 Spell Power"); they're scored like base stats. Longer sentences aren't."""
+    body = girdle()
+    body["data"]["tooltip"] += [
+        {"left": "Equip: +18 Spell Power", "kind": "green"},
+        {"left": "Equip: +4 Attack Power", "kind": "green"},
+        {"left": "Equip: +2 Attack Power", "kind": "green"},
+        {
+            "left": "Equip: Increases damage and healing done by magical spells by up to 5.",
+            "kind": "green",
+        },
+    ]
+    info = parse_item(body)
+    assert info is not None
+    assert info.stats["Spell Power"] == 18
+    assert info.stats["Attack Power"] == 6  # two lines add up
+    assert not any(name.startswith("Increases") for name in info.stats)
+    assert info.stats["Stamina"] == girdle_stats()["Stamina"]  # base stats untouched
+
+
+def girdle_stats() -> dict[str, int]:
+    info = parse_item(girdle())
+    assert info is not None
+    return info.stats

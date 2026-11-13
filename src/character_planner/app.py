@@ -33,6 +33,7 @@ from character_planner.choices import (
     set_choice,
     stored_choices,
 )
+from character_planner.classes import ClassDefaults, current_defaults
 from character_planner.companion import companion_by_id
 from character_planner.config import Settings, get_settings
 from character_planner.curated import GearTargets
@@ -80,7 +81,7 @@ from character_planner.pool import (
     pool_view,
 )
 from character_planner.progress import Progress, progress
-from character_planner.recommend import Recommendations, UsageRules, load_rules, recommend
+from character_planner.recommend import Recommendations, UsageRules, recommend
 from character_planner.rules import (
     EditedRules,
     RulesError,
@@ -99,7 +100,6 @@ from character_planner.scoring import (
     create_preset,
     current_weights,
     delete_preset,
-    load_shipped_presets,
     migrate_stored_weights,
     rename_preset,
     reset_weights,
@@ -112,7 +112,6 @@ from character_planner.talents import (
     TalentPlanView,
     compare,
     current_plan,
-    load_default_plan,
     reset_plan,
     save_plan,
 )
@@ -175,19 +174,25 @@ def get_targets(request: Request, session: SessionDep) -> GearTargets:
     return gear_targets(session, request.app.state.settings)
 
 
-def get_presets(request: Request) -> ShippedPresets:
+def get_class_defaults(request: Request, session: SessionDep) -> ClassDefaults:
+    """The synced character's class's shipped defaults (#80, ADR 0023)."""
     settings: Settings = request.app.state.settings
-    return load_shipped_presets(settings.curated_dir)
+    return current_defaults(session, settings.curated_dir)
 
 
-def get_default_plan(request: Request) -> TalentPlan:
-    settings: Settings = request.app.state.settings
-    return load_default_plan(settings.curated_dir / "talent_plan.yaml")
+ClassDefaultsDep = Annotated[ClassDefaults, Depends(get_class_defaults)]
 
 
-def get_default_rules(request: Request) -> UsageRules:
-    settings: Settings = request.app.state.settings
-    return load_rules(settings.curated_dir / "recommend.yaml")
+def get_presets(defaults: ClassDefaultsDep) -> ShippedPresets:
+    return defaults.presets
+
+
+def get_default_plan(defaults: ClassDefaultsDep) -> TalentPlan:
+    return defaults.talent_plan
+
+
+def get_default_rules(defaults: ClassDefaultsDep) -> UsageRules:
+    return defaults.rules
 
 
 DefaultRulesDep = Annotated[UsageRules, Depends(get_default_rules)]
@@ -663,15 +668,13 @@ def create_app(
         )
 
     @app.get("/api/guest")
-    def get_guest_options(presets: PresetsDep) -> GuestOptions:
-        """What guest mode offers: classes with rules and the shipped weight presets."""
-        return guest_options(presets)
+    def get_guest_options() -> GuestOptions:
+        """What guest mode offers: classes with shipped defaults, and their presets."""
+        return guest_options(settings.curated_dir)
 
     @app.get("/api/guest/recommendations")
     def get_guest_recommendations(
         session: SessionDep,
-        rules: DefaultRulesDep,
-        presets: PresetsDep,
         level: Annotated[int, Query(ge=1, le=80)],
         class_key: Annotated[str, Query(alias="class")] = "warrior",
         faction: Faction = "alliance",
@@ -682,8 +685,7 @@ def create_app(
         try:
             return guest_recommendations(
                 session,
-                rules,
-                presets,
+                settings.curated_dir,
                 class_key=class_key,
                 level=level,
                 faction=faction,

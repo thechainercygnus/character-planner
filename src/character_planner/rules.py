@@ -34,6 +34,8 @@ WEAPON_TYPES = [
 ]
 ARMOR_TYPES = ["cloth", "leather", "mail"]  # plate comes from plate_from_level
 OFF_HAND_TYPES = ["Shield", "Miscellaneous", "Axe", "Mace", "Sword", "Dagger", "Fist Weapon"]
+# Weapon types seen on Two-Hand items in the pool (2026-11-12).
+TWO_HAND_TYPES = ["Axe", "Mace", "Polearm", "Staff", "Sword"]
 
 
 class RulesError(ValueError):
@@ -46,7 +48,9 @@ class EditedRules(BaseModel):
     weapon_types: list[str]
     armor_types: list[str]
     plate_from_level: Annotated[int, Field(ge=1, le=80)] | None = None
+    mail_from_level: Annotated[int, Field(ge=1, le=80)] | None = None
     two_handers: bool = False
+    two_hand_types: list[str] | None = None  # None: any weapon type
     off_hand_types: list[str]
     levels_ahead: Annotated[int, Field(ge=0, le=20)]
     per_slot: Annotated[int, Field(ge=1, le=10)]
@@ -59,6 +63,8 @@ class EditedRules(BaseModel):
             "armor_types": (self.armor_types, ARMOR_TYPES),
             "off_hand_types": (self.off_hand_types, OFF_HAND_TYPES),
         }
+        if self.two_hand_types is not None:
+            lists["two_hand_types"] = (self.two_hand_types, TWO_HAND_TYPES)
         cleaned: dict[str, list[str]] = {}
         for name, (values, known) in lists.items():
             unknown = sorted(set(values) - set(known))
@@ -76,6 +82,7 @@ class RulesView(BaseModel):
     weapon_type_options: list[str] = WEAPON_TYPES
     armor_type_options: list[str] = ARMOR_TYPES
     off_hand_type_options: list[str] = OFF_HAND_TYPES
+    two_hand_type_options: list[str] = TWO_HAND_TYPES
 
 
 def current_rules(session: Session, default: UsageRules) -> UsageRules:

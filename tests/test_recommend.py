@@ -279,3 +279,54 @@ def test_old_exclusions_in_the_yaml_are_ignored_with_a_warning(
         rules = load_rules(path)
     assert rules.weapon_types == ["Axe"]
     assert "exclude_item_ids is no longer read" in caplog.text
+
+
+# A caster's rules, as a Warlock's will be (#80): cloth, staves but no other two-handers,
+# held-in-off-hand items, wands.
+CASTER = UsageRules(
+    weapon_types=["Dagger", "Sword", "Staff", "Wand"],
+    armor_types=["cloth"],
+    plate_from_level=None,
+    two_handers=True,
+    two_hand_types=["Staff"],
+    off_hand_types=["Miscellaneous"],
+)
+
+
+@pytest.mark.parametrize(
+    ("pool_item", "reason"),
+    [
+        (item(1, "Two-Hand", weapon_type="Staff"), None),
+        (item(2, "Two-Hand", weapon_type="Sword"), "no two-handed Sword"),
+        (item(3, "One-Hand", weapon_type="Sword"), None),
+        (item(4, "Held In Off-hand", weapon_type="Miscellaneous"), None),
+        (item(5, "Held In Off-hand", weapon_type=None), None),  # 6 such items in the pool
+        (item(6, "Off Hand", weapon_type="Shield"), "can't use Shield"),
+        (item(7, "Chest", armor_type="Leather"), "not wearing leather"),
+        (item(8, "Chest", armor_type="Mail"), "not wearing mail"),
+        (item(9, "Chest", armor_type="Plate"), "plate not yet"),
+        (item(10, "Ranged", weapon_type="Wand"), None),
+    ],
+)
+def test_caster_rules(pool_item: PoolItem, reason: str | None) -> None:
+    assert unusable_reason(pool_item, CASTER, 18) == reason
+
+
+def test_mail_from_level_forty() -> None:
+    """Hunters and Shamans wear leather until they learn mail at 40."""
+    hunter = RULES.model_copy(
+        update={
+            "armor_types": ["cloth", "leather"],
+            "mail_from_level": 40,
+            "plate_from_level": None,
+        }
+    )
+    mail = item(1, "Chest", armor_type="Mail", required_level=30)
+    assert unusable_reason(mail, hunter, 39) == "mail not yet"
+    assert unusable_reason(mail, hunter, 40) is None
+    assert unusable_reason(mail, hunter, None) == "mail not yet"
+
+
+def test_warrior_rules_are_unchanged_by_the_new_fields() -> None:
+    assert RULES.mail_from_level is None and RULES.two_hand_types is None
+    assert unusable_reason(item(1, "Chest", armor_type="Mail"), RULES, 18) is None
