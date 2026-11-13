@@ -68,6 +68,22 @@ from character_planner.db import (
     make_engine,
 )
 from character_planner.dungeons import stored_dungeons
+from character_planner.enchant_corrections import (
+    CorrectionError,
+    CorrectionsView,
+    EffectsUpdate,
+    LevelUpdate,
+    PerSlotUpdate,
+    corrections_view,
+    reset_crafted_effects,
+    reset_per_slot,
+    reset_reagent_level,
+    set_crafted_effects,
+    set_per_slot,
+    set_reagent_level,
+    stored_corrections,
+)
+from character_planner.enchant_corrections import apply as apply_corrections
 from character_planner.enchants import (
     EnchantAdvice,
     EnchantData,
@@ -249,9 +265,18 @@ def get_profession_data(request: Request) -> ProfessionData:
     return load_profession_data(settings.curated_dir / "professions.yaml")
 
 
-def get_enchant_data(request: Request) -> EnchantData:
+def get_shipped_enchant_data(request: Request) -> EnchantData:
+    """data/curated/enchants.yaml as shipped."""
     settings: Settings = request.app.state.settings
     return load_enchant_data(settings.curated_dir / "enchants.yaml")
+
+
+ShippedEnchantDataDep = Annotated[EnchantData, Depends(get_shipped_enchant_data)]
+
+
+def get_enchant_data(session: SessionDep, shipped: ShippedEnchantDataDep) -> EnchantData:
+    """The enchant data in use: enchants.yaml with corrections made in the app (#36)."""
+    return apply_corrections(shipped, stored_corrections(session))
 
 
 def equipped_items(session: Session) -> dict[str, EquippedItem]:
@@ -524,6 +549,75 @@ def create_app(
             data=data,
             equipped_effects=equipped_effects(equipped_items(session).values()),
         )
+
+    @app.get("/api/enchants/corrections")
+    def get_enchant_corrections(
+        session: SessionDep, shipped: ShippedEnchantDataDep
+    ) -> CorrectionsView:
+        """Corrections to enchants.yaml made in the app, and the shipped values (#36)."""
+        return corrections_view(session, shipped)
+
+    @app.put("/api/enchants/corrections/materials/{item_id}")
+    def put_material_level(
+        item_id: Annotated[int, FastAPIPath(gt=0)],
+        update: LevelUpdate,
+        session: SessionDep,
+        shipped: ShippedEnchantDataDep,
+    ) -> CorrectionsView:
+        """Correct the level a material is commonly found from."""
+        set_reagent_level(session, item_id, update.level)
+        return corrections_view(session, shipped)
+
+    @app.delete("/api/enchants/corrections/materials/{item_id}")
+    def delete_material_level(
+        item_id: Annotated[int, FastAPIPath(gt=0)],
+        session: SessionDep,
+        shipped: ShippedEnchantDataDep,
+    ) -> CorrectionsView:
+        """Go back to the shipped level (or the item's own)."""
+        if not reset_reagent_level(session, item_id):
+            raise HTTPException(404, f"No correction for material {item_id}")
+        return corrections_view(session, shipped)
+
+    @app.put("/api/enchants/corrections/crafted/{item_id}")
+    def put_crafted_effects(
+        item_id: Annotated[int, FastAPIPath(gt=0)],
+        update: EffectsUpdate,
+        session: SessionDep,
+        shipped: ShippedEnchantDataDep,
+    ) -> CorrectionsView:
+        """Add or fix the effect of a crafted enchant (a scope, an armor kit)."""
+        try:
+            set_crafted_effects(session, item_id, update.effects)
+        except CorrectionError as error:
+            raise HTTPException(400, str(error)) from error
+        return corrections_view(session, shipped)
+
+    @app.delete("/api/enchants/corrections/crafted/{item_id}")
+    def delete_crafted_effects(
+        item_id: Annotated[int, FastAPIPath(gt=0)],
+        session: SessionDep,
+        shipped: ShippedEnchantDataDep,
+    ) -> CorrectionsView:
+        """Go back to the shipped effect, or none."""
+        if not reset_crafted_effects(session, item_id):
+            raise HTTPException(404, f"No correction for crafted item {item_id}")
+        return corrections_view(session, shipped)
+
+    @app.put("/api/enchants/corrections/per-slot")
+    def put_per_slot(
+        update: PerSlotUpdate, session: SessionDep, shipped: ShippedEnchantDataDep
+    ) -> CorrectionsView:
+        """How many enchants to list per slot."""
+        set_per_slot(session, update.per_slot)
+        return corrections_view(session, shipped)
+
+    @app.delete("/api/enchants/corrections/per-slot")
+    def delete_per_slot(session: SessionDep, shipped: ShippedEnchantDataDep) -> CorrectionsView:
+        """Go back to the shipped number."""
+        if not reset_per_slot(session):
+            raise HTTPException(404, "per_slot isn't corrected")
+        return corrections_view(session, shipped)
 
     @app.get("/api/enchants/recommendations")
     def enchant_recommendations(

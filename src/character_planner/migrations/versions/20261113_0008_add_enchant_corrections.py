@@ -1,0 +1,31 @@
+"""Add enchant corrections (#36, ADR 0033)
+
+Revision ID: 0008
+Revises: 0007
+Create date: 2026-11-13 16:00:00
+"""
+
+from collections.abc import Sequence
+
+import sqlalchemy as sa
+import sqlmodel.sql.sqltypes
+from alembic import op
+
+revision: str = "0008"
+down_revision: str | None = "0007"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
+
+
+def upgrade() -> None:
+    op.create_table(
+        "storedenchantcorrections",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("corrections", sa.JSON(), nullable=False),
+        sa.Column("updated_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+        sa.PrimaryKeyConstraint("id"),
+    )
+
+
+def downgrade() -> None:
+    op.drop_table("storedenchantcorrections")

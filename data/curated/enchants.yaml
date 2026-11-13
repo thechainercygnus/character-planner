@@ -4,7 +4,8 @@
 # When an enchant comes within reach, estimated from its materials: the level from which
 # a material is commonly found (disenchanting gear of that item level, or mining). An
 # enchant's estimate is the highest of its materials'. Bands are Classic's disenchanting
-# and mining tables; Forever may differ, so correct any that look wrong in game.
+# and mining tables; Forever may differ, so correct any that look wrong in game: here, or
+# in the app's Enchants section, where corrections are kept on top of this file (ADR 0033).
 # Forever Companion has almost none of these materials (5 of 146 reagents, 2026-11-12).
 reagent_levels:
   10940: 1   # Strange Dust (item level 1-20)

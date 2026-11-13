@@ -55,6 +55,16 @@ RECIPE_MAX_AGE = timedelta(days=30)  # static game data
 PRIMARY_STATS = ("Strength", "Agility", "Stamina", "Intellect", "Spirit")
 RESISTANCES = ("Fire", "Frost", "Nature", "Shadow", "Arcane")
 WEAPON_DAMAGE = "Weapon Damage"  # flat damage per hit; scored as damage / weapon speed
+# Every effect parse_effects can read, so the ones a correction may name (#36).
+EFFECT_NAMES = (
+    *PRIMARY_STATS,
+    "Defense",
+    "Armor",
+    WEAPON_DAMAGE,
+    *(f"{school} Resistance" for school in RESISTANCES),
+    "Block %",
+    "Dodge %",
+)
 
 # Category -> equipment slots it enchants.
 CATEGORY_SLOTS: dict[str, tuple[str, ...]] = {
@@ -87,18 +97,29 @@ NAME_SLOTS: dict[str, tuple[str, ...]] = {
 }
 
 
+# Where a material's level comes from (#36): a correction made in the app, the shipped
+# enchants.yaml, or Forever Companion's item level.
+LevelSource = Literal["corrected", "shipped", "item"]
+
+
 class Reagent(BaseModel):
     item_id: int
     name: str
     quantity: int
+    level: int | None = None  # the level it's commonly found from, when known
+    level_source: LevelSource | None = None
 
 
 class EnchantData(BaseModel):
-    """data/curated/enchants.yaml."""
+    """data/curated/enchants.yaml, with any corrections made in the app on top (#36)."""
 
     reagent_levels: dict[int, int] = {}
     crafted_effects: dict[int, dict[str, float]] = {}
     per_slot: int = 3
+    # Which values are corrections rather than shipped (enchant_corrections.apply).
+    corrected_reagents: set[int] = set()
+    corrected_crafted: set[int] = set()
+    per_slot_corrected: bool = False
 
 
 def load_enchant_data(path: Path) -> EnchantData:
@@ -106,7 +127,7 @@ def load_enchant_data(path: Path) -> EnchantData:
         return EnchantData.model_validate(yaml.safe_load(handle) or {})
 
 
-EffectsSource = Literal["description", "curated", "equipped"]
+EffectsSource = Literal["description", "curated", "corrected", "equipped"]
 
 
 class EnchantOption(BaseModel):
@@ -218,6 +239,20 @@ def _slots(name: str, category: str) -> tuple[str, ...]:
     return ()
 
 
+def reagent_level(
+    item_id: int, items: Mapping[int, CompanionInfo], data: EnchantData
+) -> tuple[int | None, LevelSource | None]:
+    """A material's level and where it comes from: a correction or the shipped band
+    (enchants.yaml), else Forever Companion's item level."""
+    if item_id in data.reagent_levels:
+        source: LevelSource = "corrected" if item_id in data.corrected_reagents else "shipped"
+        return data.reagent_levels[item_id], source
+    info = items.get(item_id)
+    if info is not None and info.item_level is not None:
+        return info.item_level, "item"
+    return None, None
+
+
 def estimate_level(
     reagents: Iterable[Reagent],
     items: Mapping[int, CompanionInfo],
@@ -225,13 +260,10 @@ def estimate_level(
 ) -> int | None:
     """The highest level among the reagents: curated material bands, else Forever
     Companion's item level. None when no reagent has either."""
-    bands = reagent_levels or {}
-    levels: list[int] = []
-    for r in reagents:
-        if r.item_id in bands:
-            levels.append(bands[r.item_id])
-        elif (info := items.get(r.item_id)) is not None and info.item_level is not None:
-            levels.append(info.item_level)
+    data = EnchantData(reagent_levels=dict(reagent_levels or {}))
+    levels = [
+        level for r in reagents if (level := reagent_level(r.item_id, items, data)[0]) is not None
+    ]
     return max(levels, default=None)
 
 
@@ -247,27 +279,34 @@ def parse_recipe(
     name = fields.name(fields.get(payload, "name"))
     if recipe_id is None or not name:
         return None
-    reagents = [
-        Reagent(
-            item_id=item_id,
-            name=fields.name(fields.get(r, "reagent", "name")) or "?",
-            quantity=fields.as_int(fields.get(r, "quantity")) or 1,
+    data = data or EnchantData()
+    reagents = []
+    for r in fields.get(payload, "reagents") or []:
+        item_id = fields.as_int(fields.get(r, "reagent", "id"))
+        if item_id is None:
+            continue
+        level, level_source = reagent_level(item_id, items, data)
+        reagents.append(
+            Reagent(
+                item_id=item_id,
+                name=fields.name(fields.get(r, "reagent", "name")) or "?",
+                quantity=fields.as_int(fields.get(r, "quantity")) or 1,
+                level=level,
+                level_source=level_source,
+            )
         )
-        for r in fields.get(payload, "reagents") or []
-        if (item_id := fields.as_int(fields.get(r, "reagent", "id"))) is not None
-    ]
     text = fields.get(payload, "description")
     text = text.strip() if isinstance(text, str) else None
     lowered = name.lower()
     crafted_item_id = fields.as_int(fields.get(payload, "crafted_item", "id"))
     effects = parse_effects(text)
     source: EffectsSource | None = "description" if effects else None
-    data = data or EnchantData()
     if not effects and crafted_item_id is not None:
         if crafted_item_id in (equipped_effects or {}):
             effects, source = dict((equipped_effects or {})[crafted_item_id]), "equipped"
         elif crafted_item_id in data.crafted_effects:
-            effects, source = dict(data.crafted_effects[crafted_item_id]), "curated"
+            effects = dict(data.crafted_effects[crafted_item_id])
+            source = "corrected" if crafted_item_id in data.corrected_crafted else "curated"
     return EnchantOption(
         recipe_id=recipe_id,
         name=name,
@@ -283,7 +322,7 @@ def parse_recipe(
         reagents=reagents,
         crafted_item_id=crafted_item_id,
         season_of_discovery=category.lower() == SEASON_OF_DISCOVERY,
-        estimated_level=estimate_level(reagents, items, data.reagent_levels),
+        estimated_level=max((r.level for r in reagents if r.level is not None), default=None),
     )
 
 
@@ -474,6 +513,14 @@ class SlotEnchants(BaseModel):
     current_is_weaker: bool  # an enchant on and something better in reach
 
 
+class MissingEffect(BaseModel):
+    """A scope, kit or other crafted enchant in reach whose effect isn't known (#36)."""
+
+    item_id: int  # the crafted item: corrections are keyed by it
+    recipe: str
+    slots: list[str]
+
+
 class EnchantAdvice(BaseModel):
     level: int | None
     recipes: int  # catalog size; 0 means enchant data hasn't been refreshed
@@ -481,6 +528,9 @@ class EnchantAdvice(BaseModel):
     considered: int  # options scored for some slot
     unscored: int  # options in reach whose effect has no stat (procs, unknown items)
     unknown_level: int  # options with no level estimate, left out
+    missing_effects: list[MissingEffect] = []  # crafted ones of the unscored, to fill in
+    per_slot: int = 3  # enchants listed per slot
+    per_slot_corrected: bool = False
 
 
 def equipped_effects(equipment: Iterable[EquippedItem]) -> dict[int, dict[str, float]]:
@@ -555,6 +605,7 @@ def advise(
     considered: set[int] = set()
     unscored: set[int] = set()
     unknown: set[int] = set()
+    missing: dict[int, MissingEffect] = {}
     rows: list[SlotEnchants] = []
     for slot in enchantable:
         worn = equipped.get(slot)
@@ -582,6 +633,13 @@ def advise(
                 continue
             if not option.effects:
                 unscored.add(option.recipe_id)
+                if option.crafted_item_id is not None:
+                    gap = missing.setdefault(
+                        option.crafted_item_id,
+                        MissingEffect(item_id=option.crafted_item_id, recipe=option.name, slots=[]),
+                    )
+                    if slot not in gap.slots:
+                        gap.slots.append(slot)
                 continue
             considered.add(option.recipe_id)
             value = enchant_score(weights, slot, option.effects, worn.attack_speed)
@@ -613,4 +671,7 @@ def advise(
         considered=len(considered),
         unscored=len(unscored),
         unknown_level=len(unknown),
+        missing_effects=sorted(missing.values(), key=lambda m: m.recipe),
+        per_slot=data.per_slot,
+        per_slot_corrected=data.per_slot_corrected,
     )
