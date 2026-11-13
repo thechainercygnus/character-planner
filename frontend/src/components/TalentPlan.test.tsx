@@ -109,6 +109,42 @@ describe('TalentPlanPanel', () => {
     ])
   })
 
+  it('asks for the trees again until their icons have loaded', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const node = {
+      node_id: 10,
+      talent_id: 1,
+      name: 'Shield Specialization',
+      spell_id: 7,
+      row: 1,
+      col: 1,
+      max_rank: 5,
+      ranks: ['a', 'b', 'c', 'd', 'e'],
+      requires: [],
+    }
+    const tree = (icon: string | null, loading: boolean) => ({
+      class_name: 'Warrior',
+      tree: { class_name: 'Warrior', tree_id: 1117, specs: [{ spec_id: 257, name: 'Protection', nodes: [{ ...node, icon_url: icon }] }] },
+      loading,
+    })
+    const responses = [tree(null, true), tree('https://icons/shield.jpg', false)]
+    const fetchMock = vi.fn(async () => Response.json(responses.shift() ?? tree('https://icons/shield.jpg', false)))
+    vi.stubGlobal('fetch', fetchMock)
+    try {
+      const { container } = renderPanel()
+      await waitFor(() => expect(screen.getByRole('region', { name: 'Protection tree' })).toBeTruthy())
+      expect(container.querySelector('.talent-node img')).toBeNull()
+      await vi.advanceTimersByTimeAsync(5_000)
+      await waitFor(() => expect(container.querySelector('.talent-node img')).not.toBeNull())
+      // Loaded: no more asking.
+      const calls = fetchMock.mock.calls.length
+      await vi.advanceTimersByTimeAsync(20_000)
+      expect(fetchMock.mock.calls.length).toBe(calls)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('blocks saving an incomplete step', () => {
     renderPanel()
     fireEvent.click(screen.getByRole('button', { name: 'Edit plan' }))

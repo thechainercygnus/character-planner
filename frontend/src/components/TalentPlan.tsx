@@ -187,8 +187,12 @@ export function TalentPlanPanel({ view }: { view: TalentPlanView }) {
   const trees = useQuery({
     queryKey: ['talent-tree'],
     queryFn: api.talentTree,
-    // The trees load in the background after the first sync: check again until they're in.
-    refetchInterval: (query) => (query.state.data && !query.state.data.tree ? 10_000 : false),
+    // The trees load in the background after the first sync, and their icons after them:
+    // check again until the trees are in and the refresh has finished.
+    refetchInterval: (query) => {
+      const data = query.state.data
+      return data && (!data.tree || data.loading) ? 5_000 : false
+    },
   })
   const tree = trees.data?.tree ?? null
   const specMismatch = view.current_spec !== null && view.current_spec !== view.spec
