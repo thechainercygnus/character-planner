@@ -15,7 +15,7 @@ from typing import Annotated, Any
 from uuid import uuid4
 
 import httpx
-from fastapi import Depends, FastAPI, HTTPException, Query, Request
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Query, Request
 from fastapi import Path as FastAPIPath
 from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -23,7 +23,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
-from character_planner import jobs, notify
+from character_planner import jobs, leases, notify
 from character_planner.blizzard import oauth
 from character_planner.choices import (
     ChoiceKind,
@@ -56,7 +56,6 @@ from character_planner.enchants import (
     catalog,
     equipped_effects,
     load_enchant_data,
-    refresh_enchant_data,
 )
 from character_planner.guest import (
     Faction,
@@ -369,19 +368,25 @@ def create_app(
             "logged_in": current_token(session) is not None,
             "token_expires_at": stored.expires_at if stored else None,
             "latest_snapshots": {k: s.captured_at.isoformat() for k, s in latest.items()},
+            # Refreshes running now, from any process: "pool", "enchants" (#87).
+            "refreshing": leases.running(engine),
         }
 
     @app.post("/api/sync")
-    def sync(session: SessionDep) -> dict[str, int]:
+    def sync(session: SessionDep, background: BackgroundTasks) -> dict[str, int]:
         """Pull every endpoint and store each response, failures included.
 
         Then look up any target items not in the item catalog yet. That step is
-        best-effort: a catalog failure never fails the sync.
+        best-effort: a catalog failure never fails the sync. On a fresh instance, the item
+        pool and enchant data then load in the background (#87).
         """
         try:
-            return sync_character(session, settings, http=http)
+            statuses = sync_character(session, settings, http=http)
         except NotLoggedIn as error:
             raise HTTPException(401, str(error)) from error
+        if jobs.missing_data(session):
+            background.add_task(jobs.load_missing_data, engine, settings, http)
+        return statuses
 
     @app.post("/api/items/refresh")
     def refresh_items(session: SessionDep, gear: TargetsDep, force: bool = False) -> RefreshResult:
@@ -404,13 +409,19 @@ def create_app(
         whole pool. The first run takes a few minutes (paced under Forever Companion's
         rate limit); `uv run character-planner-pool` does the same with progress output.
         """
-        return jobs.refresh_item_pool(session, settings, force=force, http=http, level=level)
+        try:
+            return jobs.refresh_item_pool(session, settings, force=force, http=http, level=level)
+        except leases.Busy as error:
+            raise HTTPException(409, str(error)) from error
 
     @app.post("/api/enchants/refresh")
     def refresh_enchants(session: SessionDep, force: bool = False) -> RecipeRefresh:
         """Enchant recipes from Blizzard's profession data, plus their reagents and crafted
         items from Forever Companion (ADR 0010)."""
-        return refresh_enchant_data(session, settings, force=force, http=http)
+        try:
+            return jobs.refresh_enchants(session, settings, force=force, http=http)
+        except leases.Busy as error:
+            raise HTTPException(409, str(error)) from error
 
     @app.get("/api/enchants")
     def enchant_catalog(

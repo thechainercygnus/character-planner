@@ -28,7 +28,7 @@ const options: GuestOptions = {
 }
 
 function status(loggedIn: boolean): Status {
-  return { character: 'Brumboldt Doomlet', namespace: 'profile-forever-us', logged_in: loggedIn, token_expires_at: null, latest_snapshots: {} }
+  return { character: 'Brumboldt Doomlet', namespace: 'profile-forever-us', logged_in: loggedIn, token_expires_at: null, latest_snapshots: {}, refreshing: [] }
 }
 
 const noData: Recommendations = { ...recommendations, rows: [], dungeons: [], considered: 0, unscored: 0 }

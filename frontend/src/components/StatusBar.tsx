@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useRef, useState } from 'react'
 import { api, type SyncResult } from '../api'
 import { NotificationsDialog } from './NotificationsDialog'
 
@@ -17,12 +18,36 @@ function failures(result: SyncResult): string[] {
     .map(([kind, status]) => `${kind} (${status})`)
 }
 
+const REFRESH_LABEL: Record<string, string> = { pool: 'the item pool', enchants: 'enchant data' }
+
 export function StatusBar() {
   const queryClient = useQueryClient()
-  const status = useQuery({ queryKey: ['status'], queryFn: api.status })
+  // While a refresh runs (the first data load after a sync, the worker, or a button), check
+  // every few seconds, and reload everything once it has finished (#87).
+  // After a sync, watch for a minute: a first sync starts loading data in the background.
+  const [watchUntil, setWatchUntil] = useState(0)
+  const status = useQuery({
+    queryKey: ['status'],
+    queryFn: api.status,
+    refetchInterval: (query) =>
+      (query.state.data?.refreshing.length ?? 0) > 0 || Date.now() < watchUntil ? 5000 : false,
+  })
+  const refreshing = status.data?.refreshing ?? []
+  const wasRefreshing = useRef(false)
+  useEffect(() => {
+    if (refreshing.length > 0) {
+      wasRefreshing.current = true
+    } else if (wasRefreshing.current) {
+      wasRefreshing.current = false
+      void queryClient.invalidateQueries()
+    }
+  }, [refreshing.length, queryClient])
   const sync = useMutation({
     mutationFn: api.sync,
-    onSuccess: () => queryClient.invalidateQueries(),
+    onSuccess: () => {
+      setWatchUntil(Date.now() + 60_000)
+      return queryClient.invalidateQueries()
+    },
   })
   const refreshItems = useMutation({
     mutationFn: api.refreshItems,
@@ -95,6 +120,11 @@ export function StatusBar() {
           </button>
         </div>
       </details>
+      {refreshing.length > 0 && (
+        <span className="muted" role="status">
+          Loading {refreshing.map((name) => REFRESH_LABEL[name] ?? name).join(' and ')} in the background…
+        </span>
+      )}
       {refreshItems.isPending && <span className="muted">Looking up items…</span>}
       {refreshPool.isPending && <span className="muted">Refreshing item pool… (can take a few minutes)</span>}
       {refreshEnchants.isPending && <span className="muted">Fetching enchant data… (first run takes a few minutes)</span>}
