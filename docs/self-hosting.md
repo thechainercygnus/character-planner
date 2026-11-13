@@ -16,11 +16,13 @@ Everything is kept in one SQLite database on a Docker volume.
 
 The planner is built for one person and **has no sign-in of its own**. Anyone who can open
 the page can:
+
 - edit your plans;
 - set where alerts go;
 - start data refreshes that use your Battle.net client.
 
 So reach it only from places you trust:
+
 - this machine;
 - your home network;
 - a private network such as Tailscale;
@@ -36,21 +38,122 @@ Don't publish it on the open internet as it is.
 - **Git**, to fetch the Compose files.
 - **A Battle.net account** with a WoW Forever character.
 
-## 2. Get the files
+## 2. Build the compose file(s)
 
-You don't build anything: the Compose files run the published image. Clone the repository
-at the release you want (see [Releases](https://github.com/thechainercygnus/character-planner/releases)):
+Pin at the release you want (see [Releases](https://github.com/thechainercygnus/character-planner/releases)).
+Here is a sample compose file to get you started:
 
-```bash
-git clone --branch v0.1.0 https://github.com/thechainercygnus/character-planner.git
-cd character-planner
-cp .env.example .env
+```yaml
+name: character-planner
+
+x-planner: &planner
+  build: .
+  image: ${PLANNER_IMAGE:-ghcr.io/thechainercygnus/character-planner:latest}
+  env_file: .env  # Battle.net client and redirect URI; never committed
+  environment:
+    DATABASE_URL: sqlite:////data/character-planner.db
+    POST_LOGIN_REDIRECT: /
+    # Log files on the data volume, beside the console output (ADR 0019).
+    LOG_DIR: /data/logs
+  volumes:
+    - planner-data:/data
+  restart: unless-stopped
+
+services:
+  # Runs the schema migrations once, before the API and the worker start (ADR 0022).
+  migrate:
+    <<: *planner
+    command: ["character-planner-db", "upgrade"]
+    restart: "no"
+    healthcheck:
+      disable: true
+
+  app:
+    <<: *planner
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    # Local-only by default. PLANNER_BIND=0.0.0.0 exposes it to the LAN.
+    ports:
+      - "${PLANNER_BIND:-127.0.0.1}:${PLANNER_PORT:-8000}:8000"
+
+  worker:
+    <<: *planner
+    command: ["character-planner-worker"]
+    healthcheck:
+      disable: true  # the image's check is the API's
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  planner-data:
 ```
+
+If you want to serve the app over Tailscale create `compose.tailscale.yaml`:
+
+```yaml
+# Serve the app over HTTPS on your tailnet, as https://<TS_HOSTNAME>.<tailnet>.ts.net
+# Tailscale provides the certificate; nothing is published on the host's ports.
+#
+#   docker compose -f compose.yaml -f compose.tailscale.yaml up -d --build
+#
+# Needs TS_AUTHKEY in .env for the first start (see docs/self-hosting.md).
+
+services:
+  tailscale:
+    image: tailscale/tailscale:stable
+    hostname: ${TS_HOSTNAME:-character-planner}
+    environment:
+      TS_AUTHKEY: ${TS_AUTHKEY:-}
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_SERVE_CONFIG: /config/serve.json
+    volumes:
+      - tailscale-state:/var/lib/tailscale
+      - ./deploy/tailscale:/config:ro
+    restart: unless-stopped
+
+  app:
+    # Share the sidecar's network: Tailscale serve proxies to 127.0.0.1:8000.
+    network_mode: service:tailscale
+    ports: !reset []
+    depends_on:
+      - tailscale
+
+volumes:
+  tailscale-state:
+```
+
+You will also need to create the `serve.json` configuration in `./deploy/tailscale`:
+
+```json
+{
+  "TCP": {
+    "443": {
+      "HTTPS": true
+    }
+  },
+  "Web": {
+    "${TS_CERT_DOMAIN}:443": {
+      "Handlers": {
+        "/": {
+          "Proxy": "http://127.0.0.1:8000"
+        }
+      }
+    }
+  },
+  "AllowFunnel": {
+    "${TS_CERT_DOMAIN}:443": false
+  }
+}
+```
+
+Alternatively add a container for your reverse proxy of choice or add the required configuration to your existing one.
 
 ## 3. Choose how you'll reach it
 
 | How | Open it at | In `.env` |
-|---|---|---|
+| --- | --- | --- |
 | This machine only (default) | `http://localhost:8000` | nothing else |
 | Your home network | `http://<the server's address>:8000` | `PLANNER_BIND=0.0.0.0` |
 | Tailscale (HTTPS on your tailnet) | `https://character-planner.<tailnet>.ts.net` | `TS_AUTHKEY`, optionally `TS_HOSTNAME` |
@@ -152,6 +255,7 @@ as it runs. The planner gets a new Battle.net token by itself when the old one r
 ## 8. Alerts (optional)
 
 The planner can post to a Discord channel:
+
 - after a sync: level-ups, a gear target reached or now in reach, and new upgrades worth
   having;
 - about the planner itself: a scheduled job that failed (a refused Battle.net client
@@ -196,6 +300,7 @@ Do it while the planner is stopped (`docker compose stop`), or accept that the l
 seconds of writes may be missing.
 
 **Upgrade:**
+
 1. Read the release notes first: they list security fixes and anything you need to do.
 2. Back up.
 3. Fetch the new release's files:
@@ -226,7 +331,7 @@ To check that an image really comes from this project before running it, see
 ## 12. Troubleshooting
 
 | What you see | Why | What to do |
-|---|---|---|
+| --- | --- | --- |
 | `Sync failed: Battle.net refused the client ID and secret (HTTP 401)` | A typo in `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET`, or the client was deleted or its secret changed | Copy both again from the developer portal, then `docker compose up -d` |
 | The status bar says `Battle.net can't find …`, and the logs say `character … not found` | Name, surname or region doesn't match the character | Check `CHARACTER_NAME`, `CHARACTER_SURNAME` and `BNET_REGION`, then `docker compose up -d` and sync again |
 | The status bar says `No Battle.net client`, and `worker.log` says `skipped: no Battle.net client` | `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET` is empty, or Compose didn't read `.env` | Fill in `.env` beside `compose.yaml`, then `docker compose up -d` |
