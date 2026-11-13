@@ -5,7 +5,7 @@ import type { AlertInfo, Destination, NotificationsView, SendResult } from '../a
 import { NotificationsDialog } from './NotificationsDialog'
 
 const alerts: AlertInfo[] = [
-  { kind: 'login_expired', audience: 'user', label: 'Login expired, syncs stopped' },
+  { kind: 'target_reached', audience: 'user', label: 'Gear target reached' },
   { kind: 'level_up', audience: 'user', label: 'Level-ups' },
   { kind: 'job_failed', audience: 'system', label: 'A scheduled job failed' },
 ]
@@ -15,7 +15,7 @@ const mine: Destination = {
   kind: 'discord_webhook',
   audience: 'user',
   url: '…/webhooks/123/••••',
-  alerts: ['login_expired', 'level_up', 'job_failed'],
+  alerts: ['target_reached', 'level_up', 'job_failed'],
   enabled: true,
   last_sent_at: null,
   last_error: null,
@@ -99,7 +99,7 @@ describe('NotificationsDialog', () => {
     await openDialog()
 
     fireEvent.click(await screen.findByLabelText('Phone (user) Level-ups'))
-    await waitFor(() => expect(bodyOf(fetchMock, 'PATCH')).toEqual({ alerts: ['login_expired', 'job_failed'] }))
+    await waitFor(() => expect(bodyOf(fetchMock, 'PATCH')).toEqual({ alerts: ['target_reached', 'job_failed'] }))
 
     fireEvent.click(screen.getByLabelText('Phone (user) enabled'))
     await waitFor(() =>

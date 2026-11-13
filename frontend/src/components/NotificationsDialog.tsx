@@ -149,8 +149,7 @@ export function NotificationsDialog() {
           </button>
         </header>
         <p className="muted">
-          Get alerts in Discord: a login about to expire, level-ups, targets reached or now in reach, and upgrades
-          worth having. In Discord, open a channel's settings, then <strong>Integrations → Webhooks → New
+          Get alerts in Discord: level-ups, targets reached or now in reach, and upgrades worth having. In Discord, open a channel's settings, then <strong>Integrations → Webhooks → New
           Webhook</strong>, copy its URL and paste it below. Anyone with that URL can post to the channel, so it's
           kept private: it's never shown again in full.
         </p>

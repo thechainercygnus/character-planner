@@ -231,6 +231,11 @@ export interface GuestQuery {
 export interface Status {
   character: string
   namespace: string
+  /** Syncs use the app's own token (#107): this says the Battle.net client is set. */
+  can_sync: boolean
+  /** The last sync's answer: false after a 404 (wrong name or region), null before one. */
+  character_found: boolean | null
+  /** The optional Battle.net login; syncs don't need it. */
   logged_in: boolean
   token_expires_at: number | null
   latest_snapshots: Record<string, string>
@@ -284,8 +289,6 @@ export interface RulesView {
 
 /** Notifications (#12, ADR 0021). */
 export type AlertKind =
-  | 'login_expiring'
-  | 'login_expired'
   | 'level_up'
   | 'target_reached'
   | 'target_in_reach'

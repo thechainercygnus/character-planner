@@ -141,7 +141,7 @@ export function Landing({ hasCharacter = false }: { hasCharacter?: boolean }) {
   const queryClient = useQueryClient()
   const status = useQuery({ queryKey: ['status'], queryFn: api.status })
   const sync = useMutation({ mutationFn: api.sync, onSuccess: () => queryClient.invalidateQueries() })
-  const loggedIn = status.data?.logged_in ?? false
+  const canSync = status.data?.can_sync ?? false
 
   return (
     <div className="landing">
@@ -180,9 +180,13 @@ export function Landing({ hasCharacter = false }: { hasCharacter?: boolean }) {
           </ul>
 
           <h2>Get your character in</h2>
-          {loggedIn ? (
+          {canSync ? (
             <>
-              <p>You're logged in, but nothing has been synced yet.</p>
+              <p>
+                Sync to pull {status.data?.character ?? 'your character'}'s profile, gear, talents and professions. No
+                login needed: the planner reads the same public character data as the Armory, and keeps syncing on its
+                own after that.
+              </p>
               <p>
                 <button type="button" onClick={() => sync.mutate()} disabled={sync.isPending}>
                   {sync.isPending ? 'Syncing…' : 'Sync now'}
@@ -191,17 +195,14 @@ export function Landing({ hasCharacter = false }: { hasCharacter?: boolean }) {
               {sync.isError && <p className="error">Sync failed: {sync.error.message}</p>}
             </>
           ) : (
-            <ol>
-              <li>
-                <a className="button" href="/auth/login">
-                  Log in with Battle.net
-                </a>
-              </li>
-              <li>Sync, to pull your character's profile, gear, talents and professions.</li>
-            </ol>
+            <p>
+              This planner has no Battle.net client yet. Whoever runs it sets <code>BNET_CLIENT_ID</code>,{' '}
+              <code>BNET_CLIENT_SECRET</code> and the character's name in <code>.env</code>; see the{' '}
+              <a href="https://character-planner.readthedocs.io/en/latest/self-hosting.html">self-hosting guide</a>.
+            </p>
           )}
           <p className="muted">
-            The planner only asks to read your profile. What it reads is kept as snapshots on this server, so it can
+            The planner only reads public character data. What it reads is kept as snapshots on this server, so it can
             show your progress over time; it never changes anything in the game or on your account.
           </p>
         </section>
