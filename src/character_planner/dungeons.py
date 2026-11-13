@@ -18,7 +18,7 @@ from sqlmodel import Session, select
 
 from character_planner import fields
 from character_planner.companion import BASE_URL, USER_AGENT, as_utc
-from character_planner.db import CompanionDungeon, utcnow
+from character_planner.db import CompanionDungeon, save_now, utcnow
 
 DUNGEON_MAX_AGE = timedelta(hours=24)
 # Forever Companion allows 120 requests/min per IP; this keeps a long batch under it.
@@ -190,9 +190,10 @@ def refresh_dungeons(
         if parse_dungeon(body) is None:
             outcome.errors.append(f"{dungeon_id}: unexpected response shape")
             continue
-        session.merge(CompanionDungeon(dungeon_id=dungeon_id, payload=body, fetched_at=utcnow()))
+        save_now(
+            session, CompanionDungeon(dungeon_id=dungeon_id, payload=body, fetched_at=utcnow())
+        )
         outcome.fetched.append(dungeon_id)
-    session.commit()
     return outcome
 
 

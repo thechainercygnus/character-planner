@@ -183,6 +183,18 @@ def make_engine(database_url: str) -> Engine:
     return engine
 
 
+def save_now(session: Session, row: SQLModel) -> None:
+    """Write one row and commit straight away.
+
+    SQLite has a single writer, and the API and the worker share one file (ADR 0011).
+    Loops that fetch over the network save each result this way, so the write lock is
+    held for milliseconds, never across the next request: two refreshes, or a refresh
+    and a sync, can then run side by side (ADR 0018).
+    """
+    session.merge(row)
+    session.commit()
+
+
 def init_db(engine: Engine) -> None:
     SQLModel.metadata.create_all(engine)
 
