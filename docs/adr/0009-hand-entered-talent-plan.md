@@ -1,6 +1,6 @@
 # 0009: Hand-entered talent plan, compared after each sync
 
-Status: accepted (2026-11-11)
+Status: accepted (2026-11-11). The hand-entry parts are replaced by ADR 0025 (talent trees from Blizzard).
 
 ## Context
 

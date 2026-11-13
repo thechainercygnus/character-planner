@@ -1,0 +1,4133 @@
+{
+ "_links": {
+  "self": {
+   "href": "https://us.api.blizzard.com/data/wow/talent-tree/1116?namespace=static-1.60.1_70399-forever-us"
+  }
+ },
+ "id": 1116,
+ "spec_talent_trees": [
+  {
+   "key": {
+    "href": "https://us.api.blizzard.com/data/wow/talent-tree/1116/playable-specialization/355?namespace=static-1.60.1_70399-forever-us"
+   },
+   "name": "Affliction"
+  },
+  {
+   "key": {
+    "href": "https://us.api.blizzard.com/data/wow/talent-tree/1116/playable-specialization/354?namespace=static-1.60.1_70399-forever-us"
+   },
+   "name": "Demonology"
+  },
+  {
+   "key": {
+    "href": "https://us.api.blizzard.com/data/wow/talent-tree/1116/playable-specialization/593?namespace=static-1.60.1_70399-forever-us"
+   },
+   "name": "Destruction"
+  }
+ ],
+ "talent_nodes": [
+  {
+   "id": 105874,
+   "locked_by": [
+    105876
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135405?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Incinerate",
+       "id": 135405
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412758?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Incinerate",
+        "id": 412758
+       },
+       "description": "Deals 313 to 357 Fire damage to your target and an additional 25% damage if the target is afflicted by Immolate.",
+       "cast_time": "2.5 sec cast",
+       "power_cost": "205 Mana",
+       "range": "30 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 7,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 5730
+  },
+  {
+   "id": 105875,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135406?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow and Flame",
+       "id": 135406
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/426316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow and Flame",
+        "id": 426316
+       },
+       "description": "Hitting an enemy with Conflagrate increases all Shadow damage you deal by 4% for 20 sec, and hitting an enemy with Shadowburn increases all Fire damage you deal by 4% for 20 sec. In addition, Conflagrate has a 20% chance not to consume Immolate, and Shadowburn has a 20% chance to instantly refund a Soul Shard.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135406?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow and Flame",
+       "id": 135406
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/426316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow and Flame",
+        "id": 426316
+       },
+       "description": "Hitting an enemy with Conflagrate increases all Shadow damage you deal by 8% for 20 sec, and hitting an enemy with Shadowburn increases all Fire damage you deal by 8% for 20 sec. In addition, Conflagrate has a 40% chance not to consume Immolate, and Shadowburn has a 40% chance to instantly refund a Soul Shard.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135406?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow and Flame",
+       "id": 135406
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/426316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow and Flame",
+        "id": 426316
+       },
+       "description": "Hitting an enemy with Conflagrate increases all Shadow damage you deal by 12% for 20 sec, and hitting an enemy with Shadowburn increases all Fire damage you deal by 12% for 20 sec. In addition, Conflagrate has a 60% chance not to consume Immolate, and Shadowburn has a 60% chance to instantly refund a Soul Shard.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135406?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow and Flame",
+       "id": 135406
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/426316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow and Flame",
+        "id": 426316
+       },
+       "description": "Hitting an enemy with Conflagrate increases all Shadow damage you deal by 16% for 20 sec, and hitting an enemy with Shadowburn increases all Fire damage you deal by 16% for 20 sec. In addition, Conflagrate has a 80% chance not to consume Immolate, and Shadowburn has a 80% chance to instantly refund a Soul Shard.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135406?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow and Flame",
+       "id": 135406
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/426316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow and Flame",
+        "id": 426316
+       },
+       "description": "Hitting an enemy with Conflagrate increases all Shadow damage you deal by 20% for 20 sec, and hitting an enemy with Shadowburn increases all Fire damage you deal by 20% for 20 sec. In addition, Conflagrate has a 100% chance not to consume Immolate, and Shadowburn has a 100% chance to instantly refund a Soul Shard.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 6,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 5130
+  },
+  {
+   "id": 105876,
+   "unlocks": [
+    105874
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135407?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bane of Havoc",
+       "id": 135407
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225228?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bane of Havoc",
+        "id": 1225228
+       },
+       "description": "Afflicts the target for 5 min, causing 15% of all damage done by the Warlock to other targets to also be dealt to the cursed target. Bane of Havoc is limited to 1 target, and only one Bane per Warlock can be active on any one target.",
+       "cast_time": "Instant",
+       "power_cost": "69 Mana",
+       "range": "30 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105877,
+   "locked_by": [
+    105880
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135408?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fire and Brimstone",
+       "id": 135408
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412751?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fire and Brimstone",
+        "id": 412751
+       },
+       "description": "Increases the critical strike chance of your Conflagrate spell by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135408?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fire and Brimstone",
+       "id": 135408
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412751?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fire and Brimstone",
+        "id": 412751
+       },
+       "description": "Increases the critical strike chance of your Conflagrate spell by 17%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135408?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fire and Brimstone",
+       "id": 135408
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412751?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fire and Brimstone",
+        "id": 412751
+       },
+       "description": "Increases the critical strike chance of your Conflagrate spell by 25%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105878,
+   "locked_by": [
+    105882
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135409?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Pyroclasm",
+       "id": 135409
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18073?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Pyroclasm",
+        "id": 18073
+       },
+       "description": "Gives your Soul Fire spell a 13% chance to Stun the target for 3 sec, and your Rain of Fire and Hellfire spells a 13% chance over their duration to Stun targets they damage for 3 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135409?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Pyroclasm",
+       "id": 135409
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18073?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Pyroclasm",
+        "id": 18073
+       },
+       "description": "Gives your Soul Fire spell a 26% chance to Stun the target for 3 sec, and your Rain of Fire and Hellfire spells a 26% chance over their duration to Stun targets they damage for 3 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 14,
+   "raw_position_x": 9080,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105879,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135410?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Agonizing Flames",
+       "id": 135410
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17927?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Agonizing Flames",
+        "id": 17927
+       },
+       "description": "Increases the critical strike chance of your Searing Pain spell by 3% and the damage done by all your Destruction spells by 3%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135410?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Agonizing Flames",
+       "id": 135410
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17927?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Agonizing Flames",
+        "id": 17927
+       },
+       "description": "Increases the critical strike chance of your Searing Pain spell by 7% and the damage done by all your Destruction spells by 7%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135410?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Agonizing Flames",
+       "id": 135410
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17927?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Agonizing Flames",
+        "id": 17927
+       },
+       "description": "Increases the critical strike chance of your Searing Pain spell by 10% and the damage done by all your Destruction spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105880,
+   "unlocks": [
+    105877
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135411?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Conflagrate",
+       "id": 135411
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1293817?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Conflagrate",
+        "id": 1293817
+       },
+       "description": "Ignites a target that is already afflicted by your Immolate spell, dealing 216 to 250 Fire damage and consuming your Immolate effect.",
+       "cast_time": "Instant",
+       "power_cost": "100 Mana",
+       "range": "30 yd range",
+       "cooldown": "10 sec cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105881,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135412?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Destructive Reach",
+       "id": 135412
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17917?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Destructive Reach",
+        "id": 17917
+       },
+       "description": "Increases the range of your Destruction spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135412?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Destructive Reach",
+       "id": 135412
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17917?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Destructive Reach",
+        "id": 17917
+       },
+       "description": "Increases the range of your Destruction spells by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 14,
+   "raw_position_x": 9080,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105882,
+   "unlocks": [
+    105878
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135413?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Intensity",
+       "id": 135413
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18135?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Intensity",
+        "id": 18135
+       },
+       "description": "Gives your Destruction spells a 23% chance to not lose casting time when you take damage.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135413?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Intensity",
+       "id": 135413
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18135?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Intensity",
+        "id": 18135
+       },
+       "description": "Gives your Destruction spells a 47% chance to not lose casting time when you take damage.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135413?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Intensity",
+       "id": 135413
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18135?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Intensity",
+        "id": 18135
+       },
+       "description": "Gives your Destruction spells a 70% chance to not lose casting time when you take damage.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 14,
+   "raw_position_x": 9080,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105883,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135414?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Ruin",
+       "id": 135414
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17959?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Ruin",
+        "id": 17959
+       },
+       "description": "Increases the critical strike damage bonus of your Destruction spells by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135414?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Ruin",
+       "id": 135414
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17959?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Ruin",
+        "id": 17959
+       },
+       "description": "Increases the critical strike damage bonus of your Destruction spells by 40%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135414?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Ruin",
+       "id": 135414
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17959?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Ruin",
+        "id": 17959
+       },
+       "description": "Increases the critical strike damage bonus of your Destruction spells by 60%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135414?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Ruin",
+       "id": 135414
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17959?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Ruin",
+        "id": 17959
+       },
+       "description": "Increases the critical strike damage bonus of your Destruction spells by 80%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135414?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Ruin",
+       "id": 135414
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17959?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Ruin",
+        "id": 17959
+       },
+       "description": "Increases the critical strike damage bonus of your Destruction spells by 100%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105884,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135415?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadowburn",
+       "id": 135415
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17877?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadowburn",
+        "id": 17877
+       },
+       "description": "Instantly blasts the target for 194 to 218 Shadow damage.  If a non-trivial target dies within 8 sec of being hit with Shadowburn, the caster gains a Soul Shard.",
+       "cast_time": "Instant",
+       "power_cost": "105 Mana",
+       "range": "30 yd range",
+       "cooldown": "15 sec cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105885,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135416?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Molten Skin",
+       "id": 135416
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225220?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Molten Skin",
+        "id": 1225220
+       },
+       "description": "Reduces all damage taken by 2%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135416?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Molten Skin",
+       "id": 135416
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225220?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Molten Skin",
+        "id": 1225220
+       },
+       "description": "Reduces all damage taken by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135416?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Molten Skin",
+       "id": 135416
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225220?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Molten Skin",
+        "id": 1225220
+       },
+       "description": "Reduces all damage taken by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135416?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Molten Skin",
+       "id": 135416
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225220?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Molten Skin",
+        "id": 1225220
+       },
+       "description": "Reduces all damage taken by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135416?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Molten Skin",
+       "id": 135416
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225220?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Molten Skin",
+        "id": 1225220
+       },
+       "description": "Reduces all damage taken by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 14,
+   "raw_position_x": 9080,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105886,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135417?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Aftermath",
+       "id": 135417
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18119?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Aftermath",
+        "id": 18119
+       },
+       "description": "Increases the initial damage of your Immolate spell by 10% and your Conflagrate spell has a 20% chance to Daze the target, reducing the target's movement speed by 50% for 5 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135417?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Aftermath",
+       "id": 135417
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18119?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Aftermath",
+        "id": 18119
+       },
+       "description": "Increases the initial damage of your Immolate spell by 20% and your Conflagrate spell has a 40% chance to Daze the target, reducing the target's movement speed by 50% for 5 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135417?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Aftermath",
+       "id": 135417
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18119?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Aftermath",
+        "id": 18119
+       },
+       "description": "Increases the initial damage of your Immolate spell by 30% and your Conflagrate spell has a 60% chance to Daze the target, reducing the target's movement speed by 50% for 5 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135417?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Aftermath",
+       "id": 135417
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18119?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Aftermath",
+        "id": 18119
+       },
+       "description": "Increases the initial damage of your Immolate spell by 40% and your Conflagrate spell has a 80% chance to Daze the target, reducing the target's movement speed by 50% for 5 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135417?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Aftermath",
+       "id": 135417
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18119?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Aftermath",
+        "id": 18119
+       },
+       "description": "Increases the initial damage of your Immolate spell by 50% and your Conflagrate spell has a 100% chance to Daze the target, reducing the target's movement speed by 50% for 5 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105887,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135418?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Cataclysm",
+       "id": 135418
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17778?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Cataclysm",
+        "id": 17778
+       },
+       "description": "Reduces the Mana cost of your Destruction spells by 3%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135418?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Cataclysm",
+       "id": 135418
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17778?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Cataclysm",
+        "id": 17778
+       },
+       "description": "Reduces the Mana cost of your Destruction spells by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135418?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Cataclysm",
+       "id": 135418
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17778?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Cataclysm",
+        "id": 17778
+       },
+       "description": "Reduces the Mana cost of your Destruction spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105888,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135419?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bane",
+       "id": 135419
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17788?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bane",
+        "id": 17788
+       },
+       "description": "Reduces the casting time of your Shadow Bolt, Immolate, and Incinerate spells by 0.1 sec and your Soul Fire spell by 0.4 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135419?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bane",
+       "id": 135419
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17788?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bane",
+        "id": 17788
+       },
+       "description": "Reduces the casting time of your Shadow Bolt, Immolate, and Incinerate spells by 0.2 sec and your Soul Fire spell by 0.8 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135419?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bane",
+       "id": 135419
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17788?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bane",
+        "id": 17788
+       },
+       "description": "Reduces the casting time of your Shadow Bolt, Immolate, and Incinerate spells by 0.3 sec and your Soul Fire spell by 1.2 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135419?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bane",
+       "id": 135419
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17788?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bane",
+        "id": 17788
+       },
+       "description": "Reduces the casting time of your Shadow Bolt, Immolate, and Incinerate spells by 0.4 sec and your Soul Fire spell by 1.6 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135419?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bane",
+       "id": 135419
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17788?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bane",
+        "id": 17788
+       },
+       "description": "Reduces the casting time of your Shadow Bolt, Immolate, and Incinerate spells by 0.5 sec and your Soul Fire spell by 2 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105889,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135420?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shadow Bolt",
+       "id": 135420
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17793?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shadow Bolt",
+        "id": 17793
+       },
+       "description": "Your Shadow Bolt critical strikes increase Shadow damage taken by the target from your attacks by 4% for 12 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135420?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shadow Bolt",
+       "id": 135420
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17793?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shadow Bolt",
+        "id": 17793
+       },
+       "description": "Your Shadow Bolt critical strikes increase Shadow damage taken by the target from your attacks by 8% for 12 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135420?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shadow Bolt",
+       "id": 135420
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17793?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shadow Bolt",
+        "id": 17793
+       },
+       "description": "Your Shadow Bolt critical strikes increase Shadow damage taken by the target from your attacks by 12% for 12 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135420?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shadow Bolt",
+       "id": 135420
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17793?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shadow Bolt",
+        "id": 17793
+       },
+       "description": "Your Shadow Bolt critical strikes increase Shadow damage taken by the target from your attacks by 16% for 12 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135420?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shadow Bolt",
+       "id": 135420
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17793?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shadow Bolt",
+        "id": 17793
+       },
+       "description": "Your Shadow Bolt critical strikes increase Shadow damage taken by the target from your attacks by 20% for 12 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105890,
+   "locked_by": [
+    105892
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135421?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Pact",
+       "id": 135421
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/425464?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Pact",
+        "id": 425464
+       },
+       "description": "Your Demonic Sacrifice effect is no longer cancelled by summoning a different Demon pet. Resummoning the sacrificed pet will still cancel the effect.\r\n",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 7,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 5730
+  },
+  {
+   "id": 105891,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135422?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Demonologist",
+       "id": 135422
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23785?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Demonologist",
+        "id": 23785
+       },
+       "description": "Grants both the Warlock and the summoned demon an effect as long as that demon is active.\r\n\r\nImp - Increases Fire damage done by 2%.\r\n\r\nVoidwalker - Reduces Physical damage taken by 2%.\r\n\r\nSuccubus/Incubus - Increases Shadow damage done by 2%.\r\n\r\nFelhunter - Reduces Magic damage taken by 2%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135422?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Demonologist",
+       "id": 135422
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23785?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Demonologist",
+        "id": 23785
+       },
+       "description": "Grants both the Warlock and the summoned demon an effect as long as that demon is active.\r\n\r\nImp - Increases Fire damage done by 4%.\r\n\r\nVoidwalker - Reduces Physical damage taken by 4%.\r\n\r\nSuccubus/Incubus - Increases Shadow damage done by 4%.\r\n\r\nFelhunter - Reduces Magic damage taken by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135422?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Demonologist",
+       "id": 135422
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23785?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Demonologist",
+        "id": 23785
+       },
+       "description": "Grants both the Warlock and the summoned demon an effect as long as that demon is active.\r\n\r\nImp - Increases Fire damage done by 6%.\r\n\r\nVoidwalker - Reduces Physical damage taken by 6%.\r\n\r\nSuccubus/Incubus - Increases Shadow damage done by 6%.\r\n\r\nFelhunter - Reduces Magic damage taken by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135422?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Demonologist",
+       "id": 135422
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23785?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Demonologist",
+        "id": 23785
+       },
+       "description": "Grants both the Warlock and the summoned demon an effect as long as that demon is active.\r\n\r\nImp - Increases Fire damage done by 8%.\r\n\r\nVoidwalker - Reduces Physical damage taken by 8%.\r\n\r\nSuccubus/Incubus - Increases Shadow damage done by 8%.\r\n\r\nFelhunter - Reduces Magic damage taken by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135422?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Demonologist",
+       "id": 135422
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23785?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Demonologist",
+        "id": 23785
+       },
+       "description": "Grants both the Warlock and the summoned demon an effect as long as that demon is active.\r\n\r\nImp - Increases Fire damage done by 10%.\r\n\r\nVoidwalker - Reduces Physical damage taken by 10%.\r\n\r\nSuccubus/Incubus - Increases Shadow damage done by 10%.\r\n\r\nFelhunter - Reduces Magic damage taken by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 6,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 5130
+  },
+  {
+   "id": 105892,
+   "locked_by": [
+    105900
+   ],
+   "unlocks": [
+    105890
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135423?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Soul Link",
+       "id": 135423
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/19028?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Soul Link",
+        "id": 19028
+       },
+       "description": "When active, 30% of all damage taken by the caster is taken by your Imp, Voidwalker, Succubus, Incubus, or Felhunter Demon instead. In addition, both the Demon and the master will inflict 3% more damage. Lasts as long as the Demon is active.",
+       "cast_time": "Instant",
+       "power_cost": "275 Mana",
+       "range": "100 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105893,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135424?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Knowledge",
+       "id": 135424
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412732?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Knowledge",
+        "id": 412732
+       },
+       "description": "Increases your spell damage and your Demon pet's spell damage by up to 33% of your level while you have a summoned Demon pet active.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135424?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Knowledge",
+       "id": 135424
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412732?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Knowledge",
+        "id": 412732
+       },
+       "description": "Increases your spell damage and your Demon pet's spell damage by up to 67% of your level while you have a summoned Demon pet active.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135424?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Knowledge",
+       "id": 135424
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412732?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Knowledge",
+        "id": 412732
+       },
+       "description": "Increases your spell damage and your Demon pet's spell damage by up to 100% of your level while you have a summoned Demon pet active.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105894,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135425?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Felhunter",
+       "id": 135425
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225217?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Felhunter",
+        "id": 1225217
+       },
+       "description": "Increases the Attack Power reduction of your Felhunter's Tainted Blood, the healing of its Devour Magic, and the detection level of its Paranoia by 10%, and reduces the cooldown of its Spell Lock by 2 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135425?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Felhunter",
+       "id": 135425
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225217?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Felhunter",
+        "id": 1225217
+       },
+       "description": "Increases the Attack Power reduction of your Felhunter's Tainted Blood, the healing of its Devour Magic, and the detection level of its Paranoia by 20%, and reduces the cooldown of its Spell Lock by 4 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135425?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Felhunter",
+       "id": 135425
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225217?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Felhunter",
+        "id": 1225217
+       },
+       "description": "Increases the Attack Power reduction of your Felhunter's Tainted Blood, the healing of its Devour Magic, and the detection level of its Paranoia by 30%, and reduces the cooldown of its Spell Lock by 6 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105895,
+   "locked_by": [
+    105898
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135426?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Domination",
+       "id": 135426
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18708?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Domination",
+        "id": 18708
+       },
+       "description": "Your next Imp, Voidwalker, Succubus, Incubus, or Felhunter Summon spell has its casting time reduced by 5.5 sec and its Mana cost reduced by 50%.",
+       "cast_time": "Instant",
+       "cooldown": "5 min cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105896,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135427?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Brand",
+       "id": 135427
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1293695?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Brand",
+        "id": 1293695
+       },
+       "description": "Your Searing Pain generates 17% less threat and brands the target for 10 sec. Your pet's next 2 attacks against the target deal 90 to 93 Fire or Shadow damage based on the pet. If Shadow damage is dealt, it has high threat.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135427?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Brand",
+       "id": 135427
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1293695?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Brand",
+        "id": 1293695
+       },
+       "description": "Your Searing Pain generates 33% less threat and brands the target for 10 sec. Your pet's next 4 attacks against the target deal 90 to 93 Fire or Shadow damage based on the pet. If Shadow damage is dealt, it has high threat.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135427?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Brand",
+       "id": 135427
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1293695?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Brand",
+        "id": 1293695
+       },
+       "description": "Your Searing Pain generates 50% less threat and brands the target for 10 sec. Your pet's next 6 attacks against the target deal 90 to 93 Fire or Shadow damage based on the pet. If Shadow damage is dealt, it has high threat.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 10,
+   "raw_position_x": 6820,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105897,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135428?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Decimation",
+       "id": 135428
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/440870?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Decimation",
+        "id": 440870
+       },
+       "description": "Reduces the cooldown of your Soul Fire spell by 45%. When you cast Shadow Bolt or Searing Pain on an enemy below 35% health, they deal 3% increased damage, and for the next 10 sec your Soul Fire spell has its cast time reduced by 20% and costs no Soul Shards.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135428?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Decimation",
+       "id": 135428
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/440870?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Decimation",
+        "id": 440870
+       },
+       "description": "Reduces the cooldown of your Soul Fire spell by 90%. When you cast Shadow Bolt or Searing Pain on an enemy below 35% health, they deal 6% increased damage, and for the next 10 sec your Soul Fire spell has its cast time reduced by 40% and costs no Soul Shards.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105898,
+   "unlocks": [
+    105895
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135429?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Summoner",
+       "id": 135429
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18709?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Summoner",
+        "id": 18709
+       },
+       "description": "Reduces the casting time of your Imp, Voidwalker, Succubus, Incubus, and Felhunter Summoning spells by 2 sec and the Mana cost by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135429?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Summoner",
+       "id": 135429
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18709?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Summoner",
+        "id": 18709
+       },
+       "description": "Reduces the casting time of your Imp, Voidwalker, Succubus, Incubus, and Felhunter Summoning spells by 4 sec and the Mana cost by 40%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105899,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135430?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Energies",
+       "id": 135430
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225214?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Energies",
+        "id": 1225214
+       },
+       "description": "You heal your pet for 8% of all spell damage you deal. When you gain Mana from Life Tap, your summoned demon gains 50% of the Mana you gain.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135430?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Energies",
+       "id": 135430
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225214?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Energies",
+        "id": 1225214
+       },
+       "description": "You heal your pet for 15% of all spell damage you deal. When you gain Mana from Life Tap, your summoned demon gains 100% of the Mana you gain.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 10,
+   "raw_position_x": 6820,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105900,
+   "unlocks": [
+    105892
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135431?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Sacrifice",
+       "id": 135431
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18788?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Sacrifice",
+        "id": 18788
+       },
+       "description": "When activated, sacrifices your summoned Demon to enhance the opposing aspect of your power, granting you an effect that lasts 2 hrs. The effect is canceled if any Demon is summoned.\r\n\r\nImp: Increases your Shadow damage by 15%.\r\n\r\nVoidwalker: Restores 2% of your total Mana every 4 sec.\r\n\r\nSuccubus/Incubus: Increases your Fire damage by 15%.\r\n\r\nFelhunter: Restores 3% of your total Health every 4 sec.",
+       "cast_time": "Instant",
+       "range": "100 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105901,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135432?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Sayaad",
+       "id": 135432
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18754?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Sayaad",
+        "id": 18754
+       },
+       "description": "Increases the effect of your Succubus' and Incubus' Lash of Pain and Soothing Kiss spells by 10%, and increases the duration of your Succubus' and Incubus' Seduction and Lesser Invisibility spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135432?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Sayaad",
+       "id": 135432
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18754?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Sayaad",
+        "id": 18754
+       },
+       "description": "Increases the effect of your Succubus' and Incubus' Lash of Pain and Soothing Kiss spells by 20%, and increases the duration of your Succubus' and Incubus' Seduction and Lesser Invisibility spells by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135432?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Sayaad",
+       "id": 135432
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18754?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Sayaad",
+        "id": 18754
+       },
+       "description": "Increases the effect of your Succubus' and Incubus' Lash of Pain and Soothing Kiss spells by 30%, and increases the duration of your Succubus' and Incubus' Seduction and Lesser Invisibility spells by 30%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105902,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135433?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Aegis",
+       "id": 135433
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1235316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Aegis",
+        "id": 1235316
+       },
+       "description": "Increases the effectiveness of your Demon Skin and Demon Armor spells by 15%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135433?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Aegis",
+       "id": 135433
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1235316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Aegis",
+        "id": 1235316
+       },
+       "description": "Increases the effectiveness of your Demon Skin and Demon Armor spells by 30%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105903,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135434?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Vitality",
+       "id": 135434
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18731?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Vitality",
+        "id": 18731
+       },
+       "description": "Increases the maximum health and Mana of your Imp, Voidwalker, Succubus, Incubus, and Felhunter by 5%, and increases your maximum Mana by 5%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135434?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Vitality",
+       "id": 135434
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18731?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Vitality",
+        "id": 18731
+       },
+       "description": "Increases the maximum health and Mana of your Imp, Voidwalker, Succubus, Incubus, and Felhunter by 10%, and increases your maximum Mana by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135434?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Vitality",
+       "id": 135434
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18731?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Vitality",
+        "id": 18731
+       },
+       "description": "Increases the maximum health and Mana of your Imp, Voidwalker, Succubus, Incubus, and Felhunter by 15%, and increases your maximum Mana by 15%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105904,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135435?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Voidwalker",
+       "id": 135435
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18705?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Voidwalker",
+        "id": 18705
+       },
+       "description": "Increases the effectiveness of your Voidwalker's Torment, Consume Shadows, Sacrifice, and Suffering spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135435?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Voidwalker",
+       "id": 135435
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18705?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Voidwalker",
+        "id": 18705
+       },
+       "description": "Increases the effectiveness of your Voidwalker's Torment, Consume Shadows, Sacrifice, and Suffering spells by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135435?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Voidwalker",
+       "id": 135435
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18705?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Voidwalker",
+        "id": 18705
+       },
+       "description": "Increases the effectiveness of your Voidwalker's Torment, Consume Shadows, Sacrifice, and Suffering spells by 30%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105905,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135436?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Health Funnel",
+       "id": 135436
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18703?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Health Funnel",
+        "id": 18703
+       },
+       "description": "Increases the amount of health transferred by your Health Funnel spell by 20%, reduces its health cost by 15%, and reduces all threat your Health Funnel generates by 50%. Allows Health Funnel to be used regardless of your demon's health.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135436?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Health Funnel",
+       "id": 135436
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18703?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Health Funnel",
+        "id": 18703
+       },
+       "description": "Increases the amount of health transferred by your Health Funnel spell by 40%, reduces its health cost by 30%, and reduces all threat your Health Funnel generates by 100%. Allows Health Funnel to be used regardless of your demon's health.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105906,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135437?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unholy Power",
+       "id": 135437
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18769?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unholy Power",
+        "id": 18769
+       },
+       "description": "Increases all damage done by your Imp, Voidwalker, Succubus, Incubus, and Felhunter pets by 2%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135437?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unholy Power",
+       "id": 135437
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18769?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unholy Power",
+        "id": 18769
+       },
+       "description": "Increases all damage done by your Imp, Voidwalker, Succubus, Incubus, and Felhunter pets by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135437?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unholy Power",
+       "id": 135437
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18769?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unholy Power",
+        "id": 18769
+       },
+       "description": "Increases all damage done by your Imp, Voidwalker, Succubus, Incubus, and Felhunter pets by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135437?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unholy Power",
+       "id": 135437
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18769?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unholy Power",
+        "id": 18769
+       },
+       "description": "Increases all damage done by your Imp, Voidwalker, Succubus, Incubus, and Felhunter pets by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135437?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unholy Power",
+       "id": 135437
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18769?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unholy Power",
+        "id": 18769
+       },
+       "description": "Increases all damage done by your Imp, Voidwalker, Succubus, Incubus, and Felhunter pets by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 10,
+   "raw_position_x": 6820,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105907,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135438?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Embrace",
+       "id": 135438
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18697?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Embrace",
+        "id": 18697
+       },
+       "description": "Increases your total Stamina by 3%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135438?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Embrace",
+       "id": 135438
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18697?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Embrace",
+        "id": 18697
+       },
+       "description": "Increases your total Stamina by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135438?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Embrace",
+       "id": 135438
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18697?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Embrace",
+        "id": 18697
+       },
+       "description": "Increases your total Stamina by 9%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135438?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Embrace",
+       "id": 135438
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18697?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Embrace",
+        "id": 18697
+       },
+       "description": "Increases your total Stamina by 12%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135438?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Embrace",
+       "id": 135438
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18697?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Embrace",
+        "id": 18697
+       },
+       "description": "Increases your total Stamina by 15%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105908,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135439?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Imp",
+       "id": 135439
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18694?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Imp",
+        "id": 18694
+       },
+       "description": "Increases the damage of your Imp's Firebolt spell by 10% and the effect of its Fire Shield spell by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135439?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Imp",
+       "id": 135439
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18694?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Imp",
+        "id": 18694
+       },
+       "description": "Increases the damage of your Imp's Firebolt spell by 20% and the effect of its Fire Shield spell by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135439?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Imp",
+       "id": 135439
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18694?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Imp",
+        "id": 18694
+       },
+       "description": "Increases the damage of your Imp's Firebolt spell by 30% and the effect of its Fire Shield spell by 30%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105909,
+   "locked_by": [
+    105912
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135440?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Wrack",
+       "id": 135440
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1316697?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Wrack",
+        "id": 1316697
+       },
+       "description": "Tears the target apart from within, inflicting 177 Shadow damage every 1 sec and increasing the damage they take from your other Shadow damage over time effects by 10% for 6 sec.",
+       "cast_time": "Channeled",
+       "power_cost": "200 Mana",
+       "range": "30 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 7,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 5730
+  },
+  {
+   "id": 105910,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135441?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow Mastery",
+       "id": 135441
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18271?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow Mastery",
+        "id": 18271
+       },
+       "description": "Increases the damage dealt or life drained by your Shadow spells by 2%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135441?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow Mastery",
+       "id": 135441
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18271?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow Mastery",
+        "id": 18271
+       },
+       "description": "Increases the damage dealt or life drained by your Shadow spells by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135441?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow Mastery",
+       "id": 135441
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18271?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow Mastery",
+        "id": 18271
+       },
+       "description": "Increases the damage dealt or life drained by your Shadow spells by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135441?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow Mastery",
+       "id": 135441
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18271?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow Mastery",
+        "id": 18271
+       },
+       "description": "Increases the damage dealt or life drained by your Shadow spells by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135441?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow Mastery",
+       "id": 135441
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18271?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow Mastery",
+        "id": 18271
+       },
+       "description": "Increases the damage dealt or life drained by your Shadow spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 6,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 5130
+  },
+  {
+   "id": 105911,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135442?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Soul Siphon",
+       "id": 135442
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17804?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Soul Siphon",
+        "id": 17804
+       },
+       "description": "Increases the damage done or health drained by your Drain Life, Drain Soul, and Wrack spells by 4% per each of your other Affliction effects active on the target, up to a maximum increase of 12%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135442?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Soul Siphon",
+       "id": 135442
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17804?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Soul Siphon",
+        "id": 17804
+       },
+       "description": "Increases the damage done or health drained by your Drain Life, Drain Soul, and Wrack spells by 8% per each of your other Affliction effects active on the target, up to a maximum increase of 24%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135442?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Soul Siphon",
+       "id": 135442
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17804?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Soul Siphon",
+        "id": 17804
+       },
+       "description": "Increases the damage done or health drained by your Drain Life, Drain Soul, and Wrack spells by 12% per each of your other Affliction effects active on the target, up to a maximum increase of 36%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105912,
+   "unlocks": [
+    105909
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135443?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Siphon Life",
+       "id": 135443
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18265?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Siphon Life",
+        "id": 18265
+       },
+       "description": "Transfers 27 health from the target to the caster every 3 sec.  Lasts 30 sec.",
+       "cast_time": "Instant",
+       "power_cost": "150 Mana",
+       "range": "30 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105913,
+   "locked_by": [
+    105916
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135444?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Curse of Exhaustion",
+       "id": 135444
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18223?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Curse of Exhaustion",
+        "id": 18223
+       },
+       "description": "Reduces the target's movement speed by 30% for 12 sec.  Only one Curse per Warlock can be active on any one target.",
+       "cast_time": "Instant",
+       "power_cost": "110 Mana",
+       "range": "30 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105914,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135445?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Nightfall",
+       "id": 135445
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18094?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Nightfall",
+        "id": 18094
+       },
+       "description": "Gives your Corruption, Drain Soul, Drain Life, and Wrack spells a 2% chance to cause you to enter a Shadow Trance after damaging the opponent. The Shadow Trance reduces the casting time of your next Shadow Bolt spell by 100%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135445?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Nightfall",
+       "id": 135445
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18094?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Nightfall",
+        "id": 18094
+       },
+       "description": "Gives your Corruption, Drain Soul, Drain Life, and Wrack spells a 4% chance to cause you to enter a Shadow Trance after damaging the opponent. The Shadow Trance reduces the casting time of your next Shadow Bolt spell by 100%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105916,
+   "unlocks": [
+    105913
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135447?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Amplify Curse",
+       "id": 135447
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18288?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Amplify Curse",
+        "id": 18288
+       },
+       "description": "Increases the effect of your next Curse of Weakness or Bane of Agony by 50%, or your next Curse of Exhaustion by 20%.  Lasts 30 sec.",
+       "cast_time": "Instant",
+       "cooldown": "3 min cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 3320
+  },
+  {
+   "id": 105917,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135448?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Pandemic",
+       "id": 135448
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/427712?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Pandemic",
+        "id": 427712
+       },
+       "description": "Increases the critical strike damage bonus of your Corruption, Bane of Agony, Bane of Doom, Drain Soul, Drain Life, Siphon Life, and Wrack spells by 33%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135448?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Pandemic",
+       "id": 135448
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/427712?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Pandemic",
+        "id": 427712
+       },
+       "description": "Increases the critical strike damage bonus of your Corruption, Bane of Agony, Bane of Doom, Drain Soul, Drain Life, Siphon Life, and Wrack spells by 67%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135448?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Pandemic",
+       "id": 135448
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/427712?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Pandemic",
+        "id": 427712
+       },
+       "description": "Increases the critical strike damage bonus of your Corruption, Bane of Agony, Bane of Doom, Drain Soul, Drain Life, Siphon Life, and Wrack spells by 100%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 4,
+   "raw_position_x": 2820,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105918,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135449?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Concentration",
+       "id": 135449
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17783?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Concentration",
+        "id": 17783
+       },
+       "description": "Gives your Drain Life, Drain Mana, Drain Soul, and Wrack spells a 23% chance to not lose casting time when you take damage.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135449?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Concentration",
+       "id": 135449
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17783?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Concentration",
+        "id": 17783
+       },
+       "description": "Gives your Drain Life, Drain Mana, Drain Soul, and Wrack spells a 47% chance to not lose casting time when you take damage.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135449?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Concentration",
+       "id": 135449
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17783?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Concentration",
+        "id": 17783
+       },
+       "description": "Gives your Drain Life, Drain Mana, Drain Soul, and Wrack spells a 70% chance to not lose casting time when you take damage.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105919,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135450?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Bane of Agony",
+       "id": 135450
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18827?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Bane of Agony",
+        "id": 18827
+       },
+       "description": "Increases the damage done by your Bane of Agony by 5%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135450?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Bane of Agony",
+       "id": 135450
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18827?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Bane of Agony",
+        "id": 18827
+       },
+       "description": "Increases the damage done by your Bane of Agony by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 1,
+   "raw_position_x": 1020,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105920,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135451?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Drains",
+       "id": 135451
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/403511?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Drains",
+        "id": 403511
+       },
+       "description": "Increases Health drained, damage done, or Mana drained by your Drain Life, Drain Soul, and Drain Mana spells by 7%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135451?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Drains",
+       "id": 135451
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/403511?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Drains",
+        "id": 403511
+       },
+       "description": "Increases Health drained, damage done, or Mana drained by your Drain Life, Drain Soul, and Drain Mana spells by 13%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135451?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Drains",
+       "id": 135451
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/403511?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Drains",
+        "id": 403511
+       },
+       "description": "Increases Health drained, damage done, or Mana drained by your Drain Life, Drain Soul, and Drain Mana spells by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105921,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135452?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Life Tap",
+       "id": 135452
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18182?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Life Tap",
+        "id": 18182
+       },
+       "description": "Increases the amount of Mana awarded by your Life Tap spell by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135452?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Life Tap",
+       "id": 135452
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18182?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Life Tap",
+        "id": 18182
+       },
+       "description": "Increases the amount of Mana awarded by your Life Tap spell by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 1,
+   "raw_position_x": 1020,
+   "raw_position_y": 2120
+  },
+  {
+   "id": 105922,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135453?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Soul Harvest",
+       "id": 135453
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/437032?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Soul Harvest",
+        "id": 437032
+       },
+       "description": "Killing a non-trivial target afflicted by your Drain Soul increases your Mana regeneration by 50% for 10 sec and allows 50% of normal Mana regeneration to continue while casting.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135453?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Soul Harvest",
+       "id": 135453
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/437032?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Soul Harvest",
+        "id": 437032
+       },
+       "description": "Killing a non-trivial target afflicted by your Drain Soul increases your Mana regeneration by 100% for 10 sec and allows 100% of normal Mana regeneration to continue while casting.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105923,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135454?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Grim Reach",
+       "id": 135454
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18218?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Grim Reach",
+        "id": 18218
+       },
+       "description": "Increases the range of your Affliction spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135454?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Grim Reach",
+       "id": 135454
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18218?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Grim Reach",
+        "id": 18218
+       },
+       "description": "Increases the range of your Affliction spells by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 1,
+   "raw_position_x": 1020,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105924,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135455?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Corruption",
+       "id": 135455
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17810?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Corruption",
+        "id": 17810
+       },
+       "description": "Reduces the casting time of your Corruption spell by 0.4 sec and increases the damage it deals by 2%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135455?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Corruption",
+       "id": 135455
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17810?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Corruption",
+        "id": 17810
+       },
+       "description": "Reduces the casting time of your Corruption spell by 0.8 sec and increases the damage it deals by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135455?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Corruption",
+       "id": 135455
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17810?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Corruption",
+        "id": 17810
+       },
+       "description": "Reduces the casting time of your Corruption spell by 1.2 sec and increases the damage it deals by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135455?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Corruption",
+       "id": 135455
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17810?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Corruption",
+        "id": 17810
+       },
+       "description": "Reduces the casting time of your Corruption spell by 1.6 sec and increases the damage it deals by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135455?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Corruption",
+       "id": 135455
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17810?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Corruption",
+        "id": 17810
+       },
+       "description": "Reduces the casting time of your Corruption spell by 2 sec and increases the damage it deals by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105925,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135456?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Suppression",
+       "id": 135456
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18174?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Suppression",
+        "id": 18174
+       },
+       "description": "Improves your chance to hit by 1% and reduces all threat you generate by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135456?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Suppression",
+       "id": 135456
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18174?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Suppression",
+        "id": 18174
+       },
+       "description": "Improves your chance to hit by 2% and reduces all threat you generate by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135456?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Suppression",
+       "id": 135456
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18174?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Suppression",
+        "id": 18174
+       },
+       "description": "Improves your chance to hit by 3% and reduces all threat you generate by 12%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135456?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Suppression",
+       "id": 135456
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18174?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Suppression",
+        "id": 18174
+       },
+       "description": "Improves your chance to hit by 4% and reduces all threat you generate by 16%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135456?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Suppression",
+       "id": 135456
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18174?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Suppression",
+        "id": 18174
+       },
+       "description": "Improves your chance to hit by 5% and reduces all threat you generate by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 110876,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142628?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Malevolence",
+       "id": 142628
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310949?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Malevolence",
+        "id": 1310949
+       },
+       "description": "Increases the critical effect chance of your Shadow spells by 1%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142628?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Malevolence",
+       "id": 142628
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310949?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Malevolence",
+        "id": 1310949
+       },
+       "description": "Increases the critical effect chance of your Shadow spells by 2%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142628?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Malevolence",
+       "id": 142628
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310949?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Malevolence",
+        "id": 1310949
+       },
+       "description": "Increases the critical effect chance of your Shadow spells by 3%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142628?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Malevolence",
+       "id": 142628
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310949?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Malevolence",
+        "id": 1310949
+       },
+       "description": "Increases the critical effect chance of your Shadow spells by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142628?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Malevolence",
+       "id": 142628
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310949?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Malevolence",
+        "id": 1310949
+       },
+       "description": "Increases the critical effect chance of your Shadow spells by 5%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 1,
+   "raw_position_x": 1020,
+   "raw_position_y": 3930
+  }
+ ]
+}

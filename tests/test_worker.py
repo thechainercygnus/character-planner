@@ -86,6 +86,7 @@ def test_default_schedule_comes_from_settings(settings: Settings) -> None:
         ("sync", timedelta(hours=2)),
         ("pool", timedelta(hours=12)),
         ("enchants", timedelta(hours=168)),
+        ("talents", timedelta(hours=168)),
     ]
 
 

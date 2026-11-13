@@ -86,7 +86,8 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/dungeons.py`: Forever Companion dungeons: drop tables and quest rewards (ADR 0006)
 - `src/character_planner/pool.py`: item pool built from dungeon data, level window, target id resolution (ADR 0006)
 - `src/character_planner/progress.py`: progress over time rebuilt from snapshots: points, gear changes, level-ups (ADR 0008)
-- `src/character_planner/talents.py`: hand-entered talent plan compared with synced talents (ADR 0009); default in `data/curated/talent_plan.yaml`
+- `src/character_planner/talents.py`: the talent plan compared with synced talents (ADR 0009), matched by talent id; default in `data/curated/talent_plan.yaml`
+- `src/character_planner/talent_trees.py`: Forever's talent trees from Blizzard's game data, and the plan rules (prerequisites, points per row); the frontend's twin is `frontend/src/talentRules.ts` (ADR 0025)
 - `src/character_planner/enchants.py`: enchant catalog from Blizzard recipe data and per-slot enchant advice (ADR 0010); gaps filled in `data/curated/enchants.yaml`
 - `src/character_planner/recommend.py`: best upgrades per slot and dungeons worth running, from the pool (ADR 0007)
 - `src/character_planner/rules.py`: the Upgrades rules edited in the app; `data/curated/recommend.yaml` is the default (ADR 0016)

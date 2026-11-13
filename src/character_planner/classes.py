@@ -110,6 +110,11 @@ def character_class_key(session: Session) -> str | None:
     return class_key(name) if name else None
 
 
+def character_class_name(session: Session) -> str | None:
+    """The synced character's class as Blizzard names it ("Warlock"); None before a sync."""
+    return character_view(latest_by_kind(session)).character_class
+
+
 def current_defaults(session: Session, curated_dir: Path) -> ClassDefaults:
     """The defaults for the synced character's class (the Warrior's until it's known)."""
     key = character_class_key(session) or WARRIOR

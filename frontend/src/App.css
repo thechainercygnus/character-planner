@@ -935,3 +935,84 @@ ul.upcoming small {
 .add-destination input {
   min-width: 14rem;
 }
+
+/* Talent trees (#88) */
+.talent-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin: 0 0 0.6rem;
+}
+.talent-trees {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.6rem;
+}
+.talent-tree h3 {
+  margin: 0 0 0.4rem;
+}
+.talent-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 52px);
+  grid-auto-rows: 52px;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.talent-node {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface, transparent);
+}
+.talent-node img {
+  border-radius: 6px;
+}
+.talent-node.locked img,
+.talent-node.locked .talent-initials {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+.talent-node.partial {
+  border-color: #3ba55c;
+}
+.talent-node.maxed {
+  border-color: #faa61a;
+}
+.talent-node.spent {
+  box-shadow: 0 0 0 2px #5865f2 inset;
+}
+.talent-rank {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  font-size: 0.7rem;
+  padding: 0 4px;
+  border-radius: 6px;
+  background: #111;
+  color: #fff;
+}
+.talent-spent {
+  position: absolute;
+  left: -6px;
+  top: -6px;
+  font-size: 0.65rem;
+  min-width: 1.1em;
+  padding: 0 3px;
+  border-radius: 6px;
+  background: #5865f2;
+  color: #fff;
+}
+.talent-initials {
+  font-weight: 600;
+}
+.talent-order ol {
+  columns: 2 18rem;
+}

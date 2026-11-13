@@ -478,6 +478,45 @@ export interface Progress {
 export interface PlanStep {
   talent: string
   rank: number
+  /** The talent's id in Blizzard's trees (#88); filled in from the name for older plans. */
+  talent_id?: number | null
+}
+
+/** One talent in a tree (#88): its place on the grid, ranks and prerequisites. */
+export interface TalentNode {
+  node_id: number
+  talent_id: number
+  name: string
+  spell_id: number | null
+  /** 1 at the top. */
+  row: number
+  /** 1 at the left of its tree. */
+  col: number
+  max_rank: number
+  /** Each rank's description. */
+  ranks: string[]
+  /** Talent ids that must be at their max rank first. */
+  requires: number[]
+  icon_url: string | null
+}
+
+export interface SpecTree {
+  spec_id: number
+  name: string
+  nodes: TalentNode[]
+}
+
+export interface ClassTree {
+  class_name: string
+  tree_id: number
+  specs: SpecTree[]
+}
+
+export interface TalentTreeView {
+  class_name: string | null
+  /** Null until the trees are loaded (after the first sync, in the background). */
+  tree: ClassTree | null
+  loading: boolean
 }
 
 export interface TalentPlan {
@@ -487,6 +526,7 @@ export interface TalentPlan {
 
 export interface StepStatus {
   talent: string
+  talent_id: number | null
   /** Target rank after this step. */
   rank: number
   /** Points this step adds. */
@@ -509,8 +549,8 @@ export interface TalentPlanView {
   spent: number | null
   planned_points: number
   steps: StepStatus[]
-  next: { talent: string; rank: number; level: number } | null
-  off_plan: { talent: string; current: number; planned: number }[]
+  next: { talent: string; talent_id: number | null; rank: number; level: number } | null
+  off_plan: { talent: string; talent_id: number | null; current: number; planned: number }[]
   customised: boolean
 }
 
@@ -718,6 +758,7 @@ export const api = {
       body: JSON.stringify(plan),
     }),
   resetTalentPlan: () => request<TalentPlanView>('/api/talents/plan', { method: 'DELETE' }),
+  talentTree: () => request<TalentTreeView>('/api/talents/tree'),
   /** With a level, only that level's window (guest mode, #48); else the character's. */
   refreshPool: (level?: number) =>
     request<PoolRefresh>(level ? `/api/pool/refresh?level=${level}` : '/api/pool/refresh', { method: 'POST' }),

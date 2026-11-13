@@ -1,0 +1,1328 @@
+{
+ "_links": {
+  "self": {
+   "href": "https://us.api.blizzard.com/data/wow/talent-tree/1116/playable-specialization/355?namespace=static-1.60.1_70399-forever-us"
+  }
+ },
+ "id": 1116,
+ "playable_class": {
+  "key": {
+   "href": "https://us.api.blizzard.com/data/wow/playable-class/9?namespace=static-1.60.1_70399-forever-us"
+  },
+  "name": "Warlock",
+  "id": 9
+ },
+ "playable_specialization": {
+  "key": {
+   "href": "https://us.api.blizzard.com/data/wow/playable-specialization/355?namespace=static-1.60.1_70399-forever-us"
+  },
+  "name": "Affliction",
+  "id": 355
+ },
+ "name": "Affliction",
+ "media": {
+  "key": {
+   "href": "https://us.api.blizzard.com/data/wow/media/talent-tree/1116/playable-specialization/355?namespace=static-1.60.1_70399-forever-us"
+  }
+ },
+ "spec_talent_nodes": [
+  {
+   "id": 105921,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135452?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Life Tap",
+       "id": 135452
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18182?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Life Tap",
+        "id": 18182
+       },
+       "description": "Increases the amount of Mana awarded by your Life Tap spell by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135452?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Life Tap",
+       "id": 135452
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18182?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Life Tap",
+        "id": 18182
+       },
+       "description": "Increases the amount of Mana awarded by your Life Tap spell by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 1,
+   "raw_position_x": 1020,
+   "raw_position_y": 2120
+  },
+  {
+   "id": 105925,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135456?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Suppression",
+       "id": 135456
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18174?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Suppression",
+        "id": 18174
+       },
+       "description": "Improves your chance to hit by 1% and reduces all threat you generate by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135456?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Suppression",
+       "id": 135456
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18174?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Suppression",
+        "id": 18174
+       },
+       "description": "Improves your chance to hit by 2% and reduces all threat you generate by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135456?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Suppression",
+       "id": 135456
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18174?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Suppression",
+        "id": 18174
+       },
+       "description": "Improves your chance to hit by 3% and reduces all threat you generate by 12%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135456?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Suppression",
+       "id": 135456
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18174?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Suppression",
+        "id": 18174
+       },
+       "description": "Improves your chance to hit by 4% and reduces all threat you generate by 16%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135456?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Suppression",
+       "id": 135456
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18174?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Suppression",
+        "id": 18174
+       },
+       "description": "Improves your chance to hit by 5% and reduces all threat you generate by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105924,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135455?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Corruption",
+       "id": 135455
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17810?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Corruption",
+        "id": 17810
+       },
+       "description": "Reduces the casting time of your Corruption spell by 0.4 sec and increases the damage it deals by 2%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135455?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Corruption",
+       "id": 135455
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17810?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Corruption",
+        "id": 17810
+       },
+       "description": "Reduces the casting time of your Corruption spell by 0.8 sec and increases the damage it deals by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135455?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Corruption",
+       "id": 135455
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17810?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Corruption",
+        "id": 17810
+       },
+       "description": "Reduces the casting time of your Corruption spell by 1.2 sec and increases the damage it deals by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135455?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Corruption",
+       "id": 135455
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17810?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Corruption",
+        "id": 17810
+       },
+       "description": "Reduces the casting time of your Corruption spell by 1.6 sec and increases the damage it deals by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135455?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Corruption",
+       "id": 135455
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17810?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Corruption",
+        "id": 17810
+       },
+       "description": "Reduces the casting time of your Corruption spell by 2 sec and increases the damage it deals by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105923,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135454?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Grim Reach",
+       "id": 135454
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18218?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Grim Reach",
+        "id": 18218
+       },
+       "description": "Increases the range of your Affliction spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135454?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Grim Reach",
+       "id": 135454
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18218?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Grim Reach",
+        "id": 18218
+       },
+       "description": "Increases the range of your Affliction spells by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 1,
+   "raw_position_x": 1020,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105922,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135453?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Soul Harvest",
+       "id": 135453
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/437032?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Soul Harvest",
+        "id": 437032
+       },
+       "description": "Killing a non-trivial target afflicted by your Drain Soul increases your Mana regeneration by 50% for 10 sec and allows 50% of normal Mana regeneration to continue while casting.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135453?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Soul Harvest",
+       "id": 135453
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/437032?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Soul Harvest",
+        "id": 437032
+       },
+       "description": "Killing a non-trivial target afflicted by your Drain Soul increases your Mana regeneration by 100% for 10 sec and allows 100% of normal Mana regeneration to continue while casting.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105920,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135451?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Drains",
+       "id": 135451
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/403511?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Drains",
+        "id": 403511
+       },
+       "description": "Increases Health drained, damage done, or Mana drained by your Drain Life, Drain Soul, and Drain Mana spells by 7%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135451?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Drains",
+       "id": 135451
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/403511?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Drains",
+        "id": 403511
+       },
+       "description": "Increases Health drained, damage done, or Mana drained by your Drain Life, Drain Soul, and Drain Mana spells by 13%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135451?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Drains",
+       "id": 135451
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/403511?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Drains",
+        "id": 403511
+       },
+       "description": "Increases Health drained, damage done, or Mana drained by your Drain Life, Drain Soul, and Drain Mana spells by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105919,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135450?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Bane of Agony",
+       "id": 135450
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18827?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Bane of Agony",
+        "id": 18827
+       },
+       "description": "Increases the damage done by your Bane of Agony by 5%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135450?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Bane of Agony",
+       "id": 135450
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18827?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Bane of Agony",
+        "id": 18827
+       },
+       "description": "Increases the damage done by your Bane of Agony by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 1,
+   "raw_position_x": 1020,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105918,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135449?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Concentration",
+       "id": 135449
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17783?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Concentration",
+        "id": 17783
+       },
+       "description": "Gives your Drain Life, Drain Mana, Drain Soul, and Wrack spells a 23% chance to not lose casting time when you take damage.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135449?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Concentration",
+       "id": 135449
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17783?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Concentration",
+        "id": 17783
+       },
+       "description": "Gives your Drain Life, Drain Mana, Drain Soul, and Wrack spells a 47% chance to not lose casting time when you take damage.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135449?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Concentration",
+       "id": 135449
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17783?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Concentration",
+        "id": 17783
+       },
+       "description": "Gives your Drain Life, Drain Mana, Drain Soul, and Wrack spells a 70% chance to not lose casting time when you take damage.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105916,
+   "unlocks": [
+    105913
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135447?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Amplify Curse",
+       "id": 135447
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18288?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Amplify Curse",
+        "id": 18288
+       },
+       "description": "Increases the effect of your next Curse of Weakness or Bane of Agony by 50%, or your next Curse of Exhaustion by 20%.  Lasts 30 sec.",
+       "cast_time": "Instant",
+       "cooldown": "3 min cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 3320
+  },
+  {
+   "id": 105917,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135448?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Pandemic",
+       "id": 135448
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/427712?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Pandemic",
+        "id": 427712
+       },
+       "description": "Increases the critical strike damage bonus of your Corruption, Bane of Agony, Bane of Doom, Drain Soul, Drain Life, Siphon Life, and Wrack spells by 33%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135448?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Pandemic",
+       "id": 135448
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/427712?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Pandemic",
+        "id": 427712
+       },
+       "description": "Increases the critical strike damage bonus of your Corruption, Bane of Agony, Bane of Doom, Drain Soul, Drain Life, Siphon Life, and Wrack spells by 67%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135448?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Pandemic",
+       "id": 135448
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/427712?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Pandemic",
+        "id": 427712
+       },
+       "description": "Increases the critical strike damage bonus of your Corruption, Bane of Agony, Bane of Doom, Drain Soul, Drain Life, Siphon Life, and Wrack spells by 100%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 4,
+   "raw_position_x": 2820,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 110876,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142628?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Malevolence",
+       "id": 142628
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310949?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Malevolence",
+        "id": 1310949
+       },
+       "description": "Increases the critical effect chance of your Shadow spells by 1%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142628?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Malevolence",
+       "id": 142628
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310949?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Malevolence",
+        "id": 1310949
+       },
+       "description": "Increases the critical effect chance of your Shadow spells by 2%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142628?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Malevolence",
+       "id": 142628
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310949?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Malevolence",
+        "id": 1310949
+       },
+       "description": "Increases the critical effect chance of your Shadow spells by 3%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142628?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Malevolence",
+       "id": 142628
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310949?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Malevolence",
+        "id": 1310949
+       },
+       "description": "Increases the critical effect chance of your Shadow spells by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142628?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Malevolence",
+       "id": 142628
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310949?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Malevolence",
+        "id": 1310949
+       },
+       "description": "Increases the critical effect chance of your Shadow spells by 5%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 1,
+   "raw_position_x": 1020,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105914,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135445?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Nightfall",
+       "id": 135445
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18094?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Nightfall",
+        "id": 18094
+       },
+       "description": "Gives your Corruption, Drain Soul, Drain Life, and Wrack spells a 2% chance to cause you to enter a Shadow Trance after damaging the opponent. The Shadow Trance reduces the casting time of your next Shadow Bolt spell by 100%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135445?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Nightfall",
+       "id": 135445
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18094?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Nightfall",
+        "id": 18094
+       },
+       "description": "Gives your Corruption, Drain Soul, Drain Life, and Wrack spells a 4% chance to cause you to enter a Shadow Trance after damaging the opponent. The Shadow Trance reduces the casting time of your next Shadow Bolt spell by 100%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105913,
+   "locked_by": [
+    105916
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135444?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Curse of Exhaustion",
+       "id": 135444
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18223?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Curse of Exhaustion",
+        "id": 18223
+       },
+       "description": "Reduces the target's movement speed by 30% for 12 sec.  Only one Curse per Warlock can be active on any one target.",
+       "cast_time": "Instant",
+       "power_cost": "110 Mana",
+       "range": "30 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105912,
+   "unlocks": [
+    105909
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135443?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Siphon Life",
+       "id": 135443
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18265?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Siphon Life",
+        "id": 18265
+       },
+       "description": "Transfers 27 health from the target to the caster every 3 sec.  Lasts 30 sec.",
+       "cast_time": "Instant",
+       "power_cost": "150 Mana",
+       "range": "30 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105911,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135442?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Soul Siphon",
+       "id": 135442
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17804?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Soul Siphon",
+        "id": 17804
+       },
+       "description": "Increases the damage done or health drained by your Drain Life, Drain Soul, and Wrack spells by 4% per each of your other Affliction effects active on the target, up to a maximum increase of 12%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135442?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Soul Siphon",
+       "id": 135442
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17804?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Soul Siphon",
+        "id": 17804
+       },
+       "description": "Increases the damage done or health drained by your Drain Life, Drain Soul, and Wrack spells by 8% per each of your other Affliction effects active on the target, up to a maximum increase of 24%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135442?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Soul Siphon",
+       "id": 135442
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17804?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Soul Siphon",
+        "id": 17804
+       },
+       "description": "Increases the damage done or health drained by your Drain Life, Drain Soul, and Wrack spells by 12% per each of your other Affliction effects active on the target, up to a maximum increase of 36%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105910,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135441?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow Mastery",
+       "id": 135441
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18271?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow Mastery",
+        "id": 18271
+       },
+       "description": "Increases the damage dealt or life drained by your Shadow spells by 2%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135441?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow Mastery",
+       "id": 135441
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18271?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow Mastery",
+        "id": 18271
+       },
+       "description": "Increases the damage dealt or life drained by your Shadow spells by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135441?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow Mastery",
+       "id": 135441
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18271?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow Mastery",
+        "id": 18271
+       },
+       "description": "Increases the damage dealt or life drained by your Shadow spells by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135441?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow Mastery",
+       "id": 135441
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18271?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow Mastery",
+        "id": 18271
+       },
+       "description": "Increases the damage dealt or life drained by your Shadow spells by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135441?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow Mastery",
+       "id": 135441
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18271?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow Mastery",
+        "id": 18271
+       },
+       "description": "Increases the damage dealt or life drained by your Shadow spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 6,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 5130
+  },
+  {
+   "id": 105909,
+   "locked_by": [
+    105912
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135440?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Wrack",
+       "id": 135440
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1316697?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Wrack",
+        "id": 1316697
+       },
+       "description": "Tears the target apart from within, inflicting 177 Shadow damage every 1 sec and increasing the damage they take from your other Shadow damage over time effects by 10% for 6 sec.",
+       "cast_time": "Channeled",
+       "power_cost": "200 Mana",
+       "range": "30 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 7,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 5730
+  }
+ ]
+}

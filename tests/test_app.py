@@ -231,7 +231,8 @@ def test_talent_plan_can_be_edited_and_reset(client: TestClient) -> None:
     }
     view = client.put("/api/talents/plan", json=extended).json()
     assert view["customised"] is True
-    assert view["next"] == {"talent": "Deflection", "rank": 1, "level": 19}
+    # No talent trees loaded in this test, so no ids (#88).
+    assert view["next"] == {"talent": "Deflection", "talent_id": None, "rank": 1, "level": 19}
     assert client.get("/api/talents").json()["planned_points"] == 14
 
     bad = {"spec": "Protection", "steps": [{"talent": " ", "rank": 0}]}

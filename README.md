@@ -39,7 +39,7 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Never suggest an item | `GET /api/choices`, `PUT`/`DELETE /api/choices/{item_id}` (or **Never suggest**) |
 | Guest mode: best items and dungeons for a class and level, no account | `/api/guest`, `/api/guest/recommendations?level=20&class=warrior&faction=alliance` (or the landing page, and **Guest mode** in the ⋯ menu) |
 | Progress over time (one point per sync, gear changes, level-ups) | `/api/progress` |
-| Talent plan vs synced talents (next point, off-plan points) | `/api/talents`, plan in `data/curated/talent_plan.yaml` or edit it in the app |
+| Talent plan vs synced talents (next point, off-plan points) | `/api/talents`; the trees at `/api/talents/tree`; plan on the talent trees in the Character tab (ADR 0025), default in `data/curated/talent_plan.yaml` |
 | Stat weights for scoring | `GET`/`PUT`/`DELETE /api/weights` for the active preset (or the **Stat weights** button on the Upgrades and Plan tabs) |
 | Weight presets (Leveling tank, Dungeon tank, Solo DPS, your own) | `PUT /api/weights/active`, `POST /api/weights/presets`, `PATCH`/`DELETE /api/weights/presets/{key}` |
 | Alerts in Discord (login expiring, level-ups, targets, upgrades; failed jobs) | **Alerts** in the status bar, or `/api/notifications` (ADR 0021) |
