@@ -83,7 +83,8 @@ addopts = "-ra --strict-markers"
 
 # Coverage (#55): line and branch coverage of the package. CI runs
 # `pytest --cov --cov-report=term --cov-report=xml`; locally, add `--cov` to see it.
-# Report only for now: #94 sets the floor (OpenSSF Silver asks for 80% statements).
+# The floor (#94) is the measured total, rounded down: a PR that lowers coverage fails.
+# Raise it as coverage grows. CI also checks OpenSSF Silver's 80% of statements.
 [tool.coverage.run]
 source = ["src/character_planner"]
 branch = true
@@ -91,3 +92,4 @@ branch = true
 [tool.coverage.report]
 skip_empty = true
 precision = 1
+fail_under = 91  # statements and branches together; 91.4% on 2026-11-13

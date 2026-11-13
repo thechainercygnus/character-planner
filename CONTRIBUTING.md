@@ -77,8 +77,10 @@ cd frontend && npm run lint && npm run typecheck && npm test
 
 Coverage is measured in CI and shown in each run's summary (#55). To see it locally:
 `uv run pytest --cov` (add `--cov-report=html` for a browsable report in `htmlcov/`), and
-`npm run coverage` in `frontend/` (an HTML report lands in `frontend/coverage/`). There's
-no minimum yet; #94 sets one.
+`npm run coverage` in `frontend/` (an HTML report lands in `frontend/coverage/`). Both
+have a floor (#94), the coverage measured when it was set: `fail_under` in
+`pyproject.toml` and `thresholds` in `frontend/vitest.config.ts`. A change that lowers
+coverage fails CI, so add tests with new code. When coverage grows, raise the floors.
 
 The [README](README.md) covers running the app; you need a Battle.net API client for
 anything that talks to Blizzard, but not for the tests.
