@@ -174,6 +174,18 @@ export interface Attribution {
   text: string
 }
 
+export interface CreditLink {
+  name: string
+  url: string
+}
+
+/** The page footer (#43): data credits, the source link (AGPL) and the version. */
+export interface About {
+  version: string
+  source_url: string
+  data: CreditLink & { sources: CreditLink[] }
+}
+
 export interface GearPlan {
   level: number | null
   /** Per slot, the target to go for now (ADR 0015). */
@@ -654,6 +666,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  about: () => request<About>('/api/about'),
   status: () => request<Status>('/api/status'),
   character: () => request<CharacterView>('/api/character'),
   gear: () => request<GearPlan>('/api/gear'),

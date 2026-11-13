@@ -38,6 +38,8 @@ from character_planner.classes import (
     character_class_name,
     current_defaults,
 )
+from character_planner.companion import ATTRIBUTION as COMPANION_ATTRIBUTION
+from character_planner.companion import SOURCES as COMPANION_SOURCES
 from character_planner.companion import companion_by_id
 from character_planner.config import Settings, get_settings
 from character_planner.curated import GearTargets
@@ -155,6 +157,21 @@ def app_version() -> str:
         return version("character-planner")
     except PackageNotFoundError:
         return "(not installed)"
+
+
+class CreditLink(BaseModel):
+    name: str
+    url: str
+
+
+class DataCredit(CreditLink):
+    sources: list[CreditLink]  # where the credited site gathered the data
+
+
+class About(BaseModel):
+    version: str
+    source_url: str
+    data: DataCredit
 
 
 class ManualSnapshot(BaseModel):
@@ -345,6 +362,20 @@ def create_app(
     @app.get("/api/healthz")
     def healthz() -> dict[str, str]:
         return {"status": "ok"}
+
+    @app.get("/api/about")
+    def about() -> About:
+        """What the page footer shows (#43): the data credits, the source link (AGPL) and
+        the version. Needs no character data, so guest mode has it too."""
+        return About(
+            version=app_version(),
+            source_url=settings.source_url,
+            data=DataCredit(
+                name=str(COMPANION_ATTRIBUTION["name"]),
+                url=str(COMPANION_ATTRIBUTION["url"]),
+                sources=[CreditLink(**source) for source in COMPANION_SOURCES],
+            ),
+        )
 
     @app.get("/auth/login")
     def login() -> RedirectResponse:

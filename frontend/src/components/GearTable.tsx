@@ -260,14 +260,6 @@ export function GearTable({ plan, actions }: { plan: GearPlan; actions?: ReactNo
           </table>
         </>
       )}
-      {plan.attributions.map((credit) => (
-        <p key={credit.url} className="attribution muted">
-          {credit.text}{' '}
-          <a href={credit.url} target="_blank" rel="noreferrer">
-            {credit.name}
-          </a>
-        </p>
-      ))}
     </section>
   )
 }

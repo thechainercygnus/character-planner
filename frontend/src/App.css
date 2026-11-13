@@ -245,9 +245,16 @@ button.secondary {
   color: var(--ok);
 }
 
-.attribution {
-  margin: 0.75rem 0 0;
+.page-footer {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
   font-size: 0.8rem;
+  text-align: center;
+}
+
+.page-footer p {
+  margin: 0.25rem 0;
 }
 
 .section-heading {

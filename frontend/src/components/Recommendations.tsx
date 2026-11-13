@@ -3,7 +3,7 @@ import { slotLabel, type Candidate, type Recommendations as RecommendationsData,
 import { ItemName } from './GearTable'
 import { signed } from '../format'
 import { ChoiceButtons, DismissedItems } from './ItemChoices'
-import { Attributions, PoolItemName } from './PoolItems'
+import { PoolItemName } from './PoolItems'
 
 function GainBadge({ candidate }: { candidate: Candidate }) {
   return (
@@ -189,7 +189,6 @@ export function Recommendations({
         </>
       )}
 
-      <Attributions credits={data.attributions} />
     </section>
   )
 }
