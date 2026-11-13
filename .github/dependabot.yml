@@ -46,6 +46,13 @@ updates:
     schedule:
       interval: weekly
       day: monday
+    # Runtime upgrades are deliberate, made with CI and the dev setup: no Node majors
+    # (odd ones never get LTS) and no Python minors (3.14 to 3.15) from here.
+    ignore:
+      - dependency-name: node
+        update-types: [version-update:semver-major]
+      - dependency-name: python
+        update-types: [version-update:semver-major, version-update:semver-minor]
     groups:
       docker-minor-and-patch:
         update-types: [minor, patch]
