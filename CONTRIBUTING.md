@@ -1,0 +1,89 @@
+# Contributing
+
+Thanks for your interest. This is a small hobby project with one maintainer, so reviews are
+best effort. The rules below keep changes easy to review.
+
+## Proposing a change
+
+1. **Open an issue first**, unless the change is a small fix. Say what you want to change
+   and why. The [roadmap (#25)](https://github.com/thechainercygnus/character-planner/issues/25)
+   shows what's planned and in what order.
+2. **One branch per issue**, from an up-to-date `main`: `feature/<issue>-<slug>`, or
+   `fix/<slug>` for a small fix without an issue.
+3. **Keep changes small.** One concern per commit, with an imperative subject
+   ("Add the talents tab", not "Added talents").
+4. **Open a pull request.** Write `Closes #<issue>` when it completes the issue, or
+   `Refs #<issue>` when it's part of one.
+5. **CI must pass** before merging: the `check`, `frontend`, `docker` and `secret-scan`
+   jobs. A red job blocks the merge, even when it looks unrelated.
+
+Decisions with lasting consequences get a short, numbered ADR in [`docs/adr/`](docs/adr/).
+
+## Sign off your commits (DCO)
+
+Every commit must be signed off under the [Developer Certificate of
+Origin](https://developercertificate.org/). The sign-off says you wrote the change, or
+have the right to submit it, under this project's license (AGPL-3.0-or-later).
+
+```
+git commit -s
+```
+
+This adds a `Signed-off-by: Your Name <you@example.com>` line matching your git identity.
+To sign off commits you already made on your branch: `git rebase --signoff main`.
+
+## Tests
+
+- New or changed behaviour comes with tests.
+- A bug fix comes with a regression test that fails without the fix.
+- Tests never touch the network or read `.env`. External HTTP is mocked with
+  [respx](https://lundberg.github.io/respx/) in the backend.
+- The Forever API is undocumented. Don't invent response fields: base parsers and test
+  fixtures on real responses (see [ADR 0002](docs/adr/0002-raw-snapshots-first.md)).
+- A change to a table in `src/character_planner/db.py` needs an Alembic migration in the
+  same pull request (see [ADR 0022](docs/adr/0022-schema-migrations.md)).
+
+## Coding standards
+
+CI enforces these, and the pre-commit hooks run them locally:
+
+- **Python:** [Ruff](https://docs.astral.sh/ruff/) for lint and format, and
+  [pyright](https://microsoft.github.io/pyright/) for types. Settings are in
+  `pyproject.toml`.
+- **Frontend:** [oxlint](https://oxc.rs/docs/guide/usage/linter) and TypeScript's `tsc`.
+- Never log or print access tokens, the Battle.net client secret or webhook URLs.
+- Never commit `.env`, `samples/` or `data/*.db`: they hold secrets or personal data.
+- GitHub Actions are pinned to a full commit SHA with the version as a comment, and
+  Docker images by tag and digest.
+
+## Setting up and running the checks
+
+You need [uv](https://docs.astral.sh/uv/) and Node.js. Then:
+
+```
+uv sync
+cd frontend && npm ci && cd ..
+uv run pre-commit install
+```
+
+The hooks then run on every commit. To run the full check by hand:
+
+```
+uv run ruff check --fix && uv run ruff format
+uv run pyright
+uv run pytest
+cd frontend && npm run lint && npm run typecheck && npm test
+```
+
+The [README](README.md) covers running the app; you need a Battle.net API client for
+anything that talks to Blizzard, but not for the tests.
+
+## Security issues
+
+Don't open a public issue for a vulnerability. Report it privately as described in
+[SECURITY.md](SECURITY.md).
+
+## License
+
+By contributing, you agree that your contribution is licensed under the
+[AGPL-3.0-or-later](LICENSE), like the rest of the project.
