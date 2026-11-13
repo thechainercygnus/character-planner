@@ -193,8 +193,8 @@ def test_pool_refresh_lists_items_and_fills_target_ids(client: TestClient) -> No
     assert ids["Spiritwraith Drape"] == 271097
     assert ids["Kindlegem Girdle"] == 270230  # from the YAML
 
-    # Only Kindlegem Girdle has item details in this test, and it isn't in the pool, so
-    # every usable pool item is unscored; the shape is still complete.
+    # Of the dungeon items only Kindlegem Girdle has details, and it isn't in the pool, so
+    # they're unscored. The character's crafted gear (#10) has Blizzard's details.
     recs = client.get("/api/recommendations").json()
     assert recs["level"] == 18
     assert len(recs["rows"]) == 17
@@ -202,7 +202,14 @@ def test_pool_refresh_lists_items_and_fills_target_ids(client: TestClient) -> No
     assert neck["equipped"] is None
     off_hand = next(row for row in recs["rows"] if row["slot"] == "OFF_HAND")
     assert off_hand["equipped"]["name"] == "Burnished Shield"
-    assert recs["considered"] == 0
+    assert recs["considered"] == 1  # scored, but no upgrade: they're what's worn
+    crafted = [
+        (i["name"], i["stats"], i["sources"][0]["profession"])
+        for i in client.get("/api/pool").json()["items"]
+        if i["sources"][0]["kind"] == "crafted"
+    ]
+    # Rough Boomstick (level 5) is below the window; Rough Dynamite can't be equipped.
+    assert crafted == [("Flying Tiger Goggles", {"Stamina": 4, "Spirit": 4}, "Engineering")]
 
 
 def test_pool_is_empty_before_any_refresh(client: TestClient) -> None:
@@ -581,7 +588,9 @@ def test_guest_mode_uses_the_shipped_rules_and_stores_nothing(
     # Edits made in the app change the character's upgrades, not the guest's.
     rules = client.get("/api/rules").json()["rules"]
     no_armor = rules | {"armor_types": [], "weapon_types": []}
-    assert client.get("/api/recommendations").json()["considered"] == 1
+    # The cape and the character's crafted Flying Tiger Goggles (#10); the guest has no
+    # crafted gear: guest mode reads no character data.
+    assert client.get("/api/recommendations").json()["considered"] == 2
     assert client.put("/api/rules", json=no_armor).status_code == 200
     client.put("/api/choices/5193", json={"choice": "dismissed", "name": "Cape"})
     assert client.get("/api/recommendations").json()["considered"] == 0

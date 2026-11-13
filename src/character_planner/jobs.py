@@ -17,6 +17,7 @@ from character_planner.blizzard.client import BlizzardClient
 from character_planner.choices import take_target_choices
 from character_planner.classes import character_class_name, current_defaults
 from character_planner.config import Settings
+from character_planner.crafting import crafted_items, refresh_crafting
 from character_planner.curated import GearTargets
 from character_planner.db import (
     CompanionDungeon,
@@ -92,7 +93,7 @@ def item_levels(session: Session) -> dict[int, int]:
     faction = character_context(session)[1]
     return {
         item.item_id: item.effective_level
-        for item in pool_view(session, None, faction).items
+        for item in pool_view(session, None, faction, crafted_items(session)).items
         if item.effective_level is not None
     }
 
@@ -109,7 +110,8 @@ def migrate_target_choices(session: Session, settings: Settings) -> int:
     if not ids:
         return 0
     faction = character_context(session)[1]
-    pool = {item.item_id: item for item in pool_view(session, None, faction).items}
+    view = pool_view(session, None, faction, crafted_items(session))
+    pool = {item.item_id: item for item in view.items}
     targets, moved = gear_targets(session, settings), 0
     for item_id in ids:
         item = pool.get(item_id)
@@ -178,8 +180,24 @@ def sync_character(
     targets = gear_targets(session, settings)
     # Its own progress and errors are logged by the item search and lookups.
     refresh_item_sources(session, settings, targets, equipped_item_ids(session), http=http)
+    refresh_crafted_gear(session, settings, http)
     send_sync_alerts(session, settings)
     return {result.kind: result.status for result in results}
+
+
+def refresh_crafted_gear(
+    session: Session, settings: Settings, http: httpx.Client | None = None
+) -> None:
+    """The recipes the character knows and the items they make (#10). Best effort, as the
+    item catalog step: a failure is logged, never fails the sync."""
+    try:
+        result = refresh_crafting(session, settings, http=http)
+    except Exception:
+        session.rollback()
+        logger.exception("Crafted gear refresh after the sync failed")
+        return
+    for error in result.errors:
+        logger.warning("Crafted gear: %s", error)
 
 
 def send_sync_alerts(session: Session, settings: Settings) -> None:

@@ -78,6 +78,8 @@ def reset_targets(session: Session) -> None:
 
 def source_text(source: PoolSource) -> str:
     """A pool source in gear_targets.yaml's style."""
+    if source.kind == "crafted":
+        return f"Crafted: {source.place}" + (f" ({source.recipe})" if source.recipe else "")
     if source.kind == "rare":
         return f"Rare: {source.place}" + (f", {source.zone}" if source.zone else "")
     if source.kind == "quest":

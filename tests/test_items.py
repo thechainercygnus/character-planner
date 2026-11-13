@@ -16,6 +16,8 @@ from .conftest import FIXTURES
 SEARCH = "https://us.api.blizzard.com/data/wow/search/item"
 COMPANION = "https://forevercompanion.io/api/v1/items/"
 MEDIA = "https://us.api.blizzard.com/data/wow/media/item/"
+RECIPE = "https://us.api.blizzard.com/data/wow/recipe/"
+ITEM = "https://us.api.blizzard.com/data/wow/item/"
 
 
 def fixture(name: str) -> Any:
@@ -36,9 +38,26 @@ def mock_battlenet() -> respx.Route:
     )
     respx.get(SEARCH).mock(side_effect=search_responder)
     respx.get(url__startswith=COMPANION).mock(side_effect=companion_responder)
+    respx.get(url__startswith=RECIPE).mock(side_effect=crafting_responder)
+    respx.get(url__startswith=ITEM).mock(side_effect=crafting_responder)
     return respx.get(url__startswith=MEDIA).mock(
         return_value=httpx.Response(200, json=fixture("forever_item_media_3655"))
     )
+
+
+# Real recipes and crafted items (#10): Flying Tiger Goggles and Rough Boomstick, which
+# the synced Engineering knows, and Rough Dynamite, which can't be equipped.
+CRAFTING = {f"{RECIPE}{rid}": f"blizzard_recipe_{rid}" for rid in (2430, 2420, 2414)} | {
+    f"{ITEM}{iid}": f"blizzard_item_{iid}" for iid in (4368, 4362, 4358)
+}
+
+
+def crafting_responder(request: httpx.Request) -> httpx.Response:
+    """Blizzard recipes and items by id: the fixtures above, everything else 404s."""
+    name = CRAFTING.get(str(request.url.copy_with(query=None)))
+    if name is None:
+        return httpx.Response(404, text="Not Found")
+    return httpx.Response(200, json=fixture(name))
 
 
 def companion_responder(request: httpx.Request) -> httpx.Response:

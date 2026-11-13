@@ -2,11 +2,12 @@
 
 A planner for a WoW Forever character. It reads your character from Battle.net and works
 out what to do next:
-- the gear upgrades within reach, from dungeons, quests and rares;
+- the gear upgrades within reach, from dungeons, quests, rares and your own crafting;
 - the dungeons worth running;
 - the enchants to look for;
 - how your talents and gear compare with your plan;
-- the class quests to do, and any essential ones missed.
+- the class quests to do, and any essential ones missed;
+- your professions' next trainer ranks and what they need.
 
 It's free software (AGPL-3.0-or-later) that you host yourself.
 

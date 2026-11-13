@@ -1,0 +1,47 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://us.api.blizzard.com/data/wow/recipe/2430?namespace=static-1.60.1_70399-forever-us"
+    }
+  },
+  "id": 2430,
+  "name": "Flying Tiger Goggles",
+  "media": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/media/recipe/2430?namespace=static-1.60.1_70399-forever-us"
+    },
+    "id": 2430
+  },
+  "crafted_item": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/item/4368?namespace=static-1.60.1_70399-forever-us"
+    },
+    "name": "Flying Tiger Goggles",
+    "id": 4368
+  },
+  "reagents": [
+    {
+      "reagent": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/item/2318?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Light Leather",
+        "id": 2318
+      },
+      "quantity": 6
+    },
+    {
+      "reagent": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/item/818?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Tigerseye",
+        "id": 818
+      },
+      "quantity": 2
+    }
+  ],
+  "crafted_quantity": {
+    "value": 1.0
+  }
+}

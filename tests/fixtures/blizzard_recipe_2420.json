@@ -1,0 +1,57 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://us.api.blizzard.com/data/wow/recipe/2420?namespace=static-1.60.1_70399-forever-us"
+    }
+  },
+  "id": 2420,
+  "name": "Rough Boomstick",
+  "media": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/media/recipe/2420?namespace=static-1.60.1_70399-forever-us"
+    },
+    "id": 2420
+  },
+  "crafted_item": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/item/4362?namespace=static-1.60.1_70399-forever-us"
+    },
+    "name": "Rough Boomstick",
+    "id": 4362
+  },
+  "reagents": [
+    {
+      "reagent": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/item/4361?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Copper Tube",
+        "id": 4361
+      },
+      "quantity": 1
+    },
+    {
+      "reagent": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/item/4359?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Handful of Copper Bolts",
+        "id": 4359
+      },
+      "quantity": 1
+    },
+    {
+      "reagent": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/item/4399?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Wooden Stock",
+        "id": 4399
+      },
+      "quantity": 1
+    }
+  ],
+  "crafted_quantity": {
+    "value": 1.0
+  }
+}

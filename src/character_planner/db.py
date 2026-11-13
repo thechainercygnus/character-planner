@@ -110,6 +110,28 @@ class ClassQuestDone(SQLModel, table=True):
     done_at: datetime = Field(default_factory=utcnow)
 
 
+class CraftingRecipe(SQLModel, table=True):
+    """Raw Blizzard GET /data/wow/recipe/{id} for a recipe the character knows (#10,
+    ADR 0031). Kept apart from RecipeData, which holds the enchant catalog's recipes with
+    their category. found=False is a 404."""
+
+    recipe_id: int = Field(primary_key=True)
+    profession: str
+    found: bool
+    payload: Any = Field(default=None, sa_column=Column(JSON, nullable=True))
+    fetched_at: datetime = Field(default_factory=utcnow)
+
+
+class BlizzardItem(SQLModel, table=True):
+    """Raw Blizzard GET /data/wow/item/{id}: crafted items' details (#10, ADR 0031), which
+    Forever Companion doesn't list. found=False is a 404."""
+
+    item_id: int = Field(primary_key=True)
+    found: bool
+    payload: Any = Field(default=None, sa_column=Column(JSON, nullable=True))
+    fetched_at: datetime = Field(default_factory=utcnow)
+
+
 class RecipeData(SQLModel, table=True):
     """Raw Blizzard GET /data/wow/recipe/{id} responses for enchant recipes (ADR 0010),
     with the profession and skill-tier category they were listed under."""

@@ -1,0 +1,111 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://us.api.blizzard.com/data/wow/item/8068?namespace=static-1.60.1_70399-forever-us"
+    }
+  },
+  "id": 8068,
+  "name": "Crafted Heavy Shot",
+  "quality": {
+    "type": "COMMON",
+    "name": "Common"
+  },
+  "level": 20,
+  "required_level": 15,
+  "media": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/media/item/8068?namespace=static-1.60.1_70399-forever-us"
+    },
+    "id": 8068
+  },
+  "item_class": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/item-class/6?namespace=static-1.60.1_70399-forever-us"
+    },
+    "name": "Projectile",
+    "id": 6
+  },
+  "item_subclass": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/item-class/6/item-subclass/3?namespace=static-1.60.1_70399-forever-us"
+    },
+    "name": "Bullet",
+    "id": 3
+  },
+  "inventory_type": {
+    "type": "AMMO",
+    "name": "Ammo"
+  },
+  "purchase_price": 50,
+  "sell_price": 0,
+  "max_count": 0,
+  "is_equippable": true,
+  "is_stackable": true,
+  "preview_item": {
+    "item": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item/8068?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 8068
+    },
+    "quality": {
+      "type": "COMMON",
+      "name": "Common"
+    },
+    "name": "Crafted Heavy Shot",
+    "media": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/media/item/8068?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 8068
+    },
+    "item_class": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item-class/6?namespace=static-1.60.1_70399-forever-us"
+      },
+      "name": "Projectile",
+      "id": 6
+    },
+    "item_subclass": {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item-class/6/item-subclass/3?namespace=static-1.60.1_70399-forever-us"
+      },
+      "name": "Bullet",
+      "id": 3
+    },
+    "inventory_type": {
+      "type": "AMMO",
+      "name": "Ammo"
+    },
+    "weapon": {
+      "damage": {
+        "min_value": 4,
+        "max_value": 5,
+        "display_string": "Adds 4.5 damage per second",
+        "damage_class": {
+          "type": "PHYSICAL",
+          "name": "Physical"
+        }
+      }
+    },
+    "requirements": {
+      "level": {
+        "value": 15,
+        "display_string": "Requires Level 15"
+      }
+    },
+    "level": {
+      "value": 20,
+      "display_string": "Item Level 20"
+    }
+  },
+  "purchase_quantity": 200,
+  "appearances": [
+    {
+      "key": {
+        "href": "https://us.api.blizzard.com/data/wow/item-appearance/63946?namespace=static-1.60.1_70399-forever-us"
+      },
+      "id": 63946
+    }
+  ]
+}

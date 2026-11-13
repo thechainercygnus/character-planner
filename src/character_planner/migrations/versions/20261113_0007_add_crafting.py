@@ -1,0 +1,42 @@
+"""Add crafting recipes and Blizzard items (#10, ADR 0031)
+
+Revision ID: 0007
+Revises: 0006
+Create date: 2026-11-13 14:00:00
+"""
+
+from collections.abc import Sequence
+
+import sqlalchemy as sa
+import sqlmodel.sql.sqltypes
+from alembic import op
+
+revision: str = "0007"
+down_revision: str | None = "0006"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
+
+
+def upgrade() -> None:
+    op.create_table(
+        "craftingrecipe",
+        sa.Column("recipe_id", sa.Integer(), nullable=False),
+        sa.Column("profession", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("found", sa.Boolean(), nullable=False),
+        sa.Column("payload", sa.JSON(), nullable=True),
+        sa.Column("fetched_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+        sa.PrimaryKeyConstraint("recipe_id"),
+    )
+    op.create_table(
+        "blizzarditem",
+        sa.Column("item_id", sa.Integer(), nullable=False),
+        sa.Column("found", sa.Boolean(), nullable=False),
+        sa.Column("payload", sa.JSON(), nullable=True),
+        sa.Column("fetched_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+        sa.PrimaryKeyConstraint("item_id"),
+    )
+
+
+def downgrade() -> None:
+    op.drop_table("blizzarditem")
+    op.drop_table("craftingrecipe")
