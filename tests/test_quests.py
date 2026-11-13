@@ -232,6 +232,7 @@ def test_refresh_quests_without_ids_makes_no_requests(engine: Engine) -> None:
 def test_pool_refresh_looks_up_undescribed_steps_once(engine: Engine) -> None:
     listing = {"data": [{"id": "razorfen-kraul", "status": "launch"}]}
     respx.get(f"{BASE_URL}/rares").mock(return_value=httpx.Response(200, json={"data": []}))
+    respx.get(f"{BASE_URL}/class-quests").mock(return_value=httpx.Response(200, json={"data": []}))
     respx.get(f"{BASE_URL}/dungeons").mock(return_value=httpx.Response(200, json=listing))
     respx.get(f"{BASE_URL}/dungeons/razorfen-kraul").mock(
         return_value=httpx.Response(200, json=KRAUL)

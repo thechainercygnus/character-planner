@@ -502,6 +502,8 @@ export interface PoolRefresh {
   quests_fetched: number
   /** Rares in the latest GET /rares, merged into the stored ones (#6). */
   rares_listed: number
+  /** Class quests in the latest GET /class-quests, merged into the stored ones (#8). */
+  class_quests_listed: number
   errors: string[]
 }
 
@@ -699,6 +701,38 @@ export class ApiError extends Error {
   }
 }
 
+export type ClassQuestStatus = 'done' | 'missed' | 'now' | 'soon' | 'later'
+
+/** A quest that unlocks class abilities (class_quests.py ClassQuestRow, #8). */
+export interface ClassQuestRow {
+  id: string
+  class_key: string
+  level: number
+  name: string
+  faction: string
+  /** Only these races ("night-elf"); null for any. */
+  races: string[] | null
+  giver: string | null
+  location: string | null
+  reward: string | null
+  /** Unlocks a core ability. */
+  essential: boolean
+  done: boolean
+  /** missed: essential, at or below the character's level and not done. */
+  status: ClassQuestStatus
+}
+
+export interface ClassQuestChecklist {
+  class_name: string | null
+  level: number | null
+  /** How many levels ahead "coming soon" looks. */
+  soon_levels: number
+  /** Class quests stored for any class: 0 before the first data refresh. */
+  listed: number
+  /** By level, then name. */
+  rows: ClassQuestRow[]
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(path, init)
   if (!response.ok) {
@@ -797,6 +831,13 @@ export const api = {
       body: JSON.stringify({ choice, name }),
     }),
   pool: () => request<PoolView>('/api/pool'),
+  classQuests: () => request<ClassQuestChecklist>('/api/class-quests'),
+  setClassQuestDone: ({ id, done }: { id: string; done: boolean }) =>
+    request<ClassQuestChecklist>(`/api/class-quests/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ done }),
+    }),
   targets: () => request<GearTargets>('/api/targets'),
   saveTargets: (targets: GearTargets) =>
     request<GearTargets>('/api/targets', {

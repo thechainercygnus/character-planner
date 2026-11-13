@@ -94,6 +94,22 @@ class CompanionRare(SQLModel, table=True):
     fetched_at: datetime = Field(default_factory=utcnow)
 
 
+class CompanionClassQuest(SQLModel, table=True):
+    """One quest from Forever Companion's GET /class-quests, raw (#8, ADR 0030). Merged by
+    id like rares: the list's cache can serve a filtered subset."""
+
+    quest_id: str = Field(primary_key=True)  # e.g. "warrior-berserker-stance"
+    payload: Any = Field(sa_column=Column(JSON, nullable=False))
+    fetched_at: datetime = Field(default_factory=utcnow)
+
+
+class ClassQuestDone(SQLModel, table=True):
+    """A class quest marked done in the app (#8), until an API says which are done."""
+
+    quest_id: str = Field(primary_key=True)
+    done_at: datetime = Field(default_factory=utcnow)
+
+
 class RecipeData(SQLModel, table=True):
     """Raw Blizzard GET /data/wow/recipe/{id} responses for enchant recipes (ADR 0010),
     with the profession and skill-tier category they were listed under."""

@@ -18,6 +18,7 @@ import httpx
 from pydantic import BaseModel, computed_field
 from sqlmodel import Session
 
+from character_planner.class_quests import refresh_class_quests
 from character_planner.companion import CompanionInfo, companion_by_id, refresh_companion
 from character_planner.curated import GearTargets
 from character_planner.dungeons import (
@@ -123,6 +124,7 @@ class PoolRefresh(BaseModel):
     items_not_found: list[int] = []
     quests_fetched: int = 0
     rares_listed: int = 0
+    class_quests_listed: int = 0
     errors: list[str] = []
 
 
@@ -321,7 +323,7 @@ def refresh_pool(
 ) -> PoolRefresh:
     """Refresh dungeon data, then fetch details for pool items in the level window, and
     the quest chain steps their quests need that no dungeon describes (#7). The rare list
-    is one request, merged into the stored rares (#6).
+    is one request, merged into the stored rares (#6), and so is the class quest list (#8).
 
     The first run is a few hundred requests paced under the rate limit (a few minutes);
     later runs only fetch what's stale.
@@ -331,6 +333,8 @@ def refresh_pool(
     try:
         dungeons = refresh_dungeons(session, client, force=force, pause=pause, progress=progress)
         rares = refresh_rares(session, client)
+        # Not items, but Forever Companion's other one-request list, kept as current (#8).
+        class_quests = refresh_class_quests(session, client)
         stored = stored_dungeons(session)
         pool = build_pool(stored, faction, rares=stored_rares(session))
         window = level_window(level) if level is not None else None
@@ -364,9 +368,16 @@ def refresh_pool(
         items_not_found=items.not_found,
         quests_fetched=len(quests.fetched),
         rares_listed=rares.listed,
+        class_quests_listed=class_quests.listed,
         errors=[
             f"Forever Companion {e}"
-            for e in [*dungeons.errors, *rares.errors, *items.errors, *quests.errors]
+            for e in [
+                *dungeons.errors,
+                *rares.errors,
+                *class_quests.errors,
+                *items.errors,
+                *quests.errors,
+            ]
         ],
     )
 

@@ -34,6 +34,12 @@ from character_planner.choices import (
     set_choice,
     stored_choices,
 )
+from character_planner.class_quests import (
+    ClassQuestChecklist,
+    UnknownClassQuest,
+    checklist,
+    set_done,
+)
 from character_planner.classes import (
     ClassDefaults,
     character_class_name,
@@ -279,6 +285,10 @@ TargetsDep = Annotated[GearTargets, Depends(get_targets)]
 RulesDep = Annotated[UsageRules, Depends(get_rules)]
 DefaultPlanDep = Annotated[TalentPlan, Depends(get_default_plan)]
 EnchantDataDep = Annotated[EnchantData, Depends(get_enchant_data)]
+
+
+class ClassQuestUpdate(BaseModel):
+    done: bool
 
 
 class TalentTreeView(BaseModel):
@@ -840,6 +850,24 @@ def create_app(
         """Go back to data/curated/recommend.yaml."""
         reset_rules(session)
         return rules_view(session, default)
+
+    @app.get("/api/class-quests")
+    def get_class_quests(session: SessionDep) -> ClassQuestChecklist:
+        """The synced character's class quests: missed, now, soon, later and done (#8)."""
+        return checklist(session)
+
+    @app.put("/api/class-quests/{quest_id}")
+    def put_class_quest(
+        quest_id: Annotated[str, FastAPIPath(pattern=r"^[a-z0-9-]{1,100}$")],
+        update: ClassQuestUpdate,
+        session: SessionDep,
+    ) -> ClassQuestChecklist:
+        """Mark a class quest done, or not done."""
+        try:
+            set_done(session, quest_id, update.done)
+        except UnknownClassQuest:
+            raise HTTPException(404, f"No class quest {quest_id}") from None
+        return checklist(session)
 
     @app.get("/api/talents")
     def get_talents(session: SessionDep, default: DefaultPlanDep) -> TalentPlanView:

@@ -313,7 +313,7 @@ def _refresh_item_pool(
     logger.info(
         "Item pool refresh: done in %.1fs, %d dungeons fetched of %d listed, pool %d items "
         "(%d wanted), %d item details fetched, %d not found, %d quest chain steps fetched, "
-        "%d rares listed, %d errors",
+        "%d rares and %d class quests listed, %d errors",
         time.perf_counter() - started,
         result.dungeons_fetched,
         result.dungeons_listed,
@@ -323,6 +323,7 @@ def _refresh_item_pool(
         len(result.items_not_found),
         result.quests_fetched,
         result.rares_listed,
+        result.class_quests_listed,
         len(result.errors),
     )
     return result

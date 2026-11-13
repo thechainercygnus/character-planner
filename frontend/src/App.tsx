@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from './api'
 import { CharacterHeader } from './components/CharacterPanels'
+import { ClassQuests } from './components/ClassQuests'
 import { CharacterSnapshot } from './components/CharacterSnapshot'
 import { Dungeons } from './components/Dungeons'
 import { Enchants } from './components/Enchants'
@@ -37,8 +38,11 @@ export default function App() {
   const recommendations = useQuery({ queryKey: ['recommendations'], queryFn: api.recommendations })
   const talents = useQuery({ queryKey: ['talents'], queryFn: api.talents, enabled: tab === 'talents' })
   const progress = useQuery({ queryKey: ['progress'], queryFn: api.progress, enabled: tab === 'progress' })
+  // On the Plan tab, and for its tab count: essential class quests missed (#8).
+  const classQuests = useQuery({ queryKey: ['class-quests'], queryFn: api.classQuests })
   const enchants = useQuery({ queryKey: ['enchants'], queryFn: api.enchants, enabled: tab === 'upgrades' })
 
+  const missedClassQuests = classQuests.data?.rows.filter((row) => row.status === 'missed').length
   const upgradeSlots = recommendations.data?.rows.filter((row) => row.candidates.length > 0).length
   const recommendationsError = recommendations.isError && (
     <p className="error">Couldn't load recommendations: {recommendations.error.message}</p>
@@ -62,7 +66,11 @@ export default function App() {
             tabs={TABS}
             active={tab}
             onSelect={setTab}
-            counts={{ upgrades: upgradeSlots, dungeons: recommendations.data?.dungeons.length }}
+            counts={{
+              upgrades: upgradeSlots,
+              dungeons: recommendations.data?.dungeons.length,
+              plan: missedClassQuests || undefined,
+            }}
           />
 
           {tab === 'upgrades' && (
@@ -91,16 +99,24 @@ export default function App() {
             </>
           )}
 
-          {tab === 'plan' && gear.data && (
-            <GearTable
-              plan={gear.data}
-              actions={
-                <div className="heading-actions">
-                  <TargetsEditor customised={gear.data.targets_customised} />
-                  <WeightsDialog />
-                </div>
-              }
-            />
+          {tab === 'plan' && (
+            <>
+              {gear.data && (
+                <GearTable
+                  plan={gear.data}
+                  actions={
+                    <div className="heading-actions">
+                      <TargetsEditor customised={gear.data.targets_customised} />
+                      <WeightsDialog />
+                    </div>
+                  }
+                />
+              )}
+              {classQuests.isError && (
+                <p className="error">Couldn't load class quests: {classQuests.error.message}</p>
+              )}
+              {classQuests.data && <ClassQuests data={classQuests.data} />}
+            </>
           )}
 
           {tab === 'progress' && (

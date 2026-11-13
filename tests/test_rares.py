@@ -173,6 +173,7 @@ def test_a_pool_refresh_fetches_rares_and_their_item_details(engine: Engine) -> 
         return_value=httpx.Response(200, json=DEADMINES)
     )
     respx.get(f"{BASE_URL}/rares").mock(return_value=httpx.Response(200, json=FULL))
+    respx.get(f"{BASE_URL}/class-quests").mock(return_value=httpx.Response(200, json={"data": []}))
     items = respx.get(url__startswith=f"{BASE_URL}/items/").mock(return_value=httpx.Response(404))
     with Session(engine) as session, httpx.Client() as http:
         result = refresh_pool(session, level=18, faction="alliance", http=http, pause=0)

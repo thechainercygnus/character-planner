@@ -80,6 +80,7 @@ def mock_companion_dungeons() -> respx.Route:
     Companion does for the zone quest Hall of Thanes' chain starts with."""
     respx.get(f"{BASE_URL}/dungeons").mock(return_value=httpx.Response(200, json=LIST))
     respx.get(f"{BASE_URL}/rares").mock(return_value=httpx.Response(200, json=NO_RARES))
+    respx.get(f"{BASE_URL}/class-quests").mock(return_value=httpx.Response(200, json={"data": []}))
     respx.get(url__startswith=f"{BASE_URL}/quests/").mock(
         return_value=httpx.Response(404, json=QUEST_NOT_FOUND)
     )
