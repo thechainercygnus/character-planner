@@ -14,7 +14,9 @@ image="$2"
 digest="$3"
 repo="${GITHUB_REPOSITORY:?}"
 
-previous="$(git describe --tags --abbrev=0 --match 'v*' "${tag}^" 2>/dev/null || true)"
+# The previous full release: test releases (vX.Y.Z-rc.N) are skipped, so the final
+# release lists everything since the last one, not only what came after its rc.
+previous="$(git describe --tags --abbrev=0 --match 'v*' --exclude 'v*-*' "${tag}^" 2>/dev/null || true)"
 range="${previous:+${previous}..}${tag}"
 
 # PRs merged in this release, from the merge commits ("Merge pull request #91 from ...").
