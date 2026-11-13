@@ -1,0 +1,565 @@
+{
+  "data": [
+    {
+      "id": "druid-bear-form",
+      "class": "druid",
+      "level": 10,
+      "name": "Heeding the Call → Great Bear Spirit",
+      "faction": "both",
+      "races": null,
+      "giver": "Druid trainer",
+      "location": "Darnassus or Thunder Bluff, then Moonglade",
+      "reward": "Bear Form",
+      "essential": true
+    },
+    {
+      "id": "druid-cure-poison",
+      "class": "druid",
+      "level": 14,
+      "name": "Lessons Anew → Power over Poison",
+      "faction": "both",
+      "races": null,
+      "giver": "Druid trainer",
+      "location": "Darnassus or Thunder Bluff",
+      "reward": "Cure Poison",
+      "essential": false
+    },
+    {
+      "id": "druid-aquatic-form",
+      "class": "druid",
+      "level": 16,
+      "name": "A Lesson to Learn → Trial of the Sea Lion",
+      "faction": "both",
+      "races": null,
+      "giver": "Druid trainer",
+      "location": "Moonglade",
+      "reward": "Aquatic Form",
+      "essential": true
+    },
+    {
+      "id": "hunter-taming",
+      "class": "hunter",
+      "level": 10,
+      "name": "Taming the Beast",
+      "faction": "both",
+      "races": null,
+      "giver": "Hunter trainer in your starting zone",
+      "location": null,
+      "reward": "Tame Beast, Beast Training and your first pet",
+      "essential": true
+    },
+    {
+      "id": "mage-robe-alliance",
+      "class": "mage",
+      "level": 15,
+      "name": "Manaweave Robe",
+      "faction": "alliance",
+      "races": null,
+      "giver": "Jennea",
+      "location": "Stormwind",
+      "reward": "Manaweave Robe",
+      "essential": false
+    },
+    {
+      "id": "mage-robe-horde",
+      "class": "mage",
+      "level": 15,
+      "name": "Spellfire Robes",
+      "faction": "horde",
+      "races": null,
+      "giver": "Anastasia",
+      "location": "Undercity",
+      "reward": "Spellfire Robes",
+      "essential": false
+    },
+    {
+      "id": "paladin-redemption",
+      "class": "paladin",
+      "level": 12,
+      "name": "The Tome of Divinity",
+      "faction": "alliance",
+      "races": null,
+      "giver": "Paladin trainer",
+      "location": "Your capital",
+      "reward": "Redemption",
+      "essential": true
+    },
+    {
+      "id": "paladin-horde-trainer",
+      "class": "paladin",
+      "level": 12,
+      "name": "Ask your trainer about Redemption",
+      "faction": "horde",
+      "races": null,
+      "giver": "Paladin trainer",
+      "location": "Undercity",
+      "reward": "Redemption (and later your mounts)",
+      "essential": true
+    },
+    {
+      "id": "paladin-verigans-fist",
+      "class": "paladin",
+      "level": 20,
+      "name": "The Tome of Valor",
+      "faction": "alliance",
+      "races": null,
+      "giver": "Duthorian Rall",
+      "location": "Cathedral of Light, Stormwind",
+      "reward": "Sense Undead, and Verigan's Fist or the Bastion of Stormwind",
+      "essential": false
+    },
+    {
+      "id": "paladin-warhorse",
+      "class": "paladin",
+      "level": 40,
+      "name": "The Tome of Nobility",
+      "faction": "alliance",
+      "races": null,
+      "giver": "Duthorian Rall",
+      "location": "Cathedral of Light, Stormwind",
+      "reward": "Summon Warhorse",
+      "essential": true
+    },
+    {
+      "id": "paladin-mightstone",
+      "class": "paladin",
+      "level": 50,
+      "name": "Forging the Mightstone",
+      "faction": "alliance",
+      "races": null,
+      "giver": "Lord Grayson Shadowbreaker",
+      "location": "Stormwind",
+      "reward": "Holy Mightstone and a rare item",
+      "essential": false
+    },
+    {
+      "id": "paladin-charger",
+      "class": "paladin",
+      "level": 60,
+      "name": "Judgment and Redemption",
+      "faction": "alliance",
+      "races": null,
+      "giver": "Lord Grayson Shadowbreaker",
+      "location": "Stormwind",
+      "reward": "Summon Charger",
+      "essential": false
+    },
+    {
+      "id": "priest-racial-10",
+      "class": "priest",
+      "level": 10,
+      "name": "Check your trainer for racial priest spells",
+      "faction": "both",
+      "races": null,
+      "giver": "Priest trainer",
+      "location": "Your capital",
+      "reward": "Racial priest spells (Desperate Prayer, Touch of Weakness, Starshards…)",
+      "essential": false
+    },
+    {
+      "id": "priest-racial-20",
+      "class": "priest",
+      "level": 20,
+      "name": "Check your trainer for racial priest spells",
+      "faction": "both",
+      "races": null,
+      "giver": "Priest trainer",
+      "location": "Your capital",
+      "reward": "Racial priest spells (Fear Ward, Devouring Plague, Shadowguard, Elune's Grace…)",
+      "essential": false
+    },
+    {
+      "id": "rogue-blade-alliance",
+      "class": "rogue",
+      "level": 10,
+      "name": "Blade of Cunning",
+      "faction": "alliance",
+      "races": null,
+      "giver": "Rogue trainer",
+      "location": "Your starting zone",
+      "reward": "Blade of Cunning",
+      "essential": false
+    },
+    {
+      "id": "rogue-blade-horde",
+      "class": "rogue",
+      "level": 10,
+      "name": "Blade of Cunning",
+      "faction": "horde",
+      "races": null,
+      "giver": "Rogue trainer",
+      "location": "Your starting zone",
+      "reward": "Blade of Cunning",
+      "essential": false
+    },
+    {
+      "id": "rogue-lockpicking-alliance",
+      "class": "rogue",
+      "level": 16,
+      "name": "Redridge Rendezvous → Alther's Mill",
+      "faction": "alliance",
+      "races": null,
+      "giver": "SI:7",
+      "location": "Stormwind",
+      "reward": "Lockpicking practice and rewards",
+      "essential": false
+    },
+    {
+      "id": "rogue-lockpicking-horde",
+      "class": "rogue",
+      "level": 16,
+      "name": "Plundering the Plunderers",
+      "faction": "horde",
+      "races": null,
+      "giver": "Wrenix of Ratchet",
+      "location": "Ratchet",
+      "reward": "Lockpicking practice and rewards",
+      "essential": false
+    },
+    {
+      "id": "rogue-poisons-alliance",
+      "class": "rogue",
+      "level": 20,
+      "name": "Mathias and the Defias → The Touch of Zanzil",
+      "faction": "alliance",
+      "races": null,
+      "giver": "Mathias Shaw",
+      "location": "SI:7, Stormwind",
+      "reward": "Poisons",
+      "essential": true
+    },
+    {
+      "id": "rogue-poisons-horde",
+      "class": "rogue",
+      "level": 20,
+      "name": "Mission: Possible But Not Probable",
+      "faction": "horde",
+      "races": null,
+      "giver": "Rogues of the Shattered Hand",
+      "location": "Orgrimmar",
+      "reward": "Poisons",
+      "essential": true
+    },
+    {
+      "id": "shaman-earth",
+      "class": "shaman",
+      "level": 4,
+      "name": "Call of Earth",
+      "faction": "horde",
+      "races": null,
+      "giver": "Shaman trainer",
+      "location": "Valley of Trials (Durotar) or Red Cloud Mesa (Mulgore)",
+      "reward": "Earth Totem",
+      "essential": true
+    },
+    {
+      "id": "shaman-alliance-totems",
+      "class": "shaman",
+      "level": 4,
+      "name": "Ask your trainer about your totems",
+      "faction": "alliance",
+      "races": null,
+      "giver": "Shaman trainer",
+      "location": "Ironforge",
+      "reward": "Earth, Fire, Water and Air totems (at 4, 10, 20 and 30)",
+      "essential": true
+    },
+    {
+      "id": "shaman-fire",
+      "class": "shaman",
+      "level": 10,
+      "name": "Call of Fire",
+      "faction": "horde",
+      "races": null,
+      "giver": "Shaman trainer",
+      "location": "Orgrimmar or Thunder Bluff",
+      "reward": "Fire Totem and Fire Sapta",
+      "essential": true
+    },
+    {
+      "id": "shaman-water",
+      "class": "shaman",
+      "level": 20,
+      "name": "Call of Water",
+      "faction": "horde",
+      "races": null,
+      "giver": "Shaman trainer",
+      "location": "Orgrimmar or Thunder Bluff",
+      "reward": "Water Totem and Water Sapta",
+      "essential": true
+    },
+    {
+      "id": "shaman-air",
+      "class": "shaman",
+      "level": 30,
+      "name": "Call of Air",
+      "faction": "horde",
+      "races": null,
+      "giver": "Bath'rah the Windwatcher",
+      "location": "Alterac Mountains",
+      "reward": "Air Totem",
+      "essential": true
+    },
+    {
+      "id": "shaman-earthen-ring",
+      "class": "shaman",
+      "level": 30,
+      "name": "Relic of the Earthen Ring",
+      "faction": "horde",
+      "races": null,
+      "giver": "Shaman trainer",
+      "location": null,
+      "reward": "Four Totems relic",
+      "essential": false
+    },
+    {
+      "id": "warlock-voidwalker-alliance",
+      "class": "warlock",
+      "level": 10,
+      "name": "Gakin's Summons",
+      "faction": "alliance",
+      "races": null,
+      "giver": "Gakin the Darkbinder",
+      "location": "Stormwind",
+      "reward": "Summon Voidwalker",
+      "essential": true
+    },
+    {
+      "id": "warlock-voidwalker-horde",
+      "class": "warlock",
+      "level": 10,
+      "name": "Gan'rul's Summons / Halgar's Summons",
+      "faction": "horde",
+      "races": null,
+      "giver": "Gan'rul Bloodeye or Carendin Halgar",
+      "location": "Orgrimmar or Undercity",
+      "reward": "Summon Voidwalker",
+      "essential": true
+    },
+    {
+      "id": "warlock-succubus-alliance",
+      "class": "warlock",
+      "level": 20,
+      "name": "Devourer of Souls",
+      "faction": "alliance",
+      "races": null,
+      "giver": "Gakin the Darkbinder",
+      "location": "Stormwind",
+      "reward": "Summon Succubus",
+      "essential": true
+    },
+    {
+      "id": "warlock-succubus-horde",
+      "class": "warlock",
+      "level": 20,
+      "name": "Summon Succubus",
+      "faction": "horde",
+      "races": null,
+      "giver": "Warlock trainer",
+      "location": "Orgrimmar or Undercity",
+      "reward": "Summon Succubus",
+      "essential": true
+    },
+    {
+      "id": "warlock-orb",
+      "class": "warlock",
+      "level": 25,
+      "name": "The Orb of Soran'ruk",
+      "faction": "both",
+      "races": null,
+      "giver": "Doan Karhan",
+      "location": "The Barrens",
+      "reward": "An off-hand or staff (uses Blackfathom Deeps drops)",
+      "essential": false
+    },
+    {
+      "id": "warlock-felhunter",
+      "class": "warlock",
+      "level": 30,
+      "name": "Seeking Strahad",
+      "faction": "both",
+      "races": null,
+      "giver": "Warlock trainer, then Strahad Farsan",
+      "location": "Ratchet",
+      "reward": "Summon Felhunter",
+      "essential": true
+    },
+    {
+      "id": "warlock-felsteed",
+      "class": "warlock",
+      "level": 40,
+      "name": "Summon Felsteed",
+      "faction": "both",
+      "races": null,
+      "giver": "Strahad Farsan",
+      "location": "Ratchet",
+      "reward": "Summon Felsteed (mount)",
+      "essential": true
+    },
+    {
+      "id": "warlock-infernal",
+      "class": "warlock",
+      "level": 50,
+      "name": "What Niby Commands",
+      "faction": "both",
+      "races": null,
+      "giver": "Niby the Almighty",
+      "location": "Felwood",
+      "reward": "Inferno (summon Infernal)",
+      "essential": false
+    },
+    {
+      "id": "warlock-doomguard",
+      "class": "warlock",
+      "level": 60,
+      "name": "The Prison's Bindings",
+      "faction": "both",
+      "races": null,
+      "giver": "Mathredis Firestar",
+      "location": "Burning Steppes",
+      "reward": "Ritual of Doom (summon Doomguard)",
+      "essential": false
+    },
+    {
+      "id": "warlock-dreadsteed",
+      "class": "warlock",
+      "level": 60,
+      "name": "Dreadsteed of Xoroth",
+      "faction": "both",
+      "races": null,
+      "giver": "Mor'zul Bloodbringer",
+      "location": "Burning Steppes",
+      "reward": "Summon Dreadsteed (epic mount)",
+      "essential": false
+    },
+    {
+      "id": "warrior-defensive-stance-human",
+      "class": "warrior",
+      "level": 10,
+      "name": "A Warrior's Training",
+      "faction": "alliance",
+      "races": [
+        "human"
+      ],
+      "giver": "Warrior trainer",
+      "location": "Elwynn Forest",
+      "reward": "Defensive Stance, Taunt, Sunder Armor and a weapon",
+      "essential": true
+    },
+    {
+      "id": "warrior-defensive-stance-dwarf",
+      "class": "warrior",
+      "level": 10,
+      "name": "Muren Stormpike",
+      "faction": "alliance",
+      "races": [
+        "dwarf",
+        "gnome"
+      ],
+      "giver": "Muren Stormpike",
+      "location": "Dun Morogh",
+      "reward": "Defensive Stance, Taunt, Sunder Armor and a weapon",
+      "essential": true
+    },
+    {
+      "id": "warrior-defensive-stance-nelf",
+      "class": "warrior",
+      "level": 10,
+      "name": "Elanaria",
+      "faction": "alliance",
+      "races": [
+        "night-elf"
+      ],
+      "giver": "Elanaria",
+      "location": "Teldrassil",
+      "reward": "Defensive Stance, Taunt, Sunder Armor and a weapon",
+      "essential": true
+    },
+    {
+      "id": "warrior-defensive-stance-horde",
+      "class": "warrior",
+      "level": 10,
+      "name": "Veteran Uzzek",
+      "faction": "horde",
+      "races": [
+        "orc",
+        "troll",
+        "tauren"
+      ],
+      "giver": "Veteran Uzzek",
+      "location": "The Barrens",
+      "reward": "Defensive Stance, Taunt, Sunder Armor and a weapon",
+      "essential": true
+    },
+    {
+      "id": "warrior-defensive-stance-undead",
+      "class": "warrior",
+      "level": 10,
+      "name": "Speak with Dillinger",
+      "faction": "horde",
+      "races": [
+        "undead"
+      ],
+      "giver": "Dillinger",
+      "location": "Tirisfal Glades",
+      "reward": "Defensive Stance, Taunt, Sunder Armor and a weapon",
+      "essential": true
+    },
+    {
+      "id": "warrior-fire-hardened",
+      "class": "warrior",
+      "level": 20,
+      "name": "Yorus Barleybrew",
+      "faction": "alliance",
+      "races": null,
+      "giver": "Yorus Barleybrew",
+      "location": null,
+      "reward": "Fire Hardened armor pieces",
+      "essential": false
+    },
+    {
+      "id": "warrior-brutal-armor",
+      "class": "warrior",
+      "level": 20,
+      "name": "Speak with Ruga",
+      "faction": "horde",
+      "races": null,
+      "giver": "Ruga",
+      "location": "The Barrens",
+      "reward": "Brutal armor pieces",
+      "essential": false
+    },
+    {
+      "id": "warrior-berserker-stance",
+      "class": "warrior",
+      "level": 30,
+      "name": "The Islander → Whirlwind Weapon",
+      "faction": "both",
+      "races": null,
+      "giver": "The Islander",
+      "location": null,
+      "reward": "Berserker Stance, Intercept and a Whirlwind weapon",
+      "essential": true
+    }
+  ],
+  "meta": {
+    "updatedAt": "2026-11-13T18:03:35.333+00:00",
+    "version": "v1",
+    "docs": "https://forevercompanion.io/developers",
+    "attribution": "Data from Forever Companion (https://forevercompanion.io), gathered from ForeverChanges, Wowhead and Zockify and checked in game by players. Please link back. Fan-made, not affiliated with Blizzard Entertainment.",
+    "sources": [
+      {
+        "name": "ForeverChanges",
+        "url": "https://foreverchanges.pro"
+      },
+      {
+        "name": "Wowhead",
+        "url": "https://www.wowhead.com/forever"
+      },
+      {
+        "name": "Zockify",
+        "url": "https://www.zockify.com/forever/"
+      }
+    ]
+  }
+}

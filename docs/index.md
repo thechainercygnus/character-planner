@@ -5,7 +5,8 @@ out what to do next:
 - the gear upgrades within reach, from dungeons, quests and rares;
 - the dungeons worth running;
 - the enchants to look for;
-- how your talents and gear compare with your plan.
+- how your talents and gear compare with your plan;
+- the class quests to do, and any essential ones missed.
 
 It's free software (AGPL-3.0-or-later) that you host yourself.
 

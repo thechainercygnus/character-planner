@@ -24,7 +24,15 @@ NOTIFICATION_TABLES = {"notificationdestination", "notificationoutbox", "notific
 
 # Tables added by migrations after the baseline: databases made before #60 never had
 # them. Add each new table here when its migration is added.
-AFTER_BASELINE = {"joblease", "talenttreedata", "spellicon", "companionquest", "companionrare"}
+AFTER_BASELINE = {
+    "joblease",  # 0002
+    "talenttreedata",  # 0003
+    "spellicon",
+    "companionquest",  # 0004
+    "companionrare",  # 0005
+    "companionclassquest",  # 0006
+    "classquestdone",
+}
 
 
 def create_like_before_migrations(engine: Engine) -> None:

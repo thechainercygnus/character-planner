@@ -91,6 +91,7 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/dungeons.py`: Forever Companion dungeons: drop tables and quest rewards (ADR 0006)
 - `src/character_planner/pool.py`: item pool built from dungeon data, level window, target id resolution (ADR 0006)
 - `src/character_planner/rares.py`: rares and their drops, a third pool source; merged by id because the list's cache ignores filters (ADR 0029)
+- `src/character_planner/class_quests.py`: the class quest checklist by class, faction, race and level; done marks set in the app (ADR 0030)
 - `src/character_planner/quests.py`: quest chains for quest rewards; steps no dungeon describes fetched by id, zone quests only named (ADR 0028)
 - `src/character_planner/progress.py`: progress over time rebuilt from snapshots: points, gear changes, level-ups (ADR 0008)
 - `src/character_planner/talents.py`: the talent plan compared with synced talents (ADR 0009), matched by talent id; default in `data/curated/talent_plan.yaml`

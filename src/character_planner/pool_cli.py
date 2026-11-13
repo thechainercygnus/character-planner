@@ -54,7 +54,8 @@ def main(argv: list[str] | None = None) -> int:
             f"Item details: {result.items_fetched} fetched, "
             f"{len(result.items_not_found)} not found\n"
             f"Quest chain steps: {result.quests_fetched} fetched\n"
-            f"Rares: {result.rares_listed} listed"
+            f"Rares: {result.rares_listed} listed\n"
+            f"Class quests: {result.class_quests_listed} listed"
         )
         for error in result.errors:
             print(f"  error: {error}")
