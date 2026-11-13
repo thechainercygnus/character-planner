@@ -1,6 +1,7 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 import { api, type PlanStep, type StepStatus, type TalentPlanView } from '../api'
+import { TalentTrees } from './TalentTrees'
 
 const STATE_MARK: Record<StepStatus['state'], string> = { done: '✓', partial: '◐', pending: '○' }
 
@@ -178,8 +179,18 @@ function PlanEditor({ view }: { view: TalentPlanView }) {
   )
 }
 
-/** The talent plan against the synced talents: next point, progress, points off plan (ADR 0009). */
+/**
+ * The talent plan against the synced talents: next point, progress, points off plan
+ * (ADR 0009), on the class's talent trees once they're loaded (#88).
+ */
 export function TalentPlanPanel({ view }: { view: TalentPlanView }) {
+  const trees = useQuery({
+    queryKey: ['talent-tree'],
+    queryFn: api.talentTree,
+    // The trees load in the background after the first sync: check again until they're in.
+    refetchInterval: (query) => (query.state.data && !query.state.data.tree ? 10_000 : false),
+  })
+  const tree = trees.data?.tree ?? null
   const specMismatch = view.current_spec !== null && view.current_spec !== view.spec
   const unspent =
     view.available !== null && view.spent !== null && view.available > view.spent
@@ -195,8 +206,16 @@ export function TalentPlanPanel({ view }: { view: TalentPlanView }) {
             {view.spent ?? '?'}/{view.available ?? '?'} points · plan {view.planned_points} points in {view.spec}
           </span>
         </h2>
-        <PlanEditor view={view} />
+        {!tree && <PlanEditor view={view} />}
       </div>
+      {!tree && trees.data?.class_name && (
+        <p className="muted">
+          {trees.data.loading
+            ? `Loading the ${trees.data.class_name} talent trees…`
+            : `The ${trees.data.class_name} talent trees aren't loaded yet: they load after a sync.`}
+        </p>
+      )}
+      {tree && <TalentTrees tree={tree} view={view} />}
 
       {specMismatch && (
         <p className="warn">

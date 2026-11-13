@@ -21,6 +21,7 @@ const view: TalentPlanView = {
   steps: [
     {
       talent: 'Shield Specialization',
+      talent_id: 135507,
       rank: 5,
       points: 5,
       current: 5,
@@ -28,10 +29,19 @@ const view: TalentPlanView = {
       first_point: 1,
       level: 14,
     },
-    { talent: 'Deflection', rank: 2, points: 2, current: 0, state: 'pending', first_point: 6, level: 16 },
+    {
+      talent: 'Deflection',
+      talent_id: null,
+      rank: 2,
+      points: 2,
+      current: 0,
+      state: 'pending',
+      first_point: 6,
+      level: 16,
+    },
   ],
-  next: { talent: 'Deflection', rank: 1, level: 15 },
-  off_plan: [{ talent: 'Improved Revenge', current: 3, planned: 0 }],
+  next: { talent: 'Deflection', talent_id: null, rank: 1, level: 15 },
+  off_plan: [{ talent: 'Improved Revenge', talent_id: 135500, current: 3, planned: 0 }],
   customised: false,
 }
 
@@ -71,9 +81,11 @@ describe('TalentPlanPanel', () => {
     expect(screen.getByText('Your points are mostly in Arms, but the plan is for Protection.')).toBeTruthy()
   })
 
-  it('edits the plan: add a step, reorder, save', async () => {
-    const fetchMock = vi.fn(async (_url: string, init?: RequestInit) =>
-      Response.json({ ...view, plan: JSON.parse(String(init?.body)), customised: true }),
+  it('edits the plan as text while the talent trees are not loaded', async () => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) =>
+      url === '/api/talents/tree'
+        ? Response.json({ class_name: 'Warrior', tree: null, loading: false })
+        : Response.json({ ...view, plan: JSON.parse(String(init?.body)), customised: true }),
     )
     vi.stubGlobal('fetch', fetchMock)
     renderPanel()
@@ -88,7 +100,8 @@ describe('TalentPlanPanel', () => {
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith('/api/talents/plan', expect.objectContaining({ method: 'PUT' })),
     )
-    const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body))
+    const put = fetchMock.mock.calls.find(([, init]) => init?.method === 'PUT')!
+    const body = JSON.parse(String(put[1]?.body))
     expect(body.steps).toEqual([
       { talent: 'Shield Specialization', rank: 5 },
       { talent: 'Anticipation', rank: 5 },
