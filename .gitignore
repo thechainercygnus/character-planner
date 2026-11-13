@@ -21,3 +21,6 @@ wheels/
 data/*.db
 data/*.db-*
 samples/
+
+# Sphinx output (docs/conf.py)
+docs/_build/

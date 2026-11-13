@@ -1,6 +1,10 @@
 # character-planner
 
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/thechainercygnus/character-planner/badge)](https://scorecard.dev/viewer/?uri=github.com/thechainercygnus/character-planner)
+[![Documentation](https://readthedocs.org/projects/character-planner/badge/?version=latest)](https://character-planner.readthedocs.io/)
+
+**Documentation:** [character-planner.readthedocs.io](https://character-planner.readthedocs.io/):
+self-hosting, releases, and the decision records.
 
 Planner for a WoW Forever character: pulls data from the Battle.net Profile API, keeps a
 history of snapshots, and compares gear against curated targets: per slot, the one to go for
@@ -50,8 +54,9 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 
 ## Run your own
 
-[docs/self-hosting.md](docs/self-hosting.md) takes you from nothing to your own planner
-syncing your character, using the published image. Docker Compose runs the app and the
+The [self-hosting guide](https://character-planner.readthedocs.io/en/latest/self-hosting.html)
+([source](docs/self-hosting.md)) takes you from nothing to your own planner syncing your
+character, using the published image. Docker Compose runs the app and the
 scheduled worker, optionally served over Tailscale ([ADR 0011](docs/adr/0011-docker-compose-with-a-worker.md)).
 
 ## Develop

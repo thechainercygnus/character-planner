@@ -30,3 +30,13 @@ allow-licenses:
   - GPL-3.0-or-later
   - AGPL-3.0-only
   - AGPL-3.0-or-later
+
+# Reviewed by hand, exempt from the list above (any license passes for these only):
+# - docutils (#104, needed by Sphinx for the docs site). The scanner joins every license
+#   found in its source into one expression, including GPL-1.0-or-later, CC-PDDC and
+#   LicenseRef-scancode-* terms. Per docutils.sourceforge.io/COPYING.html: public domain
+#   for most of it, BSD-2-Clause (and SmartyPants' BSD-3-Clause) for some files, and
+#   GPL-3.0-or-later for its Emacs mode; "All used licenses are OSI-approved and
+#   GPL-compatible." It's a docs build tool only, not in the image.
+allow-dependencies-licenses:
+  - pkg:pypi/docutils
