@@ -50,4 +50,5 @@ Every node in the 6 Warlock and Warrior trees checked is one talent with 1 to 5 
 - Classes without a shipped plan (#80) get the real trees, empty, instead of a text box.
 - If Forever turns out to use a different points-per-row rule, `POINTS_PER_ROW` (in
   `talent_trees.py` and `talentRules.ts`) is the one thing to change.
-- #41's Talents tab can host this planner as it is.
+- #41 moved the planner, as it is, to its own Talents tab. Character shows talents as spent,
+  read-only.

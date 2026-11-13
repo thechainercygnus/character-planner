@@ -87,11 +87,20 @@ class Talent(BaseModel):
     rank: int | None = None
     talent_id: int | None = None  # matches the talent trees (#88)
     description: str | None = None
+    tree: str | None = None  # the tree it's in: Protection, Arms... (#41)
+
+
+class TreePoints(BaseModel):
+    """Points spent in one talent tree. Blizzard lists only trees with points in them."""
+
+    name: str
+    spent_points: int | None = None
 
 
 class Specialization(BaseModel):
-    name: str
-    spent_points: int | None = None
+    name: str  # the tree with the most points
+    spent_points: int | None = None  # in every tree
+    trees: list[TreePoints] = []  # each tree with points, as Blizzard orders them (#41)
     talents: list[Talent] = []
 
 
@@ -347,12 +356,18 @@ def parse_specialization(specializations: Any) -> Specialization | None:
     return Specialization(
         name=name,
         spent_points=sum(p for p in spent if p is not None) if any(spent) else None,
+        trees=[
+            TreePoints(name=tree, spent_points=_int(_get(s, "spent_points")))
+            for s in specs
+            if (tree := _name(_get(s, "specialization_name")))
+        ],
         talents=[
             Talent(
                 name=talent_name,
                 rank=_int(_get(t, "talent_rank")),
                 description=_name(_get(t, "spell_tooltip", "description")),
                 talent_id=_int(_get(t, "talent", "id")),
+                tree=_name(_get(spec, "specialization_name")),
             )
             for spec in specs
             for t in _get(spec, "talents") or []

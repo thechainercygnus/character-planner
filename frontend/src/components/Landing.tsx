@@ -168,10 +168,14 @@ export function Landing({ hasCharacter = false }: { hasCharacter?: boolean }) {
               <strong>Plan</strong> – your gear targets per slot: what to go for now and what's coming up.
             </li>
             <li>
+              <strong>Talents</strong> – your talent plan on the real trees, and the next point to spend.
+            </li>
+            <li>
               <strong>Progress</strong> – level, item level and gear score over time, from each sync.
             </li>
             <li>
-              <strong>Character</strong> – your talents against a plan, equipment, stats and professions.
+              <strong>Character</strong> – your character as of the last sync: talents, equipment, stats and
+              professions.
             </li>
           </ul>
 

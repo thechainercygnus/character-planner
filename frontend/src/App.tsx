@@ -1,11 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from './api'
-import {
-  CharacterHeader,
-  EquipmentPanel,
-  ProfessionsPanel,
-  StatsPanel,
-} from './components/CharacterPanels'
+import { CharacterHeader } from './components/CharacterPanels'
+import { CharacterSnapshot } from './components/CharacterSnapshot'
 import { Dungeons } from './components/Dungeons'
 import { Enchants } from './components/Enchants'
 import { Footer } from './components/Footer'
@@ -22,12 +18,13 @@ import { useHashIs, useHashTab, type Tab } from './useHashTab'
 import { WeightsDialog } from './components/WeightsDialog'
 import './App.css'
 
-type TabId = 'upgrades' | 'dungeons' | 'plan' | 'progress' | 'character'
+type TabId = 'upgrades' | 'dungeons' | 'plan' | 'talents' | 'progress' | 'character'
 
 const TABS: readonly Tab<TabId>[] = [
   { id: 'upgrades', label: 'Upgrades' },
   { id: 'dungeons', label: 'Dungeons' },
   { id: 'plan', label: 'Plan' },
+  { id: 'talents', label: 'Talents' },
   { id: 'progress', label: 'Progress' },
   { id: 'character', label: 'Character' },
 ]
@@ -38,7 +35,7 @@ export default function App() {
   const character = useQuery({ queryKey: ['character'], queryFn: api.character })
   const gear = useQuery({ queryKey: ['gear'], queryFn: api.gear })
   const recommendations = useQuery({ queryKey: ['recommendations'], queryFn: api.recommendations })
-  const talents = useQuery({ queryKey: ['talents'], queryFn: api.talents, enabled: tab === 'character' })
+  const talents = useQuery({ queryKey: ['talents'], queryFn: api.talents, enabled: tab === 'talents' })
   const progress = useQuery({ queryKey: ['progress'], queryFn: api.progress, enabled: tab === 'progress' })
   const enchants = useQuery({ queryKey: ['enchants'], queryFn: api.enchants, enabled: tab === 'upgrades' })
 
@@ -113,19 +110,14 @@ export default function App() {
             </>
           )}
 
-          {tab === 'character' && (
+          {tab === 'talents' && (
             <>
               {talents.isError && <p className="error">Couldn't load the talent plan: {talents.error.message}</p>}
               {talents.data && <TalentPlanPanel view={talents.data} />}
-              <EquipmentPanel equipment={character.data.equipment} />
-              <div className="panels">
-                {character.data.stats && <StatsPanel stats={character.data.stats} />}
-                {character.data.professions.length > 0 && (
-                  <ProfessionsPanel professions={character.data.professions} />
-                )}
-              </div>
             </>
           )}
+
+          {tab === 'character' && <CharacterSnapshot character={character.data} />}
         </>
       )}
       <Footer />

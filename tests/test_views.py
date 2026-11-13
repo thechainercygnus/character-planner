@@ -1,3 +1,4 @@
+import copy
 import json
 from typing import Any
 
@@ -53,6 +54,27 @@ def test_parse_specialization() -> None:
     assert spec.name == "Protection"
     assert spec.spent_points == 9
     assert {t.name: t.rank for t in spec.talents}["Shield Specialization"] == 5
+    # Each talent knows its tree, and each tree its points (#41's read-only snapshot).
+    assert {t.tree for t in spec.talents} == {"Protection"}
+    assert [(t.name, t.spent_points) for t in spec.trees] == [("Protection", 9)]
+
+
+def test_a_hybrid_build_lists_every_tree_with_points() -> None:
+    """The real response lists only trees with points. A second tree is added here in the
+    same shape (a copy of Protection renamed), as a hybrid build would have it."""
+    data = copy.deepcopy(payload("specializations"))
+    group = next(g for g in data["specialization_groups"] if g["is_active"])
+    arms = copy.deepcopy(group["specializations"][0])
+    arms["specialization_name"] = "Arms"
+    arms["spent_points"] = 4
+    group["specializations"].insert(0, arms)
+
+    spec = parse_specialization(data)
+    assert spec is not None
+    assert spec.name == "Protection"  # the most points
+    assert spec.spent_points == 13
+    assert [(t.name, t.spent_points) for t in spec.trees] == [("Arms", 4), ("Protection", 9)]
+    assert {t.tree for t in spec.talents} == {"Arms", "Protection"}
 
 
 def test_parsers_tolerate_garbage() -> None:
