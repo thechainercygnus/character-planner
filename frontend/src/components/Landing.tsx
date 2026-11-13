@@ -53,7 +53,9 @@ export function GuestMode() {
 
   const level = Number(levelText)
   const validLevel = Number.isInteger(level) && level >= 1 && level <= 80
-  const chosenPreset = preset ?? options.data?.presets[0]?.key ?? ''
+  // Presets belong to a class: changing class goes back to its default preset.
+  const classPresets = options.data?.classes.find((c) => c.key === classKey)?.presets ?? []
+  const chosenPreset = preset ?? classPresets[0]?.key ?? ''
   const query: GuestQuery = { classKey, level, faction, preset: chosenPreset }
   const recommendations = useQuery({
     queryKey: ['guest-recommendations', query],
@@ -74,7 +76,13 @@ export function GuestMode() {
       <div className="guest-form">
         <label>
           Class{' '}
-          <select value={classKey} onChange={(event) => setClassKey(event.target.value)}>
+          <select
+            value={classKey}
+            onChange={(event) => {
+              setClassKey(event.target.value)
+              setPreset(null)
+            }}
+          >
             {options.data.classes.map((c) => (
               <option key={c.key} value={c.key}>
                 {c.name}
@@ -105,7 +113,7 @@ export function GuestMode() {
         <label>
           Play style{' '}
           <select value={chosenPreset} onChange={(event) => setPreset(event.target.value)}>
-            {options.data.presets.map((p) => (
+            {classPresets.map((p) => (
               <option key={p.key} value={p.key}>
                 {p.name}
               </option>
@@ -113,11 +121,7 @@ export function GuestMode() {
           </select>
         </label>
       </div>
-      {options.data.classes.length === 1 && (
-        <p className="muted">
-          Only {options.data.classes[0].name} has gear rules so far; more classes are coming.
-        </p>
-      )}
+
       {!validLevel && <p className="error">Level must be a whole number from 1 to 80.</p>}
       {recommendations.isPending && validLevel && <p className="muted">Finding items…</p>}
       {recommendations.isError && <p className="error">Couldn't load items: {recommendations.error.message}</p>}

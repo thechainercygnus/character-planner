@@ -6,10 +6,23 @@ import { recommendations } from '../test/fixtures'
 import { Landing } from './Landing'
 
 const options: GuestOptions = {
-  classes: [{ key: 'warrior', name: 'Warrior' }],
-  presets: [
-    { key: 'leveling-tank', name: 'Leveling tank' },
-    { key: 'solo-dps', name: 'Solo DPS' },
+  classes: [
+    {
+      key: 'warrior',
+      name: 'Warrior',
+      presets: [
+        { key: 'leveling-tank', name: 'Leveling tank' },
+        { key: 'solo-dps', name: 'Solo DPS' },
+      ],
+    },
+    {
+      key: 'warlock',
+      name: 'Warlock',
+      presets: [
+        { key: 'warlock-leveling', name: 'Leveling caster' },
+        { key: 'warlock-dungeon', name: 'Dungeon caster' },
+      ],
+    },
   ],
   factions: ['alliance', 'horde'],
 }
@@ -108,6 +121,23 @@ describe('Landing', () => {
     )
     expect(screen.getByText('Dungeons worth running', { exact: false })).toBeTruthy()
     expect(screen.queryByText('Equipped')).toBeNull()
+  })
+
+  it('switches to the chosen class and its default play style', async () => {
+    const fetchMock = stubFetch()
+    renderLanding()
+    await screen.findByText('Best items for your level')
+
+    fireEvent.change(screen.getByLabelText('Play style'), { target: { value: 'solo-dps' } })
+    fireEvent.change(screen.getByLabelText('Class'), { target: { value: 'warlock' } })
+    await waitFor(() =>
+      expect(Object.fromEntries(guestCalls(fetchMock).at(-1)!)).toMatchObject({
+        class: 'warlock',
+        preset: 'warlock-leveling',
+      }),
+    )
+    const styles = [...(screen.getByLabelText('Play style') as HTMLSelectElement).options].map((o) => o.text)
+    expect(styles).toEqual(['Leveling caster', 'Dungeon caster'])
   })
 
   it("doesn't ask for items with a bad level", async () => {

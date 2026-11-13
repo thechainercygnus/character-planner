@@ -107,14 +107,16 @@ def _stored(session: Session) -> dict[str, WeightPreset]:
 
 
 def active_key(session: Session, shipped: ShippedPresets) -> str:
-    """The active preset, or Leveling tank when none is set or it no longer exists."""
+    """The active preset, or the class's first shipped preset when none is set or it
+    doesn't exist for this class (Leveling tank for a Warrior, #80)."""
+    default = shipped.presets[0].key
     active = session.get(ActiveWeightPreset, 1)
     if active is None:
-        return LEVELING
+        return default
     if shipped.get(active.key) is not None:
         return active.key
     stored = session.get(WeightPreset, active.key)
-    return active.key if stored is not None and not stored.shipped else LEVELING
+    return active.key if stored is not None and not stored.shipped else default
 
 
 def _preset_weights(

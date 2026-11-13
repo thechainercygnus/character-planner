@@ -14,8 +14,9 @@ from character_planner import notify
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
 from character_planner.choices import take_target_choices
+from character_planner.classes import current_defaults
 from character_planner.config import Settings
-from character_planner.curated import GearTargets, load_gear_targets
+from character_planner.curated import GearTargets
 from character_planner.db import Snapshot, StoredToken, latest_by_kind
 from character_planner.dungeons import stored_dungeons
 from character_planner.items import refresh_item_sources
@@ -61,14 +62,15 @@ def equipped_item_ids(session: Session) -> list[int]:
     return [item.item_id for item in items if item.item_id is not None]
 
 
-def default_targets(settings: Settings) -> GearTargets:
-    return load_gear_targets(settings.curated_dir / "gear_targets.yaml")
+def default_targets(session: Session, settings: Settings) -> GearTargets:
+    """The synced class's shipped targets (#80): gear_targets.yaml for a Warrior."""
+    return current_defaults(session, settings.curated_dir).targets
 
 
 def gear_targets(session: Session, settings: Settings) -> GearTargets:
     """The edited targets, or gear_targets.yaml (ADR 0014), with item ids filled in from
     the item pool where it has them."""
-    targets = current_targets(session, default_targets(settings))
+    targets = current_targets(session, default_targets(session, settings))
     pool = build_pool(stored_dungeons(session), character_context(session)[1])
     return resolve_target_ids(targets, pool)
 

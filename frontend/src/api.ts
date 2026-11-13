@@ -186,9 +186,15 @@ export interface GearPlan {
 }
 
 /** Guest mode (ADR 0017): classes with rules and the shipped weight presets. */
-export interface GuestOptions {
-  classes: { key: string; name: string }[]
+/** A class guest mode offers, with its shipped weight presets (the first is default). */
+export interface GuestClass {
+  key: string
+  name: string
   presets: { key: string; name: string }[]
+}
+
+export interface GuestOptions {
+  classes: GuestClass[]
   factions: string[]
 }
 

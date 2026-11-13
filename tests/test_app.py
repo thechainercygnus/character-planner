@@ -558,8 +558,10 @@ def test_guest_mode_uses_the_shipped_rules_and_stores_nothing(
         session.commit()
 
     options = client.get("/api/guest").json()
-    assert [c["key"] for c in options["classes"]] == ["warrior"]
-    assert options["presets"][0]["key"] == "leveling-tank"
+    classes = {c["key"]: c for c in options["classes"]}
+    assert list(classes) == ["warrior", "warlock"]  # Warrior first, then by name (#80)
+    assert classes["warrior"]["presets"][0]["key"] == "leveling-tank"
+    assert classes["warlock"]["presets"][0]["key"] == "warlock-leveling"
     assert options["factions"] == ["alliance", "horde"]
 
     guest = client.get("/api/guest/recommendations", params={"level": 18}).json()
