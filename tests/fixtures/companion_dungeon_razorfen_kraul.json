@@ -1,0 +1,672 @@
+{
+  "data": {
+    "id": "razorfen-kraul",
+    "name": "Razorfen Kraul",
+    "minLevel": 29,
+    "maxLevel": 38,
+    "zone": "The Barrens",
+    "entrance": "Southern Barrens, near Thousand Needles",
+    "access": null,
+    "isNew": false,
+    "status": "launch",
+    "betaLocked": false,
+    "bosses": [
+      "Roogug",
+      "Aggem Thorncurse",
+      "Death Speaker Jargba",
+      "Overlord Ramtusk",
+      "Agathelos the Raging",
+      "Charlga Razorflank"
+    ],
+    "questCount": 8,
+    "lootCount": 45,
+    "url": "https://forevercompanion.io/dungeons/razorfen-kraul",
+    "quests": [
+      {
+        "questId": 1221,
+        "type": "dungeon",
+        "name": "Blueleaf Tubers",
+        "level": 26,
+        "minLevel": 20,
+        "faction": "both",
+        "classes": null,
+        "xp": 4988,
+        "xpEstimated": false,
+        "classicXp": 2100,
+        "dungeon": {
+          "id": "razorfen-kraul",
+          "name": "Razorfen Kraul"
+        },
+        "zone": null,
+        "giver": "Mebok Mizzyrix",
+        "location": "The Barrens",
+        "objective": "Grab a Crate with Holes. Grab a Snufflenose Command Stick. Grab and read the Snufflenose Owner's Manual. In Razorfen Kraul, use the Crate with Holes to summon a Snufflenose Gopher, and use the Command Stick on the gopher to make it search for Tubers. Bring 6 Blueleaf Tubers, the Snufflenose Command Stick and the Crate with Holes to Mebok Mizzyrix in Ratchet.",
+        "rewards": {
+          "items": [
+            {
+              "id": 6755,
+              "name": "A Small Container of Gems"
+            }
+          ],
+          "choice": false
+        },
+        "prerequisites": null,
+        "confidence": "beta",
+        "verified": null,
+        "wowhead": "https://www.wowhead.com/forever/quest=1221",
+        "url": "https://forevercompanion.io/dungeons/razorfen-kraul"
+      },
+      {
+        "questId": 1144,
+        "type": "dungeon",
+        "name": "Willix the Importer",
+        "level": 30,
+        "minLevel": 23,
+        "faction": "both",
+        "classes": null,
+        "xp": 7244,
+        "xpEstimated": false,
+        "classicXp": 3050,
+        "dungeon": {
+          "id": "razorfen-kraul",
+          "name": "Razorfen Kraul"
+        },
+        "zone": null,
+        "giver": "Willix the Importer",
+        "location": "inside the dungeon",
+        "objective": "Escort Willix the Importer out of Razorfen Kraul.",
+        "rewards": {
+          "items": [
+            {
+              "id": 6748,
+              "name": "Monkey Ring"
+            },
+            {
+              "id": 6750,
+              "name": "Snake Hoop"
+            },
+            {
+              "id": 6749,
+              "name": "Tiger Band"
+            },
+            {
+              "id": 274078,
+              "name": "Boar Signet"
+            }
+          ],
+          "choice": true
+        },
+        "prerequisites": null,
+        "confidence": "beta",
+        "verified": null,
+        "wowhead": "https://www.wowhead.com/forever/quest=1144",
+        "url": "https://forevercompanion.io/dungeons/razorfen-kraul"
+      },
+      {
+        "questId": 1701,
+        "type": "dungeon",
+        "name": "Fire Hardened Mail",
+        "level": 28,
+        "minLevel": 20,
+        "faction": "alliance",
+        "classes": null,
+        "xp": 4830,
+        "xpEstimated": true,
+        "classicXp": 2300,
+        "dungeon": {
+          "id": "razorfen-kraul",
+          "name": "Razorfen Kraul"
+        },
+        "zone": null,
+        "giver": "Furen Longbeard",
+        "location": "Stormwind City",
+        "objective": "Gather the materials Furen Longbeard requires, and bring them to him in Stormwind.",
+        "rewards": {
+          "items": [],
+          "choice": false
+        },
+        "prerequisites": [
+          [
+            {
+              "questId": 1702,
+              "name": "The Shieldsmith"
+            }
+          ]
+        ],
+        "confidence": "classic",
+        "verified": null,
+        "wowhead": "https://www.wowhead.com/forever/quest=1701",
+        "url": "https://forevercompanion.io/dungeons/razorfen-kraul"
+      },
+      {
+        "questId": 1142,
+        "type": "dungeon",
+        "name": "Mortality Wanes",
+        "level": 30,
+        "minLevel": 25,
+        "faction": "alliance",
+        "classes": null,
+        "xp": 7244,
+        "xpEstimated": false,
+        "classicXp": 3050,
+        "dungeon": {
+          "id": "razorfen-kraul",
+          "name": "Razorfen Kraul"
+        },
+        "zone": null,
+        "giver": "Heralath Fallowbrook",
+        "location": "inside the dungeon",
+        "objective": "Find and return Treshala's Pendant to Treshala Fallowbrook in Darnassus.",
+        "rewards": {
+          "items": [
+            {
+              "id": 6751,
+              "name": "Mourning Shawl"
+            },
+            {
+              "id": 6752,
+              "name": "Lancer Boots"
+            },
+            {
+              "id": 270047,
+              "name": "Sentinel's Boots"
+            }
+          ],
+          "choice": true
+        },
+        "prerequisites": null,
+        "confidence": "beta",
+        "verified": null,
+        "wowhead": "https://www.wowhead.com/forever/quest=1142",
+        "url": "https://forevercompanion.io/dungeons/razorfen-kraul"
+      },
+      {
+        "questId": 1101,
+        "type": "dungeon",
+        "name": "The Crone of the Kraul",
+        "level": 34,
+        "minLevel": 29,
+        "faction": "alliance",
+        "classes": null,
+        "xp": 7956,
+        "xpEstimated": false,
+        "classicXp": 3350,
+        "dungeon": {
+          "id": "razorfen-kraul",
+          "name": "Razorfen Kraul"
+        },
+        "zone": null,
+        "giver": "Falfindel Waywarder",
+        "location": "Feralas",
+        "objective": "Bring Razorflank's Medallion to Falfindel Waywarder in Thalanaar.",
+        "rewards": {
+          "items": [
+            {
+              "id": 4197,
+              "name": "Berylline Pads"
+            },
+            {
+              "id": 6742,
+              "name": "Stonefist Girdle"
+            },
+            {
+              "id": 6725,
+              "name": "Marbled Buckler"
+            }
+          ],
+          "choice": true
+        },
+        "prerequisites": [
+          [
+            {
+              "questId": 1100,
+              "name": "Lonebrow's Journal"
+            }
+          ]
+        ],
+        "confidence": "beta",
+        "verified": null,
+        "wowhead": "https://www.wowhead.com/forever/quest=1101",
+        "url": "https://forevercompanion.io/dungeons/razorfen-kraul"
+      },
+      {
+        "questId": 1838,
+        "type": "dungeon",
+        "name": "Brutal Armor",
+        "level": 30,
+        "minLevel": 20,
+        "faction": "horde",
+        "classes": null,
+        "xp": 6570,
+        "xpEstimated": true,
+        "classicXp": 3650,
+        "dungeon": {
+          "id": "razorfen-kraul",
+          "name": "Razorfen Kraul"
+        },
+        "zone": null,
+        "giver": "Thun'grim Firegaze",
+        "location": "The Barrens",
+        "objective": "Bring to Thun'grim Firegaze 15 Smoky Iron Ingots, 10 Powdered Azurite, 10 Iron Bars and a Vial of Phlogiston.",
+        "rewards": {
+          "items": [],
+          "choice": false
+        },
+        "prerequisites": null,
+        "confidence": "classic",
+        "verified": null,
+        "wowhead": "https://www.wowhead.com/forever/quest=1838",
+        "url": "https://forevercompanion.io/dungeons/razorfen-kraul"
+      },
+      {
+        "questId": 1102,
+        "type": "dungeon",
+        "name": "A Vengeful Fate",
+        "level": 34,
+        "minLevel": 29,
+        "faction": "horde",
+        "classes": null,
+        "xp": 8505,
+        "xpEstimated": false,
+        "classicXp": 4050,
+        "dungeon": {
+          "id": "razorfen-kraul",
+          "name": "Razorfen Kraul"
+        },
+        "zone": null,
+        "giver": "Auld Stonespire",
+        "location": "Thunder Bluff",
+        "objective": "Bring Razorflank's Heart to Auld Stonespire in Thunder Bluff.",
+        "rewards": {
+          "items": [
+            {
+              "id": 4197,
+              "name": "Berylline Pads"
+            },
+            {
+              "id": 6742,
+              "name": "Stonefist Girdle"
+            },
+            {
+              "id": 6725,
+              "name": "Marbled Buckler"
+            }
+          ],
+          "choice": true
+        },
+        "prerequisites": null,
+        "confidence": "beta",
+        "verified": null,
+        "wowhead": "https://www.wowhead.com/forever/quest=1102",
+        "url": "https://forevercompanion.io/dungeons/razorfen-kraul"
+      },
+      {
+        "questId": 1109,
+        "type": "dungeon",
+        "name": "Going, Going, Guano!",
+        "level": 33,
+        "minLevel": 30,
+        "faction": "horde",
+        "classes": null,
+        "xp": 6930,
+        "xpEstimated": false,
+        "classicXp": 3300,
+        "dungeon": {
+          "id": "razorfen-kraul",
+          "name": "Razorfen Kraul"
+        },
+        "zone": null,
+        "giver": "Master Apothecary Faranell",
+        "location": "Undercity",
+        "objective": "Bring 1 pile of Kraul Guano to Master Apothecary Faranell in the Undercity.",
+        "rewards": {
+          "items": [],
+          "choice": false
+        },
+        "prerequisites": null,
+        "confidence": "beta",
+        "verified": null,
+        "wowhead": "https://www.wowhead.com/forever/quest=1109",
+        "url": "https://forevercompanion.io/dungeons/razorfen-kraul"
+      }
+    ],
+    "loot": [
+      {
+        "itemId": 6693,
+        "name": "Agamaggan's Clutch",
+        "slot": "ring",
+        "quality": "rare",
+        "source": "Charlga Razorflank"
+      },
+      {
+        "itemId": 274158,
+        "name": "Death Prophet Spine",
+        "slot": "staff",
+        "quality": "rare",
+        "source": "Aggem Thorncurse"
+      },
+      {
+        "itemId": 6692,
+        "name": "Pronged Reaver",
+        "slot": "one-hand",
+        "quality": "rare",
+        "source": "Charlga Razorflank"
+      },
+      {
+        "itemId": 6691,
+        "name": "Swinetusk Shank",
+        "slot": "main-hand",
+        "quality": "rare",
+        "source": "Agathelos the Raging"
+      },
+      {
+        "itemId": 274159,
+        "name": "Thorncursed Grips",
+        "slot": "hands",
+        "quality": "rare",
+        "source": "Aggem Thorncurse"
+      },
+      {
+        "itemId": 252512,
+        "name": "Brawler's Leather Helm",
+        "slot": "head",
+        "quality": "rare",
+        "source": "Aggem Thorncurse / Death Speaker Jargba / Roogug / Overlord Ramtusk / Agathelos the Raging / Charlga Razorflank"
+      },
+      {
+        "itemId": 6687,
+        "name": "Corpsemaker",
+        "slot": "two-hand",
+        "quality": "rare",
+        "source": "Overlord Ramtusk"
+      },
+      {
+        "itemId": 252455,
+        "name": "Defender's Leather Helm",
+        "slot": "head",
+        "quality": "rare",
+        "source": "Aggem Thorncurse / Agathelos the Raging / Charlga Razorflank / Earthcaller Halmgar"
+      },
+      {
+        "itemId": 6690,
+        "name": "Ferine Leggings",
+        "slot": "legs",
+        "quality": "rare",
+        "source": "Agathelos the Raging"
+      },
+      {
+        "itemId": null,
+        "name": "Pattern: Defender's Leather Kilt",
+        "slot": "other",
+        "quality": "rare",
+        "source": "Aggem Thorncurse / Death Speaker Jargba / Overlord Ramtusk"
+      },
+      {
+        "itemId": 274161,
+        "name": "Quillord Mail Leggings",
+        "slot": "legs",
+        "quality": "rare",
+        "source": "Overlord Ramtusk"
+      },
+      {
+        "itemId": null,
+        "name": "Pattern: Brawler's Leather Legguards",
+        "slot": "other",
+        "quality": "rare",
+        "source": "Aggem Thorncurse / Death Speaker Jargba / Roogug / Agathelos the Raging"
+      },
+      {
+        "itemId": 6686,
+        "name": "Tusken Helm",
+        "slot": "head",
+        "quality": "rare",
+        "source": "Overlord Ramtusk"
+      },
+      {
+        "itemId": 2816,
+        "name": "Death Speaker Scepter",
+        "slot": "main-hand",
+        "quality": "rare",
+        "source": "Death Speaker Jargba"
+      },
+      {
+        "itemId": 252456,
+        "name": "Totemic Leather Helm",
+        "slot": "head",
+        "quality": "rare",
+        "source": "Aggem Thorncurse / Charlga Razorflank"
+      },
+      {
+        "itemId": 6685,
+        "name": "Death Speaker Mantle",
+        "slot": "shoulder",
+        "quality": "rare",
+        "source": "Death Speaker Jargba"
+      },
+      {
+        "itemId": 252515,
+        "name": "Wisdom's Leather Helm",
+        "slot": "head",
+        "quality": "rare",
+        "source": "Aggem Thorncurse / Death Speaker Jargba / Overlord Ramtusk / Charlga Razorflank"
+      },
+      {
+        "itemId": 6681,
+        "name": "Thornspike",
+        "slot": "one-hand",
+        "quality": "rare",
+        "source": "Aggem Thorncurse"
+      },
+      {
+        "itemId": 6682,
+        "name": "Death Speaker Robes",
+        "slot": "chest",
+        "quality": "rare",
+        "source": "Death Speaker Jargba"
+      },
+      {
+        "itemId": 274155,
+        "name": "Geomancer Headdress",
+        "slot": "head",
+        "quality": "rare",
+        "source": "Roogug"
+      },
+      {
+        "itemId": 274152,
+        "name": "Roogug's Severed Head",
+        "slot": "trinket",
+        "quality": "rare",
+        "source": "Roogug"
+      },
+      {
+        "itemId": 17008,
+        "name": "Small Scroll",
+        "slot": "other",
+        "quality": "common",
+        "source": "Charlga Razorflank"
+      },
+      {
+        "itemId": 274149,
+        "name": "Thornweaver Drape",
+        "slot": "back",
+        "quality": "rare",
+        "source": "Roogug"
+      },
+      {
+        "itemId": 252513,
+        "name": "Trapper's Leather Helm",
+        "slot": "head",
+        "quality": "rare",
+        "source": "Overlord Ramtusk / Agathelos the Raging"
+      },
+      {
+        "itemId": 6679,
+        "name": "Armor Piercer",
+        "slot": "two-hand",
+        "quality": "uncommon",
+        "source": "Razorfen Spearhide / Trash mobs"
+      },
+      {
+        "itemId": 274160,
+        "name": "Quilrager Throwing Axe",
+        "slot": "other",
+        "quality": "rare",
+        "source": "Agathelos the Raging"
+      },
+      {
+        "itemId": 6695,
+        "name": "Stygian Bone Amulet",
+        "slot": "neck",
+        "quality": "rare",
+        "source": "Blind Hunter"
+      },
+      {
+        "itemId": 6697,
+        "name": "Batwing Mantle",
+        "slot": "shoulder",
+        "quality": "rare",
+        "source": "Blind Hunter"
+      },
+      {
+        "itemId": 6696,
+        "name": "Nightstalker Bow",
+        "slot": "ranged",
+        "quality": "rare",
+        "source": "Blind Hunter"
+      },
+      {
+        "itemId": 6694,
+        "name": "Heart of Agamaggan",
+        "slot": "off-hand",
+        "quality": "rare",
+        "source": "Charlga Razorflank"
+      },
+      {
+        "itemId": 273103,
+        "name": "Blueprint: Arcane Salvager",
+        "slot": "other",
+        "quality": "uncommon",
+        "source": "Charlga Razorflank"
+      },
+      {
+        "itemId": 6689,
+        "name": "Wind Spirit Staff",
+        "slot": "staff",
+        "quality": "rare",
+        "source": "Earthcaller Halmgar"
+      },
+      {
+        "itemId": 6688,
+        "name": "Whisperwind Headdress",
+        "slot": "head",
+        "quality": "rare",
+        "source": "Earthcaller Halmgar"
+      },
+      {
+        "itemId": 252514,
+        "name": "Stormrider's Leather Helm",
+        "slot": "head",
+        "quality": "rare",
+        "source": "Earthcaller Halmgar"
+      },
+      {
+        "itemId": 2264,
+        "name": "Mantle of Thieves",
+        "slot": "shoulder",
+        "quality": "rare",
+        "source": "Trash mobs"
+      },
+      {
+        "itemId": 1488,
+        "name": "Avenger's Armor",
+        "slot": "chest",
+        "quality": "rare",
+        "source": "Trash mobs"
+      },
+      {
+        "itemId": 4438,
+        "name": "Pugilist Bracers",
+        "slot": "wrist",
+        "quality": "rare",
+        "source": "Trash mobs"
+      },
+      {
+        "itemId": 1978,
+        "name": "Wolfclaw Gloves",
+        "slot": "hands",
+        "quality": "rare",
+        "source": "Trash mobs"
+      },
+      {
+        "itemId": 2039,
+        "name": "Plains Ring",
+        "slot": "ring",
+        "quality": "rare",
+        "source": "Trash mobs"
+      },
+      {
+        "itemId": 1727,
+        "name": "Sword of Decay",
+        "slot": "main-hand",
+        "quality": "rare",
+        "source": "Trash mobs"
+      },
+      {
+        "itemId": 776,
+        "name": "Vendetta",
+        "slot": "one-hand",
+        "quality": "rare",
+        "source": "Trash mobs"
+      },
+      {
+        "itemId": 1976,
+        "name": "Slaghammer",
+        "slot": "two-hand",
+        "quality": "rare",
+        "source": "Trash mobs"
+      },
+      {
+        "itemId": 1975,
+        "name": "Pysan's Old Greatsword",
+        "slot": "two-hand",
+        "quality": "rare",
+        "source": "Trash mobs"
+      },
+      {
+        "itemId": 2549,
+        "name": "Staff of the Shade",
+        "slot": "staff",
+        "quality": "rare",
+        "source": "Trash mobs"
+      },
+      {
+        "itemId": 3569,
+        "name": "Vicar's Robe",
+        "slot": "chest",
+        "quality": "uncommon",
+        "source": "Trash mobs"
+      }
+    ],
+    "notes": null
+  },
+  "meta": {
+    "updatedAt": "2026-11-07T06:03:32.067+00:00",
+    "version": "v1",
+    "docs": "https://forevercompanion.io/developers",
+    "attribution": "Data from Forever Companion (https://forevercompanion.io), gathered from ForeverChanges, Wowhead and Zockify and checked in game by players. Please link back. Fan-made, not affiliated with Blizzard Entertainment.",
+    "sources": [
+      {
+        "name": "ForeverChanges",
+        "url": "https://foreverchanges.pro"
+      },
+      {
+        "name": "Wowhead",
+        "url": "https://www.wowhead.com/forever"
+      },
+      {
+        "name": "Zockify",
+        "url": "https://www.zockify.com/forever/"
+      }
+    ]
+  }
+}

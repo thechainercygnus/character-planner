@@ -9,6 +9,8 @@ export const hallDrop: PoolSource = {
   detail: 'Plunder',
   choice: false,
   quest_min_level: null,
+  quest: null,
+  chain: [],
 }
 
 export const deadminesQuest: PoolSource = {
@@ -20,6 +22,8 @@ export const deadminesQuest: PoolSource = {
   detail: 'The Defias Brotherhood',
   choice: true,
   quest_min_level: 20,
+  quest: null,
+  chain: [],
 }
 
 export function poolItem(overrides: Partial<PoolItem>): PoolItem {

@@ -75,6 +75,16 @@ class CompanionDungeon(SQLModel, table=True):
     fetched_at: datetime = Field(default_factory=utcnow)
 
 
+class CompanionQuest(SQLModel, table=True):
+    """Raw Forever Companion GET /quests/{id} responses for quest chain steps (#7,
+    ADR 0028). found=False is a 404: a zone quest it doesn't describe."""
+
+    quest_id: int = Field(primary_key=True)
+    found: bool
+    payload: Any = Field(default=None, sa_column=Column(JSON, nullable=True))
+    fetched_at: datetime = Field(default_factory=utcnow)
+
+
 class RecipeData(SQLModel, table=True):
     """Raw Blizzard GET /data/wow/recipe/{id} responses for enchant recipes (ADR 0010),
     with the profession and skill-tier category they were listed under."""

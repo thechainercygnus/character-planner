@@ -17,6 +17,9 @@ from character_planner.dungeons import (
 from .conftest import FIXTURES
 
 HALL = json.loads((FIXTURES / "companion_dungeon_hall_of_thanes.json").read_text(encoding="utf-8"))
+QUEST_NOT_FOUND = json.loads(
+    (FIXTURES / "companion_quest_not_found.json").read_text(encoding="utf-8")
+)
 
 DEADMINES: dict[str, Any] = {
     "data": {
@@ -72,7 +75,12 @@ LIST = {
 
 
 def mock_companion_dungeons() -> respx.Route:
+    """Both dungeons. Quest lookups (chain steps, #7) answer 404, as Forever Companion does
+    for the zone quest Hall of Thanes' chain starts with."""
     respx.get(f"{BASE_URL}/dungeons").mock(return_value=httpx.Response(200, json=LIST))
+    respx.get(url__startswith=f"{BASE_URL}/quests/").mock(
+        return_value=httpx.Response(404, json=QUEST_NOT_FOUND)
+    )
     respx.get(f"{BASE_URL}/dungeons/hall-of-thanes").mock(
         return_value=httpx.Response(200, json=HALL)
     )
