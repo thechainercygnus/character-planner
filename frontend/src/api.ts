@@ -371,6 +371,29 @@ export interface PoolSource {
   detail: string | null
   choice: boolean
   quest_min_level: number | null
+  /** The reward's quest, described (#7). */
+  quest: QuestStep | null
+  /** Quests to do first, earliest first; each step's quests are done side by side (#7). */
+  chain: QuestStep[][]
+}
+
+/** One quest in a chain (quests.py QuestStep). Only the name is always known. */
+export interface QuestStep {
+  quest_id: number | null
+  name: string
+  level: number | null
+  /** Level needed to pick it up. */
+  min_level: number | null
+  giver: string | null
+  /** Where the giver is (dungeon quests). */
+  location: string | null
+  /** The quest's zone (elite quests). */
+  zone: string | null
+  /** The dungeon it's done in (dungeon quests). */
+  dungeon: string | null
+  wowhead: string | null
+  /** Described by Forever Companion, not just named. */
+  known: boolean
 }
 
 /** Pool items for the character's level window (pool.py PoolView). */
@@ -467,6 +490,8 @@ export interface PoolRefresh {
   in_window: number
   items_fetched: number
   items_not_found: number[]
+  /** Quest chain steps looked up by id (#7). */
+  quests_fetched: number
   errors: string[]
 }
 

@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { ItemChoice, Recommendations as RecommendationsData } from '../api'
-import { candidate, girdle, laterBelt, recommendations } from '../test/fixtures'
+import type { ItemChoice, QuestStep, Recommendations as RecommendationsData } from '../api'
+import { candidate, deadminesQuest, girdle, laterBelt, poolItem, recommendations } from '../test/fixtures'
 import { Recommendations } from './Recommendations'
 
 const hidden: ItemChoice = {
@@ -70,6 +70,84 @@ describe('Recommendations', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Hide details for Waist' }))
     expect(screen.queryByText('Later Belt')).toBeNull()
+  })
+
+  it('lists a quest reward’s chain in order, with what Forever Companion knows of each step', () => {
+    stubFetch()
+    const step = (overrides: Partial<QuestStep>): QuestStep => ({
+      quest_id: null,
+      name: '?',
+      level: null,
+      min_level: null,
+      giver: null,
+      location: null,
+      zone: null,
+      dungeon: null,
+      wowhead: null,
+      known: true,
+      ...overrides,
+    })
+    // From the real Hall of Thanes data; the second step stands in for a side-by-side one.
+    const blunderbuss = poolItem({
+      item_id: 279894,
+      name: 'Calibrated Blunderbuss',
+      sources: [
+        {
+          ...deadminesQuest,
+          dungeon_id: 'hall-of-thanes',
+          dungeon: 'Hall of Thanes',
+          detail: 'Old Ironforge Incursion',
+          quest: step({
+            quest_id: 96393,
+            name: 'Old Ironforge Incursion',
+            min_level: 9,
+            giver: 'Earthseer Farsen',
+            location: 'Dun Morogh',
+            dungeon: 'Hall of Thanes',
+          }),
+          chain: [
+            [
+              step({
+                quest_id: 96391,
+                name: 'Underground Map',
+                wowhead: 'https://www.wowhead.com/forever/quest=96391',
+                known: false,
+              }),
+            ],
+            [
+              step({ quest_id: 1100, name: "Lonebrow's Journal", min_level: 29, zone: 'Thousand Needles' }),
+              step({ name: 'Unmatched Quest', known: false }),
+            ],
+          ],
+        },
+      ],
+    })
+    renderRecommendations({
+      ...recommendations,
+      rows: [{ slot: 'RANGED', equipped: null, candidates: [candidate(blunderbuss, 5)] }],
+    })
+    // Only in the opened row.
+    expect(screen.queryByRole('list', { name: 'Quest chain for Old Ironforge Incursion' })).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Show details for Ranged' }))
+
+    const chain = screen.getByRole('list', { name: 'Quest chain for Old Ironforge Incursion' })
+    const steps = within(chain).getAllByRole('listitem').map((li) => li.textContent)
+    expect(steps).toEqual([
+      'Underground Map',
+      "Lonebrow's Journal (level 29) – Thousand Needles + Unmatched Quest",
+      'Old Ironforge Incursion (level 9) – Earthseer Farsen, Dun Morogh',
+    ])
+    expect(within(chain).getByRole('link', { name: 'Underground Map' }).getAttribute('href')).toBe(
+      'https://www.wowhead.com/forever/quest=96391',
+    )
+    expect(within(chain).queryByRole('link', { name: 'Unmatched Quest' })).toBeNull()
+  })
+
+  it('shows no chain for a quest without one', () => {
+    stubFetch()
+    renderRecommendations()
+    fireEvent.click(screen.getByRole('button', { name: 'Show details for Waist' }))
+    expect(screen.queryByRole('list', { name: /Quest chain/ })).toBeNull()
   })
 
   it('pins an item as a target and dismisses another', async () => {

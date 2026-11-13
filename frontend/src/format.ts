@@ -1,4 +1,4 @@
-import type { PoolItem, PoolSource } from './api'
+import type { PoolItem, PoolSource, QuestStep } from './api'
 
 // Display helpers shared by components. Kept out of component files so React's fast
 // refresh still works for those (react/only-export-components).
@@ -19,6 +19,16 @@ export function sourceText(source: PoolSource): string {
     return `Quest: ${source.detail ?? '?'} (${source.dungeon})${source.choice ? ', choice' : ''}`
   }
   return source.detail ? `${source.dungeon} – ${source.detail}` : source.dungeon
+}
+
+/** Who gives a quest and where, as far as Forever Companion knows: "Earthseer Farsen, Dun Morogh". */
+export function questWhere(step: QuestStep): string {
+  return [step.giver, step.location ?? step.dungeon ?? step.zone].filter(Boolean).join(', ')
+}
+
+/** The level a quest can be picked up at, when known. */
+export function questLevel(step: QuestStep): number | null {
+  return step.min_level ?? step.level
 }
 
 export function itemDetails(item: PoolItem): string {
