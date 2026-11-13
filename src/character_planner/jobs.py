@@ -70,6 +70,17 @@ def gear_targets(session: Session, settings: Settings) -> GearTargets:
     return resolve_target_ids(targets, pool)
 
 
+def item_levels(session: Session) -> dict[int, int]:
+    """Each pool item's own level (required level, else its quest or dungeon level), to
+    place targets that don't name a level (ADR 0015)."""
+    faction = character_context(session)[1]
+    return {
+        item.item_id: item.effective_level
+        for item in pool_view(session, None, faction).items
+        if item.effective_level is not None
+    }
+
+
 def pool_slot(item: PoolItem) -> str | None:
     """The equipment slot an item would go in (the first of a ring or trinket pair)."""
     slot = item.item_slot or ""
@@ -77,11 +88,11 @@ def pool_slot(item: PoolItem) -> str | None:
 
 
 def migrate_target_choices(session: Session, settings: Settings) -> int:
-    """Move items pinned before ADR 0014 into the current bracket's targets."""
+    """Move items pinned before ADR 0014 into the targets."""
     ids = take_target_choices(session)
     if not ids:
         return 0
-    level, faction = character_context(session)
+    faction = character_context(session)[1]
     pool = {item.item_id: item for item in pool_view(session, None, faction).items}
     targets, moved = gear_targets(session, settings), 0
     for item_id in ids:
@@ -90,7 +101,7 @@ def migrate_target_choices(session: Session, settings: Settings) -> int:
         if item is None or slot is None:
             logger.warning("Dropped pinned item %s: it's not in the item pool", item_id)
             continue
-        targets, moved = pin_target(targets, item, slot, level), moved + 1
+        targets, moved = pin_target(targets, item, slot), moved + 1
     if moved:
         save_targets(session, targets)
     return moved

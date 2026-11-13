@@ -141,6 +141,15 @@ class TargetInfo(BaseModel):
     conflicts: list[str] = []
 
 
+class UpcomingTarget(BaseModel):
+    """A target above the character's level: shown early so you can prepare for it."""
+
+    target: GearTarget
+    target_info: TargetInfo | None
+    level: int | None
+    score_delta: float | None = None  # against what's worn now
+
+
 class GearRow(BaseModel):
     slot: str
     equipped: EquippedItem | None
@@ -154,14 +163,24 @@ class GearRow(BaseModel):
     score_delta: float | None = None
     verdict_basis: Literal["score", "item_level", "none"] = "none"
     warning: str | None
+    level: int | None = None  # the level the target counts from (ADR 0015)
+    upcoming: list[UpcomingTarget] = []  # the slot's next targets, nearest first
+
+
+class SlotOutlook(BaseModel):
+    """A slot whose targets are all above the character's level."""
+
+    slot: str
+    equipped: EquippedItem | None
+    upcoming: list[UpcomingTarget]
 
 
 class GearPlan(BaseModel):
+    """Per slot (ADR 0015): the target to go for now, in rows, and what's coming up."""
+
     level: int | None
-    bracket_min_level: int | None
-    next_bracket_level: int | None
-    next_bracket_size: int
     rows: list[GearRow]
+    later: list[SlotOutlook] = []  # slots with nothing to go for yet
     attributions: list[dict[str, str]] = []  # credits the data sources require
     targets_customised: bool = False  # edited in the app, not gear_targets.yaml (ADR 0014)
 
@@ -548,6 +567,32 @@ def armor_warning(equipped: EquippedItem | None, info: TargetInfo | None) -> str
     return None
 
 
+# How many targets above the character's level to show per slot.
+UPCOMING_PER_SLOT = 3
+
+
+def target_level(
+    target: GearTarget, info: TargetInfo | None, item_levels: Mapping[int, int]
+) -> int | None:
+    """The level a target counts from: the planned level or the item's own level, whichever
+    is higher (ADR 0015). The item's own level is its required level, else the pool's
+    quest or dungeon level."""
+    own = _first(
+        info.required_level if info else None,
+        item_levels.get(target.item_id) if target.item_id is not None else None,
+    )
+    levels = [lvl for lvl in (target.level, own) if lvl is not None]
+    return max(levels, default=None)
+
+
+def _wears(equipped: EquippedItem | None, target: GearTarget) -> bool:
+    if equipped is None:
+        return False
+    if target.item_id is not None and equipped.item_id is not None:
+        return target.item_id == equipped.item_id
+    return equipped.name.casefold() == target.item.casefold()
+
+
 def gear_plan(
     latest: Mapping[str, Snapshot],
     targets: GearTargets,
@@ -555,31 +600,58 @@ def gear_plan(
     icons: Mapping[int, str] | None = None,
     companion: Mapping[int, CompanionInfo] | None = None,
     weights: Weights | None = None,
+    item_levels: Mapping[int, int] | None = None,
 ) -> GearPlan:
+    """Per slot, the target to go for now and the ones coming up (ADR 0015).
+
+    A slot's targets are ordered by level, then priority. The current one is the last
+    whose level the character has reached, or the one being worn when that's further
+    along. Targets after it are coming up. Targets without any known level count as
+    reachable now.
+    """
     catalog = catalog or {}
     icons = icons or {}
+    item_levels = item_levels or {}
     level = character_level(_payload(latest, "profile"))
+    reached_level = level or 0
     equipped = {
         item.slot: item.model_copy(update={"icon_url": icons.get(item.item_id or 0)})
         for item in parse_equipment(_payload(latest, "equipment"))
     }
-    bracket = targets.for_level(level) if level is not None else None
-    upcoming = targets.next_after(level) if level is not None else None
 
-    ordered = sorted(
-        bracket.targets if bracket else [],
-        key=lambda t: (t.priority is None, t.priority or 0),
-    )
     rows: list[GearRow] = []
-    for target in ordered:
-        worn = equipped.get(target.slot)
-        info = target_info(target, catalog, icons, companion)
-        gain = score_delta(target.slot, worn, info, weights)
+    later: list[SlotOutlook] = []
+    for slot in targets.slots():
+        worn = equipped.get(slot)
+        chain = []
+        for target in targets.for_slot(slot):
+            info = target_info(target, catalog, icons, companion)
+            chain.append((target, info, target_level(target, info, item_levels)))
+        chain.sort(key=lambda entry: entry[2] or 0)  # stable: priority breaks ties
+        available = [i for i, (_, _, lvl) in enumerate(chain) if (lvl or 0) <= reached_level]
+        wearing = [i for i, (target, _, _) in enumerate(chain) if _wears(worn, target)]
+        current = max([*available[-1:], *wearing[-1:]], default=-1)
+        upcoming = [
+            UpcomingTarget(
+                target=target,
+                target_info=info,
+                level=lvl,
+                score_delta=score_delta(slot, worn, info, weights),
+            )
+            for target, info, lvl in chain[current + 1 :][:UPCOMING_PER_SLOT]
+        ]
+        if current < 0:
+            later.append(SlotOutlook(slot=slot, equipped=worn, upcoming=upcoming))
+            continue
+        target, info, lvl = chain[current]
+        gain = score_delta(slot, worn, info, weights)
         verdict, delta, basis = judge(target, worn, info, gain)
+        if _wears(worn, target):
+            verdict, delta, basis = "reached", 0, "none"
         armor_delta, stat_deltas = deltas(worn, info)
         rows.append(
             GearRow(
-                slot=target.slot,
+                slot=slot,
                 equipped=worn,
                 target=target,
                 target_info=info,
@@ -591,19 +663,21 @@ def gear_plan(
                 score_delta=gain,
                 verdict_basis=basis,
                 warning=armor_warning(worn, info),
+                level=lvl,
+                upcoming=upcoming,
             )
         )
-    # Biggest gain first; rows without a score keep their priority order after them,
-    # and reached targets go last. The sort is stable, so ties keep priority order.
+    # Biggest gain first; rows without a score keep slot order after them, and reached
+    # targets go last. The sort is stable.
     rows.sort(
         key=lambda r: (r.verdict == "reached", r.score_delta is None, -(r.score_delta or 0.0))
     )
-    uses_companion = any(r.target_info and "companion" in r.target_info.sources for r in rows)
+    later.sort(key=lambda s: min((u.level or 0 for u in s.upcoming), default=0))
+    shown = [*rows, *(u for s in later for u in s.upcoming), *(u for r in rows for u in r.upcoming)]
+    uses_companion = any(r.target_info and "companion" in r.target_info.sources for r in shown)
     return GearPlan(
         level=level,
-        bracket_min_level=bracket.min_level if bracket else None,
-        next_bracket_level=upcoming.min_level if upcoming else None,
-        next_bracket_size=len(upcoming.targets) if upcoming else 0,
         rows=rows,
+        later=later,
         attributions=[COMPANION_ATTRIBUTION] if uses_companion else [],
     )

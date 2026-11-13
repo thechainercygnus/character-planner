@@ -14,6 +14,7 @@ from character_planner.views import (
     GEAR_SLOTS,
     EquippedItem,
     GearRow,
+    UpcomingTarget,
     character_level,
     character_view,
     gear_plan,
@@ -21,6 +22,15 @@ from character_planner.views import (
 )
 
 __all__ = ["build_summary", "character_level", "equipped_by_slot"]
+
+
+def _upcoming(upcoming: list[UpcomingTarget]) -> str:
+    """Targets coming up in a slot, nearest first."""
+    parts = [
+        f"{u.target.item} (level {u.level})" if u.level is not None else u.target.item
+        for u in upcoming
+    ]
+    return "; ".join(parts) or "-"
 
 
 def _label(item: EquippedItem) -> str:
@@ -34,7 +44,8 @@ def equipped_by_slot(equipment: Any) -> dict[str, str]:
 def _verdict(row: GearRow) -> str:
     if row.verdict == "reached":
         return "reached"
-    text = row.verdict
+    # What's worn scores higher: the target is outgrown, but stays until worn (ADR 0015).
+    text = "outgrown" if row.verdict == "downgrade" else row.verdict
     info = row.target_info
     details = []
     if row.equipped and row.equipped.item_level is not None and info and info.item_level:
@@ -70,6 +81,7 @@ def build_summary(
     icons: Mapping[int, str] | None = None,
     companion: Mapping[int, CompanionInfo] | None = None,
     weights: Weights | None = None,
+    item_levels: Mapping[int, int] | None = None,
 ) -> str:
     lines = [f"# {character}", ""]
     if not latest:
@@ -127,16 +139,15 @@ def build_summary(
         lines += ["", "## Professions"]
         lines += [f"- {p.name}: {_fmt(p.skill)}/{_fmt(p.max_skill)}" for p in view.professions]
 
-    plan = gear_plan(latest, targets, catalog, icons, companion, weights)
+    plan = gear_plan(latest, targets, catalog, icons, companion, weights, item_levels)
     lines += ["", "## Gear vs targets"]
-    if plan.bracket_min_level is None:
-        lines.append("No target bracket for this level.")
-    else:
+    if not plan.rows and not plan.later:
+        lines.append("No gear targets yet.")
+    if plan.rows:
         lines += [
-            f"Bracket: level {plan.bracket_min_level}+",
             "",
-            "| Slot | Equipped | Target | Source | Verdict |",
-            "|---|---|---|---|---|",
+            "| Slot | Equipped | Target now | Source | Verdict | Coming up |",
+            "|---|---|---|---|---|---|",
         ]
         any_equipment = bool(view.equipment)
         for row in plan.rows:
@@ -146,16 +157,13 @@ def build_summary(
                 current = "empty" if any_equipment else "unknown"
             lines.append(
                 f"| {row.slot} | {current} | {row.target.item} | {row.target.source} "
-                f"| {_verdict(row)} |"
+                f"| {_verdict(row)} | {_upcoming(row.upcoming)} |"
             )
+    if plan.later:
+        lines += ["", "Coming up in other slots:"]
+        lines += [f"- {slot.slot}: {_upcoming(slot.upcoming)}" for slot in plan.later]
 
     for credit in plan.attributions:
         lines += ["", f"_{credit['text']} {credit['url']}_"]
-
-    if plan.next_bracket_level is not None:
-        lines += [
-            "",
-            f"Next bracket at level {plan.next_bracket_level} ({plan.next_bracket_size} targets).",
-        ]
 
     return "\n".join(lines) + "\n"

@@ -1,7 +1,7 @@
 import json
 
 from character_planner.config import Settings
-from character_planner.curated import load_gear_targets
+from character_planner.curated import GearTarget, GearTargets, load_gear_targets
 from character_planner.db import Snapshot
 from character_planner.summary import build_summary, character_level, equipped_by_slot
 
@@ -30,7 +30,7 @@ def test_equipped_by_slot_tolerates_unknown_shapes() -> None:
     assert equipped_by_slot("Not Found") == {}
 
 
-def test_summary_compares_real_gear_to_level_bracket(settings: Settings) -> None:
+def test_summary_compares_real_gear_to_current_targets(settings: Settings) -> None:
     targets = load_gear_targets(settings.curated_dir / "gear_targets.yaml")
     latest = {"profile": snapshot("profile"), "equipment": snapshot("equipment")}
 
@@ -40,7 +40,8 @@ def test_summary_compares_real_gear_to_level_bracket(settings: Settings) -> None
     assert "- Level: 18" in text
     assert "| OFF_HAND | Burnished Shield (Uncommon) | Dwarven Defender |" in text
     assert "| LEGS | Stormwind Guard Leggings (Uncommon) | Direhammer Leggings |" in text
-    assert "Next bracket at level 20" in text
+    assert "| Cape of the Brotherhood (level 20) |" in text  # coming up in BACK
+    assert "- HEAD: Guard's Silvered Chain Helm (level 20)" in text
 
 
 def test_summary_marks_reached_targets_and_empty_slots(settings: Settings) -> None:
@@ -70,3 +71,10 @@ def test_summary_marks_reached_targets_and_empty_slots(settings: Settings) -> No
 def test_summary_without_snapshots_explains_next_step(settings: Settings) -> None:
     targets = load_gear_targets(settings.curated_dir / "gear_targets.yaml")
     assert "/auth/login" in build_summary("Brumboldt Doomlet", {}, targets)
+
+
+def test_summary_calls_targets_below_whats_worn_outgrown() -> None:
+    weak = GearTarget(slot="OFF_HAND", item="Weak Shield", source="Vendor", item_level=5)
+    latest = {"profile": snapshot("profile"), "equipment": snapshot("equipment")}
+    text = build_summary("Brumboldt Doomlet", latest, GearTargets(targets=[weak]))
+    assert "| Weak Shield | Vendor | outgrown (ilvl 21 -> 5) [manual] |" in text

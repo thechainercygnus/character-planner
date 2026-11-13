@@ -6,6 +6,7 @@ import {
   type GearRow,
   type SourceName,
   type TargetInfo,
+  type UpcomingTarget,
   type Verdict,
 } from '../api'
 
@@ -101,7 +102,7 @@ const VERDICT_TEXT: Record<Verdict, string> = {
   reached: '✓ equipped',
   upgrade: 'upgrade',
   sidegrade: 'sidegrade',
-  downgrade: 'already better',
+  downgrade: 'outgrown',
   unknown: 'unknown',
 }
 
@@ -135,16 +136,57 @@ export function VerdictBadge({ row }: { row: GearRow }) {
   )
 }
 
-/** `actions` renders on the right of the section heading (e.g. the stat weights button). */
+/** Where a target comes from: its drops when known, else the hand-written source. */
+function sourceOf(target: { target: { source: string }; target_info: TargetInfo | null }): string {
+  const drops = target.target_info?.drops ?? []
+  return drops.length > 0 ? drops.join('; ') : target.target.source
+}
+
+/** A slot's next targets above the character's level, nearest first. */
+function Upcoming({ upcoming }: { upcoming: UpcomingTarget[] }) {
+  if (upcoming.length === 0) return <span className="muted">—</span>
+  return (
+    <ul className="upcoming">
+      {upcoming.map((next, index) => (
+        <li key={`${next.target.item}-${index}`} title={sourceOf(next)}>
+          {next.target_info?.wowhead ? (
+            <a className="item-link" href={next.target_info.wowhead} target="_blank" rel="noreferrer">
+              {next.target.item}
+            </a>
+          ) : (
+            next.target.item
+          )}
+          {next.target.pinned && <span className="muted"> (pinned)</span>}
+          <small className="muted">
+            {next.level !== null ? `level ${next.level}` : 'level unknown'}
+            {next.score_delta !== null && ` · ${signed(next.score_delta, 1)} score`}
+            {' · '}
+            {sourceOf(next)}
+          </small>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+/**
+ * Per slot, the target to go for now and the ones coming up (ADR 0015). `actions` renders
+ * on the right of the section heading (e.g. the stat weights button).
+ */
 export function GearTable({ plan, actions }: { plan: GearPlan; actions?: ReactNode }) {
-  if (plan.bracket_min_level === null) {
+  const heading = (
+    <div className="section-heading">
+      <h2>
+        Gear targets {plan.level !== null && <span className="muted">level {plan.level}</span>}
+      </h2>
+      {actions}
+    </div>
+  )
+  if (plan.rows.length === 0 && plan.later.length === 0) {
     return (
       <section>
-        <div className="section-heading">
-          <h2>Gear targets</h2>
-          {actions}
-        </div>
-        <p className="muted">No gear targets for this level yet. Add a bracket with Edit targets.</p>
+        {heading}
+        <p className="muted">No gear targets yet. Add some with Edit targets.</p>
       </section>
     )
   }
@@ -155,49 +197,69 @@ export function GearTable({ plan, actions }: { plan: GearPlan; actions?: ReactNo
 
   return (
     <section>
-      <div className="section-heading">
-        <h2>
-          Gear targets <span className="muted">level {plan.bracket_min_level}+</span>
-        </h2>
-        {actions}
-      </div>
+      {heading}
       <p className="muted">
-        {upgrades} upgrade{upgrades === 1 ? '' : 's'} to chase
-        {unknown > 0 && `, ${unknown} without item data`}.
-        {plan.next_bracket_level !== null &&
-          ` Next bracket at level ${plan.next_bracket_level} (${plan.next_bracket_size} targets).`}
+        {upgrades} upgrade{upgrades === 1 ? '' : 's'} to chase now
+        {unknown > 0 && `, ${unknown} without item data`}. Each slot shows the target for your level and the next
+        ones, so you can prepare for them.
       </p>
-      <table className="gear">
-        <thead>
-          <tr>
-            <th>Slot</th>
-            <th>Equipped</th>
-            <th>Target</th>
-            <th>Verdict</th>
-            <th>Source</th>
-          </tr>
-        </thead>
-        <tbody>
-          {plan.rows.map((row, index) => (
-            // Two targets can share a slot (a pin beside a planned item).
-            <tr key={`${row.slot}-${row.target.item_id ?? row.target.item}-${index}`} className={`row-${row.verdict}`}>
-              <td>{slotLabel(row.slot)}</td>
-              <td>{row.equipped ? <ItemName item={row.equipped} /> : <span className="muted">empty</span>}</td>
-              <td>
-                <TargetName row={row} />
-              </td>
-              <td>
-                <VerdictBadge row={row} />
-              </td>
-              <td className="muted">
-                {row.target_info && row.target_info.drops.length > 0
-                  ? row.target_info.drops.join('; ')
-                  : row.target.source}
-              </td>
+      {plan.rows.length > 0 && (
+        <table className="gear">
+          <thead>
+            <tr>
+              <th>Slot</th>
+              <th>Equipped</th>
+              <th>Target now</th>
+              <th>Verdict</th>
+              <th>Source</th>
+              <th>Coming up</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {plan.rows.map((row) => (
+              <tr key={row.slot} className={`row-${row.verdict}`}>
+                <td>{slotLabel(row.slot)}</td>
+                <td>{row.equipped ? <ItemName item={row.equipped} /> : <span className="muted">empty</span>}</td>
+                <td>
+                  <TargetName row={row} />
+                </td>
+                <td>
+                  <VerdictBadge row={row} />
+                </td>
+                <td className="muted">{sourceOf(row)}</td>
+                <td>
+                  <Upcoming upcoming={row.upcoming} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {plan.later.length > 0 && (
+        <>
+          <h3>Coming up in other slots</h3>
+          <table className="gear">
+            <thead>
+              <tr>
+                <th>Slot</th>
+                <th>Equipped</th>
+                <th>Next targets</th>
+              </tr>
+            </thead>
+            <tbody>
+              {plan.later.map((slot) => (
+                <tr key={slot.slot}>
+                  <td>{slotLabel(slot.slot)}</td>
+                  <td>{slot.equipped ? <ItemName item={slot.equipped} /> : <span className="muted">empty</span>}</td>
+                  <td>
+                    <Upcoming upcoming={slot.upcoming} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
       {plan.attributions.map((credit) => (
         <p key={credit.url} className="attribution muted">
           {credit.text}{' '}
