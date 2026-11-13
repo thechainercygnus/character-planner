@@ -560,7 +560,7 @@ def test_guest_mode_uses_the_shipped_rules_and_stores_nothing(
 
     options = client.get("/api/guest").json()
     classes = {c["key"]: c for c in options["classes"]}
-    assert list(classes) == ["warrior", "warlock"]  # Warrior first, then by name (#80)
+    assert list(classes)[:2] == ["warrior", "druid"]  # Warrior first, then by name (#80)
     assert classes["warrior"]["presets"][0]["key"] == "leveling-tank"
     assert classes["warlock"]["presets"][0]["key"] == "warlock-leveling"
     assert options["factions"] == ["alliance", "horde"]
@@ -591,7 +591,7 @@ def test_guest_mode_uses_the_shipped_rules_and_stores_nothing(
 @pytest.mark.parametrize(
     "params",
     [
-        {"level": 18, "class": "mage"},
+        {"level": 18, "class": "death-knight"},
         {"level": 18, "preset": "nope"},
         {"level": 0},
         {"level": 81},

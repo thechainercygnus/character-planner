@@ -1,0 +1,84 @@
+# Paladin defaults (#80, ADR 0023): used when the synced character is a Paladin, and in
+# guest mode. Edits made in the app (Upgrades settings, Stat weights, Edit targets, the
+# talent planner) are saved in the database and win until reset.
+
+name: Paladin
+
+# What a Paladin can wear and wield. Proficiencies as in Classic: Forever's own data
+# doesn't list proficiencies, so correct anything here that Forever changed.
+# Values match Forever Companion's item details (weaponType, armor class).
+rules:
+  weapon_types: [Axe, Mace, Sword, Polearm, Shield]
+  armor_types: [cloth, leather, mail]
+  # Plate from 40, as in Classic.
+  plate_from_level: 40
+  mail_from_level: null
+  # Retribution levels with a two-hander; the tank and healer presets favour a shield
+  # through their weights, not these rules.
+  two_handers: true
+  two_hand_types: [Axe, Mace, Sword, Polearm]
+  off_hand_types: [Shield, Miscellaneous]
+
+# Stat weights: rough starting points, not theorycraft. Adjust them in the app.
+# Stat names are as Forever writes them, including equip bonuses ("Equip: +5 Spell Power").
+# The first preset is the default; the others only list what they change.
+presets:
+  # Retribution: a slow two-hander and Seal of Command.
+  - key: paladin-leveling
+    name: Leveling retribution
+    weights:
+      Strength: 1.0
+      Agility: 0.5
+      Attack Power: 0.5
+      Stamina: 0.6
+      Intellect: 0.3
+      Spirit: 0.1
+      Weapon DPS: 3.0
+      Armor: 0.03
+      Defense: 0.1
+      Ranged DPS: 0.0
+      Spell Damage: 0.1
+      Spell Power: 0.1
+      Holy Spell Damage: 0.1
+      Healing: 0.1
+      Mana Regeneration: 0.2
+      Fire Resistance: 0.05
+      Frost Resistance: 0.05
+      Nature Resistance: 0.05
+      Shadow Resistance: 0.05
+      Arcane Resistance: 0.05
+  # Protection: holy damage holds threat, so spell power counts too.
+  - key: paladin-tank
+    name: Dungeon tank
+    weights:
+      Stamina: 1.0
+      Armor: 0.1
+      Defense: 1.0
+      Agility: 0.5
+      Strength: 0.5
+      Attack Power: 0.2
+      Spell Damage: 0.4
+      Spell Power: 0.4
+      Holy Spell Damage: 0.4
+      Intellect: 0.3
+      Weapon DPS: 0.8
+  - key: paladin-healer
+    name: Dungeon healer
+    weights:
+      Healing: 1.0
+      Spell Power: 0.8
+      Spell Damage: 0.1
+      Holy Spell Damage: 0.0
+      Intellect: 1.0
+      Spirit: 0.2
+      Mana Regeneration: 1.0
+      Stamina: 0.3
+      Strength: 0.0
+      Agility: 0.0
+      Attack Power: 0.0
+      Weapon DPS: 0.0
+      Armor: 0.02
+      Defense: 0.0
+
+# No curated gear targets or talent plan yet: build them in the app's editors.
+targets: []

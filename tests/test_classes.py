@@ -1,5 +1,6 @@
 """Shipped defaults per class (#80, ADR 0023)."""
 
+import json
 from collections.abc import Iterator
 
 import pytest
@@ -17,8 +18,9 @@ from character_planner.classes import (
 )
 from character_planner.config import Settings
 from character_planner.db import ActiveWeightPreset, Snapshot
+from character_planner.rules import ARMOR_TYPES, OFF_HAND_TYPES, TWO_HAND_TYPES, WEAPON_TYPES
 
-from .conftest import REPO_ROOT
+from .conftest import FIXTURES, REPO_ROOT
 
 CURATED = REPO_ROOT / "data" / "curated"
 
@@ -47,7 +49,64 @@ def test_class_keys() -> None:
 
 
 def test_supported_classes_start_with_the_warrior() -> None:
-    assert [c.key for c in supported_classes(CURATED)] == ["warrior", "warlock"]
+    assert [c.name for c in supported_classes(CURATED)] == [
+        "Warrior",
+        "Druid",
+        "Hunter",
+        "Mage",
+        "Paladin",
+        "Priest",
+        "Rogue",
+        "Shaman",
+        "Warlock",
+    ]
+
+
+def test_every_class_in_forever_has_defaults() -> None:
+    """Forever's classes, as its talent tree index names them (a real response)."""
+    index = json.loads((FIXTURES / "talent_tree_index.json").read_text(encoding="utf-8"))
+    forever = {tree["name"] for tree in index["class_talent_trees"]}
+    assert {c.name for c in supported_classes(CURATED)} == forever
+
+
+@pytest.mark.parametrize("key", [c.key for c in supported_classes(CURATED)])
+def test_each_classs_defaults_use_values_the_editor_offers(key: str) -> None:
+    defaults = load_class_defaults(CURATED, key)
+    rules = defaults.rules
+    assert defaults.playable.key == key
+    assert set(rules.weapon_types) <= set(WEAPON_TYPES)
+    assert set(rules.armor_types) <= set(ARMOR_TYPES)
+    assert set(rules.off_hand_types) <= set(OFF_HAND_TYPES)
+    if rules.two_hand_types is not None:
+        assert rules.two_handers and set(rules.two_hand_types) <= set(TWO_HAND_TYPES)
+        # A two-hander type the class can't otherwise wield would never be suggested.
+        assert set(rules.two_hand_types) <= set(rules.weapon_types)
+    presets = defaults.presets.presets
+    assert presets and all(p.key.startswith(f"{key}-") or key == "warrior" for p in presets)
+    assert all(weight >= 0 for p in presets for weight in p.weights.values())
+
+
+def test_mail_and_plate_come_at_40_for_the_classes_that_wear_them() -> None:
+    levels = {}
+    for playable in supported_classes(CURATED):
+        rules = load_class_defaults(CURATED, playable.key).rules
+        if (rules.mail_from_level, rules.plate_from_level) != (None, None):
+            levels[playable.key] = (rules.mail_from_level, rules.plate_from_level)
+    assert levels == {
+        "hunter": (40, None),
+        "shaman": (40, None),
+        "paladin": (None, 40),
+        "warrior": (None, 40),
+    }
+
+
+def test_preset_keys_are_unique_across_classes() -> None:
+    keys = [
+        p.key
+        for c in supported_classes(CURATED)
+        for p in load_class_defaults(CURATED, c.key).presets.presets
+    ]
+    assert len(keys) == len(set(keys))
 
 
 def test_the_warlock_defaults() -> None:
@@ -78,7 +137,7 @@ def test_the_warlock_defaults() -> None:
 
 
 def test_a_class_without_defaults_gets_the_warriors() -> None:
-    assert load_class_defaults(CURATED, "mage").playable.key == "warrior"
+    assert load_class_defaults(CURATED, "death-knight").playable.key == "warrior"
 
 
 def test_the_class_comes_from_the_synced_profile(engine: Engine, settings: Settings) -> None:
@@ -136,7 +195,9 @@ def test_guest_mode_offers_each_class_with_its_presets(client: TestClient) -> No
         params={"level": 20, "class": "warlock", "preset": "leveling-tank"},
     )
     assert warrior_preset.status_code == 422  # presets belong to their class
-    unknown = client.get("/api/guest/recommendations", params={"level": 20, "class": "mage"})
+    unknown = client.get(
+        "/api/guest/recommendations", params={"level": 20, "class": "death-knight"}
+    )
     assert unknown.status_code == 422
 
 
