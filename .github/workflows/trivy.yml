@@ -1,0 +1,73 @@
+# Trivy (#54): scans the image that ships and the Dockerfile, results to Security > Code
+# scanning beside CodeQL. Report-only: findings show there, the job stays green. The
+# release workflow (ADR 0026) is the gate: it refuses to publish an image with fixable
+# HIGH or CRITICAL vulnerabilities. Weekly, so new CVEs in an unchanged image show up.
+name: trivy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "17 6 * * 3"
+
+permissions: {}
+
+# A newer push to the same branch or PR replaces a scan still running.
+concurrency:
+  group: trivy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: scan (image and config)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # upload SARIF
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build the image
+        run: docker build -t character-planner:ci .
+
+      # OS packages and Python libraries in the image. Unfixed CVEs are left out, so every
+      # finding has something to do; LOW is left out as noise.
+      - name: Scan the image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: character-planner:ci
+          version: v0.70.0
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH,MEDIUM
+          limit-severities-for-sarif: true
+          format: sarif
+          output: trivy-image.sarif
+          exit-code: "0"
+
+      # Misconfigurations: the Dockerfile. (Trivy has no Compose checks.)
+      - name: Scan the config
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: config
+          scan-ref: .
+          version: v0.70.0
+          skip-setup-trivy: true # installed by the step above
+          format: sarif
+          output: trivy-config.sarif
+          exit-code: "0"
+
+      # Pull requests from forks get a read-only token: they can't upload.
+      - if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          sarif_file: trivy-image.sarif
+          category: trivy-image
+      - if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          sarif_file: trivy-config.sarif
+          category: trivy-config
