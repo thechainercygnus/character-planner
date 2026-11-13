@@ -24,7 +24,31 @@ jobs:
       - run: uv run ruff check
       - run: uv run ruff format --check
       - run: uv run pyright
-      - run: uv run pytest
+      # Coverage (#55): report only; #94 sets the floor at Silver's 80% statements.
+      - run: uv run pytest --cov --cov-report=term --cov-report=xml
+      - name: Coverage summary
+        run: |
+          uv run python - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          import xml.etree.ElementTree as ET
+          root = ET.parse("coverage.xml").getroot()
+          lines, branches = float(root.get("line-rate")), float(root.get("branch-rate"))
+          print("### Backend coverage")
+          print()
+          print(f"Statements **{lines:.1%}**, branches **{branches:.1%}**.")
+          print()
+          EOF
+          {
+            echo "<details><summary>Per file</summary>"
+            echo
+            uv run coverage report --format=markdown
+            echo
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: backend-coverage
+          path: coverage.xml
+          retention-days: 14
 
   secret-scan:
     runs-on: ubuntu-latest
@@ -73,7 +97,14 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
-      - run: npm test
+      # Tests with coverage (#55): report only; #94 sets the floor.
+      - run: npm run coverage
+      - run: node scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/lcov.info
+          retention-days: 14
       - run: npm run build
 
   docker:
