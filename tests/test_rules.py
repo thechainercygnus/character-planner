@@ -97,3 +97,10 @@ def test_mail_level_is_bounded() -> None:
     assert edited(mail_from_level=40).to_rules().mail_from_level == 40
     with pytest.raises(ValueError):
         edited(mail_from_level=0)
+
+
+def test_dual_wield_level_is_bounded_and_optional() -> None:
+    assert edited(dual_wield_from_level=20).to_rules().dual_wield_from_level == 20
+    assert edited(dual_wield_from_level=None).to_rules().dual_wield_from_level is None
+    with pytest.raises(ValueError):
+        edited(dual_wield_from_level=81)

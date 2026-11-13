@@ -12,6 +12,7 @@ const rules: UsageRules = {
   two_handers: false,
   two_hand_types: null,
   off_hand_types: ['Shield'],
+  dual_wield_from_level: null,
   levels_ahead: 3,
   per_slot: 3,
   min_gain: 1,
@@ -98,12 +99,14 @@ describe('RulesDialog', () => {
     fireEvent.click(twoHanders.getByLabelText('Sword'))
     fireEvent.click(twoHanders.getByLabelText('Axe'))
     fireEvent.change(screen.getByLabelText('Mail from level'), { target: { value: '40' } })
+    fireEvent.change(screen.getByLabelText('Dual wield from level'), { target: { value: '20' } })
     fireEvent.click(screen.getByText('Save'))
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/rules', expect.objectContaining({ method: 'PUT' })))
     const saved = putBody(fetchMock)
     expect(saved.two_handers).toBe(true)
     expect(saved.mail_from_level).toBe(40)
+    expect(saved.dual_wield_from_level).toBe(20)
     expect(saved.two_hand_types).toEqual(['Staff'])
   })
 

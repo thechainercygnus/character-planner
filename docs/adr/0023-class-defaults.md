@@ -45,6 +45,10 @@ for any class, and the synced profile names the class.
 - Dual wielders (Rogues, Hunters) list one-hand weapon types in `off_hand_types`, so a
   one-hand weapon competes for the off hand too. The Warrior's `[Shield]` keeps its
   one-handers in the main hand.
+- **Dual Wield is learned:** `dual_wield_from_level` gates weapons in the off hand (not
+  shields or held-in-off-hand items), like the mail and plate levels. Rogues get it at 10,
+  Warriors and Hunters at 20, as in Forever. The Warrior's defaults stay Protection's
+  shields; #93 covers Fury and Arms.
 - Edits made in the app are global, so on one instance they belong to the one tracked
   character. #14 makes them per character.
 - A Warrior's equip bonuses (Attack Power, Defense Rating) now count for pool items too,

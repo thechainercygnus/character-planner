@@ -14,8 +14,10 @@ rules:
   mail_from_level: null
   # One-handed weapons only.
   two_handers: false
-  # Dual wielding: a second one-hand weapon in the off hand.
+  # Dual wielding: a second one-hand weapon in the off hand, once Dual Wield is learned
+  # at 10 (confirmed for Forever by Bryce, 2026-11-13).
   off_hand_types: [Dagger, Sword, Mace, Fist Weapon]
+  dual_wield_from_level: 10
 
 # Stat weights: rough starting points, not theorycraft. Adjust them in the app.
 # Stat names are as Forever writes them, including equip bonuses ("Equip: +4 Attack Power").

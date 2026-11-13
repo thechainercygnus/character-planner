@@ -16,8 +16,10 @@ rules:
   # No two-handed maces.
   two_handers: true
   two_hand_types: [Axe, Sword, Polearm, Staff]
-  # Dual wielding: a second one-hand weapon in the off hand.
+  # Dual wielding: a second one-hand weapon in the off hand, once Dual Wield is
+  # learned from the trainer at 20.
   off_hand_types: [Axe, Sword, Dagger, Fist Weapon]
+  dual_wield_from_level: 20
 
 # Stat weights: rough starting points, not theorycraft. Adjust them in the app.
 # Stat names are as Forever writes them, including equip bonuses ("Equip: +4 Attack Power").

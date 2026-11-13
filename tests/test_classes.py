@@ -221,3 +221,21 @@ def test_guest_mode_refuses_a_path_as_a_class(client: TestClient) -> None:
         "/api/guest/recommendations", params={"level": 20, "class": "../recommend"}
     )
     assert response.status_code == 422
+
+
+def test_dual_wield_levels() -> None:
+    """Rogues learn Dual Wield at 10, Warriors and Hunters at 20 (Forever, per Bryce)."""
+    levels = {
+        c.key: load_class_defaults(CURATED, c.key).rules.dual_wield_from_level
+        for c in supported_classes(CURATED)
+    }
+    assert {key: level for key, level in levels.items() if level is not None} == {
+        "rogue": 10,
+        "hunter": 20,
+        "warrior": 20,
+    }
+    # Classes without it put no weapons in the off hand.
+    for key, level in levels.items():
+        if level is None:
+            off_hand = load_class_defaults(CURATED, key).rules.off_hand_types
+            assert set(off_hand) <= {"Shield", "Miscellaneous"}, key

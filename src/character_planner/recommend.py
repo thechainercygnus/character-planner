@@ -83,6 +83,9 @@ class UsageRules(BaseModel):
     # staves but not two-handed swords.
     two_hand_types: list[str] | None = None
     off_hand_types: list[str] = ["Shield"]
+    # Weapons in off_hand_types (not shields or held-in-off-hand items) count from this
+    # level: Rogues learn Dual Wield at 10, Warriors and Hunters at 20. None: from the start.
+    dual_wield_from_level: int | None = None
     levels_ahead: int = 3
     per_slot: int = 3
     # Gains at or below this are sidegrades, not worth listing (same band as gear targets).
@@ -177,19 +180,37 @@ def unusable_reason(
             return f"no two-handed {weapon}"
     # Held-in-off-hand items have the weapon type Miscellaneous, or none at all.
     off_hand = item.weapon_type or ("Miscellaneous" if slot == "Held In Off-hand" else None)
-    if SLOT_FOR.get(slot) == "OFF_HAND" and off_hand not in rules.off_hand_types:
-        return "off hand type"
+    if SLOT_FOR.get(slot) == "OFF_HAND":
+        if off_hand not in rules.off_hand_types:
+            return "off hand type"
+        if off_hand not in NOT_WEAPONS and not dual_wields(rules, level):
+            return "dual wield not yet"
     return None
 
 
-def slots_for(item: PoolItem, rules: UsageRules) -> tuple[str | None, ...]:
+# Off-hand types that aren't weapons, so need no Dual Wield.
+NOT_WEAPONS = (None, "Shield", "Miscellaneous")
+
+
+def dual_wields(rules: UsageRules, level: int | None) -> bool:
+    """Whether a weapon counts for the off hand at this level (Dual Wield learned)."""
+    start = rules.dual_wield_from_level
+    return start is None or (level is not None and level >= start)
+
+
+def slots_for(item: PoolItem, rules: UsageRules, level: int | None) -> tuple[str | None, ...]:
     """The equipment slots an item competes for. Rings and trinkets fill either of two;
-    a one-hand weapon also fits the off hand when the class dual wields it (#80: Rogues
-    and Hunters list Dagger, Sword... in off_hand_types; a Warrior's [Shield] doesn't)."""
+    a one-hand weapon also fits the off hand when the class dual wields it at this level
+    (#80: Rogues and Hunters list Dagger, Sword... in off_hand_types; a Warrior's [Shield]
+    doesn't)."""
     item_slot = item.item_slot or ""
     if item_slot in PAIRED:
         return PAIRED[item_slot]
-    if item_slot == "One-Hand" and item.weapon_type in rules.off_hand_types:
+    if (
+        item_slot == "One-Hand"
+        and item.weapon_type in rules.off_hand_types
+        and dual_wields(rules, level)
+    ):
         return ("MAIN_HAND", "OFF_HAND")
     return (SLOT_FOR.get(item_slot),)
 
@@ -277,7 +298,7 @@ def recommend(
 
     by_slot: dict[str, list[Candidate]] = {slot: [] for slot in EQUIPMENT_SLOTS}
     for item in scored:
-        for slot in slots_for(item, rules):
+        for slot in slots_for(item, rules, level):
             if slot is not None:
                 by_slot[slot].append(
                     _candidate(

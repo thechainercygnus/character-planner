@@ -337,6 +337,7 @@ def test_dual_wielders_get_one_hand_weapons_offered_for_the_off_hand() -> None:
         update={
             "weapon_types": ["Dagger", "Sword", "Mace", "Fist Weapon"],
             "off_hand_types": ["Dagger", "Sword", "Mace", "Fist Weapon"],
+            "dual_wield_from_level": None,
         }
     )
     dagger = item(1, "One-Hand", weapon_type="Dagger", dps=8.0)
@@ -351,3 +352,27 @@ def test_dual_wielders_get_one_hand_weapons_offered_for_the_off_hand() -> None:
     assert ids(rogue, "OFF_HAND") == [1]  # a main-hand-only sword stays out
     # A Warrior's off hand takes shields only: one-handers stay main hand.
     assert ids(RULES, "OFF_HAND") == []
+
+
+@pytest.mark.parametrize(("level", "offered"), [(19, False), (20, True)])
+def test_off_hand_weapons_wait_for_dual_wield(level: int, offered: bool) -> None:
+    """Warriors and Hunters learn Dual Wield at 20 (#80); shields don't need it."""
+    hunter = RULES.model_copy(
+        update={
+            "weapon_types": ["Axe", "Sword", "Dagger"],
+            "off_hand_types": ["Axe", "Sword", "Dagger"],
+            "dual_wield_from_level": 20,
+        }
+    )
+    dagger = item(1, "One-Hand", weapon_type="Dagger", dps=8.0, required_level=15)
+    off_hand_sword = item(2, "Off Hand", weapon_type="Sword", dps=6.0, required_level=15)
+    rows = recommend(view(dagger, off_hand_sword, level=level), {}, WEIGHTS, hunter).rows
+    off_hand = [c.item.item_id for c in next(r for r in rows if r.slot == "OFF_HAND").candidates]
+    assert off_hand == ([1, 2] if offered else [])
+    expected = None if offered else "dual wield not yet"
+    assert unusable_reason(off_hand_sword, hunter, level) == expected
+    # The main hand doesn't wait.
+    assert unusable_reason(dagger, hunter, level) is None
+    # A shield in the off hand never needs Dual Wield.
+    shield_user = RULES.model_copy(update={"dual_wield_from_level": 20})
+    assert unusable_reason(item(3, "Off Hand", weapon_type="Shield"), shield_user, 18) is None
