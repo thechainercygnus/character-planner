@@ -60,6 +60,14 @@ docker compose logs -f worker
 Once the Tailscale container has joined, remove `TS_AUTHKEY` from `.env`. Its state is
 kept on the `tailscale-state` volume.
 
+### Alerts
+
+Open **Alerts** in the status bar and paste a Discord webhook URL (channel settings →
+Integrations → Webhooks). **Send a test** checks it. The worker sends queued alerts on
+every pass (`WORKER_POLL_SECONDS`, default 60) and warns 2 hours before the 24-hour
+Battle.net login expires, so keep it running. Alerts from a sync you start yourself are
+sent straight away. See ADR 0021.
+
 ### Logs
 
 Both containers log to the console (`docker compose logs -f app worker`) and to rotating

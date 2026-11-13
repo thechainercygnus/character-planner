@@ -42,6 +42,7 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Talent plan vs synced talents (next point, off-plan points) | `/api/talents`, plan in `data/curated/talent_plan.yaml` or edit it in the app |
 | Stat weights for scoring | `GET`/`PUT`/`DELETE /api/weights` for the active preset (or the **Stat weights** button on the Upgrades and Plan tabs) |
 | Weight presets (Leveling tank, Dungeon tank, Solo DPS, your own) | `PUT /api/weights/active`, `POST /api/weights/presets`, `PATCH`/`DELETE /api/weights/presets/{key}` |
+| Alerts in Discord (login expiring, level-ups, targets, upgrades; failed jobs) | **Alerts** in the status bar, or `/api/notifications` (ADR 0021) |
 | API docs | http://localhost:8000/docs |
 | Logs (console; files with `LOG_DIR`) | `LOG_LEVEL=DEBUG` for upstream requests, `LOG_DIR=data/logs` for `server.log` and `access.log` (ADR 0019) |
 | Run scheduled syncs and pool refreshes | `uv run character-planner-worker` (`--once` to run them now) |
