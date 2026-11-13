@@ -11,6 +11,7 @@ Using this data requires linking back to Forever Companion and crediting its sou
 see ATTRIBUTION.
 """
 
+import logging
 import re
 import time
 from collections.abc import Callable, Iterable
@@ -24,6 +25,9 @@ from sqlmodel import Session, select
 
 from character_planner import fields
 from character_planner.db import CompanionItem, save_now, utcnow
+from character_planner.logs import JobLog
+
+logger = logging.getLogger(__name__)
 
 BASE_URL = "https://forevercompanion.io/api/v1"
 USER_AGENT = "character-planner/0.1 (personal WoW Forever planner)"
@@ -173,8 +177,10 @@ def refresh_companion(
 
     own_http = http is None
     client = http or httpx.Client(timeout=20, headers={"User-Agent": USER_AGENT})
+    job = JobLog(logger, "Forever Companion items", len(wanted))
     try:
         for index, item_id in enumerate(wanted, start=1):
+            job.step(index)
             if pause and index > 1:
                 time.sleep(pause)
             if progress:
@@ -206,6 +212,11 @@ def refresh_companion(
     finally:
         if own_http:
             client.close()
+    job.done(
+        f"{len(outcome.fetched)} fetched, {len(outcome.not_found)} not found, "
+        f"{len(outcome.errors)} errors",
+        outcome.errors,
+    )
     return outcome
 
 

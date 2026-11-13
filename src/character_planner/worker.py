@@ -24,6 +24,7 @@ from sqlmodel import Session
 from character_planner import jobs
 from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, make_engine, utcnow
+from character_planner.logs import configure_logging
 
 logger = logging.getLogger("character_planner.worker")
 
@@ -93,6 +94,7 @@ def run_due(
         if not job.due(now):
             continue
         job.last_run = now
+        logger.info("%s: running", job.name)
         try:
             with Session(engine) as session:
                 outcomes[job.name] = job.run(session, settings, http)
@@ -107,13 +109,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run scheduled syncs and pool refreshes.")
     parser.add_argument("--once", action="store_true", help="run every job now, then exit")
     args = parser.parse_args(argv)
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
-    )
-    # httpx logs every request URL at INFO; keep the log to job outcomes.
-    logging.getLogger("httpx").setLevel(logging.WARNING)
-
     settings = get_settings()
+    configure_logging(settings, "worker")
     engine = make_engine(settings.database_url)
     init_db(engine)
     schedule = default_schedule(settings)

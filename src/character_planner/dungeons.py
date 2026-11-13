@@ -6,6 +6,7 @@ GET /dungeons/{id} carries the dungeon's drop table (item ids, slot, quality, bo
 its quests with reward item ids. Both are cached here as raw payloads (ADR 0002).
 """
 
+import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -19,6 +20,9 @@ from sqlmodel import Session, select
 from character_planner import fields
 from character_planner.companion import BASE_URL, USER_AGENT, as_utc
 from character_planner.db import CompanionDungeon, save_now, utcnow
+from character_planner.logs import JobLog
+
+logger = logging.getLogger(__name__)
 
 DUNGEON_MAX_AGE = timedelta(hours=24)
 # Forever Companion allows 120 requests/min per IP; this keeps a long batch under it.
@@ -161,9 +165,11 @@ def refresh_dungeons(
         response = http.get(f"{BASE_URL}/dungeons")
     except httpx.HTTPError as error:
         outcome.errors.append(f"dungeon list: {error}")
+        logger.warning("Forever Companion dungeon list: %s", error)
         return outcome
     if response.status_code != 200:
         outcome.errors.append(f"dungeon list: HTTP {response.status_code}")
+        logger.warning("Forever Companion dungeon list: HTTP %s", response.status_code)
         return outcome
     ids = listed_dungeon_ids(response.json())
     outcome.listed = len(ids)
@@ -171,7 +177,9 @@ def refresh_dungeons(
     cutoff = utcnow() - DUNGEON_MAX_AGE
     cached = {row.dungeon_id: row for row in session.exec(select(CompanionDungeon)).all()}
     wanted = [d for d in ids if force or d not in cached or as_utc(cached[d].fetched_at) < cutoff]
+    job = JobLog(logger, f"Forever Companion dungeons ({len(ids)} listed)", len(wanted))
     for index, dungeon_id in enumerate(wanted, start=1):
+        job.step(index)
         time.sleep(pause)
         if progress:
             progress(f"dungeon {index}/{len(wanted)}: {dungeon_id}")
@@ -194,6 +202,7 @@ def refresh_dungeons(
             session, CompanionDungeon(dungeon_id=dungeon_id, payload=body, fetched_at=utcnow())
         )
         outcome.fetched.append(dungeon_id)
+    job.done(f"{len(outcome.fetched)} fetched, {len(outcome.errors)} errors", outcome.errors)
     return outcome
 
 

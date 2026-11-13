@@ -8,6 +8,7 @@ from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Region = Literal["us", "eu", "kr", "tw"]
+LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
 
 
 class Settings(BaseSettings):
@@ -37,6 +38,12 @@ class Settings(BaseSettings):
     sync_every_hours: float = 6
     pool_every_hours: float = 24
     worker_poll_seconds: float = 60
+
+    # Logging (ADR 0019). DEBUG adds every upstream request. With log_dir set, the API
+    # writes server.log and access.log there and the worker writes worker.log.
+    log_level: LogLevel = "INFO"
+    log_format: Literal["text", "json"] = "text"
+    log_dir: Path | None = None
 
     @property
     def api_base_url(self) -> str:
