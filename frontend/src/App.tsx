@@ -11,6 +11,7 @@ import { Enchants } from './components/Enchants'
 import { GearTable } from './components/GearTable'
 import { Progress } from './components/Progress'
 import { Recommendations } from './components/Recommendations'
+import { RulesDialog } from './components/RulesDialog'
 import { StatusBar } from './components/StatusBar'
 import { TalentPlanPanel } from './components/TalentPlan'
 import { TabBar } from './components/Tabs'
@@ -67,7 +68,17 @@ export default function App() {
           {tab === 'upgrades' && (
             <>
               {recommendationsError}
-              {recommendations.data && <Recommendations data={recommendations.data} actions={<WeightsDialog />} />}
+              {recommendations.data && (
+                <Recommendations
+                  data={recommendations.data}
+                  actions={
+                    <div className="heading-actions">
+                      <RulesDialog />
+                      <WeightsDialog />
+                    </div>
+                  }
+                />
+              )}
               {enchants.isError && <p className="error">Couldn't load enchants: {enchants.error.message}</p>}
               {enchants.data && <Enchants data={enchants.data} />}
             </>

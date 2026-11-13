@@ -69,6 +69,15 @@ from character_planner.pool import (
 )
 from character_planner.progress import Progress, progress
 from character_planner.recommend import Recommendations, UsageRules, load_rules, recommend
+from character_planner.rules import (
+    EditedRules,
+    RulesError,
+    RulesView,
+    current_rules,
+    reset_rules,
+    rules_view,
+    save_rules,
+)
 from character_planner.scoring import (
     PresetError,
     ShippedPresets,
@@ -154,9 +163,17 @@ def get_default_plan(request: Request) -> TalentPlan:
     return load_default_plan(settings.curated_dir / "talent_plan.yaml")
 
 
-def get_rules(request: Request) -> UsageRules:
+def get_default_rules(request: Request) -> UsageRules:
     settings: Settings = request.app.state.settings
     return load_rules(settings.curated_dir / "recommend.yaml")
+
+
+DefaultRulesDep = Annotated[UsageRules, Depends(get_default_rules)]
+
+
+def get_rules(session: SessionDep, default: DefaultRulesDep) -> UsageRules:
+    """The Upgrades rules in use: edited in the app, or recommend.yaml (ADR 0016)."""
+    return current_rules(session, default)
 
 
 def get_enchant_data(request: Request) -> EnchantData:
@@ -568,6 +585,26 @@ def create_app(
             character_level(profile.payload if profile else None),
             customised=plan != default,
         )
+
+    @app.get("/api/rules")
+    def get_rules_view(session: SessionDep, default: DefaultRulesDep) -> RulesView:
+        """The Upgrades rules, their defaults, and what the editor can offer (ADR 0016)."""
+        return rules_view(session, default)
+
+    @app.put("/api/rules")
+    def put_rules(edited: EditedRules, session: SessionDep, default: DefaultRulesDep) -> RulesView:
+        """Replace the Upgrades rules."""
+        try:
+            save_rules(session, edited.to_rules())
+        except RulesError as error:
+            raise HTTPException(422, str(error)) from error
+        return rules_view(session, default)
+
+    @app.delete("/api/rules")
+    def delete_rules(session: SessionDep, default: DefaultRulesDep) -> RulesView:
+        """Go back to data/curated/recommend.yaml."""
+        reset_rules(session)
+        return rules_view(session, default)
 
     @app.get("/api/talents")
     def get_talents(session: SessionDep, default: DefaultPlanDep) -> TalentPlanView:

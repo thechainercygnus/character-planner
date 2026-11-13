@@ -1,3 +1,5 @@
+import logging
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -100,8 +102,7 @@ def test_items_without_a_required_level_use_their_quest_or_dungeon_level() -> No
 
 
 def test_excluded_ids_and_plate_at_forty() -> None:
-    rules = RULES.model_copy(update={"exclude_item_ids": [10]})
-    assert unusable_reason(item(10, "Back"), rules, 18) == "excluded"
+    assert unusable_reason(item(10, "Back"), RULES, 18, excluded={10}) == "excluded"
     assert (
         unusable_reason(item(4, "Chest", armor_type="Plate", required_level=40), RULES, 40) is None
     )
@@ -208,10 +209,6 @@ def test_dismissed_items_are_never_suggested() -> None:
     back = next(r for r in recs.rows if r.slot == "BACK")
     assert [c.item.item_id for c in back.candidates] == [2]
     assert [d.dungeon for d in recs.dungeons] == ["The Deadmines"]
-    # The curated exclusions still apply alongside.
-    rules = RULES.model_copy(update={"exclude_item_ids": [2]})
-    recs = recommend(pool, {}, WEIGHTS, rules, choices=Choices(dismissed={1}))
-    assert next(r for r in recs.rows if r.slot == "BACK").candidates == []
 
 
 def targets_for(slot: str, *ids: int, pinned: bool = True) -> GearTargets:
@@ -271,3 +268,14 @@ def test_a_pinned_ring_is_listed_in_one_finger_slot() -> None:
     rows = {r.slot: r for r in recommend(pool, equipped, WEIGHTS, RULES, targets).rows}
     assert [c.item.item_id for c in rows["FINGER_2"].candidates] == [1, 2]
     assert rows["FINGER_1"].candidates == []
+
+
+def test_old_exclusions_in_the_yaml_are_ignored_with_a_warning(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    path = tmp_path / "recommend.yaml"
+    path.write_text("weapon_types: [Axe]\narmor_types: [mail]\nexclude_item_ids: [5]\n")
+    with caplog.at_level(logging.WARNING):
+        rules = load_rules(path)
+    assert rules.weapon_types == ["Axe"]
+    assert "exclude_item_ids is no longer read" in caplog.text

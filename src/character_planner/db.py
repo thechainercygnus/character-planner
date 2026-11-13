@@ -92,6 +92,15 @@ class StoredTalentPlan(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=utcnow)
 
 
+class StoredUsageRules(SQLModel, table=True):
+    """The Upgrades rules as edited in the app (ADR 0016); data/curated/recommend.yaml is
+    the default. One row, id 1; none means the YAML."""
+
+    id: int = Field(default=1, primary_key=True)
+    rules: Any = Field(sa_column=Column(JSON, nullable=False))
+    updated_at: datetime = Field(default_factory=utcnow)
+
+
 class StoredGearTargets(SQLModel, table=True):
     """Gear targets edited in the app (ADR 0014); data/curated/gear_targets.yaml is the
     default. One row, id 1; none means the YAML."""

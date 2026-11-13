@@ -1,5 +1,7 @@
 # Rules for proposing gear from the item pool (ADR 0007): what this character can and
 # wants to wear. Values match Forever Companion's item details (weaponType, armor class).
+# The default: edits made in the app (Upgrades tab > Upgrades settings) are saved in the
+# database and win until Reset (ADR 0016). To hide an item, use Never suggest there.
 #
 # The engine compares every usable pool item against what's equipped, slot by slot, using
 # the stat weights, and lists the best upgrades in reach. gear_targets.yaml stays the
@@ -25,6 +27,3 @@ per_slot: 3
 
 # Score gains at or below this are sidegrades and aren't listed.
 min_gain: 1.0
-
-# Pool items never to recommend (e.g. a quest you won't do). Find ids in /api/pool.
-exclude_item_ids: []

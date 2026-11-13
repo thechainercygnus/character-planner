@@ -206,6 +206,30 @@ export interface PresetSummary {
 }
 
 /** The active preset's weights, its defaults and every preset. */
+/** What the character can wear and how Upgrades lists items: recommend.yaml or edits (ADR 0016). */
+export interface UsageRules {
+  weapon_types: string[]
+  armor_types: string[]
+  /** Plate counts from this level; null never. */
+  plate_from_level: number | null
+  two_handers: boolean
+  off_hand_types: string[]
+  /** Include items this many levels above yours. */
+  levels_ahead: number
+  per_slot: number
+  /** Score gains at or below this aren't listed. */
+  min_gain: number
+}
+
+export interface RulesView {
+  rules: UsageRules
+  defaults: UsageRules
+  customised: boolean
+  weapon_type_options: string[]
+  armor_type_options: string[]
+  off_hand_type_options: string[]
+}
+
 export interface WeightsView {
   weights: Record<string, number>
   /** What Reset restores; equal to weights for a preset of your own. */
@@ -517,6 +541,14 @@ export const api = {
       body: JSON.stringify({ weights }),
     }),
   resetWeights: () => request<WeightsView>('/api/weights', { method: 'DELETE' }),
+  rules: () => request<RulesView>('/api/rules'),
+  saveRules: (rules: UsageRules) =>
+    request<RulesView>('/api/rules', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(rules),
+    }),
+  resetRules: () => request<RulesView>('/api/rules', { method: 'DELETE' }),
   activatePreset: (key: string) =>
     request<WeightsView>('/api/weights/active', {
       method: 'PUT',

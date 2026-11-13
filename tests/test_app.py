@@ -9,11 +9,13 @@ from fastapi.testclient import TestClient
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
+from character_planner import app as app_module
 from character_planner import jobs
 from character_planner.app import create_app
 from character_planner.blizzard import oauth
 from character_planner.config import Settings
 from character_planner.db import CompanionItem, ItemChoice
+from character_planner.recommend import UsageRules
 
 from .conftest import FIXTURES
 from .test_dungeons import mock_companion_dungeons
@@ -496,3 +498,43 @@ def test_items_pinned_before_targets_were_editable_move_into_them(
     targets = client.get("/api/targets").json()["targets"]
     assert [(t["slot"], t["pinned"]) for t in targets if t["item_id"] == 5193] == [("BACK", True)]
     assert client.get("/api/gear").json()["targets_customised"] is True
+
+
+def test_upgrades_rules_can_be_edited_and_reset(client: TestClient, engine: Engine) -> None:
+    default = client.get("/api/rules").json()
+    assert default["customised"] is False
+    assert default["rules"] == default["defaults"]
+    assert "Wand" in default["weapon_type_options"]
+    assert "exclude_item_ids" not in default["rules"]
+
+    edited = default["rules"] | {"weapon_types": ["Gun", "Axe"], "per_slot": 1, "min_gain": 2.5}
+    saved = client.put("/api/rules", json=edited).json()
+    assert saved["customised"] is True
+    assert (saved["rules"]["weapon_types"], saved["rules"]["per_slot"]) == (["Axe", "Gun"], 1)
+    assert saved["defaults"] == default["defaults"]
+    # Recommendations and enchants read the stored rules.
+    with Session(engine) as session:
+        assert (
+            app_module.get_rules(session, UsageRules.model_validate(default["defaults"])).per_slot
+            == 1
+        )
+    assert client.get("/api/recommendations").status_code == 200
+
+    reset = client.delete("/api/rules").json()
+    assert reset["customised"] is False
+    assert reset["rules"] == default["rules"]
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"weapon_types": ["Lightsaber"]},
+        {"per_slot": 0},
+        {"min_gain": -1},
+        {"armor_types": ["plate"]},
+    ],
+)
+def test_upgrades_rules_edits_are_validated(client: TestClient, change: dict[str, object]) -> None:
+    rules = client.get("/api/rules").json()["rules"]
+    assert client.put("/api/rules", json=rules | change).status_code == 422
+    assert client.get("/api/rules").json()["customised"] is False

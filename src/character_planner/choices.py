@@ -1,7 +1,7 @@
 """Items dismissed from the Upgrades tab (ADR 0012).
 
-recommend.yaml's exclude_item_ids stays the default; items dismissed in the app are
-stored in the database and add to it. Pinned targets used to live here too; they're gear
+Dismissed items are stored in the database and never suggested; they replaced
+recommend.yaml's exclude_item_ids (ADR 0016). Pinned targets used to live here too; they're gear
 targets now (ADR 0014), and migrate_target_choices moves old ones across.
 """
 
