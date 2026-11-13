@@ -3,6 +3,8 @@ name = "character-planner"
 version = "0.1.0"
 description = "Character growth planner for a WoW Forever character, backed by the Battle.net API."
 readme = "README.md"
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
 requires-python = ">=3.14"
 dependencies = [
     "fastapi>=0.115",
