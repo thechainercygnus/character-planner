@@ -74,7 +74,7 @@ def _id_from(href: object, after: str) -> int | None:
 
 
 def class_tree_id(index: object, class_name: str) -> int | None:
-    for entry in fields.get(index, "class_talent_trees") or []:
+    for entry in fields.as_list(fields.get(index, "class_talent_trees")):
         if str(fields.get(entry, "name") or "").casefold() == class_name.casefold():
             return _id_from(fields.get(entry, "key", "href"), "/talent-tree/")
     return None
@@ -82,8 +82,8 @@ def class_tree_id(index: object, class_name: str) -> int | None:
 
 def spec_ids(class_payload: object) -> list[tuple[int, str]]:
     """(spec id, name) for each spec tree a class tree lists, in its order."""
-    out = []
-    for entry in fields.get(class_payload, "spec_talent_trees") or []:
+    out: list[tuple[int, str]] = []
+    for entry in fields.as_list(fields.get(class_payload, "spec_talent_trees")):
         spec_id = _id_from(fields.get(entry, "key", "href"), "playable-specialization/")
         if spec_id is not None:
             out.append((spec_id, str(fields.get(entry, "name") or spec_id)))
@@ -94,7 +94,7 @@ def _node(
     payload: object, talent_of: dict[int, int], prereqs: dict[int, list[int]]
 ) -> TalentNode | None:
     node_id = fields.as_int(fields.get(payload, "id"))
-    ranks = fields.get(payload, "ranks") or []
+    ranks = fields.as_list(fields.get(payload, "ranks"))
     if node_id is None or not ranks:
         return None
     talent = fields.get(ranks[0], "tooltip", "talent")
@@ -128,9 +128,9 @@ def parse_class_tree(
     icons = icons or {}
     prereqs: dict[int, list[int]] = {}
     talent_of: dict[int, int] = {}
-    for payload in fields.get(class_payload, "talent_nodes") or []:
+    for payload in fields.as_list(fields.get(class_payload, "talent_nodes")):
         node_id = fields.as_int(fields.get(payload, "id"))
-        ranks = fields.get(payload, "ranks") or []
+        ranks = fields.as_list(fields.get(payload, "ranks"))
         talent_id = (
             fields.as_int(fields.get(ranks[0], "tooltip", "talent", "id")) if ranks else None
         )
@@ -138,14 +138,16 @@ def parse_class_tree(
             continue
         if talent_id is not None:
             talent_of[node_id] = talent_id
-        locked = [i for x in fields.get(payload, "locked_by") or [] if (i := fields.as_int(x))]
+        locked = [
+            i for x in fields.as_list(fields.get(payload, "locked_by")) if (i := fields.as_int(x))
+        ]
         prereqs[node_id] = locked
-    specs = []
+    specs: list[SpecTree] = []
     for spec_id, name in spec_ids(class_payload):
         payload = spec_payloads.get(spec_id)
         nodes = [
             node
-            for raw in fields.get(payload, "spec_talent_nodes") or []
+            for raw in fields.as_list(fields.get(payload, "spec_talent_nodes"))
             if (node := _node(raw, talent_of, prereqs)) is not None
         ]
         if not nodes:
@@ -235,7 +237,8 @@ def refresh_talent_trees(
             outcome.trees += 1
 
         parsed = stored_tree(session, class_name)
-        spells = [n.spell_id for _, n in (parsed.nodes().values() if parsed else []) if n.spell_id]
+        nodes = parsed.nodes().values() if parsed else ()
+        spells = [n.spell_id for _, n in nodes if n.spell_id]
         # Spells without an icon yet are tried again: a failed lookup may have been a blip.
         known = {row.spell_id for row in session.exec(select(SpellIcon)).all() if row.url}
         wanted = [s for s in dict.fromkeys(spells) if s not in known]
@@ -257,7 +260,7 @@ def refresh_talent_trees(
 
 
 def _icon(body: object) -> str | None:
-    for asset in fields.get(body, "assets") or []:
+    for asset in fields.as_list(fields.get(body, "assets")):
         if fields.get(asset, "key") == "icon":
             value = fields.get(asset, "value")
             return value if isinstance(value, str) else None
@@ -280,7 +283,7 @@ def check_plan(points: Iterable[PlanPoint], tree: ClassTree) -> list[str]:
     nodes = tree.nodes()
     rank: dict[int, int] = {}
     spent: dict[int, int] = {}  # points per spec tree
-    problems = []
+    problems: list[str] = []
     for number, point in enumerate(points, start=1):
         found = nodes.get(point.talent_id)
         if found is None:

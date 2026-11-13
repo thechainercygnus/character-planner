@@ -81,9 +81,9 @@ class CompanionInfo(BaseModel):
 
 @dataclass
 class CompanionRefresh:
-    fetched: list[int] = field(default_factory=list)
-    not_found: list[int] = field(default_factory=list)
-    errors: list[str] = field(default_factory=list)
+    fetched: list[int] = field(default_factory=list[int])
+    not_found: list[int] = field(default_factory=list[int])
+    errors: list[str] = field(default_factory=list[str])
 
 
 def parse_item(payload: Any) -> CompanionInfo | None:
@@ -98,7 +98,7 @@ def parse_item(payload: Any) -> CompanionInfo | None:
     dps: float | None = None
     stats: dict[str, int] = {}
     tooltip_armor_type: str | None = None
-    for line in fields.get(item, "tooltip") or []:
+    for line in fields.as_list(fields.get(item, "tooltip")):
         left = fields.get(line, "left")
         right = fields.get(line, "right")
         if not isinstance(left, str):
@@ -140,11 +140,11 @@ def parse_item(payload: Any) -> CompanionInfo | None:
             f"{fields.get(d, 'dungeon', 'name')} - {fields.get(d, 'source')}"
             if fields.get(d, "source")
             else str(fields.get(d, "dungeon", "name"))
-            for d in fields.get(item, "dropsFrom") or []
+            for d in fields.as_list(fields.get(item, "dropsFrom"))
         ],
         rewards=[
             f"Quest: {fields.get(r, 'name')}"
-            for r in fields.get(item, "rewardFrom") or []
+            for r in fields.as_list(fields.get(item, "rewardFrom"))
             if fields.get(r, "name")
         ],
         verified=fields.as_int(fields.get(item, "verified")),

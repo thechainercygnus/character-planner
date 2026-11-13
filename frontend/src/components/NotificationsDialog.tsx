@@ -218,6 +218,8 @@ export function NotificationsDialog() {
                   </thead>
                   <tbody>
                     {data.recent.map((alert, index) => (
+                      // A read-only list in a fixed order with no id: its index is stable.
+                      // oxlint-disable-next-line react/no-array-index-key
                       <tr key={index}>
                         <td>{when(alert.created_at)}</td>
                         <td>{alert.destination}</td>

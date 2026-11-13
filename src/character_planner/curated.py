@@ -1,10 +1,12 @@
 """Gear targets: data/curated/gear_targets.yaml is the default (ADR 0014, 0015)."""
 
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import yaml
 from pydantic import BaseModel, model_validator
+
+from character_planner import fields
 
 
 class GearTarget(BaseModel):
@@ -50,12 +52,16 @@ class GearTargets(BaseModel):
         """Read targets saved in level brackets (ADR 0014): each target takes its
         bracket's level as its own, and a slot keeps bracket order, then priority."""
         if not isinstance(data, dict) or "brackets" not in data or "targets" in data:
-            return data
-        brackets = sorted(data["brackets"], key=lambda b: b.get("min_level", 0))
-        targets = []
+            return cast(Any, data)
+        saved = fields.as_mapping(data)
+        brackets = sorted(
+            (fields.as_mapping(b) for b in fields.as_list(saved["brackets"])),
+            key=lambda b: b.get("min_level", 0),
+        )
+        targets: list[dict[str, Any]] = []
         for bracket in brackets:
             ranked = sorted(
-                bracket.get("targets", []),
+                (fields.as_mapping(t) for t in fields.as_list(bracket.get("targets", []))),
                 key=lambda t: (t.get("priority") is None, t.get("priority") or 0),
             )
             for target in ranked:

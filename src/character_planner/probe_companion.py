@@ -49,10 +49,10 @@ def _get(
 
 def exact_match(body: Any, item_name: str) -> dict[str, Any] | None:
     wanted = item_name.casefold().strip()
-    for item in fields.get(body, "data") or []:
+    for item in fields.as_list(fields.get(body, "data")):
         found = fields.get(item, "name")
         if isinstance(found, str) and found.casefold().strip() == wanted and isinstance(item, dict):
-            return item
+            return dict(fields.as_mapping(item))
     return None
 
 
@@ -63,7 +63,7 @@ def slug(text: str) -> str:
 def probe_item(http: httpx.Client, item_name: str) -> list[ApiResult]:
     results = [_get(http, f"search-{slug(item_name)}", "/items", {"q": item_name, "limit": "50"})]
     search = results[0]
-    hits = fields.get(search.body, "data") or []
+    hits = fields.as_list(fields.get(search.body, "data"))
     match = exact_match(search.body, item_name) if search.ok else None
 
     print(f"\n{item_name}")
@@ -84,16 +84,16 @@ def probe_item(http: httpx.Client, item_name: str) -> list[ApiResult]:
     }
     summary["classicOnly"] = fields.get(item, "classicOnly")
     print(f"  item {detail.status}: {summary}")
-    for line in fields.get(item, "tooltip") or []:
+    for line in fields.as_list(fields.get(item, "tooltip")):
         right = fields.get(line, "right")
         changed = " (changed from Classic)" if fields.get(line, "changed") else ""
         text = f"{fields.get(line, 'left')}{'  |  ' + right if right else ''}"
         print(f"    tooltip: {text}{changed}")
-    for drop in fields.get(item, "dropsFrom") or []:
+    for drop in fields.as_list(fields.get(item, "dropsFrom")):
         print(
             f"    drops from: {fields.get(drop, 'source')} ({fields.get(drop, 'dungeon', 'name')})"
         )
-    for quest in fields.get(item, "rewardFrom") or []:
+    for quest in fields.as_list(fields.get(item, "rewardFrom")):
         print(f"    reward from: {fields.get(quest, 'name')} ({fields.get(quest, 'type')})")
     return results
 

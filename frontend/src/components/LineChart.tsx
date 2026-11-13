@@ -25,6 +25,11 @@ const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
   minute: '2-digit',
 })
 
+// A default prop made once, not on every render (oxlint react/no-object-type-as-default-prop).
+function plainNumber(value: number): string {
+  return String(value)
+}
+
 /**
  * One measure over time: 2px line, 8px markers, recessive axes, and a hover crosshair
  * with the value. Single series, so no legend: the title names it.
@@ -32,7 +37,7 @@ const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
 export function LineChart({
   title,
   points,
-  format = (value) => String(value),
+  format = plainNumber,
 }: {
   title: string
   points: ChartPoint[]

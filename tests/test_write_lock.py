@@ -6,6 +6,8 @@ minutes, and they failed with "database is locked".
 """
 
 import sqlite3
+from collections.abc import Generator
+from contextlib import closing, contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -24,9 +26,13 @@ def db_path(settings: Settings) -> Path:
     return Path(settings.database_url.removeprefix("sqlite:///"))
 
 
-def other_connection(settings: Settings) -> sqlite3.Connection:
-    """Another process's view of the file, giving up at once if the database is locked."""
-    return sqlite3.connect(db_path(settings), timeout=0)
+@contextmanager
+def other_connection(settings: Settings) -> Generator[sqlite3.Connection]:
+    """Another process's view of the file, giving up at once if the database is locked.
+    Committed, then closed: sqlite3's own `with` only commits, and a connection left to
+    the garbage collector closes with a ResourceWarning (warnings are errors, #85)."""
+    with closing(sqlite3.connect(db_path(settings), timeout=0)) as connection, connection:
+        yield connection
 
 
 @respx.mock

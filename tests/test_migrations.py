@@ -1,5 +1,6 @@
 """Schema migrations (#60, ADR 0022): every kind of database ends at the same schema."""
 
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -45,8 +46,21 @@ def create_like_before_migrations(engine: Engine) -> None:
     SQLModel.metadata.create_all(engine, tables=tables)
 
 
+ENGINES: list[Engine] = []
+
+
+@pytest.fixture(autouse=True)
+def dispose_engines() -> Iterator[None]:
+    """Close every engine a test made: see the engine fixture in conftest.py."""
+    yield
+    while ENGINES:
+        ENGINES.pop().dispose()
+
+
 def engine_at(tmp_path: Path, name: str = "planner.db") -> Engine:
-    return make_engine(f"sqlite:///{tmp_path / name}")
+    engine = make_engine(f"sqlite:///{tmp_path / name}")
+    ENGINES.append(engine)
+    return engine
 
 
 def head() -> str:

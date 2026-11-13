@@ -101,6 +101,9 @@ export function EffectEditor({
   return (
     <div className="effect-editor" aria-label={`Effect of ${label}`}>
       {current.map((row, index) => (
+        // Rows have no stable id, and two can name the same effect while editing; index
+        // keys are fine because every input is controlled.
+        // oxlint-disable-next-line react/no-array-index-key
         <div key={index} className="effect-row">
           <select
             aria-label="Effect"

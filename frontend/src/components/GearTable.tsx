@@ -147,8 +147,8 @@ function Upcoming({ upcoming }: { upcoming: UpcomingTarget[] }) {
   if (upcoming.length === 0) return <span className="muted">—</span>
   return (
     <ul className="upcoming">
-      {upcoming.map((next, index) => (
-        <li key={`${next.target.item}-${index}`} title={sourceOf(next)}>
+      {upcoming.map((next) => (
+        <li key={`${next.target.item}@${next.level ?? '?'}`} title={sourceOf(next)}>
           {next.target_info?.wowhead ? (
             <a className="item-link" href={next.target_info.wowhead} target="_blank" rel="noreferrer">
               {next.target.item}

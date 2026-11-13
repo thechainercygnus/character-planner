@@ -42,7 +42,7 @@ class EditedTargets(BaseModel):
 
     def to_targets(self) -> GearTargets:
         """Validated GearTargets; priority follows each slot's order."""
-        targets = []
+        targets: list[GearTarget] = []
         for target in self.targets:
             if target.slot not in EQUIPMENT_SLOTS:
                 raise TargetsError(f"Unknown slot {target.slot}")

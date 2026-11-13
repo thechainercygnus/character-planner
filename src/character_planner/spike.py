@@ -57,7 +57,7 @@ def wait_for_callback(settings: Settings) -> dict[str, str]:
 
 def save(results: list[ApiResult], out_dir: Path) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
-    summary = []
+    summary: list[dict[str, object]] = []
     for result in results:
         path = out_dir / f"{result.kind}.json"
         record = {"url": result.url, "status": result.status, "body": result.body}

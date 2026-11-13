@@ -280,8 +280,8 @@ def parse_recipe(
     if recipe_id is None or not name:
         return None
     data = data or EnchantData()
-    reagents = []
-    for r in fields.get(payload, "reagents") or []:
+    reagents: list[Reagent] = []
+    for r in fields.as_list(fields.get(payload, "reagents")):
         item_id = fields.as_int(fields.get(r, "reagent", "id"))
         if item_id is None:
             continue
@@ -335,7 +335,7 @@ def catalog(
     equipped_effects: Mapping[int, dict[str, float]] | None = None,
 ) -> list[EnchantOption]:
     """Every stored enchant recipe that maps to a gear slot."""
-    options = []
+    options: list[EnchantOption] = []
     for row in session.exec(select(RecipeData)).all():
         option = parse_recipe(
             row.payload, row.profession, row.category, items, data, equipped_effects
@@ -407,7 +407,7 @@ def refresh_recipes(
         wanted = {p.lower() for p in PROFESSIONS}
         professions = [
             (pid, pname)
-            for p in fields.get(index.body, "professions") or []
+            for p in fields.as_list(fields.get(index.body, "professions"))
             if (pid := fields.as_int(fields.get(p, "id"))) is not None
             and (pname := fields.name(fields.get(p, "name"))) is not None
             and pname.lower() in wanted
@@ -415,7 +415,7 @@ def refresh_recipes(
         for pid, pname in professions:
             outcome.professions.append(pname)
             profession = client.get("profession", f"/data/wow/profession/{pid}", namespace)
-            for tier in fields.get(profession.body, "skill_tiers") or []:
+            for tier in fields.as_list(fields.get(profession.body, "skill_tiers")):
                 tid = fields.as_int(fields.get(tier, "id"))
                 if tid is None:
                     continue
@@ -424,9 +424,9 @@ def refresh_recipes(
                 if not detail.ok:
                     outcome.errors.append(f"{pname} tier {tid}: HTTP {detail.status}")
                     continue
-                for category in fields.get(detail.body, "categories") or []:
+                for category in fields.as_list(fields.get(detail.body, "categories")):
                     cname = fields.name(fields.get(category, "name")) or ""
-                    for entry in fields.get(category, "recipes") or []:
+                    for entry in fields.as_list(fields.get(category, "recipes")):
                         rid = fields.as_int(fields.get(entry, "id"))
                         rname = fields.name(fields.get(entry, "name"))
                         if rid is None or not looks_like_enchant(rname, cname):

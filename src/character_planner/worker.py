@@ -16,6 +16,7 @@ import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
+from types import FrameType
 
 import httpx
 from sqlalchemy.engine import Engine
@@ -114,7 +115,7 @@ class Job:
 
 @dataclass
 class Schedule:
-    jobs: list[Job] = field(default_factory=list)
+    jobs: list[Job] = field(default_factory=list[Job])
 
 
 def default_schedule(settings: Settings) -> Schedule:
@@ -181,17 +182,29 @@ def main(argv: list[str] | None = None) -> int:
     settings = get_settings()
     configure_logging(settings, "worker")
     engine = make_engine(settings.database_url)
+    try:
+        return run(engine, settings, once=args.once)
+    finally:
+        engine.dispose()
+
+
+def run(engine: Engine, settings: Settings, *, once: bool) -> int:
+    """The worker loop, or one pass of it with once=True."""
     init_db(engine)
     schedule = default_schedule(settings)
-    if args.once:
+    if once:
         outcomes = run_due(engine, settings, schedule, utcnow())
         with notify.new_client() as discord:
             tick_notifications(engine, settings, discord)
         return 1 if any(o.startswith("failed") for o in outcomes.values()) else 0
 
     stop = threading.Event()
-    signal.signal(signal.SIGTERM, lambda *_: stop.set())
-    signal.signal(signal.SIGINT, lambda *_: stop.set())
+
+    def stop_on_signal(_signum: int, _frame: FrameType | None) -> None:
+        stop.set()
+
+    signal.signal(signal.SIGTERM, stop_on_signal)
+    signal.signal(signal.SIGINT, stop_on_signal)
     logger.info(
         "worker started: sync every %sh, pool every %sh, enchants every %sh",
         settings.sync_every_hours,

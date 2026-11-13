@@ -24,10 +24,13 @@ def main(argv: list[str] | None = None) -> int:
     settings = get_settings()
     configure_logging(settings, "worker")
     engine = make_engine(settings.database_url)
-    if args.command == "upgrade":
-        init_db(engine)
-    with engine.connect() as connection:
-        current = MigrationContext.configure(connection).get_current_revision()
+    try:
+        if args.command == "upgrade":
+            init_db(engine)
+        with engine.connect() as connection:
+            current = MigrationContext.configure(connection).get_current_revision()
+    finally:
+        engine.dispose()
     logger.info("Database schema version: %s", current or "none")
     print(current or "none")
     return 0

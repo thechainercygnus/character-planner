@@ -101,20 +101,20 @@ def load_profession_data(path: Path) -> ProfessionData:
     return ProfessionData.model_validate(yaml.safe_load(path.read_text(encoding="utf-8")))
 
 
-def _professions(payload: Any) -> list[tuple[dict[str, Any], bool]]:
+def _professions(payload: Any) -> list[tuple[Mapping[str, Any], bool]]:
     """(profession entry, primary?) from a professions snapshot."""
-    entries: list[tuple[dict[str, Any], bool]] = []
+    entries: list[tuple[Mapping[str, Any], bool]] = []
     for key, primary in (("primaries", True), ("secondaries", False)):
-        for entry in fields.get(payload, key) or []:
-            if isinstance(entry, dict):
-                entries.append((entry, primary))
+        for entry in fields.as_list(fields.get(payload, key)):
+            if isinstance(entry, Mapping):
+                entries.append((fields.as_mapping(entry), primary))
     return entries
 
 
 def _tier(entry: Any) -> Any:
     """A profession's skill tier: Forever's professions have one each."""
-    tiers = fields.get(entry, "tiers")
-    return tiers[0] if isinstance(tiers, list) and tiers else None
+    tiers = fields.as_list(fields.get(entry, "tiers"))
+    return tiers[0] if tiers else None
 
 
 def known_recipes(payload: Any) -> list[KnownRecipe]:
@@ -122,7 +122,7 @@ def known_recipes(payload: Any) -> list[KnownRecipe]:
     recipes: list[KnownRecipe] = []
     for entry, _ in _professions(payload):
         profession = fields.name(fields.get(entry, "profession", "name"))
-        for recipe in fields.get(_tier(entry), "known_recipes") or []:
+        for recipe in fields.as_list(fields.get(_tier(entry), "known_recipes")):
             rid = fields.as_int(fields.get(recipe, "id"))
             name = fields.name(fields.get(recipe, "name"))
             if rid is not None and name and profession:
@@ -146,7 +146,7 @@ def item_info(payload: Any) -> CompanionInfo | None:
     required = fields.as_int(fields.get(payload, "required_level"))
     stats = {
         name: value
-        for stat in fields.get(preview, "stats") or []
+        for stat in fields.as_list(fields.get(preview, "stats"))
         if (name := fields.name(fields.get(stat, "type", "name"))) is not None
         and (value := fields.as_int(fields.get(stat, "value"))) is not None
     }
@@ -222,7 +222,7 @@ def professions_view(session: Session, data: ProfessionData, level: int | None) 
         gear.setdefault(item.profession, []).append(item.name)
     payload = _professions_payload(session)
     known = known_recipes(payload)
-    rows = []
+    rows: list[ProfessionRow] = []
     for entry, primary in _professions(payload):
         name = fields.name(fields.get(entry, "profession", "name"))
         if not name:

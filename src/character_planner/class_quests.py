@@ -64,8 +64,8 @@ class ClassQuestChecklist(BaseModel):
 @dataclass
 class ClassQuestRefresh:
     listed: int = 0
-    new: list[str] = field(default_factory=list)
-    errors: list[str] = field(default_factory=list)
+    new: list[str] = field(default_factory=list[str])
+    errors: list[str] = field(default_factory=list[str])
 
 
 def key(name: str) -> str:
@@ -92,7 +92,9 @@ def parse_class_quest(row: Any) -> ClassQuest | None:
         level=level,
         name=str(name),
         faction=faction if isinstance(faction, str) else "both",
-        races=[key(r) for r in races if isinstance(r, str)] if isinstance(races, list) else None,
+        races=[key(r) for r in fields.as_list(races) if isinstance(r, str)]
+        if isinstance(races, list)
+        else None,
         giver=_text(fields.get(row, "giver")),
         location=_text(fields.get(row, "location")),
         reward=_text(fields.get(row, "reward")),
@@ -124,7 +126,7 @@ def refresh_class_quests(session: Session, http: httpx.Client) -> ClassQuestRefr
 
     known = {row.quest_id for row in session.exec(select(CompanionClassQuest)).all()}
     now = utcnow()
-    for row in rows:
+    for row in fields.as_list(rows):
         quest = parse_class_quest(row)
         if quest is None:
             continue

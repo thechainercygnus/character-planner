@@ -21,7 +21,7 @@ from sqlmodel import Session
 from character_planner.class_quests import refresh_class_quests
 from character_planner.companion import CompanionInfo, companion_by_id, refresh_companion
 from character_planner.crafting import CraftedItem, crafted_details
-from character_planner.curated import GearTargets
+from character_planner.curated import GearTarget, GearTargets
 from character_planner.dungeons import (
     REQUEST_PAUSE,
     Dungeon,
@@ -423,7 +423,7 @@ def resolve_target_ids(targets: GearTargets, pool: Mapping[int, PoolItem]) -> Ge
     for item in pool.values():
         by_name.setdefault(item.name.casefold().strip(), []).append(item.item_id)
 
-    resolved = []
+    resolved: list[GearTarget] = []
     for target in targets.targets:
         matches = by_name.get(target.item.casefold().strip(), [])
         if target.item_id is None and len(matches) == 1:
