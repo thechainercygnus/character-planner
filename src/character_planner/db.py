@@ -8,7 +8,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import JSON, Column, event
+from sqlalchemy import JSON, Column, UniqueConstraint, event
 from sqlalchemy.engine import Engine
 from sqlmodel import Field, Session, SQLModel, col, create_engine, desc, select
 
@@ -138,6 +138,51 @@ class ActiveWeightPreset(SQLModel, table=True):
 
     id: int = Field(default=1, primary_key=True)
     key: str
+
+
+class NotificationDestination(SQLModel, table=True):
+    """Where alerts go (ADR 0021): a Discord webhook for now. The URL is a credential
+    (anyone holding it can post to the channel): never logged, never returned in full."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    name: str
+    kind: str = "discord_webhook"
+    audience: str = "user"  # "user" or "system" (ADR 0020)
+    url: str
+    alerts: Any = Field(sa_column=Column(JSON, nullable=False))  # list of alert kinds
+    enabled: bool = True
+    user_id: int | None = None  # set by #16; None while the app has one user
+    created_at: datetime = Field(default_factory=utcnow)
+    last_sent_at: datetime | None = None
+    last_error: str | None = None  # set when a send fails for good, cleared on success
+
+
+class NotificationOutbox(SQLModel, table=True):
+    """Alerts waiting to be sent, or sent; the worker delivers them (ADR 0021).
+
+    One row per destination and dedupe key, so an alert is never queued twice."""
+
+    __table_args__ = (UniqueConstraint("destination_id", "dedupe_key"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    destination_id: int = Field(index=True)
+    kind: str
+    dedupe_key: str
+    payload: Any = Field(sa_column=Column(JSON, nullable=False))  # the Discord message
+    created_at: datetime = Field(default_factory=utcnow)
+    attempts: int = 0
+    next_attempt_at: datetime = Field(default_factory=utcnow)
+    sent_at: datetime | None = None
+    failed: bool = False  # gave up: too many attempts, or the webhook is gone
+    last_error: str | None = None
+
+
+class NotificationState(SQLModel, table=True):
+    """What alerts compare against: the character as of the last sync (key "digest")."""
+
+    key: str = Field(primary_key=True)
+    value: Any = Field(sa_column=Column(JSON, nullable=False))
+    updated_at: datetime = Field(default_factory=utcnow)
 
 
 class ItemChoice(SQLModel, table=True):

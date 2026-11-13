@@ -94,6 +94,7 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/fields.py`: defensive JSON readers used by all parsers
 - `src/character_planner/views.py`: the only code that reads API response shapes; typed views for the frontend
 - `src/character_planner/summary.py`: Markdown rendering of those views, for pasting into a chat
+- `src/character_planner/notify.py`: alerts to Discord webhooks: destinations, change detection after a sync, login expiry, an outbox the worker sends (ADR 0021)
 - `src/character_planner/logs.py`: logging for the API and the worker: console, rotating files with `LOG_DIR`, request ids, redaction of secrets in every line (ADR 0019)
 - `src/character_planner/jobs.py`: sync and pool refresh, shared by the API and the worker
 - `src/character_planner/worker.py`: scheduled jobs beside the API (ADR 0011); `Dockerfile`, `compose*.yaml` and `docs/deploy.md` deploy both

@@ -909,3 +909,29 @@ ul.upcoming small {
 .missing-data p {
   margin: 0 0 0.5rem;
 }
+
+.notifications-dialog .destination {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 0 0 0.9rem;
+  padding: 0.5rem 0.9rem 0.7rem;
+}
+.notifications-dialog .destination legend {
+  padding: 0 0.4rem;
+  font-weight: 600;
+}
+.destination-actions,
+.add-destination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin: 0.4rem 0 0.9rem;
+}
+.add-destination h3 {
+  flex-basis: 100%;
+  margin: 0;
+}
+.add-destination input {
+  min-width: 14rem;
+}

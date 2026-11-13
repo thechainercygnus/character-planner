@@ -46,6 +46,8 @@ _PATTERNS = [
         r"[^\"]*"
     ),
     re.compile(r"(?i)(\b[a-z][a-z0-9+.-]*://[^:/\s@]+:)[^@\s]+(?=@)"),
+    # Discord webhook URLs carry their own credential (#12).
+    re.compile(r"(?i)(/api/(?:v\d+/)?webhooks/\d+/)[A-Za-z0-9_-]+"),
 ]
 
 
