@@ -16,6 +16,8 @@ export const hallDrop: PoolSource = {
   zone: null,
   spawns: null,
   elite: false,
+  profession: null,
+  recipe: null,
 }
 
 export const deadminesQuest: PoolSource = {
@@ -34,6 +36,8 @@ export const deadminesQuest: PoolSource = {
   zone: null,
   spawns: null,
   elite: false,
+  profession: null,
+  recipe: null,
 }
 
 export function poolItem(overrides: Partial<PoolItem>): PoolItem {

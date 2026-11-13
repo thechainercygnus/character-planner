@@ -362,8 +362,8 @@ export interface RefreshResult {
 }
 
 export interface PoolSource {
-  kind: 'drop' | 'quest' | 'rare'
-  /** Null for a rare. */
+  kind: 'drop' | 'quest' | 'rare' | 'crafted'
+  /** Null for a rare or a crafted item. */
   dungeon_id: string | null
   dungeon: string | null
   /** The dungeon's level range, or the rare's. */
@@ -383,6 +383,9 @@ export interface PoolSource {
   zone: string | null
   spawns: number | null
   elite: boolean
+  /** Crafted from a recipe the character knows (#10): the profession and recipe. */
+  profession: string | null
+  recipe: string | null
 }
 
 /** One quest in a chain (quests.py QuestStep). Only the name is always known. */
@@ -701,6 +704,36 @@ export class ApiError extends Error {
   }
 }
 
+/** A trainer rank not reached yet (crafting.py NextRank, #10). */
+export interface NextRank {
+  name: string
+  max_skill: number
+  train_at_skill: number
+  train_at_level: number
+  skill_ready: boolean
+  level_ready: boolean
+}
+
+export interface ProfessionRow {
+  name: string
+  primary: boolean
+  skill: number | null
+  max_skill: number | null
+  /** From the skill cap: Journeyman for 150. */
+  rank: string | null
+  next_rank: NextRank | null
+  /** How a rank is earned when it isn't a trainer. */
+  note: string | null
+  known_recipes: number
+  /** Equippable items its known recipes make. */
+  crafted_gear: string[]
+}
+
+export interface ProfessionsView {
+  level: number | null
+  professions: ProfessionRow[]
+}
+
 export type ClassQuestStatus = 'done' | 'missed' | 'now' | 'soon' | 'later'
 
 /** A quest that unlocks class abilities (class_quests.py ClassQuestRow, #8). */
@@ -831,6 +864,7 @@ export const api = {
       body: JSON.stringify({ choice, name }),
     }),
   pool: () => request<PoolView>('/api/pool'),
+  professions: () => request<ProfessionsView>('/api/professions'),
   classQuests: () => request<ClassQuestChecklist>('/api/class-quests'),
   setClassQuestDone: ({ id, done }: { id: string; done: boolean }) =>
     request<ClassQuestChecklist>(`/api/class-quests/${encodeURIComponent(id)}`, {
