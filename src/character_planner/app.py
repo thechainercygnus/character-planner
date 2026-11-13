@@ -12,7 +12,7 @@ from dataclasses import asdict
 from typing import Annotated, Any
 
 import httpx
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi import Path as FastAPIPath
 from fastapi.responses import PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -52,6 +52,13 @@ from character_planner.enchants import (
     equipped_effects,
     load_enchant_data,
     refresh_enchant_data,
+)
+from character_planner.guest import (
+    Faction,
+    GuestError,
+    GuestOptions,
+    guest_options,
+    guest_recommendations,
 )
 from character_planner.items import RefreshResult, refresh_item_sources
 from character_planner.jobs import (
@@ -585,6 +592,36 @@ def create_app(
             character_level(profile.payload if profile else None),
             customised=plan != default,
         )
+
+    @app.get("/api/guest")
+    def get_guest_options(presets: PresetsDep) -> GuestOptions:
+        """What guest mode offers: classes with rules and the shipped weight presets."""
+        return guest_options(presets)
+
+    @app.get("/api/guest/recommendations")
+    def get_guest_recommendations(
+        session: SessionDep,
+        rules: DefaultRulesDep,
+        presets: PresetsDep,
+        level: Annotated[int, Query(ge=1, le=80)],
+        class_key: Annotated[str, Query(alias="class")] = "warrior",
+        faction: Faction = "alliance",
+        preset: str | None = None,
+    ) -> Recommendations:
+        """Guest mode (ADR 0017): the best items per slot and dungeons for a class and
+        level, from the shipped rules and weights. Reads no character data; stores nothing."""
+        try:
+            return guest_recommendations(
+                session,
+                rules,
+                presets,
+                class_key=class_key,
+                level=level,
+                faction=faction,
+                preset=preset,
+            )
+        except GuestError as error:
+            raise HTTPException(422, str(error)) from error
 
     @app.get("/api/rules")
     def get_rules_view(session: SessionDep, default: DefaultRulesDep) -> RulesView:
