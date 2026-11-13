@@ -1,16 +1,18 @@
 """Propose gear from the item pool: the best upgrades in reach for each slot (ADR 0007).
 
-Every pool item the character can use (data/curated/recommend.yaml) is scored with the
+Every pool item the character can use (the Upgrades rules: data/curated/recommend.yaml,
+or edits stored in the app, ADR 0016) is scored with the
 stat weights and compared with what's equipped in each slot it fits. Each slot lists its
 biggest score gains; dungeons are ranked by the upgrades they hold. gear_targets.yaml
 stays the hand-picked plan: items it names are flagged as targets.
 
 Targets pinned with "Make target" (ADR 0014) are always listed for their slot until worn;
-other targets are only tagged. Items dismissed in the app (ADR 0012) join
-exclude_item_ids and are never suggested.
+other targets are only tagged. Items dismissed in the app (ADR 0012) are never
+suggested.
 """
 
-from collections.abc import Mapping
+import logging
+from collections.abc import Collection, Mapping
 from pathlib import Path
 
 import yaml
@@ -65,7 +67,12 @@ SLOT_FOR = {
 }
 
 
+logger = logging.getLogger(__name__)
+
+
 class UsageRules(BaseModel):
+    """What the character can and wants to wear, and how many upgrades to list."""
+
     weapon_types: list[str]
     armor_types: list[str]
     plate_from_level: int | None = 40
@@ -75,7 +82,6 @@ class UsageRules(BaseModel):
     per_slot: int = 3
     # Gains at or below this are sidegrades, not worth listing (same band as gear targets).
     min_gain: float = 1.0
-    exclude_item_ids: list[int] = []
 
 
 class Candidate(BaseModel):
@@ -123,12 +129,20 @@ class Recommendations(BaseModel):
 
 def load_rules(path: Path) -> UsageRules:
     with path.open(encoding="utf-8") as handle:
-        return UsageRules.model_validate(yaml.safe_load(handle))
+        data = yaml.safe_load(handle)
+    if isinstance(data, dict) and data.get("exclude_item_ids"):
+        # ADR 0016: exclusions are dismissals now ("Never suggest" on the Upgrades tab).
+        logger.warning(
+            "%s: exclude_item_ids is no longer read; use Never suggest instead", path.name
+        )
+    return UsageRules.model_validate(data)
 
 
-def unusable_reason(item: PoolItem, rules: UsageRules, level: int | None) -> str | None:
+def unusable_reason(
+    item: PoolItem, rules: UsageRules, level: int | None, excluded: Collection[int] = ()
+) -> str | None:
     """Why the character can't (or won't) wear this item; None when it's fine."""
-    if item.item_id in rules.exclude_item_ids:
+    if item.item_id in excluded:
         return "excluded"
     slot = item.item_slot
     if slot is None or (slot not in SLOT_FOR and slot not in PAIRED):
@@ -229,12 +243,9 @@ def recommend(
     choices = choices or Choices()
     target_ids = set(targets.item_ids()) if targets else set()
     pinned_ids = (targets.pinned_ids() if targets else set()) - choices.dismissed
-    rules = rules.model_copy(
-        update={"exclude_item_ids": sorted(set(rules.exclude_item_ids) | choices.dismissed)}
-    )
     worn = {item.item_id for item in equipped.values() if item.item_id is not None}
 
-    usable = [i for i in pool.items if unusable_reason(i, rules, level) is None]
+    usable = [i for i in pool.items if unusable_reason(i, rules, level, choices.dismissed) is None]
     scored = [i for i in usable if has_stat_data(i)]
 
     by_slot: dict[str, list[Candidate]] = {slot: [] for slot in EQUIPMENT_SLOTS}

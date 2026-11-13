@@ -853,3 +853,26 @@ ul.upcoming small {
   flex-wrap: wrap;
   gap: 0.5rem;
 }
+
+.rule-types {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 0 0 0.9rem;
+  padding: 0.5rem 0.9rem 0.7rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+}
+.rule-types legend {
+  padding: 0 0.4rem;
+  font-weight: 600;
+}
+.rule-numbers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 0.6rem 1.2rem;
+  margin: 0 0 0.9rem;
+}
+.rule-numbers input[type='number'] {
+  width: 5rem;
+}
