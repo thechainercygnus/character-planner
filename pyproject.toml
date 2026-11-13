@@ -1,6 +1,6 @@
 [project]
 name = "character-planner"
-version = "0.2.0"
+version = "0.2.1"
 description = "Character growth planner for a WoW Forever character, backed by the Battle.net API."
 readme = "README.md"
 license = "AGPL-3.0-or-later"
@@ -36,11 +36,7 @@ dev = [
     "pytest-cov>=7",
     "httpx2>=2.16.0",
 ]
-docs = [
-    "furo>=2025.12.19",
-    "myst-parser>=5.2.0",
-    "sphinx>=9.2.0",
-]
+docs = ["furo>=2025.12.19", "myst-parser>=5.2.0", "sphinx>=9.2.0"]
 
 [build-system]
 requires = ["hatchling"]
@@ -99,4 +95,4 @@ branch = true
 [tool.coverage.report]
 skip_empty = true
 precision = 1
-fail_under = 91  # statements and branches together; 91.4% on 2026-11-13
+fail_under = 91   # statements and branches together; 91.4% on 2026-11-13
