@@ -108,6 +108,7 @@ function PlanEditor({ view }: { view: TalentPlanView }) {
           <ol className="plan-rows">
             {rows.map((row, index) => (
               // Rows have no stable id; index keys are fine because the inputs are controlled.
+              // oxlint-disable-next-line react/no-array-index-key
               <li key={index}>
                 <input
                   aria-label={`Step ${index + 1} talent`}

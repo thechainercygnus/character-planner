@@ -13,6 +13,15 @@
     "moduleDetection": "force",
     "noEmit": true,
 
+    /* Type checking: strict, set explicitly rather than left to the compiler's default,
+       plus stricter checks it doesn't include (#85, OpenSSF Silver's warnings_strict).
+       noUncheckedIndexedAccess isn't on yet: 45 findings to work through first. */
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+
     /* Linting */
     "noUnusedLocals": true,
     "noUnusedParameters": true,

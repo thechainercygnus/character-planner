@@ -98,8 +98,8 @@ function QuestChain({ source }: { source: PoolSource }) {
   }
   return (
     <ol className="quest-chain" aria-label={`Quest chain for ${last.name}`}>
-      {source.chain.map((quests, i) => (
-        <li key={i}>
+      {source.chain.map((quests) => (
+        <li key={quests.map((q) => q.quest_id ?? q.name).join('+')}>
           <ChainStep quests={quests} />
         </li>
       ))}

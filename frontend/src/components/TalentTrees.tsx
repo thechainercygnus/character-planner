@@ -205,8 +205,9 @@ export function TalentTrees({ tree, view }: { tree: ClassTree; view: TalentPlanV
         <details className="talent-order" open={editing}>
           <summary>Order of points</summary>
           <ol>
-            {order.map(({ step, from, to, points }, i) => (
-              <li key={i}>
+            {order.map(({ step, from, to, points }) => (
+              // A talent's ranks only rise through the plan, so talent and rank are unique.
+              <li key={`${step.talent}:${to}`}>
                 {step.talent} → {step.rank}{' '}
                 <span className="muted">
                   {points === 1 ? `level ${from}` : `levels ${from}–${to}`}

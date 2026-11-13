@@ -95,8 +95,9 @@ export function LookAhead() {
         <div key={group.level} className="look-ahead-level">
           <h3>Level {group.level}</h3>
           <ul aria-label={`Level ${group.level}`}>
-            {group.events.map((event, i) => (
-              <Event key={`${event.kind}:${event.title}:${i}`} event={event} />
+            {group.events.map((event) => (
+              // One event per kind and title in a level: a dungeon, a slot's target, a point.
+              <Event key={`${event.kind}:${event.title}`} event={event} />
             ))}
           </ul>
         </div>
