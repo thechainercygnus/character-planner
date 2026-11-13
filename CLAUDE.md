@@ -30,6 +30,7 @@ Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `n
 Run scheduled jobs once: `uv run character-planner-worker --once` (sync, then pool refresh).
 Changed a table in `db.py`? Add a migration in the same PR: `uv run alembic revision --autogenerate -m "..."`, then read and correct it (ADR 0022). `tests/test_migrations.py` fails until it matches. `uv run character-planner-db current` shows the schema version.
 Deploy (Docker): `docker compose up -d --build`; over Tailscale add `-f compose.tailscale.yaml`. See `docs/deploy.md`.
+Release: bump `pyproject.toml`'s version in a PR, then the user tags `vX.Y.Z` on `main`; `release.yml` publishes to GHCR (ADR 0026, `docs/releasing.md`). Tagging is the user's call, like merging.
 
 ## Rules
 
