@@ -117,6 +117,11 @@ git pull
 docker compose -f compose.yaml -f compose.tailscale.yaml up -d --build
 ```
 
+The `migrate` service runs first and brings the database's schema up to date, keeping its
+data (ADR 0022); the API and the worker start once it has finished. If it fails,
+`docker compose logs migrate` says why, and nothing else starts. Back up the data volume
+before an upgrade (below).
+
 ## Back up
 
 The database is one file on the volume:

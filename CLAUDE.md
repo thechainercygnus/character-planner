@@ -28,6 +28,7 @@ Look up Forever Companion items by id: `uv run character-planner-probe-companion
 Build the item pool with progress: `uv run character-planner-pool` (first run takes a few minutes).
 Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `npm run dev`.
 Run scheduled jobs once: `uv run character-planner-worker --once` (sync, then pool refresh).
+Changed a table in `db.py`? Add a migration in the same PR: `uv run alembic revision --autogenerate -m "..."`, then read and correct it (ADR 0022). `tests/test_migrations.py` fails until it matches. `uv run character-planner-db current` shows the schema version.
 Deploy (Docker): `docker compose up -d --build`; over Tailscale add `-f compose.tailscale.yaml`. See `docs/deploy.md`.
 
 ## Rules
@@ -76,7 +77,7 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 ## Layout
 
 - `src/character_planner/blizzard/`: OAuth and the API client (raw JSON in, status always reported)
-- `src/character_planner/db.py`: SQLModel tables (`Snapshot`, `StoredToken`)
+- `src/character_planner/db.py`: SQLModel tables (`Snapshot`, `StoredToken`); `init_db` runs the migrations in `migrations/` (ADR 0022)
 - `src/character_planner/curated.py` + `data/curated/*.yaml`: hand-maintained defaults (targets, stat weights, rules); edits made in the app live in the database
 - `src/character_planner/scoring.py`: gear scores from editable stat weights (ADR 0005) in named presets (ADR 0013); shipped presets in `data/curated/stat_weights.yaml` and `weight_presets.yaml`
 - `src/character_planner/items.py`: item catalog (Battle.net item search + icons), cached in SQLite (ADR 0003)
