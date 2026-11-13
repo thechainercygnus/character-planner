@@ -4,8 +4,8 @@ Run with: uv run character-planner-worker [--once]
 
 Runs beside the API, sharing its database. Each job runs when its interval has passed
 since its last attempt, so a failing job is retried on the next interval, not every
-minute. A sync needs the token from the last login: Battle.net gives no refresh token,
-so scheduled syncs stop when it expires (24 hours) until you log in again.
+minute. Syncs use the app's own Battle.net token (tokens.py, #107), so they keep running
+with no login.
 """
 
 import argparse
@@ -29,17 +29,21 @@ from character_planner.logs import configure_logging
 
 logger = logging.getLogger("character_planner.worker")
 
-# How soon a skipped job (no login yet, no level yet, already running) is tried again.
+# How soon a skipped job (no client yet, no level yet, already running) is tried again.
 RETRY_SKIPPED = timedelta(minutes=2)
 
 JobFn = Callable[[Session, Settings, httpx.Client | None], str]
 
 
 def sync_job(session: Session, settings: Settings, http: httpx.Client | None) -> str:
-    try:
-        statuses = jobs.sync_character(session, settings, http=http)
-    except jobs.NotLoggedIn:
-        return "skipped: no valid login (none yet, or it expired); log in to resume syncs"
+    # Syncs use the app's own token (#107): no login needed. Without a client at all
+    # (guest mode only), there's nothing to sync with. A client Battle.net refuses raises
+    # CredentialsError, which fails the job and sends the system alert.
+    if not settings.has_credentials:
+        return "skipped: no Battle.net client (BNET_CLIENT_ID, BNET_CLIENT_SECRET in .env)"
+    statuses = jobs.sync_character(session, settings, http=http)
+    if statuses.get("profile") == 404:
+        return f"character {settings.character_slug} not found: check its name and region"
     failed = sorted(kind for kind, status in statuses.items() if status != 200)
     return f"synced {len(statuses)} endpoints" + (
         f", failed: {', '.join(failed)}" if failed else ""
@@ -146,7 +150,7 @@ def run_due(
                 outcome = job.run(session, settings, http)
             outcomes[job.name] = outcome
             if outcome.startswith("skipped"):
-                # Not a run: try again soon, so a login or first sync is picked up in
+                # Not a run: try again soon, so a new client or first sync is picked up in
                 # minutes rather than a whole interval later (#87).
                 job.last_run = now - job.every + RETRY_SKIPPED
             # The same outcome again (a skip every few minutes) only at DEBUG.
@@ -162,10 +166,9 @@ def run_due(
 
 
 def tick_notifications(engine: Engine, settings: Settings, http: httpx.Client) -> None:
-    """Each pass: warn about an expiring login, then send what's queued (#12)."""
+    """Each pass: send what's queued (#12)."""
     try:
         with Session(engine) as session:
-            notify.check_login(session, settings)
             notify.deliver_due(session, http)
     except Exception:
         logger.exception("Notifications failed")

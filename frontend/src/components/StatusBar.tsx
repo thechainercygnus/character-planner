@@ -62,25 +62,32 @@ export function StatusBar() {
     onSuccess: () => queryClient.invalidateQueries(),
   })
 
-  if (status.isPending) return <div className="status-bar">Checking login…</div>
+  if (status.isPending) return <div className="status-bar">Checking status…</div>
   if (status.isError) {
     return <div className="status-bar error">Backend unreachable: {status.error.message}</div>
   }
 
-  const loggedIn = status.data.logged_in
   const failed = sync.data ? failures(sync.data) : []
 
+  // Syncs use the app's own Battle.net token, so no login is needed (#107): only the client
+  // in .env, and a character Battle.net can find.
   return (
     <div className="status-bar">
       <span>Last sync: {lastSynced(status.data.latest_snapshots)}</span>
-      {loggedIn ? (
+      {status.data.can_sync ? (
         <button type="button" onClick={() => sync.mutate()} disabled={sync.isPending}>
           {sync.isPending ? 'Syncing…' : 'Sync now'}
         </button>
       ) : (
-        <a className="button" href="/auth/login">
-          Log in with Battle.net
-        </a>
+        <span className="warn" role="alert">
+          No Battle.net client: set BNET_CLIENT_ID and BNET_CLIENT_SECRET in .env to sync.
+        </span>
+      )}
+      {status.data.character_found === false && !sync.isPending && (
+        <span className="warn" role="alert">
+          Battle.net can't find {status.data.character}: check CHARACTER_NAME, CHARACTER_SURNAME and BNET_REGION in
+          .env.
+        </span>
       )}
       <NotificationsDialog />
       <details className="menu">

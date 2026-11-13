@@ -23,11 +23,11 @@ from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from character_planner import fields
-from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
 from character_planner.config import Settings
 from character_planner.db import SpellIcon, TalentTreeData, save_now, utcnow
 from character_planner.logs import JobLog
+from character_planner.tokens import CredentialsError, app_token
 
 logger = logging.getLogger(__name__)
 
@@ -197,8 +197,8 @@ def refresh_talent_trees(
     outcome = TalentRefresh(class_name=class_name)
     namespace = settings.static_namespace
     try:
-        token = oauth.client_credentials(settings, client=http)
-    except httpx.HTTPError as error:
+        token = app_token(session, settings, http)
+    except (httpx.HTTPError, CredentialsError) as error:
         outcome.errors.append(f"Blizzard token: {error}")
         logger.warning("Talent trees: no Blizzard token: %s", error)
         return outcome

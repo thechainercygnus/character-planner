@@ -27,7 +27,9 @@ class Snapshot(SQLModel, table=True):
 
 
 class StoredToken(SQLModel, table=True):
-    """The single user token. One row, id 1: this is a one-user app."""
+    """Battle.net tokens. Row 1 is the user's login (authorization code, 24 hours, only
+    needed for the account's character list). Row 2 is the app's own Client Credentials
+    token, which syncs and every refresh use (tokens.py, #107)."""
 
     id: int = Field(default=1, primary_key=True)
     access_token: str

@@ -27,16 +27,25 @@ const options: GuestOptions = {
   factions: ['alliance', 'horde'],
 }
 
-function status(loggedIn: boolean): Status {
-  return { character: 'Brumboldt Doomlet', namespace: 'profile-forever-us', logged_in: loggedIn, token_expires_at: null, latest_snapshots: {}, refreshing: [] }
+function status(canSync: boolean): Status {
+  return {
+    character: 'Brumboldt Doomlet',
+    namespace: 'profile-forever-us',
+    can_sync: canSync,
+    character_found: null,
+    logged_in: false,
+    token_expires_at: null,
+    latest_snapshots: {},
+    refreshing: [],
+  }
 }
 
 const noData: Recommendations = { ...recommendations, rows: [], dungeons: [], considered: 0, unscored: 0 }
 
-function stubFetch(loggedIn = false, guestData: Recommendations = recommendations) {
+function stubFetch(canSync = false, guestData: Recommendations = recommendations) {
   let refreshed = false
   const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
-    if (url === '/api/status') return Response.json(status(loggedIn))
+    if (url === '/api/status') return Response.json(status(canSync))
     if (url === '/api/guest') return Response.json(options)
     if (url.startsWith('/api/guest/recommendations')) return Response.json(refreshed ? recommendations : guestData)
     if (url.startsWith('/api/pool/refresh') && init?.method === 'POST') {
@@ -79,16 +88,18 @@ describe('Landing', () => {
     vi.unstubAllGlobals()
   })
 
-  it('explains the planner and how to log in', async () => {
+  it('explains the planner, and what a planner without a Battle.net client needs', async () => {
     stubFetch()
     renderLanding()
 
     expect(screen.getByText('Plan your WoW Forever character')).toBeTruthy()
-    expect(screen.getByText('Log in with Battle.net').getAttribute('href')).toBe('/auth/login')
-    expect(screen.getByText(/only asks to read your profile/)).toBeTruthy()
+    expect(await screen.findByText(/has no Battle.net client yet/)).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'self-hosting guide' })).toBeTruthy()
+    expect(screen.queryByText('Log in with Battle.net')).toBeNull()
+    expect(screen.getByText(/only reads public character data/)).toBeTruthy()
   })
 
-  it('offers a sync when logged in without data', async () => {
+  it('offers a sync, with no login, when the client is set (#107)', async () => {
     const fetchMock = stubFetch(true)
     renderLanding()
 

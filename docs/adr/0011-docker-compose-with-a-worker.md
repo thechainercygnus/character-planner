@@ -1,6 +1,6 @@
 # 0011: One image, an API and a worker, served over Tailscale
 
-Status: accepted (2026-11-12)
+Status: accepted (2026-11-12). Syncs no longer need the 24-hour login described here: ADR 0027.
 
 ## Context
 

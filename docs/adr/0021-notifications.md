@@ -1,6 +1,6 @@
 # 0021: Notifications through an outbox, to Discord webhooks
 
-Status: accepted (2026-11-13). Stage 1 of three: bot DMs (#58) and guild channels (#18)
+Status: accepted (2026-11-13); the login alerts were retired by ADR 0027. Stage 1 of three: bot DMs (#58) and guild channels (#18)
 come later.
 
 ## Context

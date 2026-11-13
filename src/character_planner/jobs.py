@@ -41,17 +41,15 @@ from character_planner.pool import (
 from character_planner.recommend import PAIRED, SLOT_FOR
 from character_planner.talent_trees import TalentRefresh, refresh_talent_trees, stored_tree
 from character_planner.targets import current_targets, pin_target, save_targets
+from character_planner.tokens import CredentialsError, app_token
 from character_planner.views import character_faction, character_level, parse_equipment
 
 logger = logging.getLogger(__name__)
 
 
-class NotLoggedIn(Exception):
-    """No stored user token, or it has expired. Battle.net issues no refresh token for
-    the authorization code flow, so only logging in again fixes it."""
-
-
 def current_token(session: Session) -> oauth.Token | None:
+    """The user's login token while it's valid. Syncs don't need it (#107): only the
+    account's character list does."""
     stored = session.get(StoredToken, 1)
     if stored is None:
         return None
@@ -127,17 +125,38 @@ def sync_character(
 ) -> dict[str, int]:
     """Pull every character endpoint and store each response, failures included.
 
+    Uses the app's own token, so no login is needed and syncs never stop at 24 hours
+    (#107). A 401 means Blizzard no longer takes the cached token: get a new one and try
+    once more. A second 401 means the client itself is refused, so CredentialsError, as
+    when the client ID and secret are missing or wrong. Other failures (a 404 for a
+    character that doesn't exist, 403, 429, 5xx) are stored and reported, not retried.
+
     Then look up any target items not in the item catalog yet. That step is best-effort:
-    a catalog failure never fails the sync. Raises NotLoggedIn without a valid token.
+    a catalog failure never fails the sync.
     """
-    token = current_token(session)
-    if token is None:
-        logger.info("Sync skipped: not logged in, or the login has expired")
-        raise NotLoggedIn("Not logged in or token expired; visit /auth/login")
     started = time.perf_counter()
     logger.info("Sync %s: started", settings.character_slug)
+    token = app_token(session, settings, http)
     with BlizzardClient(settings, token, http=http) as client:
         results = client.all_character_data()
+    if any(r.status == 401 for r in results):
+        logger.warning("Sync: Battle.net refused the app token (401); trying a new one")
+        token = app_token(session, settings, http, renew=True)
+        with BlizzardClient(settings, token, http=http) as client:
+            results = client.all_character_data()
+        if any(r.status == 401 for r in results):
+            raise CredentialsError(
+                "Battle.net refused a new app token too (HTTP 401): check BNET_CLIENT_ID, "
+                "BNET_CLIENT_SECRET and BNET_REGION"
+            )
+    profile = next((r for r in results if r.kind == "profile"), None)
+    if profile is not None and profile.status == 404:
+        logger.warning(
+            "Sync: character %s not found in the %s region: check CHARACTER_NAME, "
+            "CHARACTER_SURNAME and BNET_REGION",
+            settings.character_slug,
+            settings.bnet_region,
+        )
     for result in results:
         session.add(
             Snapshot(source="api", kind=result.kind, status=result.status, payload=result.body)

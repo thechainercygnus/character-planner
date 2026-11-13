@@ -16,7 +16,6 @@ Everything is kept in one SQLite database on a Docker volume.
 
 The planner is built for one person and **has no sign-in of its own**. Anyone who can open
 the page can:
-- use your Battle.net login while it's valid;
 - edit your plans;
 - set where alerts go;
 - start data refreshes that use your Battle.net client.
@@ -50,20 +49,15 @@ cp .env.example .env
 
 ## 3. Choose how you'll reach it
 
-Choose first: Battle.net sends you back to the planner after you log in, so the address
-goes into both `.env` and your Battle.net client.
+| How | Open it at | In `.env` |
+|---|---|---|
+| This machine only (default) | `http://localhost:8000` | nothing else |
+| Your home network | `http://<the server's address>:8000` | `PLANNER_BIND=0.0.0.0` |
+| Tailscale (HTTPS on your tailnet) | `https://character-planner.<tailnet>.ts.net` | `TS_AUTHKEY`, optionally `TS_HOSTNAME` |
+| Your own reverse proxy with HTTPS, on the same machine | `https://planner.example.com` | nothing else; the proxy forwards to `127.0.0.1:8000` |
 
-| How | Open it at | `BNET_REDIRECT_URI` | In `.env` |
-|---|---|---|---|
-| This machine only (default) | `http://localhost:8000` | `http://localhost:8000/auth/callback` | nothing else |
-| Tailscale (HTTPS on your tailnet) | `https://character-planner.<tailnet>.ts.net` | `https://character-planner.<tailnet>.ts.net/auth/callback` | `TS_AUTHKEY`, optionally `TS_HOSTNAME` |
-| Your own reverse proxy with HTTPS, on the same machine | `https://planner.example.com` | `https://planner.example.com/auth/callback` | nothing else; the proxy forwards to `127.0.0.1:8000` |
-
-To change the port, set `PLANNER_PORT`.
-
-**On your home network**, without Tailscale or a proxy: set `PLANNER_BIND=0.0.0.0` to
-listen on the network as well. Battle.net may refuse a plain `http://` redirect for any
-address other than `localhost`. If it does, use Tailscale or a reverse proxy with HTTPS.
+To change the port, set `PLANNER_PORT`. You don't sign in to Battle.net through the
+planner, so the address doesn't go into your Battle.net client.
 
 **Tailscale** needs HTTPS certificates and MagicDNS turned on for your tailnet (admin
 console, DNS), and an auth key (admin console, Settings, Keys). Your tailnet's name is
@@ -83,13 +77,14 @@ planner.example.com {
 
 ## 4. Create a Battle.net client
 
-Each planner uses its owner's own Battle.net API client.
+Each planner uses its owner's own Battle.net API client. With it, the planner reads your
+character's public data (the same as the Armory) and keeps syncing on its own. There's no
+Battle.net login to renew (ADR 0027).
 
 1. Sign in at the [Battle.net developer portal](https://develop.battle.net/access/clients)
-   and create a client. The name is up to you.
-2. Add your `BNET_REDIRECT_URI` from step 3 as a redirect URL. It must match **exactly**:
-   scheme, host, port and path.
-3. Copy the **client ID** and **client secret** into `.env`:
+   and create a client. The name is up to you. If the form asks for a redirect URL, enter
+   `http://localhost:8000/auth/callback`: the planner doesn't use it yet.
+2. Copy the **client ID** and **client secret** into `.env`:
 
    ```
    BNET_CLIENT_ID=...
@@ -103,15 +98,15 @@ Keep `.env` private: the secret is like a password. The planner never logs it.
 Besides the client:
 
 - `BNET_REGION`: your account's region, `us`, `eu`, `kr` or `tw`.
-- `BNET_REDIRECT_URI`: from step 3.
 - `CHARACTER_NAME` and `CHARACTER_SURNAME`: your character's first name and surname, as
-  shown in game. Forever looks characters up by both.
+  shown in game. Forever looks characters up by both, and the planner syncs that
+  character.
 - `PLANNER_IMAGE`: the release to run, for example
   `PLANNER_IMAGE=ghcr.io/thechainercygnus/character-planner:0.1`. `0.1` follows the
   latest `0.1.x`; `0.1.0` stays put.
 - For Tailscale: `TS_AUTHKEY`, and `TS_HOSTNAME` for a name other than `character-planner`.
 
-Leave `POST_LOGIN_REDIRECT` and `DATABASE_URL` as they are: Compose sets its own values.
+Leave `BNET_REDIRECT_URI`, `POST_LOGIN_REDIRECT` and `DATABASE_URL` as they are.
 
 ## 6. Start it
 
@@ -139,29 +134,28 @@ docker compose ps
 With Tailscale, once the `tailscale` container has joined, remove `TS_AUTHKEY` from `.env`.
 Its state stays on the `tailscale-state` volume.
 
-## 7. Log in and sync
+## 7. Sync
 
-Open the planner. Before you log in, **Try it without an account** already works: pick a
-class and a level to see the best items and dungeons for it.
+Open the planner. **Try it without an account** works straight away: pick a class and a
+level to see the best items and dungeons for it.
 
-1. Choose **Log in with Battle.net** and approve. You come back to the planner.
-2. Choose **Sync now**. The planner reads your character's profile, gear, talents and
-   professions.
-3. **The first sync also loads item, enchant and talent data in the background.** That
+1. Choose **Sync now**. The planner reads your character's profile, gear, talents and
+   professions. No login: it uses the client from step 4.
+2. **The first sync also loads item, enchant and talent data in the background.** That
    takes a few minutes, and the status bar says so (ADR 0024). Upgrades and Dungeons fill
    in when it's done.
 
-From then on, the worker syncs every 6 hours (`SYNC_EVERY_HOURS`) while your login is
-valid. **Battle.net logins last 24 hours with no way to renew them,** so log in again when
-you want fresh data. The worker's log then says
-`skipped: no valid login (none yet, or it expired); log in to resume syncs`.
+From then on, the worker syncs every 6 hours (`SYNC_EVERY_HOURS`) on its own, for as long
+as it runs. The planner gets a new Battle.net token by itself when the old one runs out
+(ADR 0027).
 
 ## 8. Alerts (optional)
 
 The planner can post to a Discord channel:
 - after a sync: level-ups, a gear target reached or now in reach, and new upgrades worth
   having;
-- about your login: 2 hours before it expires, and when it has.
+- about the planner itself: a scheduled job that failed (a refused Battle.net client
+  among them), or many errors from Battle.net or Forever Companion.
 
 You choose which alerts each channel gets.
 
@@ -233,11 +227,9 @@ To check that an image really comes from this project before running it, see
 
 | What you see | Why | What to do |
 |---|---|---|
-| Battle.net shows an error about the redirect URI after **Log in** | `BNET_REDIRECT_URI` and the client's redirect URL differ: `http` versus `https`, a port, or a trailing slash | Make them identical, then `docker compose up -d` to apply `.env` |
-| `BNET_CLIENT_ID / BNET_CLIENT_SECRET are not set` | `.env` has no client, or Compose didn't read it | Fill in `.env` beside `compose.yaml`, then `docker compose up -d` |
-| `Unknown or expired login state` | The login took over 10 minutes, or the planner restarted mid-login | Choose **Log in** again |
-| After a sync, nothing shows, and `server.log` says `failed: profile (404)` | Name, surname or region doesn't match the character | Check `CHARACTER_NAME`, `CHARACTER_SURNAME` and `BNET_REGION`, then sync again |
-| `worker.log` says `skipped: no valid login` | The 24-hour login expired | Log in again |
+| `Sync failed: Battle.net refused the client ID and secret (HTTP 401)` | A typo in `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET`, or the client was deleted or its secret changed | Copy both again from the developer portal, then `docker compose up -d` |
+| The status bar says `Battle.net can't find …`, and the logs say `character … not found` | Name, surname or region doesn't match the character | Check `CHARACTER_NAME`, `CHARACTER_SURNAME` and `BNET_REGION`, then `docker compose up -d` and sync again |
+| The status bar says `No Battle.net client`, and `worker.log` says `skipped: no Battle.net client` | `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET` is empty, or Compose didn't read `.env` | Fill in `.env` beside `compose.yaml`, then `docker compose up -d` |
 | Upgrades and Dungeons stay empty after the first sync | Item data is still loading | Wait for the status bar's note to clear. `server.log` shows progress every 50 items |
 | `migrate` exited with an error, and the app doesn't start | The schema update failed | `docker compose logs migrate`. Restore your backup if needed, and [report it](https://github.com/thechainercygnus/character-planner/issues) |
 | `pull access denied` for the image | A typo in `PLANNER_IMAGE`, or a version that doesn't exist | Copy the image name from the release notes |

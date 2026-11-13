@@ -70,7 +70,7 @@ def test_summary_marks_reached_targets_and_empty_slots(settings: Settings) -> No
 
 def test_summary_without_snapshots_explains_next_step(settings: Settings) -> None:
     targets = load_gear_targets(settings.curated_dir / "gear_targets.yaml")
-    assert "/auth/login" in build_summary("Brumboldt Doomlet", {}, targets)
+    assert "/api/sync" in build_summary("Brumboldt Doomlet", {}, targets)
 
 
 def test_summary_calls_targets_below_whats_worn_outgrown() -> None:

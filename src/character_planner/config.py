@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     # under its 120 requests/min limit. Tests set 0.
     companion_request_pause: float = 0.55
 
-    # The worker's schedule (worker.py, ADR 0011). A sync needs a login from the last 24h.
+    # The worker's schedule (worker.py, ADR 0011). Syncs use the app's own token (#107).
     sync_every_hours: float = 6
     pool_every_hours: float = 24
     # Enchant recipes are static: weekly is plenty (#87).

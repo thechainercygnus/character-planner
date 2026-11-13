@@ -102,9 +102,10 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/fields.py`: defensive JSON readers used by all parsers
 - `src/character_planner/views.py`: the only code that reads API response shapes; typed views for the frontend
 - `src/character_planner/summary.py`: Markdown rendering of those views, for pasting into a chat
-- `src/character_planner/notify.py`: alerts to Discord webhooks: destinations, change detection after a sync, login expiry, an outbox the worker sends (ADR 0021)
+- `src/character_planner/notify.py`: alerts to Discord webhooks: destinations, change detection after a sync, an outbox the worker sends (ADR 0021)
 - `src/character_planner/logs.py`: logging for the API and the worker: console, rotating files with `LOG_DIR`, request ids, redaction of secrets in every line (ADR 0019)
+- `src/character_planner/tokens.py`: the app's own Battle.net token (Client Credentials), cached and renewed; syncs and every refresh use it, so no login is needed (ADR 0027)
 - `src/character_planner/leases.py`: one-at-a-time leases for long refreshes, shared by the API and the worker (ADR 0024)
 - `src/character_planner/jobs.py`: sync and pool refresh, shared by the API and the worker
 - `src/character_planner/worker.py`: scheduled jobs beside the API (ADR 0011); `Dockerfile`, `compose*.yaml` and `docs/self-hosting.md` deploy both
-- `src/character_planner/app.py`: FastAPI routes, built by `create_app()`. Data routes live under `/api`, login under `/auth`; a built frontend in `frontend/dist` is served at `/`
+- `src/character_planner/app.py`: FastAPI routes, built by `create_app()`. Data routes live under `/api`, the optional Battle.net login under `/auth`; a built frontend in `frontend/dist` is served at `/`

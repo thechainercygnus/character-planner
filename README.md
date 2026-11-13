@@ -16,7 +16,8 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 ## Setup
 
 1. Create a client at the [Battle.net developer portal](https://develop.battle.net/access/clients)
-   with redirect URI `http://localhost:8000/auth/callback`.
+   (redirect URI `http://localhost:8000/auth/callback` if it asks; syncs don't use the
+   login, ADR 0027).
 2. `cp .env.example .env` and fill in the client ID and secret.
 3. `uv sync`
 4. `cd frontend && npm ci` (the frontend's tools, also used by the pre-commit hooks)
@@ -29,8 +30,8 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 |---|---|
 | Capture raw API responses (phase 0) | `uv run character-planner-spike` |
 | Run the app | `uv run uvicorn character_planner.app:create_app --factory --reload` |
-| Log in | http://localhost:8000/auth/login |
-| Pull fresh data | `POST /api/sync` |
+| Pull fresh data (no login: the app's own token, ADR 0027) | `POST /api/sync`, or **Sync now** |
+| Optional Battle.net login (only the account's character list needs it) | http://localhost:8000/auth/login |
 | Character summary (Markdown) | http://localhost:8000/api/summary.md |
 | Character / gear plan (JSON) | `/api/character`, `/api/gear` |
 | Re-run item lookups | `POST /api/items/refresh?force=true` |
@@ -47,7 +48,7 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Talent plan vs synced talents (next point, off-plan points) | `/api/talents`; the trees at `/api/talents/tree`; plan on the talent trees in the Talents tab (ADR 0025); the Character tab shows talents as spent, read-only (#41), default in `data/curated/talent_plan.yaml` |
 | Stat weights for scoring | `GET`/`PUT`/`DELETE /api/weights` for the active preset (or the **Stat weights** button on the Upgrades and Plan tabs) |
 | Weight presets (Leveling tank, Dungeon tank, Solo DPS, your own) | `PUT /api/weights/active`, `POST /api/weights/presets`, `PATCH`/`DELETE /api/weights/presets/{key}` |
-| Alerts in Discord (login expiring, level-ups, targets, upgrades; failed jobs) | **Alerts** in the status bar, or `/api/notifications` (ADR 0021) |
+| Alerts in Discord (level-ups, targets, upgrades; failed jobs, upstream errors) | **Alerts** in the status bar, or `/api/notifications` (ADR 0021) |
 | API docs | http://localhost:8000/docs |
 | Logs (console; files with `LOG_DIR`) | `LOG_LEVEL=DEBUG` for upstream requests, `LOG_DIR=data/logs` for `server.log` and `access.log` (ADR 0019) |
 | Run scheduled syncs and pool refreshes | `uv run character-planner-worker` (`--once` to run them now) |

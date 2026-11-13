@@ -1,11 +1,11 @@
 """Notifications, stage 1 (#12, ADR 0021): alerts to Discord webhooks.
 
-Two audiences (ADR 0020). User alerts are about a character: login expiring or expired,
-level-ups, targets reached or now in reach, new upgrades. System alerts are for whoever
+Two audiences (ADR 0020). User alerts are about a character: level-ups, targets reached
+or now in reach, new upgrades. System alerts are for whoever
 runs the instance: a scheduled job failed, or upstream services errored. System alerts go
 to system destinations, or to user destinations when there are none (a self-hosted copy).
 
-Flow: jobs report what happened (after_sync, check_login, job_failed, upstream_errors),
+Flow: jobs report what happened (after_sync, job_failed, upstream_errors),
 which queues a Discord message per subscribed destination in the outbox. The worker sends
 what's due (deliver_due): Discord's 429 retry_after is respected, other failures are
 retried with backoff, and a webhook that's gone marks its destination failing.
@@ -16,7 +16,6 @@ so a sync where nothing changed sends nothing, and the first sync only sets the 
 
 import logging
 import re
-import time
 from collections.abc import Iterable
 from datetime import datetime, timedelta
 from typing import Literal
@@ -32,15 +31,12 @@ from character_planner.db import (
     NotificationDestination,
     NotificationOutbox,
     NotificationState,
-    StoredToken,
     utcnow,
 )
 
 logger = logging.getLogger(__name__)
 
 AlertKind = Literal[
-    "login_expiring",
-    "login_expired",
     "level_up",
     "target_reached",
     "target_in_reach",
@@ -58,8 +54,6 @@ class AlertInfo(BaseModel):
 
 
 ALERTS: list[AlertInfo] = [
-    AlertInfo(kind="login_expiring", audience="user", label="Login expiring soon"),
-    AlertInfo(kind="login_expired", audience="user", label="Login expired, syncs stopped"),
     AlertInfo(kind="level_up", audience="user", label="Level-ups"),
     AlertInfo(kind="target_reached", audience="user", label="Gear target reached"),
     AlertInfo(kind="target_in_reach", audience="user", label="Coming-up target now in reach"),
@@ -69,6 +63,10 @@ ALERTS: list[AlertInfo] = [
 ]
 AUDIENCE: dict[str, Audience] = {a.kind: a.audience for a in ALERTS}
 USER_ALERTS = [a.kind for a in ALERTS if a.audience == "user"]
+# Alerts no longer sent. Destinations may still list them: they're dropped when read or
+# saved, so an old destination doesn't fail validation. The login alerts went with #107:
+# syncs no longer need the 24-hour login.
+RETIRED_ALERTS = {"login_expiring", "login_expired"}
 SYSTEM_ALERTS = [a.kind for a in ALERTS if a.audience == "system"]
 
 # Only Discord's own webhook addresses are accepted, so a destination can't make the app
@@ -78,13 +76,12 @@ WEBHOOK_URL = re.compile(
     r"(?P<id>\d{5,25})/(?P<token>[A-Za-z0-9_-]{20,100})"
 )
 
-LOGIN_WARNING = timedelta(hours=2)
 UPGRADE_MIN_GAIN = 3.0  # score gain an upgrade needs to be worth an alert
 UPGRADES_LISTED = 3
 UPSTREAM_ERROR_THRESHOLD = 10  # errors in one refresh before it's worth an alert
 MAX_ATTEMPTS = 5
 BACKOFF = [timedelta(minutes=m) for m in (1, 5, 15, 60)]
-COLOR = {"user": 0x3BA55C, "system": 0xED4245, "login": 0xFAA61A}
+COLOR = {"user": 0x3BA55C, "system": 0xED4245}
 
 
 class NotifyError(ValueError):
@@ -106,7 +103,7 @@ def masked(url: str) -> str:
 
 def clean_alerts(alerts: Iterable[str], audience: Audience) -> list[str]:
     """Known alerts, in the standard order. System destinations take system alerts only."""
-    wanted = set(alerts)
+    wanted = set(alerts) - RETIRED_ALERTS
     unknown = wanted - set(AUDIENCE)
     if unknown:
         raise NotifyError(f"Unknown alerts: {', '.join(sorted(unknown))}")
@@ -216,46 +213,6 @@ def upstream_errors(
             app_url(settings),
         ),
     )
-
-
-# --- login -------------------------------------------------------------------------------
-
-
-def check_login(session: Session, settings: Settings, now: float | None = None) -> None:
-    """Warn before the Battle.net login expires, and when it has: Battle.net gives no
-    refresh token, so scheduled syncs stop until someone logs in again."""
-    token = session.get(StoredToken, 1)
-    if token is None:
-        return
-    now = time.time() if now is None else now
-    login = app_url(settings)
-    login = f"{login}auth/login" if login else None
-    expires = int(token.expires_at)
-    if now >= token.expires_at:
-        notify(
-            session,
-            "login_expired",
-            f"login_expired:{expires}",
-            _message(
-                "Login expired: syncs have stopped",
-                "Battle.net logins last 24 hours. Log in again to resume scheduled syncs.",
-                COLOR["login"],
-                login,
-            ),
-        )
-    elif now >= token.expires_at - LOGIN_WARNING.total_seconds():
-        minutes = max(1, int((token.expires_at - now) // 60))
-        notify(
-            session,
-            "login_expiring",
-            f"login_expiring:{expires}",
-            _message(
-                f"Login expires in {minutes // 60}h {minutes % 60:02d}m",
-                "Log in again before then to keep scheduled syncs running.",
-                COLOR["login"],
-                login,
-            ),
-        )
 
 
 # --- character changes ---------------------------------------------------------------
@@ -577,7 +534,7 @@ def _view(d: NotificationDestination) -> DestinationView:
         kind=d.kind,
         audience=_audience(d),
         url=masked(d.url),
-        alerts=list(d.alerts or []),
+        alerts=[a for a in d.alerts or [] if a not in RETIRED_ALERTS],
         enabled=d.enabled,
         last_sent_at=d.last_sent_at,
         last_error=d.last_error,
