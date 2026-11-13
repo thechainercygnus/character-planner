@@ -147,10 +147,21 @@ def sync_character(
 
 
 def refresh_item_pool(
-    session: Session, settings: Settings, *, force: bool = False, http: httpx.Client | None = None
+    session: Session,
+    settings: Settings,
+    *,
+    force: bool = False,
+    http: httpx.Client | None = None,
+    level: int | None = None,
 ) -> PoolRefresh:
-    """Dungeon drop tables and quest rewards, then item details for the level window."""
-    level, faction = character_context(session)
+    """Dungeon drop tables and quest rewards, then item details for a level window.
+
+    The window is around `level` when given (guest mode's level, #48), else the
+    character's. Without either, every pool item: about 1,700 requests, ~20 minutes.
+    """
+    character_level, faction = character_context(session)
+    asked = level is not None
+    level = level if level is not None else character_level
     started = time.perf_counter()
     if level is None:
         # No synced character (guest mode on a fresh install): every pool item's details.
@@ -160,10 +171,11 @@ def refresh_item_pool(
         )
     else:
         logger.info(
-            "Item pool refresh: level %s, window %s, faction %s%s",
+            "Item pool refresh: level %s (%s), window %s, faction %s%s",
             level,
+            "asked for" if asked else "the character's",
             level_window(level),
-            faction or "unknown",
+            faction or "any",
             " (forced)" if force else "",
         )
     result = refresh_pool(
