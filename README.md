@@ -61,6 +61,10 @@ uv run pytest
 
 CI runs the same checks plus a gitleaks secret scan and a Docker build with a smoke test.
 
+## Security
+
+Please report vulnerabilities privately. See [SECURITY.md](SECURITY.md).
+
 ## License
 
 Character Planner is free software under the [GNU Affero General Public License v3.0 or
