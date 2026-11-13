@@ -1,0 +1,234 @@
+"""Baseline: the schema as of #60
+
+Revision ID: 0001
+Revises:
+Create date: 2026-11-12 21:02:57.509323
+"""
+
+from collections.abc import Sequence
+
+import sqlalchemy as sa
+import sqlmodel.sql.sqltypes
+from alembic import op
+
+revision: str = "0001"
+down_revision: str | None = None
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
+
+
+def _missing(table: str) -> bool:
+    return table not in sa.inspect(op.get_bind()).get_table_names()
+
+
+def upgrade() -> None:
+    """Create every table of the #60 schema that doesn't exist yet.
+
+    Databases from before #60 were made with create_all and have no version table:
+    their tables are kept and any missing ones (from older app versions) are added,
+    so every database reaches the same baseline (ADR 0022)."""
+    if _missing("activeweightpreset"):
+        op.create_table(
+            "activeweightpreset",
+            sa.Column("id", sa.Integer(), nullable=False),
+            sa.Column("key", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.PrimaryKeyConstraint("id"),
+        )
+    if _missing("catalogitem"):
+        op.create_table(
+            "catalogitem",
+            sa.Column("name_key", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("found", sa.Boolean(), nullable=False),
+            sa.Column("item_id", sa.Integer(), nullable=True),
+            sa.Column("payload", sa.JSON(), nullable=True),
+            sa.Column("fetched_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.PrimaryKeyConstraint("name_key"),
+        )
+    if _missing("companiondungeon"):
+        op.create_table(
+            "companiondungeon",
+            sa.Column("dungeon_id", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("payload", sa.JSON(), nullable=False),
+            sa.Column("fetched_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.PrimaryKeyConstraint("dungeon_id"),
+        )
+    if _missing("companionitem"):
+        op.create_table(
+            "companionitem",
+            sa.Column("item_id", sa.Integer(), nullable=False),
+            sa.Column("found", sa.Boolean(), nullable=False),
+            sa.Column("payload", sa.JSON(), nullable=True),
+            sa.Column("fetched_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.PrimaryKeyConstraint("item_id"),
+        )
+    if _missing("itemchoice"):
+        op.create_table(
+            "itemchoice",
+            sa.Column("item_id", sa.Integer(), nullable=False),
+            sa.Column("choice", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("created_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.PrimaryKeyConstraint("item_id"),
+        )
+    if _missing("itemicon"):
+        op.create_table(
+            "itemicon",
+            sa.Column("item_id", sa.Integer(), nullable=False),
+            sa.Column("url", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+            sa.Column("fetched_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.PrimaryKeyConstraint("item_id"),
+        )
+    if _missing("notificationdestination"):
+        op.create_table(
+            "notificationdestination",
+            sa.Column("id", sa.Integer(), nullable=False),
+            sa.Column("name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("kind", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("audience", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("url", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("alerts", sa.JSON(), nullable=False),
+            sa.Column("enabled", sa.Boolean(), nullable=False),
+            sa.Column("user_id", sa.Integer(), nullable=True),
+            sa.Column("created_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.Column("last_sent_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=True),
+            sa.Column("last_error", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+            sa.PrimaryKeyConstraint("id"),
+        )
+    if _missing("notificationoutbox"):
+        op.create_table(
+            "notificationoutbox",
+            sa.Column("id", sa.Integer(), nullable=False),
+            sa.Column("destination_id", sa.Integer(), nullable=False),
+            sa.Column("kind", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("dedupe_key", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("payload", sa.JSON(), nullable=False),
+            sa.Column("created_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.Column("attempts", sa.Integer(), nullable=False),
+            sa.Column("next_attempt_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.Column("sent_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=True),
+            sa.Column("failed", sa.Boolean(), nullable=False),
+            sa.Column("last_error", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+            sa.PrimaryKeyConstraint("id"),
+            sa.UniqueConstraint("destination_id", "dedupe_key"),
+        )
+        with op.batch_alter_table("notificationoutbox", schema=None) as batch_op:
+            batch_op.create_index(
+                batch_op.f("ix_notificationoutbox_destination_id"), ["destination_id"], unique=False
+            )
+    if _missing("notificationstate"):
+        op.create_table(
+            "notificationstate",
+            sa.Column("key", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("value", sa.JSON(), nullable=False),
+            sa.Column("updated_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.PrimaryKeyConstraint("key"),
+        )
+    if _missing("recipedata"):
+        op.create_table(
+            "recipedata",
+            sa.Column("recipe_id", sa.Integer(), nullable=False),
+            sa.Column("profession", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("category", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("payload", sa.JSON(), nullable=False),
+            sa.Column("fetched_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.PrimaryKeyConstraint("recipe_id"),
+        )
+    if _missing("snapshot"):
+        op.create_table(
+            "snapshot",
+            sa.Column("id", sa.Integer(), nullable=False),
+            sa.Column("captured_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.Column("source", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("kind", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("status", sa.Integer(), nullable=False),
+            sa.Column("payload", sa.JSON(), nullable=True),
+            sa.PrimaryKeyConstraint("id"),
+        )
+        with op.batch_alter_table("snapshot", schema=None) as batch_op:
+            batch_op.create_index(
+                batch_op.f("ix_snapshot_captured_at"), ["captured_at"], unique=False
+            )
+            batch_op.create_index(batch_op.f("ix_snapshot_kind"), ["kind"], unique=False)
+            batch_op.create_index(batch_op.f("ix_snapshot_source"), ["source"], unique=False)
+    if _missing("storedgeartargets"):
+        op.create_table(
+            "storedgeartargets",
+            sa.Column("id", sa.Integer(), nullable=False),
+            sa.Column("targets", sa.JSON(), nullable=False),
+            sa.Column("updated_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.PrimaryKeyConstraint("id"),
+        )
+    if _missing("storedtalentplan"):
+        op.create_table(
+            "storedtalentplan",
+            sa.Column("id", sa.Integer(), nullable=False),
+            sa.Column("plan", sa.JSON(), nullable=False),
+            sa.Column("updated_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.PrimaryKeyConstraint("id"),
+        )
+    if _missing("storedtoken"):
+        op.create_table(
+            "storedtoken",
+            sa.Column("id", sa.Integer(), nullable=False),
+            sa.Column("access_token", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("expires_at", sa.Float(), nullable=False),
+            sa.Column("scope", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.PrimaryKeyConstraint("id"),
+        )
+    if _missing("storedusagerules"):
+        op.create_table(
+            "storedusagerules",
+            sa.Column("id", sa.Integer(), nullable=False),
+            sa.Column("rules", sa.JSON(), nullable=False),
+            sa.Column("updated_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.PrimaryKeyConstraint("id"),
+        )
+    if _missing("storedweights"):
+        op.create_table(
+            "storedweights",
+            sa.Column("id", sa.Integer(), nullable=False),
+            sa.Column("weights", sa.JSON(), nullable=False),
+            sa.Column("updated_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.PrimaryKeyConstraint("id"),
+        )
+    if _missing("weightpreset"):
+        op.create_table(
+            "weightpreset",
+            sa.Column("key", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+            sa.Column("shipped", sa.Boolean(), nullable=False),
+            sa.Column("weights", sa.JSON(), nullable=False),
+            sa.Column("updated_at", sqlmodel.sql.sqltypes.UTCDateTime(), nullable=False),
+            sa.PrimaryKeyConstraint("key"),
+        )
+
+
+def downgrade() -> None:
+    # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_table("weightpreset")
+    op.drop_table("storedweights")
+    op.drop_table("storedusagerules")
+    op.drop_table("storedtoken")
+    op.drop_table("storedtalentplan")
+    op.drop_table("storedgeartargets")
+    with op.batch_alter_table("snapshot", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_snapshot_source"))
+        batch_op.drop_index(batch_op.f("ix_snapshot_kind"))
+        batch_op.drop_index(batch_op.f("ix_snapshot_captured_at"))
+
+    op.drop_table("snapshot")
+    op.drop_table("recipedata")
+    op.drop_table("notificationstate")
+    with op.batch_alter_table("notificationoutbox", schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f("ix_notificationoutbox_destination_id"))
+
+    op.drop_table("notificationoutbox")
+    op.drop_table("notificationdestination")
+    op.drop_table("itemicon")
+    op.drop_table("itemchoice")
+    op.drop_table("companionitem")
+    op.drop_table("companiondungeon")
+    op.drop_table("catalogitem")
+    op.drop_table("activeweightpreset")
+    # ### end Alembic commands ###
