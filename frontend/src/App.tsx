@@ -9,6 +9,7 @@ import {
 import { Dungeons } from './components/Dungeons'
 import { Enchants } from './components/Enchants'
 import { GearTable } from './components/GearTable'
+import { Landing } from './components/Landing'
 import { Progress } from './components/Progress'
 import { Recommendations } from './components/Recommendations'
 import { RulesDialog } from './components/RulesDialog'
@@ -16,7 +17,7 @@ import { StatusBar } from './components/StatusBar'
 import { TalentPlanPanel } from './components/TalentPlan'
 import { TabBar } from './components/Tabs'
 import { TargetsEditor } from './components/TargetsEditor'
-import { useHashTab, type Tab } from './useHashTab'
+import { useHashIs, useHashTab, type Tab } from './useHashTab'
 import { WeightsDialog } from './components/WeightsDialog'
 import './App.css'
 
@@ -32,6 +33,7 @@ const TABS: readonly Tab<TabId>[] = [
 
 export default function App() {
   const [tab, setTab] = useHashTab(TABS, 'upgrades')
+  const guestView = useHashIs('guest')
   const character = useQuery({ queryKey: ['character'], queryFn: api.character })
   const gear = useQuery({ queryKey: ['gear'], queryFn: api.gear })
   const recommendations = useQuery({ queryKey: ['recommendations'], queryFn: api.recommendations })
@@ -51,11 +53,11 @@ export default function App() {
       {character.isPending && <p className="muted">Loading character…</p>}
       {character.isError && <p className="error">Couldn't load character: {character.error.message}</p>}
 
-      {character.data && character.data.level === null && (
-        <p className="muted">No character data yet. Log in with Battle.net, then sync.</p>
+      {character.data && (character.data.level === null || guestView) && (
+        <Landing hasCharacter={character.data.level !== null} />
       )}
 
-      {character.data && character.data.level !== null && (
+      {character.data && character.data.level !== null && !guestView && (
         <>
           <CharacterHeader character={character.data} />
           <TabBar

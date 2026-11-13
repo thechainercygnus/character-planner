@@ -35,6 +35,7 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Edit gear targets (YAML is the default) | `PUT`/`DELETE /api/targets` (or **Edit targets** on the Plan tab) |
 | Pin an item as a target | `POST /api/targets/pins`, `DELETE /api/targets/pins/{item_id}` (or **Make target** in an expanded Upgrades row) |
 | Never suggest an item | `GET /api/choices`, `PUT`/`DELETE /api/choices/{item_id}` (or **Never suggest**) |
+| Guest mode: best items and dungeons for a class and level, no account | `/api/guest`, `/api/guest/recommendations?level=20&class=warrior&faction=alliance` (or the landing page, and **Guest mode** in the ⋯ menu) |
 | Progress over time (one point per sync, gear changes, level-ups) | `/api/progress` |
 | Talent plan vs synced talents (next point, off-plan points) | `/api/talents`, plan in `data/curated/talent_plan.yaml` or edit it in the app |
 | Stat weights for scoring | `GET`/`PUT`/`DELETE /api/weights` for the active preset (or the **Stat weights** button on the Upgrades and Plan tabs) |

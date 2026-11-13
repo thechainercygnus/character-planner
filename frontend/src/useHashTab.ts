@@ -27,3 +27,14 @@ export function useHashTab<Id extends string>(tabs: readonly Tab<Id>[], fallback
   }
   return [active, select] as const
 }
+
+/** Whether the URL hash is exactly this (e.g. "guest"), kept up to date. */
+export function useHashIs(id: string): boolean {
+  const [matches, setMatches] = useState(() => window.location.hash === `#${id}`)
+  useEffect(() => {
+    const onHashChange = () => setMatches(window.location.hash === `#${id}`)
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [id])
+  return matches
+}
