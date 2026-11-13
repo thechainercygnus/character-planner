@@ -27,6 +27,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, col, select
 
 from character_planner.config import Settings
+from character_planner.crafting import crafted_items
 from character_planner.db import (
     NotificationDestination,
     NotificationOutbox,
@@ -263,7 +264,7 @@ def character_digest(session: Session, settings: Settings) -> tuple[Digest, list
     equipped = {i.slot: i for i in parse_equipment(equipment.payload if equipment else None)}
     rules = current_rules(session, defaults.rules)
     recs = recommend(
-        pool_view(session, level, faction),
+        pool_view(session, level, faction, crafted_items(session)),
         equipped,
         weights,
         rules,

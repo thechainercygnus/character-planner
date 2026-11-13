@@ -32,6 +32,8 @@ AFTER_BASELINE = {
     "companionrare",  # 0005
     "companionclassquest",  # 0006
     "classquestdone",
+    "craftingrecipe",  # 0007
+    "blizzarditem",
 }
 
 

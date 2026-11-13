@@ -22,6 +22,9 @@ export function sourceText(source: PoolSource): string {
     const where = [source.rare ?? '?', source.zone].filter(Boolean).join(', ')
     return `Rare${source.elite ? ' elite' : ''}: ${where}${levels ? ` (${levels})` : ''}${spawns}`
   }
+  if (source.kind === 'crafted') {
+    return `Crafted: ${source.profession ?? '?'}${source.recipe ? ` (${source.recipe})` : ''}`
+  }
   const place = source.dungeon ?? '?'
   if (source.kind === 'quest') {
     return `Quest: ${source.detail ?? '?'} (${place})${source.choice ? ', choice' : ''}`

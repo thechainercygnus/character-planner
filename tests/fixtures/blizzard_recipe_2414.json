@@ -1,0 +1,47 @@
+{
+  "_links": {
+    "self": {
+      "href": "https://us.api.blizzard.com/data/wow/recipe/2414?namespace=static-1.60.1_70399-forever-us"
+    }
+  },
+  "id": 2414,
+  "name": "Rough Dynamite",
+  "media": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/media/recipe/2414?namespace=static-1.60.1_70399-forever-us"
+    },
+    "id": 2414
+  },
+  "crafted_item": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/item/4358?namespace=static-1.60.1_70399-forever-us"
+    },
+    "name": "Rough Dynamite",
+    "id": 4358
+  },
+  "reagents": [
+    {
+      "reagent": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/item/4357?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Rough Blasting Powder",
+        "id": 4357
+      },
+      "quantity": 1
+    },
+    {
+      "reagent": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/item/2589?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Linen Cloth",
+        "id": 2589
+      },
+      "quantity": 1
+    }
+  ],
+  "crafted_quantity": {
+    "value": 2.0
+  }
+}

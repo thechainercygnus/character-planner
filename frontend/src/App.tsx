@@ -8,6 +8,7 @@ import { Enchants } from './components/Enchants'
 import { Footer } from './components/Footer'
 import { GearTable } from './components/GearTable'
 import { Landing } from './components/Landing'
+import { ProfessionMilestones } from './components/ProfessionMilestones'
 import { Progress } from './components/Progress'
 import { Recommendations } from './components/Recommendations'
 import { RulesDialog } from './components/RulesDialog'
@@ -38,6 +39,11 @@ export default function App() {
   const recommendations = useQuery({ queryKey: ['recommendations'], queryFn: api.recommendations })
   const talents = useQuery({ queryKey: ['talents'], queryFn: api.talents, enabled: tab === 'talents' })
   const progress = useQuery({ queryKey: ['progress'], queryFn: api.progress, enabled: tab === 'progress' })
+  const professions = useQuery({
+    queryKey: ['professions'],
+    queryFn: api.professions,
+    enabled: tab === 'progress',
+  })
   // On the Plan tab, and for its tab count: essential class quests missed (#8).
   const classQuests = useQuery({ queryKey: ['class-quests'], queryFn: api.classQuests })
   const enchants = useQuery({ queryKey: ['enchants'], queryFn: api.enchants, enabled: tab === 'upgrades' })
@@ -123,6 +129,10 @@ export default function App() {
             <>
               {progress.isError && <p className="error">Couldn't load progress: {progress.error.message}</p>}
               {progress.data && <Progress data={progress.data} />}
+              {professions.isError && (
+                <p className="error">Couldn't load professions: {professions.error.message}</p>
+              )}
+              {professions.data && <ProfessionMilestones data={professions.data} />}
             </>
           )}
 

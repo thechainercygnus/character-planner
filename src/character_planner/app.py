@@ -49,6 +49,13 @@ from character_planner.companion import ATTRIBUTION as COMPANION_ATTRIBUTION
 from character_planner.companion import SOURCES as COMPANION_SOURCES
 from character_planner.companion import companion_by_id
 from character_planner.config import Settings, get_settings
+from character_planner.crafting import (
+    ProfessionData,
+    ProfessionsView,
+    crafted_items,
+    load_profession_data,
+    professions_view,
+)
 from character_planner.curated import GearTargets
 from character_planner.db import (
     NotificationDestination,
@@ -231,6 +238,11 @@ DefaultRulesDep = Annotated[UsageRules, Depends(get_default_rules)]
 def get_rules(session: SessionDep, default: DefaultRulesDep) -> UsageRules:
     """The Upgrades rules in use: edited in the app, or recommend.yaml (ADR 0016)."""
     return current_rules(session, default)
+
+
+def get_profession_data(request: Request) -> ProfessionData:
+    settings: Settings = request.app.state.settings
+    return load_profession_data(settings.curated_dir / "professions.yaml")
 
 
 def get_enchant_data(request: Request) -> EnchantData:
@@ -536,7 +548,14 @@ def create_app(
     def item_pool(session: SessionDep) -> PoolView:
         """Dungeon drops and quest rewards for the character's level window."""
         level, faction = character_context(session)
-        return pool_view(session, level, faction)
+        return pool_view(session, level, faction, crafted_items(session))
+
+    @app.get("/api/professions")
+    def get_professions(
+        session: SessionDep, data: Annotated[ProfessionData, Depends(get_profession_data)]
+    ) -> ProfessionsView:
+        """Each synced profession: skill, rank, the next rank and crafted gear (#10)."""
+        return professions_view(session, data, jobs.character_context(session)[0])
 
     @app.get("/api/progress")
     def progress_over_time(session: SessionDep, presets: PresetsDep) -> Progress:
@@ -556,7 +575,7 @@ def create_app(
             for item in parse_equipment(equipment.payload if equipment else None)
         }
         return recommend(
-            pool_view(session, level, faction),
+            pool_view(session, level, faction, crafted_items(session)),
             equipped,
             current_weights(session, presets),
             rules,
@@ -633,7 +652,12 @@ def create_app(
         """Pin a pool item as a target ("Make target")."""
         faction = character_context(session)[1]
         item = next(
-            (i for i in pool_view(session, None, faction).items if i.item_id == pin.item_id), None
+            (
+                i
+                for i in pool_view(session, None, faction, crafted_items(session)).items
+                if i.item_id == pin.item_id
+            ),
+            None,
         )
         if item is None:
             raise HTTPException(404, f"Item {pin.item_id} isn't in the item pool")

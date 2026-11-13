@@ -34,6 +34,10 @@ section {
   color: var(--warn);
 }
 
+.ok {
+  color: var(--ok);
+}
+
 /* Status bar */
 .status-bar {
   display: flex;
@@ -1092,4 +1096,34 @@ ul.upcoming small {
 .class-quest.status-done strong {
   color: var(--muted);
   text-decoration: line-through;
+}
+
+.profession-milestones {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.profession-milestones li {
+  padding: 0.5rem 0;
+}
+
+.profession-milestones progress {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.profession-milestones small {
+  display: block;
+}
+
+.profession-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.profession-skill {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
 }

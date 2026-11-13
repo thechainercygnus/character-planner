@@ -8,6 +8,19 @@ describe('sourceText', () => {
     expect(sourceText(deadminesQuest)).toBe('Quest: The Defias Brotherhood (The Deadmines), choice')
   })
 
+  it('names crafted gear by profession and recipe (#10)', () => {
+    const crafted = {
+      ...hallDrop,
+      kind: 'crafted' as const,
+      dungeon_id: null,
+      dungeon: null,
+      detail: null,
+      profession: 'Engineering',
+      recipe: 'Flying Tiger Goggles',
+    }
+    expect(sourceText(crafted)).toBe('Crafted: Engineering (Flying Tiger Goggles)')
+  })
+
   it('names a rare with its zone, levels and spawn points (#6)', () => {
     // Humar the Pridelord and Swiftmane, from the real GET /rares response.
     const rare = {

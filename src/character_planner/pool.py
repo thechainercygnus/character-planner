@@ -20,6 +20,7 @@ from sqlmodel import Session
 
 from character_planner.class_quests import refresh_class_quests
 from character_planner.companion import CompanionInfo, companion_by_id, refresh_companion
+from character_planner.crafting import CraftedItem, crafted_details
 from character_planner.curated import GearTargets
 from character_planner.dungeons import (
     REQUEST_PAUSE,
@@ -45,7 +46,7 @@ LEVELS_ABOVE = 10
 POOL_ITEM_MAX_AGE = timedelta(days=7)
 
 
-SourceKind = Literal["drop", "quest", "rare"]
+SourceKind = Literal["drop", "quest", "rare", "crafted"]
 
 
 class PoolSource(BaseModel):
@@ -67,11 +68,14 @@ class PoolSource(BaseModel):
     zone: str | None = None
     spawns: int | None = None
     elite: bool = False
+    # Crafted from a recipe the character knows (#10): the profession and recipe.
+    profession: str | None = None
+    recipe: str | None = None
 
     @property
     def place(self) -> str:
-        """Where it's had, in a word: the dungeon, or the rare."""
-        return self.dungeon or self.rare or "?"
+        """Where it's had, in a word: the dungeon, the rare or the profession."""
+        return self.dungeon or self.rare or self.profession or "?"
 
     @property
     def start_level(self) -> int | None:
@@ -162,6 +166,17 @@ def _source(
     )
 
 
+def _crafted_source(item: CraftedItem) -> PoolSource:
+    level = item.info.required_level
+    return PoolSource(
+        kind="crafted",
+        profession=item.profession,
+        recipe=item.recipe,
+        min_level=level,
+        max_level=level,
+    )
+
+
 def _rare_source(rare: Rare) -> PoolSource:
     return PoolSource(
         kind="rare",
@@ -193,12 +208,14 @@ def build_pool(
     faction: str | None = None,
     quests: Mapping[int, QuestStep] | None = None,
     rares: Iterable[Rare] = (),
+    crafted: Iterable[CraftedItem] = (),
 ) -> dict[int, PoolItem]:
-    """Every drop, every quest reward this faction can take, and every drop of a rare
-    this faction can reach, keyed by item id.
+    """Every drop, every quest reward this faction can take, every drop of a rare this
+    faction can reach, and every item the character can craft, keyed by item id.
 
     quests: chain steps fetched by id (quests.stored_quests); steps that are dungeon
     quests are described from the dungeons themselves. rares: rares.stored_rares (#6).
+    crafted: crafting.crafted_items, the synced character's own (#10); never for a guest.
     """
     dungeons = list(dungeons)
     known = known_quests(dungeons, quests)
@@ -238,6 +255,8 @@ def build_pool(
         if _can_take(rare.faction, faction):
             for loot in rare.loot:
                 add(loot.item_id, loot.name, _rare_source(rare), loot.slot, loot.quality)
+    for made in crafted:
+        add(made.item_id, made.name, _crafted_source(made), slot_key(made.info.slot), None)
     return pool
 
 
@@ -295,13 +314,28 @@ def with_details(item: PoolItem, info: CompanionInfo | None) -> PoolItem:
     )
 
 
-def pool_view(session: Session, level: int | None, faction: str | None) -> PoolView:
-    """Pool items in the level window (all of them without a level), with item details."""
+def pool_view(
+    session: Session,
+    level: int | None,
+    faction: str | None,
+    crafted: Iterable[CraftedItem] = (),
+) -> PoolView:
+    """Pool items in the level window (all of them without a level), with item details.
+
+    crafted: the character's craftable gear (#10), with its details from Blizzard. Guest
+    mode passes none: it reads no character data (ADR 0017).
+    """
+    crafted = list(crafted)
     pool = build_pool(
-        stored_dungeons(session), faction, stored_quests(session), stored_rares(session)
+        stored_dungeons(session),
+        faction,
+        stored_quests(session),
+        stored_rares(session),
+        crafted,
     )
     window = level_window(level) if level is not None else None
-    details = companion_by_id(session)
+    # Forever Companion's details win; crafted items are the ones it doesn't list.
+    details = {**crafted_details(crafted), **companion_by_id(session)}
     items = [
         with_details(item, details.get(item.item_id))
         for item in pool.values()
