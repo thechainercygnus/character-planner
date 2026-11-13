@@ -38,6 +38,7 @@ from character_planner.pool import (
     refresh_pool,
     resolve_target_ids,
 )
+from character_planner.rares import stored_rares
 from character_planner.recommend import PAIRED, SLOT_FOR
 from character_planner.talent_trees import TalentRefresh, refresh_talent_trees, stored_tree
 from character_planner.targets import current_targets, pin_target, save_targets
@@ -79,7 +80,9 @@ def gear_targets(session: Session, settings: Settings) -> GearTargets:
     """The edited targets, or gear_targets.yaml (ADR 0014), with item ids filled in from
     the item pool where it has them."""
     targets = current_targets(session, default_targets(session, settings))
-    pool = build_pool(stored_dungeons(session), character_context(session)[1])
+    pool = build_pool(
+        stored_dungeons(session), character_context(session)[1], rares=stored_rares(session)
+    )
     return resolve_target_ids(targets, pool)
 
 
@@ -310,7 +313,7 @@ def _refresh_item_pool(
     logger.info(
         "Item pool refresh: done in %.1fs, %d dungeons fetched of %d listed, pool %d items "
         "(%d wanted), %d item details fetched, %d not found, %d quest chain steps fetched, "
-        "%d errors",
+        "%d rares listed, %d errors",
         time.perf_counter() - started,
         result.dungeons_fetched,
         result.dungeons_listed,
@@ -319,6 +322,7 @@ def _refresh_item_pool(
         result.items_fetched,
         len(result.items_not_found),
         result.quests_fetched,
+        result.rares_listed,
         len(result.errors),
     )
     return result

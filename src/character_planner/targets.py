@@ -78,9 +78,11 @@ def reset_targets(session: Session) -> None:
 
 def source_text(source: PoolSource) -> str:
     """A pool source in gear_targets.yaml's style."""
+    if source.kind == "rare":
+        return f"Rare: {source.place}" + (f", {source.zone}" if source.zone else "")
     if source.kind == "quest":
-        return f"Quest: {source.detail} ({source.dungeon})" if source.detail else source.dungeon
-    return f"{source.dungeon} - {source.detail}" if source.detail else source.dungeon
+        return f"Quest: {source.detail} ({source.place})" if source.detail else source.place
+    return f"{source.place} - {source.detail}" if source.detail else source.place
 
 
 def pin_target(targets: GearTargets, item: PoolItem, slot: str) -> GearTargets:

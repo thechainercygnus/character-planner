@@ -1,0 +1,94 @@
+{
+  "data": [
+    {
+      "id": "humar",
+      "name": "Humar the Pridelord",
+      "zone": "The Barrens",
+      "levels": "10–25",
+      "faction": "both",
+      "coords": [
+        "61.0, 35.0"
+      ],
+      "elite": false,
+      "tameable": "Cat",
+      "loot": [
+        {
+          "itemId": 285331,
+          "name": "Mark of the Pack Leader",
+          "slot": "neck",
+          "quality": "uncommon",
+          "source": null
+        }
+      ],
+      "verified": null
+    },
+    {
+      "id": "swiftmane",
+      "name": "Swiftmane",
+      "zone": "The Barrens",
+      "levels": "10–25",
+      "faction": "both",
+      "coords": [
+        "60.4, 33.0",
+        "61.2, 29.6",
+        "61.8, 36.2"
+      ],
+      "elite": false,
+      "tameable": null,
+      "loot": [
+        {
+          "itemId": 285330,
+          "name": "Signet of the Zhevra",
+          "slot": "ring",
+          "quality": "uncommon",
+          "source": null
+        }
+      ],
+      "verified": null
+    },
+    {
+      "id": "takk",
+      "name": "Takk the Leaper",
+      "zone": "The Barrens",
+      "levels": "10–25",
+      "faction": "both",
+      "coords": [
+        "60.4, 9.4",
+        "58.2, 7.4",
+        "60.8, 13.4"
+      ],
+      "elite": false,
+      "tameable": "Raptor",
+      "loot": [
+        {
+          "itemId": 285329,
+          "name": "Raptor Hide Cloak",
+          "slot": "back",
+          "quality": "uncommon",
+          "source": null
+        }
+      ],
+      "verified": null
+    }
+  ],
+  "meta": {
+    "updatedAt": "2026-11-13T12:03:40.79+00:00",
+    "version": "v1",
+    "docs": "https://forevercompanion.io/developers",
+    "attribution": "Data from Forever Companion (https://forevercompanion.io), gathered from ForeverChanges, Wowhead and Zockify and checked in game by players. Please link back. Fan-made, not affiliated with Blizzard Entertainment.",
+    "sources": [
+      {
+        "name": "ForeverChanges",
+        "url": "https://foreverchanges.pro"
+      },
+      {
+        "name": "Wowhead",
+        "url": "https://www.wowhead.com/forever"
+      },
+      {
+        "name": "Zockify",
+        "url": "https://www.zockify.com/forever/"
+      }
+    ]
+  }
+}

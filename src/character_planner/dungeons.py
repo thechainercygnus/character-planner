@@ -93,6 +93,22 @@ def _upper(value: Any) -> str | None:
     return value.upper() if isinstance(value, str) else None
 
 
+def parse_loot(rows: Any) -> list[Loot]:
+    """A `Loot` list (a dungeon's drop table, a rare's drops); rows without an item id
+    are left out."""
+    return [
+        Loot(
+            item_id=item_id,
+            name=str(fields.get(row, "name") or item_id),
+            slot=fields.get(row, "slot"),
+            quality=_upper(fields.get(row, "quality")),
+            boss=fields.get(row, "source"),
+        )
+        for row in (rows if isinstance(rows, list) else [])
+        if (item_id := fields.as_int(fields.get(row, "itemId"))) is not None
+    ]
+
+
 def parse_dungeon(payload: Any) -> Dungeon | None:
     """Turn a GET /dungeons/{id} body (or its `data`) into a Dungeon."""
     data = _data(payload)
@@ -101,17 +117,7 @@ def parse_dungeon(payload: Any) -> Dungeon | None:
     if not isinstance(dungeon_id, str) or not isinstance(name, str):
         return None
 
-    loot = [
-        Loot(
-            item_id=item_id,
-            name=str(fields.get(row, "name") or item_id),
-            slot=fields.get(row, "slot"),
-            quality=_upper(fields.get(row, "quality")),
-            boss=fields.get(row, "source"),
-        )
-        for row in fields.get(data, "loot") or []
-        if (item_id := fields.as_int(fields.get(row, "itemId"))) is not None
-    ]
+    loot = parse_loot(fields.get(data, "loot"))
 
     rewards: list[QuestReward] = []
     quests: list[QuestStep] = []

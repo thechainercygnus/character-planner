@@ -53,7 +53,8 @@ def main(argv: list[str] | None = None) -> int:
             f"Pool: {result.pool_size} items, {result.in_window} in the level window\n"
             f"Item details: {result.items_fetched} fetched, "
             f"{len(result.items_not_found)} not found\n"
-            f"Quest chain steps: {result.quests_fetched} fetched"
+            f"Quest chain steps: {result.quests_fetched} fetched\n"
+            f"Rares: {result.rares_listed} listed"
         )
         for error in result.errors:
             print(f"  error: {error}")
