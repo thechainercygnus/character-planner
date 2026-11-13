@@ -134,6 +134,7 @@ function enchantOption(overrides: Partial<EnchantOption> & Pick<EnchantOption, '
     crafted_item_id: null,
     season_of_discovery: false,
     estimated_level: 1,
+    reagents: [],
     ...overrides,
   }
 }
@@ -145,6 +146,9 @@ export const enchantAdvice: EnchantAdvice = {
   considered: 35,
   unscored: 16,
   unknown_level: 3,
+  missing_effects: [],
+  per_slot: 3,
+  per_slot_corrected: false,
   rows: [
     {
       slot: 'WRIST',
