@@ -23,7 +23,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
-from character_planner import jobs
+from character_planner import jobs, notify
 from character_planner.blizzard import oauth
 from character_planner.choices import (
     ChoiceKind,
@@ -37,6 +37,7 @@ from character_planner.companion import companion_by_id
 from character_planner.config import Settings, get_settings
 from character_planner.curated import GearTargets
 from character_planner.db import (
+    NotificationDestination,
     Snapshot,
     StoredToken,
     catalog_by_name,
@@ -690,6 +691,53 @@ def create_app(
             )
         except GuestError as error:
             raise HTTPException(422, str(error)) from error
+
+    def destination_or_404(session: Session, destination_id: int) -> NotificationDestination:
+        destination = session.get(NotificationDestination, destination_id)
+        if destination is None:
+            raise HTTPException(404, f"No notification destination {destination_id}")
+        return destination
+
+    @app.get("/api/notifications")
+    def get_notifications(session: SessionDep) -> notify.NotificationsView:
+        """Alert destinations (webhook URLs masked), the alerts on offer, recent sends."""
+        return notify.notifications_view(session)
+
+    @app.post("/api/notifications/destinations", status_code=201)
+    def post_destination(
+        new: notify.NewDestination, session: SessionDep
+    ) -> notify.NotificationsView:
+        """Add a Discord webhook destination (#12)."""
+        try:
+            notify.add_destination(session, new)
+        except notify.NotifyError as error:
+            raise HTTPException(422, str(error)) from error
+        return notify.notifications_view(session)
+
+    @app.patch("/api/notifications/destinations/{destination_id}")
+    def patch_destination(
+        destination_id: int, update: notify.DestinationUpdate, session: SessionDep
+    ) -> notify.NotificationsView:
+        destination = destination_or_404(session, destination_id)
+        try:
+            notify.update_destination(session, destination, update)
+        except notify.NotifyError as error:
+            raise HTTPException(422, str(error)) from error
+        return notify.notifications_view(session)
+
+    @app.delete("/api/notifications/destinations/{destination_id}")
+    def delete_destination(destination_id: int, session: SessionDep) -> notify.NotificationsView:
+        notify.remove_destination(session, destination_or_404(session, destination_id))
+        return notify.notifications_view(session)
+
+    @app.post("/api/notifications/destinations/{destination_id}/test")
+    def test_destination(destination_id: int, session: SessionDep) -> notify.SendResult:
+        """Send a test message to the destination now."""
+        destination = destination_or_404(session, destination_id)
+        if http is not None:
+            return notify.send_test(session, settings, destination, http)
+        with notify.new_client() as client:
+            return notify.send_test(session, settings, destination, client)
 
     @app.get("/api/rules")
     def get_rules_view(session: SessionDep, default: DefaultRulesDep) -> RulesView:

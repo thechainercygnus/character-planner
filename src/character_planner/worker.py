@@ -21,7 +21,7 @@ import httpx
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
-from character_planner import jobs
+from character_planner import jobs, notify
 from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, make_engine, utcnow
 from character_planner.logs import configure_logging
@@ -48,6 +48,13 @@ def pool_job(session: Session, settings: Settings, http: httpx.Client | None) ->
     if jobs.character_context(session)[0] is None:
         return "skipped: no synced level yet"
     result = jobs.refresh_item_pool(session, settings, http=http)
+    notify.upstream_errors(
+        session,
+        settings,
+        "Item pool refresh",
+        result.errors,
+        rate_limited=any("rate limited" in e for e in result.errors),
+    )
     errors = f", {len(result.errors)} errors" if result.errors else ""
     return (
         f"pool {result.pool_size} items ({result.in_window} in window), "
@@ -102,7 +109,19 @@ def run_due(
         except Exception as error:
             outcomes[job.name] = f"failed: {error.__class__.__name__}: {error}"
             logger.exception("%s failed", job.name)
+            with Session(engine) as session:
+                notify.job_failed(session, settings, job.name, outcomes[job.name])
     return outcomes
+
+
+def tick_notifications(engine: Engine, settings: Settings, http: httpx.Client) -> None:
+    """Each pass: warn about an expiring login, then send what's queued (#12)."""
+    try:
+        with Session(engine) as session:
+            notify.check_login(session, settings)
+            notify.deliver_due(session, http)
+    except Exception:
+        logger.exception("Notifications failed")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -116,6 +135,8 @@ def main(argv: list[str] | None = None) -> int:
     schedule = default_schedule(settings)
     if args.once:
         outcomes = run_due(engine, settings, schedule, utcnow())
+        with notify.new_client() as discord:
+            tick_notifications(engine, settings, discord)
         return 1 if any(o.startswith("failed") for o in outcomes.values()) else 0
 
     stop = threading.Event()
@@ -126,9 +147,11 @@ def main(argv: list[str] | None = None) -> int:
         settings.sync_every_hours,
         settings.pool_every_hours,
     )
-    while not stop.is_set():
-        run_due(engine, settings, schedule, utcnow())
-        stop.wait(settings.worker_poll_seconds)
+    with notify.new_client() as discord:
+        while not stop.is_set():
+            run_due(engine, settings, schedule, utcnow())
+            tick_notifications(engine, settings, discord)
+            stop.wait(settings.worker_poll_seconds)
     logger.info("worker stopped")
     return 0
 

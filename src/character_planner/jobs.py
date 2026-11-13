@@ -10,6 +10,7 @@ import time
 import httpx
 from sqlmodel import Session
 
+from character_planner import notify
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
 from character_planner.choices import take_target_choices
@@ -143,7 +144,20 @@ def sync_character(
     targets = gear_targets(session, settings)
     # Its own progress and errors are logged by the item search and lookups.
     refresh_item_sources(session, settings, targets, equipped_item_ids(session), http=http)
+    send_sync_alerts(session, settings)
     return {result.kind: result.status for result in results}
+
+
+def send_sync_alerts(session: Session, settings: Settings) -> None:
+    """Queue alerts for what this sync changed and send them now (#12). Best effort: an
+    alert problem never fails the sync; the worker retries what's left."""
+    try:
+        if notify.after_sync(session, settings):
+            with notify.new_client() as client:
+                notify.deliver_due(session, client)
+    except Exception:
+        session.rollback()
+        logger.exception("Notifications after the sync failed")
 
 
 def refresh_item_pool(
