@@ -85,6 +85,7 @@ def test_default_schedule_comes_from_settings(settings: Settings) -> None:
     assert [(j.name, j.every) for j in schedule.jobs] == [
         ("sync", timedelta(hours=2)),
         ("pool", timedelta(hours=12)),
+        ("enchants", timedelta(hours=168)),
     ]
 
 

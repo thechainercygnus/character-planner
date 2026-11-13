@@ -72,6 +72,18 @@ def _data(payload: Any) -> Any:
     return inner if inner is not None else payload
 
 
+def _describe(response: httpx.Response) -> str:
+    """Enough of an unexpected response to diagnose it, without dumping the body."""
+    try:
+        body = response.json()
+    except ValueError:
+        return f"HTTP {response.status_code}, not JSON ({len(response.content)} bytes)"
+    data = _data(body)
+    keys = sorted(body)[:8] if isinstance(body, dict) else type(body).__name__
+    size = len(data) if isinstance(data, list | dict) else type(data).__name__
+    return f"HTTP {response.status_code}, top-level keys {keys}, data size {size}"
+
+
 def _upper(value: Any) -> str | None:
     return value.upper() if isinstance(value, str) else None
 
@@ -161,17 +173,33 @@ def refresh_dungeons(
     Stops at the first 429 so the batch never hammers the rate limit.
     """
     outcome = DungeonRefresh()
-    try:
-        response = http.get(f"{BASE_URL}/dungeons")
-    except httpx.HTTPError as error:
-        outcome.errors.append(f"dungeon list: {error}")
-        logger.warning("Forever Companion dungeon list: %s", error)
+    ids: list[str] = []
+    for attempt in (1, 2):
+        try:
+            response = http.get(f"{BASE_URL}/dungeons")
+        except httpx.HTTPError as error:
+            outcome.errors.append(f"dungeon list: {error}")
+            logger.warning("Forever Companion dungeon list: %s", error)
+            return outcome
+        if response.status_code != 200:
+            outcome.errors.append(f"dungeon list: HTTP {response.status_code}")
+            logger.warning("Forever Companion dungeon list: HTTP %s", response.status_code)
+            return outcome
+        ids = listed_dungeon_ids(response.json())
+        if ids:
+            break
+        # Seen once on a fresh instance (#87): a 200 with no dungeons, and 30 a few minutes
+        # later. Say what came back, then try once more after a pause.
+        logger.warning(
+            "Forever Companion dungeon list came back empty (attempt %d): %s",
+            attempt,
+            _describe(response),
+        )
+        if attempt == 1:
+            time.sleep(pause * 10)
+    if not ids:
+        outcome.errors.append("dungeon list: empty response from Forever Companion")
         return outcome
-    if response.status_code != 200:
-        outcome.errors.append(f"dungeon list: HTTP {response.status_code}")
-        logger.warning("Forever Companion dungeon list: HTTP %s", response.status_code)
-        return outcome
-    ids = listed_dungeon_ids(response.json())
     outcome.listed = len(ids)
 
     cutoff = utcnow() - DUNGEON_MAX_AGE

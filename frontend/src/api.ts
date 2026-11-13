@@ -211,6 +211,8 @@ export interface Status {
   logged_in: boolean
   token_expires_at: number | null
   latest_snapshots: Record<string, string>
+  /** Refreshes running now, from any process: "pool", "enchants" (#87). */
+  refreshing: string[]
 }
 
 export type SyncResult = Record<string, number>

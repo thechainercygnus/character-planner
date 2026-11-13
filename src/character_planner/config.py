@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     # The worker's schedule (worker.py, ADR 0011). A sync needs a login from the last 24h.
     sync_every_hours: float = 6
     pool_every_hours: float = 24
+    # Enchant recipes are static: weekly is plenty (#87).
+    enchants_every_hours: float = 168
     worker_poll_seconds: float = 60
 
     # Logging (ADR 0019). DEBUG adds every upstream request. With log_dir set, the API

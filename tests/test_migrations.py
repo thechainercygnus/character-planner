@@ -22,6 +22,18 @@ from character_planner.db import (
 NOTIFICATION_TABLES = {"notificationdestination", "notificationoutbox", "notificationstate"}
 
 
+# Tables added by migrations after the baseline: databases made before #60 never had
+# them. Add each new table here when its migration is added.
+AFTER_BASELINE = {"joblease"}  # 0002
+
+
+def create_like_before_migrations(engine: Engine) -> None:
+    """Make a database the way every one was made before #60: create_all, at the
+    baseline's tables."""
+    tables = [t for name, t in SQLModel.metadata.tables.items() if name not in AFTER_BASELINE]
+    SQLModel.metadata.create_all(engine, tables=tables)
+
+
 def engine_at(tmp_path: Path, name: str = "planner.db") -> Engine:
     return make_engine(f"sqlite:///{tmp_path / name}")
 
@@ -64,7 +76,7 @@ def test_the_migrations_match_the_models(tmp_path: Path) -> None:
 
 def test_a_database_from_before_migrations_keeps_its_data(tmp_path: Path) -> None:
     engine = engine_at(tmp_path)
-    SQLModel.metadata.create_all(engine)  # how every database was made before #60
+    create_like_before_migrations(engine)
     with Session(engine) as session:
         session.add(Snapshot(source="api", kind="profile", status=200, payload={"level": 19}))
         session.add(StoredGearTargets(id=1, targets={"targets": []}))
@@ -83,7 +95,7 @@ def test_a_database_from_before_migrations_keeps_its_data(tmp_path: Path) -> Non
 def test_an_older_database_gains_the_tables_it_is_missing(tmp_path: Path) -> None:
     """A copy from before #12 (no notification tables) upgrading straight to now."""
     engine = engine_at(tmp_path)
-    SQLModel.metadata.create_all(engine)
+    create_like_before_migrations(engine)
     with engine.begin() as connection:
         for table in NOTIFICATION_TABLES:
             connection.execute(text(f"DROP TABLE {table}"))

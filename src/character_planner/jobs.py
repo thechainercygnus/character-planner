@@ -8,7 +8,8 @@ import logging
 import time
 
 import httpx
-from sqlmodel import Session
+from sqlalchemy.engine import Engine
+from sqlmodel import Session, select
 
 from character_planner import notify
 from character_planner.blizzard import oauth
@@ -17,9 +18,17 @@ from character_planner.choices import take_target_choices
 from character_planner.classes import current_defaults
 from character_planner.config import Settings
 from character_planner.curated import GearTargets
-from character_planner.db import Snapshot, StoredToken, latest_by_kind
+from character_planner.db import (
+    CompanionDungeon,
+    RecipeData,
+    Snapshot,
+    StoredToken,
+    latest_by_kind,
+)
 from character_planner.dungeons import stored_dungeons
+from character_planner.enchants import RecipeRefresh, refresh_enchant_data
 from character_planner.items import refresh_item_sources
+from character_planner.leases import Busy, lease
 from character_planner.pool import (
     PoolItem,
     PoolRefresh,
@@ -163,6 +172,65 @@ def send_sync_alerts(session: Session, settings: Settings) -> None:
 
 
 def refresh_item_pool(
+    session: Session,
+    settings: Settings,
+    *,
+    force: bool = False,
+    http: httpx.Client | None = None,
+    level: int | None = None,
+) -> PoolRefresh:
+    """The item pool refresh, one at a time across processes (#87); raises leases.Busy
+    when it's already running."""
+    with lease(_engine(session), "pool"):
+        return _refresh_item_pool(session, settings, force=force, http=http, level=level)
+
+
+def refresh_enchants(
+    session: Session, settings: Settings, *, force: bool = False, http: httpx.Client | None = None
+) -> RecipeRefresh:
+    """The enchant data refresh (ADR 0010), one at a time across processes (#87)."""
+    with lease(_engine(session), "enchants"):
+        return refresh_enchant_data(session, settings, force=force, http=http)
+
+
+def _engine(session: Session) -> Engine:
+    bind = session.get_bind()
+    return bind if isinstance(bind, Engine) else bind.engine
+
+
+def missing_data(session: Session) -> list[str]:
+    """Static data a fresh instance hasn't loaded yet: "pool" (no dungeon data),
+    "enchants" (no recipes)."""
+    missing = []
+    if session.exec(select(CompanionDungeon)).first() is None:
+        missing.append("pool")
+    if session.exec(select(RecipeData)).first() is None:
+        missing.append("enchants")
+    return missing
+
+
+def load_missing_data(engine: Engine, settings: Settings, http: httpx.Client | None = None) -> None:
+    """Load what a fresh instance is missing, in the background after the first sync
+    (#87). Skips anything already running (the worker may be on it)."""
+    with Session(engine) as session:
+        missing = missing_data(session)
+        if not missing:
+            return
+        logger.info("First data load: %s", ", ".join(missing))
+        for name in missing:
+            try:
+                if name == "pool":
+                    refresh_item_pool(session, settings, http=http)
+                else:
+                    refresh_enchants(session, settings, http=http)
+            except Busy:
+                logger.info("First data load: the %s refresh is already running", name)
+            except Exception:
+                session.rollback()
+                logger.exception("First data load: the %s refresh failed", name)
+
+
+def _refresh_item_pool(
     session: Session,
     settings: Settings,
     *,

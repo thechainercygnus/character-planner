@@ -140,6 +140,16 @@ class ActiveWeightPreset(SQLModel, table=True):
     key: str
 
 
+class JobLease(SQLModel, table=True):
+    """A long refresh in progress (#87): taken atomically, so the API, the worker and the
+    background loader never run the same refresh at once. Expires, in case a process dies
+    holding it."""
+
+    name: str = Field(primary_key=True)  # "pool", "enchants"
+    holder: str
+    expires_at: datetime
+
+
 class NotificationDestination(SQLModel, table=True):
     """Where alerts go (ADR 0021): a Discord webhook for now. The URL is a credential
     (anyone holding it can post to the channel): never logged, never returned in full."""

@@ -24,9 +24,13 @@ from sqlmodel import Session
 from character_planner import jobs, notify
 from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, make_engine, utcnow
+from character_planner.leases import Busy
 from character_planner.logs import configure_logging
 
 logger = logging.getLogger("character_planner.worker")
+
+# How soon a skipped job (no login yet, no level yet, already running) is tried again.
+RETRY_SKIPPED = timedelta(minutes=2)
 
 JobFn = Callable[[Session, Settings, httpx.Client | None], str]
 
@@ -47,19 +51,36 @@ def pool_job(session: Session, settings: Settings, http: httpx.Client | None) ->
     # items far outside the window. Wait for the first sync instead.
     if jobs.character_context(session)[0] is None:
         return "skipped: no synced level yet"
-    result = jobs.refresh_item_pool(session, settings, http=http)
-    notify.upstream_errors(
-        session,
-        settings,
-        "Item pool refresh",
-        result.errors,
-        rate_limited=any("rate limited" in e for e in result.errors),
-    )
+    try:
+        result = jobs.refresh_item_pool(session, settings, http=http)
+    except Busy:
+        return "skipped: already running"
+    notify_upstream(session, settings, "Item pool refresh", result.errors)
     errors = f", {len(result.errors)} errors" if result.errors else ""
     return (
         f"pool {result.pool_size} items ({result.in_window} in window), "
         f"{result.items_fetched} item details fetched{errors}"
     )
+
+
+def enchants_job(session: Session, settings: Settings, http: httpx.Client | None) -> str:
+    try:
+        result = jobs.refresh_enchants(session, settings, http=http)
+    except Busy:
+        return "skipped: already running"
+    notify_upstream(session, settings, "Enchant data refresh", result.errors)
+    return (
+        f"{result.recipes_listed} enchant recipes ({result.recipes_fetched} fetched), "
+        f"{result.items_fetched} reagent and crafted item details fetched"
+        + (f", {len(result.errors)} errors" if result.errors else "")
+    )
+
+
+def notify_upstream(session: Session, settings: Settings, job: str, errors: list[str]) -> None:
+    """A system alert for many upstream errors, or for one that stopped the refresh: a
+    rate limit, or an upstream list that came back empty (#87)."""
+    urgent = any("rate limited" in e or "empty" in e for e in errors)
+    notify.upstream_errors(session, settings, job, errors, rate_limited=urgent)
 
 
 @dataclass
@@ -68,6 +89,7 @@ class Job:
     every: timedelta
     run: JobFn
     last_run: datetime | None = None
+    last_outcome: str | None = None
 
     def due(self, now: datetime) -> bool:
         return self.last_run is None or now - self.last_run >= self.every
@@ -84,6 +106,7 @@ def default_schedule(settings: Settings) -> Schedule:
         jobs=[
             Job("sync", timedelta(hours=settings.sync_every_hours), sync_job),
             Job("pool", timedelta(hours=settings.pool_every_hours), pool_job),
+            Job("enchants", timedelta(hours=settings.enchants_every_hours), enchants_job),
         ]
     )
 
@@ -101,11 +124,20 @@ def run_due(
         if not job.due(now):
             continue
         job.last_run = now
-        logger.info("%s: running", job.name)
+        repeat_skip = (job.last_outcome or "").startswith("skipped")
+        logger.log(logging.DEBUG if repeat_skip else logging.INFO, "%s: running", job.name)
         try:
             with Session(engine) as session:
-                outcomes[job.name] = job.run(session, settings, http)
-            logger.info("%s: %s", job.name, outcomes[job.name])
+                outcome = job.run(session, settings, http)
+            outcomes[job.name] = outcome
+            if outcome.startswith("skipped"):
+                # Not a run: try again soon, so a login or first sync is picked up in
+                # minutes rather than a whole interval later (#87).
+                job.last_run = now - job.every + RETRY_SKIPPED
+            # The same outcome again (a skip every few minutes) only at DEBUG.
+            level = logging.DEBUG if outcome == job.last_outcome else logging.INFO
+            logger.log(level, "%s: %s", job.name, outcome)
+            job.last_outcome = outcome
         except Exception as error:
             outcomes[job.name] = f"failed: {error.__class__.__name__}: {error}"
             logger.exception("%s failed", job.name)
@@ -143,9 +175,10 @@ def main(argv: list[str] | None = None) -> int:
     signal.signal(signal.SIGTERM, lambda *_: stop.set())
     signal.signal(signal.SIGINT, lambda *_: stop.set())
     logger.info(
-        "worker started: sync every %sh, pool every %sh",
+        "worker started: sync every %sh, pool every %sh, enchants every %sh",
         settings.sync_every_hours,
         settings.pool_every_hours,
+        settings.enchants_every_hours,
     )
     with notify.new_client() as discord:
         while not stop.is_set():
