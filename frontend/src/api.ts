@@ -362,9 +362,11 @@ export interface RefreshResult {
 }
 
 export interface PoolSource {
-  kind: 'drop' | 'quest'
-  dungeon_id: string
-  dungeon: string
+  kind: 'drop' | 'quest' | 'rare'
+  /** Null for a rare. */
+  dungeon_id: string | null
+  dungeon: string | null
+  /** The dungeon's level range, or the rare's. */
   min_level: number | null
   max_level: number | null
   /** The boss for a drop, the quest for a reward. */
@@ -375,6 +377,12 @@ export interface PoolSource {
   quest: QuestStep | null
   /** Quests to do first, earliest first; each step's quests are done side by side (#7). */
   chain: QuestStep[][]
+  /** A rare's drop (#6): the rare, its zone, how many spawn points, whether elite. */
+  rare_id: string | null
+  rare: string | null
+  zone: string | null
+  spawns: number | null
+  elite: boolean
 }
 
 /** One quest in a chain (quests.py QuestStep). Only the name is always known. */
@@ -492,6 +500,8 @@ export interface PoolRefresh {
   items_not_found: number[]
   /** Quest chain steps looked up by id (#7). */
   quests_fetched: number
+  /** Rares in the latest GET /rares, merged into the stored ones (#6). */
+  rares_listed: number
   errors: string[]
 }
 

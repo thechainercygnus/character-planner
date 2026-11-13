@@ -287,7 +287,7 @@ def character_digest(session: Session, settings: Settings) -> tuple[Digest, list
     for row in recs.rows if level is not None else []:
         for c in row.candidates:
             if c.usable_now and c.score_gain >= UPGRADE_MIN_GAIN:
-                source = c.item.sources[0].dungeon if c.item.sources else "?"
+                source = c.item.sources[0].place if c.item.sources else "?"
                 current = best.get(c.item.item_id)
                 if current is None or c.score_gain > current[0]:
                     best[c.item.item_id] = (c.score_gain, c.item.name, row.slot, source)

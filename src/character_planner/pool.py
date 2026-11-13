@@ -1,8 +1,10 @@
-"""The item pool: every dungeon drop and dungeon quest reward, with where it comes from.
+"""The item pool: every dungeon drop, dungeon quest reward and rare drop, with where it
+comes from.
 
-Built from Forever Companion's per-dungeon data (ADR 0006). Item details (stats, armor,
-item level) come from GET /items/{id} as before (ADR 0004), fetched only for items in
-the character's level window so a refresh stays a few hundred requests.
+Built from Forever Companion's per-dungeon data (ADR 0006) and its rares (ADR 0029).
+Item details (stats, armor, item level) come from GET /items/{id} as before (ADR 0004),
+fetched only for items in the character's level window so a refresh stays a few hundred
+requests.
 
 The pool is what the engine will pick gear targets from (phase C). For now it also fills
 in item_id for gear targets that only name their item.
@@ -33,6 +35,7 @@ from character_planner.quests import (
     refresh_quests,
     stored_quests,
 )
+from character_planner.rares import Rare, refresh_rares, stored_rares
 
 # Dungeons this far below / above the character's level are in the window.
 LEVELS_BELOW = 3
@@ -41,10 +44,14 @@ LEVELS_ABOVE = 10
 POOL_ITEM_MAX_AGE = timedelta(days=7)
 
 
+SourceKind = Literal["drop", "quest", "rare"]
+
+
 class PoolSource(BaseModel):
-    kind: Literal["drop", "quest"]
-    dungeon_id: str
-    dungeon: str
+    kind: SourceKind
+    dungeon_id: str | None = None  # None for a rare
+    dungeon: str | None = None
+    # The dungeon's level range, or the rare's (#6).
     min_level: int | None = None
     max_level: int | None = None
     detail: str | None = None  # the boss for a drop, the quest for a reward
@@ -53,6 +60,17 @@ class PoolSource(BaseModel):
     quest: QuestStep | None = None  # the reward's quest, described (#7)
     # The quests to do before it, earliest first; each step's quests side by side (#7).
     chain: list[list[QuestStep]] = []
+    # A rare's drop (#6): the rare's id and name, its zone, how many spawn points.
+    rare_id: str | None = None
+    rare: str | None = None
+    zone: str | None = None
+    spawns: int | None = None
+    elite: bool = False
+
+    @property
+    def place(self) -> str:
+        """Where it's had, in a word: the dungeon, or the rare."""
+        return self.dungeon or self.rare or "?"
 
     @property
     def start_level(self) -> int | None:
@@ -104,6 +122,7 @@ class PoolRefresh(BaseModel):
     items_fetched: int = 0
     items_not_found: list[int] = []
     quests_fetched: int = 0
+    rares_listed: int = 0
     errors: list[str] = []
 
 
@@ -120,7 +139,7 @@ def _can_take(quest_faction: str, faction: str | None) -> bool:
 
 def _source(
     dungeon: Dungeon,
-    kind: Literal["drop", "quest"],
+    kind: SourceKind,
     detail: str | None,
     choice: bool = False,
     quest_min_level: int | None = None,
@@ -141,6 +160,19 @@ def _source(
     )
 
 
+def _rare_source(rare: Rare) -> PoolSource:
+    return PoolSource(
+        kind="rare",
+        rare_id=rare.id,
+        rare=rare.name,
+        zone=rare.zone,
+        min_level=rare.min_level,
+        max_level=rare.max_level,
+        spawns=rare.spawns,
+        elite=rare.elite,
+    )
+
+
 def known_quests(
     dungeons: Iterable[Dungeon], fetched: Mapping[int, QuestStep] | None = None
 ) -> dict[int, QuestStep]:
@@ -158,11 +190,13 @@ def build_pool(
     dungeons: Iterable[Dungeon],
     faction: str | None = None,
     quests: Mapping[int, QuestStep] | None = None,
+    rares: Iterable[Rare] = (),
 ) -> dict[int, PoolItem]:
-    """Every drop, and every quest reward this faction can take, keyed by item id.
+    """Every drop, every quest reward this faction can take, and every drop of a rare
+    this faction can reach, keyed by item id.
 
     quests: chain steps fetched by id (quests.stored_quests); steps that are dungeon
-    quests are described from the dungeons themselves.
+    quests are described from the dungeons themselves. rares: rares.stored_rares (#6).
     """
     dungeons = list(dungeons)
     known = known_quests(dungeons, quests)
@@ -198,6 +232,10 @@ def build_pool(
                     chain_steps(reward.prerequisites, known),
                 )
                 add(reward.item_id, reward.name, quest, None, None)
+    for rare in rares:
+        if _can_take(rare.faction, faction):
+            for loot in rare.loot:
+                add(loot.item_id, loot.name, _rare_source(rare), loot.slot, loot.quality)
     return pool
 
 
@@ -257,7 +295,9 @@ def with_details(item: PoolItem, info: CompanionInfo | None) -> PoolItem:
 
 def pool_view(session: Session, level: int | None, faction: str | None) -> PoolView:
     """Pool items in the level window (all of them without a level), with item details."""
-    pool = build_pool(stored_dungeons(session), faction, stored_quests(session))
+    pool = build_pool(
+        stored_dungeons(session), faction, stored_quests(session), stored_rares(session)
+    )
     window = level_window(level) if level is not None else None
     details = companion_by_id(session)
     items = [
@@ -280,7 +320,8 @@ def refresh_pool(
     progress: Progress | None = None,
 ) -> PoolRefresh:
     """Refresh dungeon data, then fetch details for pool items in the level window, and
-    the quest chain steps their quests need that no dungeon describes (#7).
+    the quest chain steps their quests need that no dungeon describes (#7). The rare list
+    is one request, merged into the stored rares (#6).
 
     The first run is a few hundred requests paced under the rate limit (a few minutes);
     later runs only fetch what's stale.
@@ -289,8 +330,9 @@ def refresh_pool(
     client = http or new_client()
     try:
         dungeons = refresh_dungeons(session, client, force=force, pause=pause, progress=progress)
+        rares = refresh_rares(session, client)
         stored = stored_dungeons(session)
-        pool = build_pool(stored, faction)
+        pool = build_pool(stored, faction, rares=stored_rares(session))
         window = level_window(level) if level is not None else None
         wanted = [i for i in pool.values() if window is None or in_window(i, window)]
         items = refresh_companion(
@@ -321,8 +363,10 @@ def refresh_pool(
         items_fetched=len(items.fetched),
         items_not_found=items.not_found,
         quests_fetched=len(quests.fetched),
+        rares_listed=rares.listed,
         errors=[
-            f"Forever Companion {e}" for e in [*dungeons.errors, *items.errors, *quests.errors]
+            f"Forever Companion {e}"
+            for e in [*dungeons.errors, *rares.errors, *items.errors, *quests.errors]
         ],
     )
 

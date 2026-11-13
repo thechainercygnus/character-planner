@@ -35,7 +35,7 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Character summary (Markdown) | http://localhost:8000/api/summary.md |
 | Character / gear plan (JSON) | `/api/character`, `/api/gear` |
 | Re-run item lookups | `POST /api/items/refresh?force=true` |
-| Build the item pool (dungeon drops + quest rewards) | `uv run character-planner-pool` or `POST /api/pool/refresh` (`?level=N` for one level's window; guest mode offers it) |
+| Build the item pool (dungeon drops, quest rewards and rare drops) | `uv run character-planner-pool` or `POST /api/pool/refresh` (`?level=N` for one level's window; guest mode offers it) |
 | Item pool for your level window (JSON) | `/api/pool` |
 | Best upgrades per slot + dungeons worth running | `/api/recommendations` |
 | What you can wear and how Upgrades lists items (YAML is the default) | `GET`/`PUT`/`DELETE /api/rules` (or **Upgrades settings** on the Upgrades tab) |

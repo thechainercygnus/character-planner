@@ -85,6 +85,15 @@ class CompanionQuest(SQLModel, table=True):
     fetched_at: datetime = Field(default_factory=utcnow)
 
 
+class CompanionRare(SQLModel, table=True):
+    """One rare from Forever Companion's GET /rares, raw (#6, ADR 0029). Merged by id on
+    every fetch, never replaced wholesale: the list's cache can serve a filtered subset."""
+
+    rare_id: str = Field(primary_key=True)  # e.g. "humar"
+    payload: Any = Field(sa_column=Column(JSON, nullable=False))
+    fetched_at: datetime = Field(default_factory=utcnow)
+
+
 class RecipeData(SQLModel, table=True):
     """Raw Blizzard GET /data/wow/recipe/{id} responses for enchant recipes (ADR 0010),
     with the profession and skill-tier category they were listed under."""

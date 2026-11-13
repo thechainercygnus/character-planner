@@ -356,6 +356,8 @@ def dungeon_values(
             if not candidate.usable_now or candidate.score_gain <= min_gain:
                 continue
             for source in candidate.item.sources:
+                if source.dungeon_id is None:  # a rare (#6): not a dungeon to run
+                    continue
                 meta.setdefault(source.dungeon_id, source)
                 slot_best = best.setdefault(source.dungeon_id, {})
                 current = slot_best.get(slot)
@@ -380,7 +382,7 @@ def dungeon_values(
         values.append(
             DungeonValue(
                 dungeon_id=dungeon_id,
-                dungeon=source.dungeon,
+                dungeon=source.place,
                 min_level=source.min_level,
                 max_level=source.max_level,
                 total_gain=round(sum(u.score_gain for u in ranked), 2),

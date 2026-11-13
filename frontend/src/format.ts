@@ -15,10 +15,18 @@ export function levelRange(min: number | null, max: number | null): string {
 }
 
 export function sourceText(source: PoolSource): string {
-  if (source.kind === 'quest') {
-    return `Quest: ${source.detail ?? '?'} (${source.dungeon})${source.choice ? ', choice' : ''}`
+  if (source.kind === 'rare') {
+    // "Rare: Humar the Pridelord, The Barrens (10–25), 1 spawn"
+    const levels = levelRange(source.min_level, source.max_level)
+    const spawns = source.spawns ? `, ${source.spawns} ${source.spawns === 1 ? 'spawn' : 'spawns'}` : ''
+    const where = [source.rare ?? '?', source.zone].filter(Boolean).join(', ')
+    return `Rare${source.elite ? ' elite' : ''}: ${where}${levels ? ` (${levels})` : ''}${spawns}`
   }
-  return source.detail ? `${source.dungeon} – ${source.detail}` : source.dungeon
+  const place = source.dungeon ?? '?'
+  if (source.kind === 'quest') {
+    return `Quest: ${source.detail ?? '?'} (${place})${source.choice ? ', choice' : ''}`
+  }
+  return source.detail ? `${place} – ${source.detail}` : place
 }
 
 /** Who gives a quest and where, as far as Forever Companion knows: "Earthseer Farsen, Dun Morogh". */

@@ -126,6 +126,7 @@ def test_refresh_pool_fetches_details_in_window_only(engine: Engine) -> None:
 @respx.mock
 def test_refresh_pool_skips_items_outside_the_window(engine: Engine) -> None:
     only_deadmines = {"data": [entry for entry in LIST["data"] if entry["id"] == "the-deadmines"]}
+    respx.get(f"{BASE_URL}/rares").mock(return_value=httpx.Response(200, json={"data": []}))
     respx.get(f"{BASE_URL}/dungeons").mock(return_value=httpx.Response(200, json=only_deadmines))
     respx.get(f"{BASE_URL}/dungeons/the-deadmines").mock(
         return_value=httpx.Response(200, json=DEADMINES)
@@ -140,6 +141,7 @@ def test_refresh_pool_skips_items_outside_the_window(engine: Engine) -> None:
 
 @respx.mock
 def test_pool_view_adds_item_details(engine: Engine) -> None:
+    respx.get(f"{BASE_URL}/rares").mock(return_value=httpx.Response(200, json={"data": []}))
     respx.get(f"{BASE_URL}/dungeons").mock(
         return_value=httpx.Response(200, json={"data": [{"id": "hall-of-thanes"}]})
     )
