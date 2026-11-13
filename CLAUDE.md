@@ -34,6 +34,9 @@ Release: bump `pyproject.toml`'s version in a PR, then the user tags `vX.Y.Z` on
 
 ## Rules
 
+`CONTRIBUTING.md` holds the shared rules for everyone (workflow, tests, coding standards,
+DCO sign-off). The rules here add what agents need on top.
+
 - The Forever API is undocumented. Never invent a response field: read it from a real
   sample in `samples/` or a fixture in `tests/fixtures/`, and say when you're assuming.
   See `docs/adr/0002-raw-snapshots-first.md`.
