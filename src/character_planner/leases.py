@@ -10,7 +10,7 @@ succeeds for exactly one process or fails.
 import logging
 import os
 import socket
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 from uuid import uuid4
@@ -70,7 +70,7 @@ def release(engine: Engine, name: str, holder: str) -> None:
 
 
 @contextmanager
-def lease(engine: Engine, name: str) -> Iterator[None]:
+def lease(engine: Engine, name: str) -> Generator[None]:
     """Hold the lease while the block runs; raise Busy if someone else holds it."""
     holder = _holder()
     if not acquire(engine, name, holder):

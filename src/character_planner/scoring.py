@@ -16,6 +16,7 @@ import yaml
 from pydantic import BaseModel
 from sqlmodel import Session, col, select
 
+from character_planner import fields
 from character_planner.db import ActiveWeightPreset, StoredWeights, WeightPreset, utcnow
 
 ARMOR = "Armor"
@@ -91,8 +92,8 @@ def load_shipped_presets(curated_dir: Path) -> ShippedPresets:
     path = curated_dir / "weight_presets.yaml"
     if path.is_file():
         with path.open(encoding="utf-8") as handle:
-            data = yaml.safe_load(handle) or {}
-        for entry in data.get("presets", []):
+            data = fields.as_mapping(yaml.safe_load(handle))
+        for entry in fields.as_list(data.get("presets")):
             preset = Preset.model_validate(entry)
             presets.append(preset.model_copy(update={"weights": base.weights | preset.weights}))
     keys = [p.key for p in presets]
@@ -125,7 +126,7 @@ def _preset_weights(
     """(weights, defaults) for a preset; defaults is None for one made in the app."""
     preset, row = shipped.get(key), stored.get(key)
     if preset is not None:
-        edits = row.weights if row is not None and row.shipped else {}
+        edits: dict[str, float] = row.weights if row is not None and row.shipped else {}
         return preset.weights | edits, preset.weights
     if row is None:
         raise UnknownPreset(key)
@@ -260,10 +261,9 @@ def migrate_stored_weights(session: Session) -> bool:
     old = session.get(StoredWeights, 1)
     if old is None:
         return False
+    weights: dict[str, float] = dict(fields.as_mapping(old.weights))
     if session.get(WeightPreset, LEVELING) is None and isinstance(old.weights, dict):
-        session.add(
-            WeightPreset(key=LEVELING, name="Leveling tank", shipped=True, weights=old.weights)
-        )
+        session.add(WeightPreset(key=LEVELING, name="Leveling tank", shipped=True, weights=weights))
     session.delete(old)
     session.commit()
     return True

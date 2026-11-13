@@ -43,7 +43,7 @@ class GuestError(ValueError):
 
 
 def guest_options(curated_dir: Path) -> GuestOptions:
-    classes = []
+    classes: list[GuestClass] = []
     for playable in supported_classes(curated_dir):
         defaults = load_class_defaults(curated_dir, playable.key)
         classes.append(

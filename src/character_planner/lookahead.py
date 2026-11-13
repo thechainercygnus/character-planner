@@ -61,7 +61,7 @@ def _in_range(value: int | None, level: int, until: int) -> bool:
 def dungeon_events(
     dungeons: Iterable[Dungeon], faction: str | None, level: int, until: int
 ) -> list[tuple[int, LookAheadEvent]]:
-    events = []
+    events: list[tuple[int, LookAheadEvent]] = []
     for dungeon in dungeons:
         if dungeon.status == "announced" or not _in_range(dungeon.min_level, level, until):
             continue
@@ -88,7 +88,7 @@ def dungeon_events(
 def target_events(gear: GearPlan, level: int, until: int) -> list[tuple[int, LookAheadEvent]]:
     upcoming = [u for row in gear.rows for u in row.upcoming]
     upcoming += [u for slot in gear.later for u in slot.upcoming]
-    events = []
+    events: list[tuple[int, LookAheadEvent]] = []
     for entry in upcoming:
         if not _in_range(entry.level, level, until):
             continue
@@ -122,7 +122,7 @@ def talent_events(
             planned[step.first_point + offset] = (step.talent, step.rank - step.points + offset + 1)
     first = (points_at(level) or 0) + 1
     last = points_at(until) or 0
-    events = []
+    events: list[tuple[int, LookAheadEvent]] = []
     for point in range(first, last + 1):
         at = level_for_point(point)
         talent = planned.get(point)
@@ -135,7 +135,7 @@ def talent_events(
 def class_quest_events(
     checklist: ClassQuestChecklist, level: int, until: int
 ) -> list[tuple[int, LookAheadEvent]]:
-    events = []
+    events: list[tuple[int, LookAheadEvent]] = []
     for row in checklist.rows:
         if row.done or not _in_range(row.level, level, until):
             continue
@@ -158,7 +158,7 @@ def class_quest_events(
 def profession_events(
     professions: ProfessionsView, level: int, until: int
 ) -> list[tuple[int, LookAheadEvent]]:
-    events = []
+    events: list[tuple[int, LookAheadEvent]] = []
     for row in professions.professions:
         rank = row.next_rank
         if rank is None or not _in_range(rank.train_at_level, level, until):
@@ -212,7 +212,7 @@ def look_ahead(
         *target_events(gear, level, until),
         *talent_events(talents, level, until),
     ]
-    groups = []
+    groups: list[LevelGroup] = []
     for at in range(level + 1, until + 1):
         here = sorted((e for lvl, e in events if lvl == at), key=lambda e: ORDER[e.kind])
         if here:

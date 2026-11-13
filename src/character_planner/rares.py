@@ -43,8 +43,8 @@ class Rare(BaseModel):
 @dataclass
 class RareRefresh:
     listed: int = 0
-    new: list[str] = field(default_factory=list)
-    errors: list[str] = field(default_factory=list)
+    new: list[str] = field(default_factory=list[str])
+    errors: list[str] = field(default_factory=list[str])
 
 
 def parse_levels(value: Any) -> tuple[int | None, int | None]:
@@ -73,7 +73,7 @@ def parse_rare(row: Any) -> Rare | None:
         min_level=low,
         max_level=high,
         faction=faction if isinstance(faction, str) else "both",
-        spawns=len(coords) if isinstance(coords, list) else 0,
+        spawns=len(fields.as_list(coords)),
         elite=fields.get(row, "elite") is True,
         loot=parse_loot(fields.get(row, "loot")),
     )
@@ -102,7 +102,7 @@ def refresh_rares(session: Session, http: httpx.Client) -> RareRefresh:
 
     known = {row.rare_id for row in session.exec(select(CompanionRare)).all()}
     now = utcnow()
-    for row in rows:
+    for row in fields.as_list(rows):
         rare = parse_rare(row)
         if rare is None:
             continue

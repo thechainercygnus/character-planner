@@ -242,7 +242,7 @@ def _engine(session: Session) -> Engine:
 def missing_data(session: Session) -> list[str]:
     """Static data a fresh instance hasn't loaded yet: "pool" (no dungeon data),
     "enchants" (no recipes), "talents" (no trees for the synced class, #88)."""
-    missing = []
+    missing: list[str] = []
     if session.exec(select(CompanionDungeon)).first() is None:
         missing.append("pool")
     if session.exec(select(RecipeData)).first() is None:

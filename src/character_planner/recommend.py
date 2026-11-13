@@ -18,6 +18,7 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel
 
+from character_planner import fields
 from character_planner.choices import Choices
 from character_planner.companion import ATTRIBUTION as COMPANION_ATTRIBUTION
 from character_planner.curated import GearTargets
@@ -138,7 +139,7 @@ class Recommendations(BaseModel):
 def load_rules(path: Path) -> UsageRules:
     with path.open(encoding="utf-8") as handle:
         data = yaml.safe_load(handle)
-    if isinstance(data, dict) and data.get("exclude_item_ids"):
+    if fields.as_mapping(data).get("exclude_item_ids"):
         # ADR 0016: exclusions are dismissals now ("Never suggest" on the Upgrades tab).
         logger.warning(
             "%s: exclude_item_ids is no longer read; use Never suggest instead", path.name
@@ -289,8 +290,8 @@ def recommend(
 ) -> Recommendations:
     level = pool.level
     choices = choices or Choices()
-    target_ids = set(targets.item_ids()) if targets else set()
-    pinned_ids = (targets.pinned_ids() if targets else set()) - choices.dismissed
+    target_ids = set(targets.item_ids()) if targets else set[int]()
+    pinned_ids = (targets.pinned_ids() if targets else set[int]()) - choices.dismissed
     worn = {item.item_id for item in equipped.values() if item.item_id is not None}
 
     usable = [i for i in pool.items if unusable_reason(i, rules, level, choices.dismissed) is None]
@@ -318,7 +319,7 @@ def recommend(
         # (most rings and trinkets are unique).
         weaker, stronger = sorted(pair, key=lambda s: _worn_score(weights, s, equipped.get(s)))
         picks[weaker] = _best(by_slot[weaker], rules.per_slot, set(), rules.min_gain, worn)
-        first = {picks[weaker][0].item.item_id} if picks[weaker] else set()
+        first = {picks[weaker][0].item.item_id} if picks[weaker] else set[int]()
         # A pinned ring or trinket is listed once, in the slot it would replace first.
         shown_pinned = {c.item.item_id for c in picks[weaker] if c.pinned}
         picks[stronger] = _best(
@@ -369,7 +370,7 @@ def dungeon_values(
                         source=source,
                     )
 
-    values = []
+    values: list[DungeonValue] = []
     for dungeon_id, slots in best.items():
         source = meta[dungeon_id]
         # The same ring can top both finger slots; count each item once.

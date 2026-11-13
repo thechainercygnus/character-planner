@@ -20,6 +20,7 @@ from character_planner.scoring import Weights, score
 
 # Short local names for the defensive readers.
 _get = fields.get
+_list = fields.as_list
 _name = fields.name
 _int = fields.as_int
 _float = fields.as_float
@@ -241,14 +242,14 @@ def character_faction(profile: Any) -> str | None:
 def parse_equipment(equipment: Any) -> list[EquippedItem]:
     items = _get(equipment, "equipped_items")
     parsed: list[EquippedItem] = []
-    for item in items if isinstance(items, list) else []:
+    for item in _list(items):
         slot = _get(item, "slot", "type")
         name = _name(_get(item, "name"))
         if not (isinstance(slot, str) and name):
             continue
         stats = [
             ItemStat(name=stat_name, value=value)
-            for stat in _get(item, "stats") or []
+            for stat in _list(_get(item, "stats"))
             if (stat_name := _name(_get(stat, "type", "name"))) is not None
             and (value := _int(_get(stat, "value"))) is not None
         ]
@@ -285,7 +286,7 @@ def parse_enchantments(enchantments: Any) -> list[Enchantment]:
             source_item_id=_int(_get(e, "source_item", "id")),
             kind=_get(e, "enchantment_slot", "type"),
         )
-        for e in (enchantments if isinstance(enchantments, list) else [])
+        for e in _list(enchantments)
         if (text := _name(_get(e, "display_string")))
     ]
 
@@ -313,12 +314,12 @@ def parse_stats(statistics: Any) -> Stats | None:
 def parse_professions(professions: Any) -> list[Profession]:
     parsed: list[Profession] = []
     for group, primary in (("primaries", True), ("secondaries", False)):
-        for entry in _get(professions, group) or []:
+        for entry in _list(_get(professions, group)):
             name = _name(_get(entry, "profession", "name"))
             if not name:
                 continue
-            tiers = _get(entry, "tiers") or [{}]
-            tier = tiers[-1] if isinstance(tiers, list) and tiers else {}
+            tiers = _list(_get(entry, "tiers"))
+            tier = tiers[-1] if tiers else None
             parsed.append(
                 Profession(
                     name=name,
@@ -334,18 +335,18 @@ def known_recipe_ids(professions: Any) -> set[int]:
     """Recipe ids the character knows, from every profession tier."""
     ids: set[int] = set()
     for group in ("primaries", "secondaries"):
-        for entry in _get(professions, group) or []:
-            for tier in _get(entry, "tiers") or []:
-                for recipe in _get(tier, "known_recipes") or []:
+        for entry in _list(_get(professions, group)):
+            for tier in _list(_get(entry, "tiers")):
+                for recipe in _list(_get(tier, "known_recipes")):
                     if (recipe_id := _int(_get(recipe, "id"))) is not None:
                         ids.add(recipe_id)
     return ids
 
 
 def parse_specialization(specializations: Any) -> Specialization | None:
-    groups = _get(specializations, "specialization_groups") or []
+    groups = _list(_get(specializations, "specialization_groups"))
     active = next((g for g in groups if _get(g, "is_active")), None)
-    specs = _get(active, "specializations") or []
+    specs = _list(_get(active, "specializations"))
     # Classic-style talents: the tree with the most points names the spec, but points in
     # every tree count, so hybrid builds show whole (#88).
     best = max(specs, key=lambda s: _int(_get(s, "spent_points")) or 0, default=None)
@@ -370,7 +371,7 @@ def parse_specialization(specializations: Any) -> Specialization | None:
                 tree=_name(_get(spec, "specialization_name")),
             )
             for spec in specs
-            for t in _get(spec, "talents") or []
+            for t in _list(_get(spec, "talents"))
             if (talent_name := _name(_get(t, "talent", "name")))
         ],
     )
@@ -643,7 +644,7 @@ def gear_plan(
     later: list[SlotOutlook] = []
     for slot in targets.slots():
         worn = equipped.get(slot)
-        chain = []
+        chain: list[tuple[GearTarget, TargetInfo | None, int | None]] = []
         for target in targets.for_slot(slot):
             info = target_info(target, catalog, icons, companion)
             chain.append((target, info, target_level(target, info, item_levels)))

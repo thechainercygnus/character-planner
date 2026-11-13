@@ -47,14 +47,14 @@ def _verdict(row: GearRow) -> str:
     # What's worn scores higher: the target is outgrown, but stays until worn (ADR 0015).
     text = "outgrown" if row.verdict == "downgrade" else row.verdict
     info = row.target_info
-    details = []
+    details: list[str] = []
     if row.equipped and row.equipped.item_level is not None and info and info.item_level:
         details.append(f"ilvl {row.equipped.item_level} -> {info.item_level}")
     if row.score_delta is not None:
         details.append(f"score {row.score_delta:+.1f}")
     if details:
         text += f" ({', '.join(details)})"
-    gains = []
+    gains: list[str] = []
     if row.armor_delta:
         gains.append(f"{row.armor_delta:+d} armor")
     gains += [f"{change:+d} {name}" for name, change in row.stat_deltas.items()]

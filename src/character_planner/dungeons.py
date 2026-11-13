@@ -72,8 +72,8 @@ class Dungeon(BaseModel):
 @dataclass
 class DungeonRefresh:
     listed: int = 0
-    fetched: list[str] = field(default_factory=list)
-    errors: list[str] = field(default_factory=list)
+    fetched: list[str] = field(default_factory=list[str])
+    errors: list[str] = field(default_factory=list[str])
 
 
 def _data(payload: Any) -> Any:
@@ -88,8 +88,12 @@ def _describe(response: httpx.Response) -> str:
     except ValueError:
         return f"HTTP {response.status_code}, not JSON ({len(response.content)} bytes)"
     data = _data(body)
-    keys = sorted(body)[:8] if isinstance(body, dict) else type(body).__name__
-    size = len(data) if isinstance(data, list | dict) else type(data).__name__
+    keys = sorted(fields.as_mapping(body))[:8] if isinstance(body, dict) else type(body).__name__
+    size = (
+        len(fields.as_list(data) or fields.as_mapping(data))
+        if isinstance(data, list | dict)
+        else type(data).__name__
+    )
     return f"HTTP {response.status_code}, top-level keys {keys}, data size {size}"
 
 
@@ -112,7 +116,7 @@ def parse_loot(rows: Any) -> list[Loot]:
             quality=_upper(fields.get(row, "quality")),
             boss=fields.get(row, "source"),
         )
-        for row in (rows if isinstance(rows, list) else [])
+        for row in fields.as_list(rows)
         if (item_id := fields.as_int(fields.get(row, "itemId"))) is not None
     ]
 
@@ -129,7 +133,7 @@ def parse_dungeon(payload: Any) -> Dungeon | None:
 
     rewards: list[QuestReward] = []
     quests: list[QuestStep] = []
-    for quest in fields.get(data, "quests") or []:
+    for quest in fields.as_list(fields.get(data, "quests")):
         quest_name = fields.get(quest, "name")
         if not isinstance(quest_name, str):
             continue
@@ -137,7 +141,7 @@ def parse_dungeon(payload: Any) -> Dungeon | None:
             quests.append(step)
         prerequisites = parse_prerequisites(fields.get(quest, "prerequisites"))
         faction = fields.get(quest, "faction")
-        for item in fields.get(quest, "rewards", "items") or []:
+        for item in fields.as_list(fields.get(quest, "rewards", "items")):
             item_id = fields.as_int(fields.get(item, "id"))
             if item_id is None:
                 continue
@@ -177,7 +181,7 @@ def listed_dungeon_ids(payload: Any) -> list[str]:
         return []
     return [
         dungeon_id
-        for row in rows
+        for row in fields.as_list(rows)
         if isinstance(dungeon_id := fields.get(row, "id"), str)
         and fields.get(row, "status") != "announced"
     ]

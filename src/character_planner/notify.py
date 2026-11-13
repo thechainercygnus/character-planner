@@ -18,7 +18,7 @@ import logging
 import re
 from collections.abc import Iterable
 from datetime import datetime, timedelta
-from typing import Literal
+from typing import Any, Literal
 from urllib.parse import urlsplit
 
 import httpx
@@ -26,6 +26,7 @@ from pydantic import BaseModel
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, col, select
 
+from character_planner import fields
 from character_planner.config import Settings
 from character_planner.crafting import crafted_items
 from character_planner.db import (
@@ -34,6 +35,9 @@ from character_planner.db import (
     NotificationState,
     utcnow,
 )
+
+# A Discord webhook message: JSON, as Discord's API takes it.
+Message = dict[str, Any]
 
 logger = logging.getLogger(__name__)
 
@@ -136,7 +140,7 @@ def _recipients(session: Session, kind: str) -> list[NotificationDestination]:
 
 
 def _queue(
-    session: Session, destination: NotificationDestination, kind: str, key: str, message: dict
+    session: Session, destination: NotificationDestination, kind: str, key: str, message: Message
 ) -> bool:
     """Queue one message unless this destination already has this key; True if queued."""
     assert destination.id is not None
@@ -161,8 +165,12 @@ def _queue(
     return True
 
 
-def _message(title: str, description: str, color: int, url: str | None = None) -> dict:
-    embed: dict = {"title": title[:256], "description": description[:4000], "color": color}
+def _message(title: str, description: str, color: int, url: str | None = None) -> Message:
+    embed: dict[str, Any] = {
+        "title": title[:256],
+        "description": description[:4000],
+        "color": color,
+    }
     if url:
         embed["url"] = url
     # No pings, whatever an item or character name contains.
@@ -177,7 +185,7 @@ def app_url(settings: Settings, tab: str = "") -> str | None:
     return f"{parts.scheme}://{parts.netloc}/" + (f"#{tab}" if tab else "")
 
 
-def notify(session: Session, kind: AlertKind, key: str, message: dict) -> int:
+def notify(session: Session, kind: AlertKind, key: str, message: Message) -> int:
     """Queue an alert for every destination that wants it; how many were queued."""
     return sum(_queue(session, d, kind, key, message) for d in _recipients(session, kind))
 
@@ -387,7 +395,7 @@ class SendResult(BaseModel):
     gone: bool = False  # the webhook no longer exists or isn't allowed
 
 
-def send(http: httpx.Client, url: str, message: dict) -> SendResult:
+def send(http: httpx.Client, url: str, message: Message) -> SendResult:
     try:
         response = http.post(url, json=message, timeout=10)
     except httpx.HTTPError as error:
@@ -535,7 +543,7 @@ def _view(d: NotificationDestination) -> DestinationView:
         kind=d.kind,
         audience=_audience(d),
         url=masked(d.url),
-        alerts=[a for a in d.alerts or [] if a not in RETIRED_ALERTS],
+        alerts=[a for a in fields.as_list(d.alerts) if a not in RETIRED_ALERTS],
         enabled=d.enabled,
         last_sent_at=d.last_sent_at,
         last_error=d.last_error,

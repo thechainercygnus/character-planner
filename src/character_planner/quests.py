@@ -60,9 +60,9 @@ ChainRefs = list[list[tuple[int | None, str]]]
 
 @dataclass
 class QuestRefresh:
-    fetched: list[int] = field(default_factory=list)
-    not_found: list[int] = field(default_factory=list)
-    errors: list[str] = field(default_factory=list)
+    fetched: list[int] = field(default_factory=list[int])
+    not_found: list[int] = field(default_factory=list[int])
+    errors: list[str] = field(default_factory=list[str])
 
 
 def _data(payload: Any) -> Any:
@@ -96,10 +96,10 @@ def parse_quest(payload: Any) -> QuestStep | None:
 def parse_prerequisites(value: Any) -> ChainRefs:
     """A quest's `prerequisites` as steps of (quest id, name); malformed entries dropped."""
     steps: ChainRefs = []
-    for step in value if isinstance(value, list) else []:
+    for step in fields.as_list(value):
         quests = [
             (fields.as_int(fields.get(ref, "questId")), name)
-            for ref in (step if isinstance(step, list) else [])
+            for ref in fields.as_list(step)
             if isinstance(name := fields.get(ref, "name"), str)
         ]
         if quests:

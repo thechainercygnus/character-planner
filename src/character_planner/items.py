@@ -51,11 +51,11 @@ def name_key(item_name: str) -> str:
 def exact_match(body: Any, item_name: str) -> dict[str, Any] | None:
     """The search result whose name is exactly item_name (case-insensitive)."""
     wanted = name_key(item_name)
-    for result in fields.get(body, "results") or []:
+    for result in fields.as_list(fields.get(body, "results")):
         data = fields.get(result, "data")
         found = fields.name(fields.get(data, "name"))
         if found and name_key(found) == wanted and isinstance(data, dict):
-            return data
+            return dict(fields.as_mapping(data))
     return None
 
 
@@ -101,7 +101,7 @@ def _search_pages(
 
 
 def icon_url(body: Any) -> str | None:
-    for asset in fields.get(body, "assets") or []:
+    for asset in fields.as_list(fields.get(body, "assets")):
         if fields.get(asset, "key") == "icon":
             value = fields.get(asset, "value")
             return value if isinstance(value, str) else None

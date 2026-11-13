@@ -17,6 +17,7 @@ import yaml
 from pydantic import BaseModel
 from sqlmodel import Session
 
+from character_planner import fields
 from character_planner.curated import GearTargets, load_gear_targets
 from character_planner.db import latest_by_kind
 from character_planner.recommend import UsageRules, load_rules
@@ -57,10 +58,10 @@ def _class_files(curated_dir: Path) -> dict[str, Path]:
 
 def supported_classes(curated_dir: Path) -> list[PlayableClass]:
     """Classes with shipped defaults: the Warrior, then every classes/*.yaml by name."""
-    others = []
+    others: list[PlayableClass] = []
     for path in sorted(_class_files(curated_dir).values()):
         with path.open(encoding="utf-8") as handle:
-            data = yaml.safe_load(handle) or {}
+            data = fields.as_mapping(yaml.safe_load(handle))
         others.append(PlayableClass(key=path.stem, name=str(data.get("name", path.stem.title()))))
     others.sort(key=lambda c: c.name)
     return [PlayableClass(key=WARRIOR, name="Warrior"), *others]
@@ -79,12 +80,12 @@ def load_class_defaults(curated_dir: Path, key: str) -> ClassDefaults:
         )
 
     with path.open(encoding="utf-8") as handle:
-        data = yaml.safe_load(handle) or {}
+        data = fields.as_mapping(yaml.safe_load(handle))
     shared = load_rules(curated_dir / "recommend.yaml")
     rules = UsageRules.model_validate(
         {name: getattr(shared, name) for name in TUNING} | (data.get("rules") or {})
     )
-    entries = [Preset.model_validate(p) for p in data.get("presets") or []]
+    entries = [Preset.model_validate(p) for p in fields.as_list(data.get("presets"))]
     if not entries:
         raise ValueError(f"{path.name} needs at least one weight preset")
     base = entries[0].weights

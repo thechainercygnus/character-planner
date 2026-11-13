@@ -67,10 +67,10 @@ def trace_search(client: BlizzardClient, namespace: str, item_name: str) -> list
             {"name.en_US": query, "orderby": "id", "_page": "1", "_pageSize": "100"},
         )
         results.append(result)
-        body = result.body if isinstance(result.body, dict) else {}
+        body = fields.as_mapping(result.body)
         names = [
             f"{fields.get(r, 'data', 'id')}:{fields.name(fields.get(r, 'data', 'name'))}"
-            for r in body.get("results", [])
+            for r in fields.as_list(body.get("results"))
         ]
         exact = exact_match(body, item_name)
         print(
@@ -104,8 +104,8 @@ def main() -> int:
     print(f"Saved {len(results)} responses to {out_dir}:")
     for result in results:
         hits = ""
-        if result.ok and isinstance(result.body, dict) and "results" in result.body:
-            hits = f"  ({len(result.body['results'])} hits)"
+        if result.ok and "results" in fields.as_mapping(result.body):
+            hits = f"  ({len(fields.as_list(fields.get(result.body, 'results')))} hits)"
         print(f"  {result.status}  {result.kind}{hits}")
     return 0
 

@@ -74,6 +74,9 @@ ignore = ["S101"] # asserts are fine in tests
 include = ["src", "tests"]
 pythonVersion = "3.14"
 typeCheckingMode = "standard"
+# The package is checked strictly (#85, OpenSSF Silver's warnings_strict); the tests stay
+# on standard, where most strict findings are unknown types from JSON fixtures.
+strict = ["src"]
 venvPath = "."
 venv = ".venv"
 

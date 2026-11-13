@@ -51,7 +51,7 @@ def probe(client: BlizzardClient, region: str) -> list[ApiResult]:
     wanted = {name.lower() for name in PROFESSIONS}
     professions = [
         (pid, fields.name(fields.get(p, "name")))
-        for p in fields.get(index.body, "professions") or []
+        for p in fields.as_list(fields.get(index.body, "professions"))
         if (pid := fields.as_int(fields.get(p, "id"))) is not None
         and (fields.name(fields.get(p, "name")) or "").lower() in wanted
     ]
@@ -60,16 +60,16 @@ def probe(client: BlizzardClient, region: str) -> list[ApiResult]:
     for pid, pname in professions:
         slug = (pname or str(pid)).lower()
         profession = prober.get(f"profession-{slug}", f"/data/wow/profession/{pid}")
-        for tier in fields.get(profession.body, "skill_tiers") or []:
+        for tier in fields.as_list(fields.get(profession.body, "skill_tiers")):
             tid = fields.as_int(fields.get(tier, "id"))
             if tid is None:
                 continue
             detail = prober.get(
                 f"skill-tier-{slug}-{tid}", f"/data/wow/profession/{pid}/skill-tier/{tid}"
             )
-            for category in fields.get(detail.body, "categories") or []:
+            for category in fields.as_list(fields.get(detail.body, "categories")):
                 cname = fields.name(fields.get(category, "name"))
-                for recipe in fields.get(category, "recipes") or []:
+                for recipe in fields.as_list(fields.get(category, "recipes")):
                     rid = fields.as_int(fields.get(recipe, "id"))
                     rname = fields.name(fields.get(recipe, "name"))
                     if rid is not None and looks_like_enchant(rname, cname):
