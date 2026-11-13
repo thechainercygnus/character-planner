@@ -1,0 +1,1449 @@
+{
+ "_links": {
+  "self": {
+   "href": "https://us.api.blizzard.com/data/wow/talent-tree/1116/playable-specialization/354?namespace=static-1.60.1_70399-forever-us"
+  }
+ },
+ "id": 1116,
+ "playable_class": {
+  "key": {
+   "href": "https://us.api.blizzard.com/data/wow/playable-class/9?namespace=static-1.60.1_70399-forever-us"
+  },
+  "name": "Warlock",
+  "id": 9
+ },
+ "playable_specialization": {
+  "key": {
+   "href": "https://us.api.blizzard.com/data/wow/playable-specialization/354?namespace=static-1.60.1_70399-forever-us"
+  },
+  "name": "Demonology",
+  "id": 354
+ },
+ "name": "Demonology",
+ "media": {
+  "key": {
+   "href": "https://us.api.blizzard.com/data/wow/media/talent-tree/1116/playable-specialization/354?namespace=static-1.60.1_70399-forever-us"
+  }
+ },
+ "spec_talent_nodes": [
+  {
+   "id": 105905,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135436?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Health Funnel",
+       "id": 135436
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18703?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Health Funnel",
+        "id": 18703
+       },
+       "description": "Increases the amount of health transferred by your Health Funnel spell by 20%, reduces its health cost by 15%, and reduces all threat your Health Funnel generates by 50%. Allows Health Funnel to be used regardless of your demon's health.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135436?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Health Funnel",
+       "id": 135436
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18703?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Health Funnel",
+        "id": 18703
+       },
+       "description": "Increases the amount of health transferred by your Health Funnel spell by 40%, reduces its health cost by 30%, and reduces all threat your Health Funnel generates by 100%. Allows Health Funnel to be used regardless of your demon's health.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105908,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135439?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Imp",
+       "id": 135439
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18694?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Imp",
+        "id": 18694
+       },
+       "description": "Increases the damage of your Imp's Firebolt spell by 10% and the effect of its Fire Shield spell by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135439?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Imp",
+       "id": 135439
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18694?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Imp",
+        "id": 18694
+       },
+       "description": "Increases the damage of your Imp's Firebolt spell by 20% and the effect of its Fire Shield spell by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135439?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Imp",
+       "id": 135439
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18694?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Imp",
+        "id": 18694
+       },
+       "description": "Increases the damage of your Imp's Firebolt spell by 30% and the effect of its Fire Shield spell by 30%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105907,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135438?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Embrace",
+       "id": 135438
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18697?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Embrace",
+        "id": 18697
+       },
+       "description": "Increases your total Stamina by 3%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135438?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Embrace",
+       "id": 135438
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18697?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Embrace",
+        "id": 18697
+       },
+       "description": "Increases your total Stamina by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135438?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Embrace",
+       "id": 135438
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18697?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Embrace",
+        "id": 18697
+       },
+       "description": "Increases your total Stamina by 9%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135438?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Embrace",
+       "id": 135438
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18697?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Embrace",
+        "id": 18697
+       },
+       "description": "Increases your total Stamina by 12%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135438?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Embrace",
+       "id": 135438
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18697?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Embrace",
+        "id": 18697
+       },
+       "description": "Increases your total Stamina by 15%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105906,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135437?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unholy Power",
+       "id": 135437
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18769?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unholy Power",
+        "id": 18769
+       },
+       "description": "Increases all damage done by your Imp, Voidwalker, Succubus, Incubus, and Felhunter pets by 2%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135437?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unholy Power",
+       "id": 135437
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18769?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unholy Power",
+        "id": 18769
+       },
+       "description": "Increases all damage done by your Imp, Voidwalker, Succubus, Incubus, and Felhunter pets by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135437?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unholy Power",
+       "id": 135437
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18769?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unholy Power",
+        "id": 18769
+       },
+       "description": "Increases all damage done by your Imp, Voidwalker, Succubus, Incubus, and Felhunter pets by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135437?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unholy Power",
+       "id": 135437
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18769?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unholy Power",
+        "id": 18769
+       },
+       "description": "Increases all damage done by your Imp, Voidwalker, Succubus, Incubus, and Felhunter pets by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135437?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unholy Power",
+       "id": 135437
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18769?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unholy Power",
+        "id": 18769
+       },
+       "description": "Increases all damage done by your Imp, Voidwalker, Succubus, Incubus, and Felhunter pets by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 10,
+   "raw_position_x": 6820,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105902,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135433?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Aegis",
+       "id": 135433
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1235316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Aegis",
+        "id": 1235316
+       },
+       "description": "Increases the effectiveness of your Demon Skin and Demon Armor spells by 15%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135433?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Aegis",
+       "id": 135433
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1235316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Aegis",
+        "id": 1235316
+       },
+       "description": "Increases the effectiveness of your Demon Skin and Demon Armor spells by 30%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105904,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135435?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Voidwalker",
+       "id": 135435
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18705?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Voidwalker",
+        "id": 18705
+       },
+       "description": "Increases the effectiveness of your Voidwalker's Torment, Consume Shadows, Sacrifice, and Suffering spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135435?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Voidwalker",
+       "id": 135435
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18705?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Voidwalker",
+        "id": 18705
+       },
+       "description": "Increases the effectiveness of your Voidwalker's Torment, Consume Shadows, Sacrifice, and Suffering spells by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135435?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Voidwalker",
+       "id": 135435
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18705?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Voidwalker",
+        "id": 18705
+       },
+       "description": "Increases the effectiveness of your Voidwalker's Torment, Consume Shadows, Sacrifice, and Suffering spells by 30%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105903,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135434?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Vitality",
+       "id": 135434
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18731?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Vitality",
+        "id": 18731
+       },
+       "description": "Increases the maximum health and Mana of your Imp, Voidwalker, Succubus, Incubus, and Felhunter by 5%, and increases your maximum Mana by 5%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135434?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Vitality",
+       "id": 135434
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18731?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Vitality",
+        "id": 18731
+       },
+       "description": "Increases the maximum health and Mana of your Imp, Voidwalker, Succubus, Incubus, and Felhunter by 10%, and increases your maximum Mana by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135434?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Vitality",
+       "id": 135434
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18731?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Vitality",
+        "id": 18731
+       },
+       "description": "Increases the maximum health and Mana of your Imp, Voidwalker, Succubus, Incubus, and Felhunter by 15%, and increases your maximum Mana by 15%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105899,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135430?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Energies",
+       "id": 135430
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225214?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Energies",
+        "id": 1225214
+       },
+       "description": "You heal your pet for 8% of all spell damage you deal. When you gain Mana from Life Tap, your summoned demon gains 50% of the Mana you gain.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135430?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Energies",
+       "id": 135430
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225214?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Energies",
+        "id": 1225214
+       },
+       "description": "You heal your pet for 15% of all spell damage you deal. When you gain Mana from Life Tap, your summoned demon gains 100% of the Mana you gain.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 10,
+   "raw_position_x": 6820,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105901,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135432?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Sayaad",
+       "id": 135432
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18754?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Sayaad",
+        "id": 18754
+       },
+       "description": "Increases the effect of your Succubus' and Incubus' Lash of Pain and Soothing Kiss spells by 10%, and increases the duration of your Succubus' and Incubus' Seduction and Lesser Invisibility spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135432?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Sayaad",
+       "id": 135432
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18754?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Sayaad",
+        "id": 18754
+       },
+       "description": "Increases the effect of your Succubus' and Incubus' Lash of Pain and Soothing Kiss spells by 20%, and increases the duration of your Succubus' and Incubus' Seduction and Lesser Invisibility spells by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135432?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Sayaad",
+       "id": 135432
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18754?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Sayaad",
+        "id": 18754
+       },
+       "description": "Increases the effect of your Succubus' and Incubus' Lash of Pain and Soothing Kiss spells by 30%, and increases the duration of your Succubus' and Incubus' Seduction and Lesser Invisibility spells by 30%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105900,
+   "unlocks": [
+    105892
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135431?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Sacrifice",
+       "id": 135431
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18788?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Sacrifice",
+        "id": 18788
+       },
+       "description": "When activated, sacrifices your summoned Demon to enhance the opposing aspect of your power, granting you an effect that lasts 2 hrs. The effect is canceled if any Demon is summoned.\r\n\r\nImp: Increases your Shadow damage by 15%.\r\n\r\nVoidwalker: Restores 2% of your total Mana every 4 sec.\r\n\r\nSuccubus/Incubus: Increases your Fire damage by 15%.\r\n\r\nFelhunter: Restores 3% of your total Health every 4 sec.",
+       "cast_time": "Instant",
+       "range": "100 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105898,
+   "unlocks": [
+    105895
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135429?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Summoner",
+       "id": 135429
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18709?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Summoner",
+        "id": 18709
+       },
+       "description": "Reduces the casting time of your Imp, Voidwalker, Succubus, Incubus, and Felhunter Summoning spells by 2 sec and the Mana cost by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135429?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Summoner",
+       "id": 135429
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18709?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Summoner",
+        "id": 18709
+       },
+       "description": "Reduces the casting time of your Imp, Voidwalker, Succubus, Incubus, and Felhunter Summoning spells by 4 sec and the Mana cost by 40%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105897,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135428?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Decimation",
+       "id": 135428
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/440870?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Decimation",
+        "id": 440870
+       },
+       "description": "Reduces the cooldown of your Soul Fire spell by 45%. When you cast Shadow Bolt or Searing Pain on an enemy below 35% health, they deal 3% increased damage, and for the next 10 sec your Soul Fire spell has its cast time reduced by 20% and costs no Soul Shards.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135428?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Decimation",
+       "id": 135428
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/440870?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Decimation",
+        "id": 440870
+       },
+       "description": "Reduces the cooldown of your Soul Fire spell by 90%. When you cast Shadow Bolt or Searing Pain on an enemy below 35% health, they deal 6% increased damage, and for the next 10 sec your Soul Fire spell has its cast time reduced by 40% and costs no Soul Shards.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105895,
+   "locked_by": [
+    105898
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135426?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fel Domination",
+       "id": 135426
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18708?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fel Domination",
+        "id": 18708
+       },
+       "description": "Your next Imp, Voidwalker, Succubus, Incubus, or Felhunter Summon spell has its casting time reduced by 5.5 sec and its Mana cost reduced by 50%.",
+       "cast_time": "Instant",
+       "cooldown": "5 min cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105896,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135427?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Brand",
+       "id": 135427
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1293695?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Brand",
+        "id": 1293695
+       },
+       "description": "Your Searing Pain generates 17% less threat and brands the target for 10 sec. Your pet's next 2 attacks against the target deal 90 to 93 Fire or Shadow damage based on the pet. If Shadow damage is dealt, it has high threat.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135427?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Brand",
+       "id": 135427
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1293695?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Brand",
+        "id": 1293695
+       },
+       "description": "Your Searing Pain generates 33% less threat and brands the target for 10 sec. Your pet's next 4 attacks against the target deal 90 to 93 Fire or Shadow damage based on the pet. If Shadow damage is dealt, it has high threat.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135427?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Brand",
+       "id": 135427
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1293695?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Brand",
+        "id": 1293695
+       },
+       "description": "Your Searing Pain generates 50% less threat and brands the target for 10 sec. Your pet's next 6 attacks against the target deal 90 to 93 Fire or Shadow damage based on the pet. If Shadow damage is dealt, it has high threat.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 10,
+   "raw_position_x": 6820,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105894,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135425?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Felhunter",
+       "id": 135425
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225217?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Felhunter",
+        "id": 1225217
+       },
+       "description": "Increases the Attack Power reduction of your Felhunter's Tainted Blood, the healing of its Devour Magic, and the detection level of its Paranoia by 10%, and reduces the cooldown of its Spell Lock by 2 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135425?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Felhunter",
+       "id": 135425
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225217?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Felhunter",
+        "id": 1225217
+       },
+       "description": "Increases the Attack Power reduction of your Felhunter's Tainted Blood, the healing of its Devour Magic, and the detection level of its Paranoia by 20%, and reduces the cooldown of its Spell Lock by 4 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135425?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Felhunter",
+       "id": 135425
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225217?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Felhunter",
+        "id": 1225217
+       },
+       "description": "Increases the Attack Power reduction of your Felhunter's Tainted Blood, the healing of its Devour Magic, and the detection level of its Paranoia by 30%, and reduces the cooldown of its Spell Lock by 6 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105892,
+   "locked_by": [
+    105900
+   ],
+   "unlocks": [
+    105890
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135423?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Soul Link",
+       "id": 135423
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/19028?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Soul Link",
+        "id": 19028
+       },
+       "description": "When active, 30% of all damage taken by the caster is taken by your Imp, Voidwalker, Succubus, Incubus, or Felhunter Demon instead. In addition, both the Demon and the master will inflict 3% more damage. Lasts as long as the Demon is active.",
+       "cast_time": "Instant",
+       "power_cost": "275 Mana",
+       "range": "100 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105893,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135424?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Knowledge",
+       "id": 135424
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412732?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Knowledge",
+        "id": 412732
+       },
+       "description": "Increases your spell damage and your Demon pet's spell damage by up to 33% of your level while you have a summoned Demon pet active.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135424?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Knowledge",
+       "id": 135424
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412732?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Knowledge",
+        "id": 412732
+       },
+       "description": "Increases your spell damage and your Demon pet's spell damage by up to 67% of your level while you have a summoned Demon pet active.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135424?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Knowledge",
+       "id": 135424
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412732?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Knowledge",
+        "id": 412732
+       },
+       "description": "Increases your spell damage and your Demon pet's spell damage by up to 100% of your level while you have a summoned Demon pet active.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105891,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135422?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Demonologist",
+       "id": 135422
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23785?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Demonologist",
+        "id": 23785
+       },
+       "description": "Grants both the Warlock and the summoned demon an effect as long as that demon is active.\r\n\r\nImp - Increases Fire damage done by 2%.\r\n\r\nVoidwalker - Reduces Physical damage taken by 2%.\r\n\r\nSuccubus/Incubus - Increases Shadow damage done by 2%.\r\n\r\nFelhunter - Reduces Magic damage taken by 2%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135422?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Demonologist",
+       "id": 135422
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23785?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Demonologist",
+        "id": 23785
+       },
+       "description": "Grants both the Warlock and the summoned demon an effect as long as that demon is active.\r\n\r\nImp - Increases Fire damage done by 4%.\r\n\r\nVoidwalker - Reduces Physical damage taken by 4%.\r\n\r\nSuccubus/Incubus - Increases Shadow damage done by 4%.\r\n\r\nFelhunter - Reduces Magic damage taken by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135422?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Demonologist",
+       "id": 135422
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23785?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Demonologist",
+        "id": 23785
+       },
+       "description": "Grants both the Warlock and the summoned demon an effect as long as that demon is active.\r\n\r\nImp - Increases Fire damage done by 6%.\r\n\r\nVoidwalker - Reduces Physical damage taken by 6%.\r\n\r\nSuccubus/Incubus - Increases Shadow damage done by 6%.\r\n\r\nFelhunter - Reduces Magic damage taken by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135422?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Demonologist",
+       "id": 135422
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23785?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Demonologist",
+        "id": 23785
+       },
+       "description": "Grants both the Warlock and the summoned demon an effect as long as that demon is active.\r\n\r\nImp - Increases Fire damage done by 8%.\r\n\r\nVoidwalker - Reduces Physical damage taken by 8%.\r\n\r\nSuccubus/Incubus - Increases Shadow damage done by 8%.\r\n\r\nFelhunter - Reduces Magic damage taken by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135422?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master Demonologist",
+       "id": 135422
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23785?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master Demonologist",
+        "id": 23785
+       },
+       "description": "Grants both the Warlock and the summoned demon an effect as long as that demon is active.\r\n\r\nImp - Increases Fire damage done by 10%.\r\n\r\nVoidwalker - Reduces Physical damage taken by 10%.\r\n\r\nSuccubus/Incubus - Increases Shadow damage done by 10%.\r\n\r\nFelhunter - Reduces Magic damage taken by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 6,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 5130
+  },
+  {
+   "id": 105890,
+   "locked_by": [
+    105892
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135421?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Demonic Pact",
+       "id": 135421
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/425464?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Pact",
+        "id": 425464
+       },
+       "description": "Your Demonic Sacrifice effect is no longer cancelled by summoning a different Demon pet. Resummoning the sacrificed pet will still cancel the effect.\r\n",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 7,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 5730
+  }
+ ]
+}

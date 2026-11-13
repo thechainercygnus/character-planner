@@ -1,0 +1,1416 @@
+{
+ "_links": {
+  "self": {
+   "href": "https://us.api.blizzard.com/data/wow/talent-tree/1116/playable-specialization/593?namespace=static-1.60.1_70399-forever-us"
+  }
+ },
+ "id": 1116,
+ "playable_class": {
+  "key": {
+   "href": "https://us.api.blizzard.com/data/wow/playable-class/9?namespace=static-1.60.1_70399-forever-us"
+  },
+  "name": "Warlock",
+  "id": 9
+ },
+ "playable_specialization": {
+  "key": {
+   "href": "https://us.api.blizzard.com/data/wow/playable-specialization/593?namespace=static-1.60.1_70399-forever-us"
+  },
+  "name": "Destruction",
+  "id": 593
+ },
+ "name": "Destruction",
+ "media": {
+  "key": {
+   "href": "https://us.api.blizzard.com/data/wow/media/talent-tree/1116/playable-specialization/593?namespace=static-1.60.1_70399-forever-us"
+  }
+ },
+ "spec_talent_nodes": [
+  {
+   "id": 105881,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135412?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Destructive Reach",
+       "id": 135412
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17917?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Destructive Reach",
+        "id": 17917
+       },
+       "description": "Increases the range of your Destruction spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135412?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Destructive Reach",
+       "id": 135412
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17917?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Destructive Reach",
+        "id": 17917
+       },
+       "description": "Increases the range of your Destruction spells by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 14,
+   "raw_position_x": 9080,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105889,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135420?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shadow Bolt",
+       "id": 135420
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17793?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shadow Bolt",
+        "id": 17793
+       },
+       "description": "Your Shadow Bolt critical strikes increase Shadow damage taken by the target from your attacks by 4% for 12 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135420?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shadow Bolt",
+       "id": 135420
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17793?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shadow Bolt",
+        "id": 17793
+       },
+       "description": "Your Shadow Bolt critical strikes increase Shadow damage taken by the target from your attacks by 8% for 12 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135420?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shadow Bolt",
+       "id": 135420
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17793?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shadow Bolt",
+        "id": 17793
+       },
+       "description": "Your Shadow Bolt critical strikes increase Shadow damage taken by the target from your attacks by 12% for 12 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135420?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shadow Bolt",
+       "id": 135420
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17793?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shadow Bolt",
+        "id": 17793
+       },
+       "description": "Your Shadow Bolt critical strikes increase Shadow damage taken by the target from your attacks by 16% for 12 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135420?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shadow Bolt",
+       "id": 135420
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17793?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shadow Bolt",
+        "id": 17793
+       },
+       "description": "Your Shadow Bolt critical strikes increase Shadow damage taken by the target from your attacks by 20% for 12 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105888,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135419?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bane",
+       "id": 135419
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17788?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bane",
+        "id": 17788
+       },
+       "description": "Reduces the casting time of your Shadow Bolt, Immolate, and Incinerate spells by 0.1 sec and your Soul Fire spell by 0.4 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135419?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bane",
+       "id": 135419
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17788?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bane",
+        "id": 17788
+       },
+       "description": "Reduces the casting time of your Shadow Bolt, Immolate, and Incinerate spells by 0.2 sec and your Soul Fire spell by 0.8 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135419?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bane",
+       "id": 135419
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17788?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bane",
+        "id": 17788
+       },
+       "description": "Reduces the casting time of your Shadow Bolt, Immolate, and Incinerate spells by 0.3 sec and your Soul Fire spell by 1.2 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135419?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bane",
+       "id": 135419
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17788?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bane",
+        "id": 17788
+       },
+       "description": "Reduces the casting time of your Shadow Bolt, Immolate, and Incinerate spells by 0.4 sec and your Soul Fire spell by 1.6 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135419?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bane",
+       "id": 135419
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17788?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bane",
+        "id": 17788
+       },
+       "description": "Reduces the casting time of your Shadow Bolt, Immolate, and Incinerate spells by 0.5 sec and your Soul Fire spell by 2 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105885,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135416?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Molten Skin",
+       "id": 135416
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225220?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Molten Skin",
+        "id": 1225220
+       },
+       "description": "Reduces all damage taken by 2%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135416?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Molten Skin",
+       "id": 135416
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225220?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Molten Skin",
+        "id": 1225220
+       },
+       "description": "Reduces all damage taken by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135416?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Molten Skin",
+       "id": 135416
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225220?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Molten Skin",
+        "id": 1225220
+       },
+       "description": "Reduces all damage taken by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135416?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Molten Skin",
+       "id": 135416
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225220?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Molten Skin",
+        "id": 1225220
+       },
+       "description": "Reduces all damage taken by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135416?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Molten Skin",
+       "id": 135416
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225220?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Molten Skin",
+        "id": 1225220
+       },
+       "description": "Reduces all damage taken by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 14,
+   "raw_position_x": 9080,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105887,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135418?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Cataclysm",
+       "id": 135418
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17778?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Cataclysm",
+        "id": 17778
+       },
+       "description": "Reduces the Mana cost of your Destruction spells by 3%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135418?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Cataclysm",
+       "id": 135418
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17778?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Cataclysm",
+        "id": 17778
+       },
+       "description": "Reduces the Mana cost of your Destruction spells by 6%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135418?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Cataclysm",
+       "id": 135418
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17778?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Cataclysm",
+        "id": 17778
+       },
+       "description": "Reduces the Mana cost of your Destruction spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105886,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135417?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Aftermath",
+       "id": 135417
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18119?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Aftermath",
+        "id": 18119
+       },
+       "description": "Increases the initial damage of your Immolate spell by 10% and your Conflagrate spell has a 20% chance to Daze the target, reducing the target's movement speed by 50% for 5 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135417?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Aftermath",
+       "id": 135417
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18119?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Aftermath",
+        "id": 18119
+       },
+       "description": "Increases the initial damage of your Immolate spell by 20% and your Conflagrate spell has a 40% chance to Daze the target, reducing the target's movement speed by 50% for 5 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135417?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Aftermath",
+       "id": 135417
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18119?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Aftermath",
+        "id": 18119
+       },
+       "description": "Increases the initial damage of your Immolate spell by 30% and your Conflagrate spell has a 60% chance to Daze the target, reducing the target's movement speed by 50% for 5 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135417?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Aftermath",
+       "id": 135417
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18119?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Aftermath",
+        "id": 18119
+       },
+       "description": "Increases the initial damage of your Immolate spell by 40% and your Conflagrate spell has a 80% chance to Daze the target, reducing the target's movement speed by 50% for 5 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135417?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Aftermath",
+       "id": 135417
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18119?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Aftermath",
+        "id": 18119
+       },
+       "description": "Increases the initial damage of your Immolate spell by 50% and your Conflagrate spell has a 100% chance to Daze the target, reducing the target's movement speed by 50% for 5 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105883,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135414?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Ruin",
+       "id": 135414
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17959?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Ruin",
+        "id": 17959
+       },
+       "description": "Increases the critical strike damage bonus of your Destruction spells by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135414?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Ruin",
+       "id": 135414
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17959?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Ruin",
+        "id": 17959
+       },
+       "description": "Increases the critical strike damage bonus of your Destruction spells by 40%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135414?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Ruin",
+       "id": 135414
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17959?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Ruin",
+        "id": 17959
+       },
+       "description": "Increases the critical strike damage bonus of your Destruction spells by 60%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135414?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Ruin",
+       "id": 135414
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17959?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Ruin",
+        "id": 17959
+       },
+       "description": "Increases the critical strike damage bonus of your Destruction spells by 80%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135414?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Ruin",
+       "id": 135414
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17959?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Ruin",
+        "id": 17959
+       },
+       "description": "Increases the critical strike damage bonus of your Destruction spells by 100%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105884,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135415?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadowburn",
+       "id": 135415
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17877?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadowburn",
+        "id": 17877
+       },
+       "description": "Instantly blasts the target for 197 to 204 Shadow damage.  If a non-trivial target dies within 8 sec of being hit with Shadowburn, the caster gains a Soul Shard.",
+       "cast_time": "Instant",
+       "power_cost": "105 Mana",
+       "range": "30 yd range",
+       "cooldown": "15 sec cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105882,
+   "unlocks": [
+    105878
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135413?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Intensity",
+       "id": 135413
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18135?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Intensity",
+        "id": 18135
+       },
+       "description": "Gives your Destruction spells a 23% chance to not lose casting time when you take damage.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135413?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Intensity",
+       "id": 135413
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18135?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Intensity",
+        "id": 18135
+       },
+       "description": "Gives your Destruction spells a 47% chance to not lose casting time when you take damage.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135413?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Intensity",
+       "id": 135413
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18135?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Intensity",
+        "id": 18135
+       },
+       "description": "Gives your Destruction spells a 70% chance to not lose casting time when you take damage.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 14,
+   "raw_position_x": 9080,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105879,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135410?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Agonizing Flames",
+       "id": 135410
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17927?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Agonizing Flames",
+        "id": 17927
+       },
+       "description": "Increases the critical strike chance of your Searing Pain spell by 3% and the damage done by all your Destruction spells by 3%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135410?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Agonizing Flames",
+       "id": 135410
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17927?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Agonizing Flames",
+        "id": 17927
+       },
+       "description": "Increases the critical strike chance of your Searing Pain spell by 7% and the damage done by all your Destruction spells by 7%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135410?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Agonizing Flames",
+       "id": 135410
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/17927?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Agonizing Flames",
+        "id": 17927
+       },
+       "description": "Increases the critical strike chance of your Searing Pain spell by 10% and the damage done by all your Destruction spells by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105880,
+   "unlocks": [
+    105877
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135411?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Conflagrate",
+       "id": 135411
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1293817?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Conflagrate",
+        "id": 1293817
+       },
+       "description": "Ignites a target that is already afflicted by your Immolate spell, dealing 229 to 258 Fire damage and consuming your Immolate effect.",
+       "cast_time": "Instant",
+       "power_cost": "100 Mana",
+       "range": "30 yd range",
+       "cooldown": "10 sec cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105878,
+   "locked_by": [
+    105882
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135409?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Pyroclasm",
+       "id": 135409
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18073?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Pyroclasm",
+        "id": 18073
+       },
+       "description": "Gives your Soul Fire spell a 13% chance to Stun the target for 3 sec, and your Rain of Fire and Hellfire spells a 13% chance over their duration to Stun targets they damage for 3 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135409?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Pyroclasm",
+       "id": 135409
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/18073?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Pyroclasm",
+        "id": 18073
+       },
+       "description": "Gives your Soul Fire spell a 26% chance to Stun the target for 3 sec, and your Rain of Fire and Hellfire spells a 26% chance over their duration to Stun targets they damage for 3 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 14,
+   "raw_position_x": 9080,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105876,
+   "unlocks": [
+    105874
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135407?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bane of Havoc",
+       "id": 135407
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1225228?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bane of Havoc",
+        "id": 1225228
+       },
+       "description": "Afflicts the target for 5 min, causing 15% of all damage done by the Warlock to other targets to also be dealt to the cursed target. Bane of Havoc is limited to 1 target, and only one Bane per Warlock can be active on any one target.",
+       "cast_time": "Instant",
+       "power_cost": "69 Mana",
+       "range": "30 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105877,
+   "locked_by": [
+    105880
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135408?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fire and Brimstone",
+       "id": 135408
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412751?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fire and Brimstone",
+        "id": 412751
+       },
+       "description": "Increases the critical strike chance of your Conflagrate spell by 8%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135408?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fire and Brimstone",
+       "id": 135408
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412751?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fire and Brimstone",
+        "id": 412751
+       },
+       "description": "Increases the critical strike chance of your Conflagrate spell by 17%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135408?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Fire and Brimstone",
+       "id": 135408
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412751?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Fire and Brimstone",
+        "id": 412751
+       },
+       "description": "Increases the critical strike chance of your Conflagrate spell by 25%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105875,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135406?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow and Flame",
+       "id": 135406
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/426316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow and Flame",
+        "id": 426316
+       },
+       "description": "Hitting an enemy with Conflagrate increases all Shadow damage you deal by 4% for 20 sec, and hitting an enemy with Shadowburn increases all Fire damage you deal by 4% for 20 sec. In addition, Conflagrate has a 20% chance not to consume Immolate, and Shadowburn has a 20% chance to instantly refund a Soul Shard.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135406?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow and Flame",
+       "id": 135406
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/426316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow and Flame",
+        "id": 426316
+       },
+       "description": "Hitting an enemy with Conflagrate increases all Shadow damage you deal by 8% for 20 sec, and hitting an enemy with Shadowburn increases all Fire damage you deal by 8% for 20 sec. In addition, Conflagrate has a 40% chance not to consume Immolate, and Shadowburn has a 40% chance to instantly refund a Soul Shard.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135406?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow and Flame",
+       "id": 135406
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/426316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow and Flame",
+        "id": 426316
+       },
+       "description": "Hitting an enemy with Conflagrate increases all Shadow damage you deal by 12% for 20 sec, and hitting an enemy with Shadowburn increases all Fire damage you deal by 12% for 20 sec. In addition, Conflagrate has a 60% chance not to consume Immolate, and Shadowburn has a 60% chance to instantly refund a Soul Shard.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135406?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow and Flame",
+       "id": 135406
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/426316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow and Flame",
+        "id": 426316
+       },
+       "description": "Hitting an enemy with Conflagrate increases all Shadow damage you deal by 16% for 20 sec, and hitting an enemy with Shadowburn increases all Fire damage you deal by 16% for 20 sec. In addition, Conflagrate has a 80% chance not to consume Immolate, and Shadowburn has a 80% chance to instantly refund a Soul Shard.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135406?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shadow and Flame",
+       "id": 135406
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/426316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadow and Flame",
+        "id": 426316
+       },
+       "description": "Hitting an enemy with Conflagrate increases all Shadow damage you deal by 20% for 20 sec, and hitting an enemy with Shadowburn increases all Fire damage you deal by 20% for 20 sec. In addition, Conflagrate has a 100% chance not to consume Immolate, and Shadowburn has a 100% chance to instantly refund a Soul Shard.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 6,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 5130
+  },
+  {
+   "id": 105874,
+   "locked_by": [
+    105876
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135405?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Incinerate",
+       "id": 135405
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/412758?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Incinerate",
+        "id": 412758
+       },
+       "description": "Deals 339 to 357 Fire damage to your target and an additional 25% damage if the target is afflicted by Immolate.",
+       "cast_time": "2.5 sec cast",
+       "power_cost": "205 Mana",
+       "range": "30 yd range"
+      }
+     }
+    }
+   ],
+   "display_row": 7,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 5730
+  }
+ ]
+}

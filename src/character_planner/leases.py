@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 # Long enough for a whole-pool refresh (~20 minutes); a process that dies holding a lease
 # blocks the refresh for at most this long.
 TTL = timedelta(hours=2)
-LABELS = {"pool": "item pool", "enchants": "enchant data"}
+LABELS = {"pool": "item pool", "enchants": "enchant data", "talents": "talent trees"}
 
 
 class Busy(Exception):

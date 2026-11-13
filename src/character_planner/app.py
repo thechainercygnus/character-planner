@@ -33,7 +33,11 @@ from character_planner.choices import (
     set_choice,
     stored_choices,
 )
-from character_planner.classes import ClassDefaults, current_defaults
+from character_planner.classes import (
+    ClassDefaults,
+    character_class_name,
+    current_defaults,
+)
 from character_planner.companion import companion_by_id
 from character_planner.config import Settings, get_settings
 from character_planner.curated import GearTargets
@@ -106,13 +110,16 @@ from character_planner.scoring import (
     weights_view,
 )
 from character_planner.summary import build_summary
+from character_planner.talent_trees import ClassTree, TalentRefresh, stored_tree
 from character_planner.talents import (
     TalentPlan,
     TalentPlanView,
     compare,
     current_plan,
+    plan_problems,
     reset_plan,
     save_plan,
+    with_talent_ids,
 )
 from character_planner.targets import (
     EditedTargets,
@@ -254,6 +261,12 @@ TargetsDep = Annotated[GearTargets, Depends(get_targets)]
 RulesDep = Annotated[UsageRules, Depends(get_rules)]
 DefaultPlanDep = Annotated[TalentPlan, Depends(get_default_plan)]
 EnchantDataDep = Annotated[EnchantData, Depends(get_enchant_data)]
+
+
+class TalentTreeView(BaseModel):
+    class_name: str | None  # the synced class; None before a sync
+    tree: ClassTree | None  # None until the trees are loaded
+    loading: bool  # a talent tree refresh is running
 
 
 def create_app(
@@ -670,13 +683,19 @@ def create_app(
     def talents_view(session: Session, default: TalentPlan) -> TalentPlanView:
         latest = latest_by_kind(session)
         profile, specs = latest.get("profile"), latest.get("specializations")
-        plan = current_plan(session, default)
+        stored = current_plan(session, default)
+        # Ids filled in from the trees by name, for plans written before #88.
+        plan = with_talent_ids(stored, talent_tree(session))
         return compare(
             plan,
             parse_specialization(specs.payload if specs else None),
             character_level(profile.payload if profile else None),
-            customised=plan != default,
+            customised=stored != default,
         )
+
+    def talent_tree(session: Session) -> ClassTree | None:
+        class_name = character_class_name(session)
+        return stored_tree(session, class_name) if class_name else None
 
     @app.get("/api/guest")
     def get_guest_options() -> GuestOptions:
@@ -781,9 +800,36 @@ def create_app(
     def put_talent_plan(
         plan: TalentPlan, session: SessionDep, default: DefaultPlanDep
     ) -> TalentPlanView:
-        """Replace the talent plan."""
-        save_plan(session, plan)
+        """Replace the talent plan. With the talent trees loaded, a plan that breaks their
+        rules (unknown talents, prerequisites, points per row) is refused (#88)."""
+        tree = talent_tree(session)
+        problems = plan_problems(plan, tree)
+        if problems:
+            raise HTTPException(422, "; ".join(problems))
+        save_plan(session, with_talent_ids(plan, tree))
         return talents_view(session, default)
+
+    @app.get("/api/talents/tree")
+    def get_talent_tree(session: SessionDep) -> TalentTreeView:
+        """The synced class's talent trees (#88). `tree` is null until they're loaded:
+        after the first sync, in the background."""
+        class_name = character_class_name(session)
+        return TalentTreeView(
+            class_name=class_name,
+            tree=stored_tree(session, class_name) if class_name else None,
+            loading="talents" in leases.running(engine),
+        )
+
+    @app.post("/api/talents/refresh")
+    def refresh_talents(session: SessionDep) -> TalentRefresh:
+        """Fetch the synced class's talent trees and icons again."""
+        try:
+            result = jobs.refresh_talents(session, settings, http=http)
+        except leases.Busy as error:
+            raise HTTPException(409, str(error)) from error
+        if result is None:
+            raise HTTPException(409, "No synced character yet: sync first")
+        return result
 
     @app.delete("/api/talents/plan")
     def delete_talent_plan(session: SessionDep, default: DefaultPlanDep) -> TalentPlanView:

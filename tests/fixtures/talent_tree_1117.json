@@ -1,0 +1,4227 @@
+{
+ "_links": {
+  "self": {
+   "href": "https://us.api.blizzard.com/data/wow/talent-tree/1117?namespace=static-1.60.1_70399-forever-us"
+  }
+ },
+ "id": 1117,
+ "spec_talent_trees": [
+  {
+   "key": {
+    "href": "https://us.api.blizzard.com/data/wow/talent-tree/1117/playable-specialization/26?namespace=static-1.60.1_70399-forever-us"
+   },
+   "name": "Arms"
+  },
+  {
+   "key": {
+    "href": "https://us.api.blizzard.com/data/wow/talent-tree/1117/playable-specialization/256?namespace=static-1.60.1_70399-forever-us"
+   },
+   "name": "Fury"
+  },
+  {
+   "key": {
+    "href": "https://us.api.blizzard.com/data/wow/talent-tree/1117/playable-specialization/257?namespace=static-1.60.1_70399-forever-us"
+   },
+   "name": "Protection"
+  }
+ ],
+ "talent_nodes": [
+  {
+   "id": 105926,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135457?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Intercept",
+       "id": 135457
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/20504?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Intercept",
+        "id": 20504
+       },
+       "description": "Reduces the cooldown of your Intercept ability by 5 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135457?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Intercept",
+       "id": 135457
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/20504?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Intercept",
+        "id": 20504
+       },
+       "description": "Reduces the cooldown of your Intercept ability by 10 sec.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 10,
+   "raw_position_x": 6820,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105927,
+   "unlocks": [
+    105930
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135458?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Death Wish",
+       "id": 135458
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12328?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Death Wish",
+        "id": 12328
+       },
+       "description": "When activated, increases your Physical damage done by 20% and makes you immune to Fear effects, but increases all damage you take by 5%. Lasts 30 sec.",
+       "cast_time": "Instant",
+       "power_cost": "10 Rage",
+       "cooldown": "3 min cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105928,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135459?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Flurry",
+       "id": 135459
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12319?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Flurry",
+        "id": 12319
+       },
+       "description": "Increases your melee attack speed by 10% for your next 3 swings after dealing a melee critical strike.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135459?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Flurry",
+       "id": 135459
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12319?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Flurry",
+        "id": 12319
+       },
+       "description": "Increases your melee attack speed by 20% for your next 3 swings after dealing a melee critical strike.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135459?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Flurry",
+       "id": 135459
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12319?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Flurry",
+        "id": 12319
+       },
+       "description": "Increases your melee attack speed by 30% for your next 3 swings after dealing a melee critical strike.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 6,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 5130
+  },
+  {
+   "id": 105930,
+   "locked_by": [
+    105927
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135461?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bloodthirst",
+       "id": 135461
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23881?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bloodthirst",
+        "id": 23881
+       },
+       "description": "Instantly attack the target causing damage equal to 45% of your Attack Power plus 30 and increasing your movement speed by 10% for 10 sec.",
+       "cast_time": "Instant",
+       "power_cost": "30 Rage",
+       "range": "Melee Range",
+       "cooldown": "6 sec cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 7,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 5730
+  },
+  {
+   "id": 105931,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135462?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Enrage",
+       "id": 135462
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12317?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Enrage",
+        "id": 12317
+       },
+       "description": "Gives you a 30% chance to deal 2% increased Physical damage for 12 sec after being the victim of any damaging attack.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135462?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Enrage",
+       "id": 135462
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12317?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Enrage",
+        "id": 12317
+       },
+       "description": "Gives you a 30% chance to deal 4% increased Physical damage for 12 sec after being the victim of any damaging attack.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135462?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Enrage",
+       "id": 135462
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12317?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Enrage",
+        "id": 12317
+       },
+       "description": "Gives you a 30% chance to deal 6% increased Physical damage for 12 sec after being the victim of any damaging attack.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135462?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Enrage",
+       "id": 135462
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12317?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Enrage",
+        "id": 12317
+       },
+       "description": "Gives you a 30% chance to deal 8% increased Physical damage for 12 sec after being the victim of any damaging attack.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135462?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Enrage",
+       "id": 135462
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12317?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Enrage",
+        "id": 12317
+       },
+       "description": "Gives you a 30% chance to deal 10% increased Physical damage for 12 sec after being the victim of any damaging attack.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 10,
+   "raw_position_x": 6820,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105932,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135463?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Execute",
+       "id": 135463
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/20502?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Execute",
+        "id": 20502
+       },
+       "description": "Reduces the Rage cost of your Execute ability by 3.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135463?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Execute",
+       "id": 135463
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/20502?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Execute",
+        "id": 20502
+       },
+       "description": "Reduces the Rage cost of your Execute ability by 5.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 10,
+   "raw_position_x": 6820,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105933,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135464?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Dual Wield Specialization",
+       "id": 135464
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23584?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Dual Wield Specialization",
+        "id": 23584
+       },
+       "description": "Increases the damage done by your off-hand weapon by 5% and the Rage generated by your off-hand attacks by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135464?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Dual Wield Specialization",
+       "id": 135464
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23584?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Dual Wield Specialization",
+        "id": 23584
+       },
+       "description": "Increases the damage done by your off-hand weapon by 10% and the Rage generated by your off-hand attacks by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135464?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Dual Wield Specialization",
+       "id": 135464
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23584?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Dual Wield Specialization",
+        "id": 23584
+       },
+       "description": "Increases the damage done by your off-hand weapon by 15% and the Rage generated by your off-hand attacks by 30%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135464?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Dual Wield Specialization",
+       "id": 135464
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23584?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Dual Wield Specialization",
+        "id": 23584
+       },
+       "description": "Increases the damage done by your off-hand weapon by 20% and the Rage generated by your off-hand attacks by 40%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135464?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Dual Wield Specialization",
+       "id": 135464
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23584?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Dual Wield Specialization",
+        "id": 23584
+       },
+       "description": "Increases the damage done by your off-hand weapon by 25% and the Rage generated by your off-hand attacks by 50%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105934,
+   "unlocks": [
+    113569
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135465?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Blood Craze",
+       "id": 135465
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16487?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Blood Craze",
+        "id": 16487
+       },
+       "description": "Regenerates 1% of your total Health over 6 sec after being the victim of a critical strike or suffering more than 20% of your maximum Health from a single attack.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135465?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Blood Craze",
+       "id": 135465
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16487?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Blood Craze",
+        "id": 16487
+       },
+       "description": "Regenerates 2% of your total Health over 6 sec after being the victim of a critical strike or suffering more than 20% of your maximum Health from a single attack.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135465?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Blood Craze",
+       "id": 135465
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16487?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Blood Craze",
+        "id": 16487
+       },
+       "description": "Regenerates 3% of your total Health over 6 sec after being the victim of a critical strike or suffering more than 20% of your maximum Health from a single attack.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105935,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135466?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Piercing Howl",
+       "id": 135466
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12323?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Piercing Howl",
+        "id": 12323
+       },
+       "description": "Causes all enemies within 10 yds to be Dazed, reducing movement speed by 50% for 6 sec.",
+       "cast_time": "Instant",
+       "power_cost": "10 Rage"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105937,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135468?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unbridled Wrath",
+       "id": 135468
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12322?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unbridled Wrath",
+        "id": 12322
+       },
+       "description": "Gives you a 12% chance to generate 1 additional Rage when you deal melee damage with a weapon.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135468?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unbridled Wrath",
+       "id": 135468
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12322?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unbridled Wrath",
+        "id": 12322
+       },
+       "description": "Gives you a 24% chance to generate 1 additional Rage when you deal melee damage with a weapon.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135468?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unbridled Wrath",
+       "id": 135468
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12322?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unbridled Wrath",
+        "id": 12322
+       },
+       "description": "Gives you a 36% chance to generate 1 additional Rage when you deal melee damage with a weapon.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135468?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unbridled Wrath",
+       "id": 135468
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12322?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unbridled Wrath",
+        "id": 12322
+       },
+       "description": "Gives you a 48% chance to generate 1 additional Rage when you deal melee damage with a weapon.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135468?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Unbridled Wrath",
+       "id": 135468
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12322?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Unbridled Wrath",
+        "id": 12322
+       },
+       "description": "Gives you a 60% chance to generate 1 additional Rage when you deal melee damage with a weapon.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105938,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135469?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Booming Voice",
+       "id": 135469
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12321?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Booming Voice",
+        "id": 12321
+       },
+       "description": "Increases the area of effect of your Shouts by 10% and reduces the Rage cost by of your Shouts and Howls by 5%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135469?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Booming Voice",
+       "id": 135469
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12321?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Booming Voice",
+        "id": 12321
+       },
+       "description": "Increases the area of effect of your Shouts by 20% and reduces the Rage cost by of your Shouts and Howls by 10%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135469?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Booming Voice",
+       "id": 135469
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12321?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Booming Voice",
+        "id": 12321
+       },
+       "description": "Increases the area of effect of your Shouts by 30% and reduces the Rage cost by of your Shouts and Howls by 15%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135469?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Booming Voice",
+       "id": 135469
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12321?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Booming Voice",
+        "id": 12321
+       },
+       "description": "Increases the area of effect of your Shouts by 40% and reduces the Rage cost by of your Shouts and Howls by 20%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135469?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Booming Voice",
+       "id": 135469
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12321?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Booming Voice",
+        "id": 12321
+       },
+       "description": "Increases the area of effect of your Shouts by 50% and reduces the Rage cost by of your Shouts and Howls by 25%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105939,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135470?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Cruelty",
+       "id": 135470
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12320?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Cruelty",
+        "id": 12320
+       },
+       "description": "Improves your chance to get a critical strike with melee attacks by 1%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135470?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Cruelty",
+       "id": 135470
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12320?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Cruelty",
+        "id": 12320
+       },
+       "description": "Improves your chance to get a critical strike with melee attacks by 2%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135470?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Cruelty",
+       "id": 135470
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12320?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Cruelty",
+        "id": 12320
+       },
+       "description": "Improves your chance to get a critical strike with melee attacks by 3%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135470?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Cruelty",
+       "id": 135470
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12320?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Cruelty",
+        "id": 12320
+       },
+       "description": "Improves your chance to get a critical strike with melee attacks by 4%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135470?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Cruelty",
+       "id": 135470
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12320?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Cruelty",
+        "id": 12320
+       },
+       "description": "Improves your chance to get a critical strike with melee attacks by 5%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105941,
+   "locked_by": [
+    105945
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135472?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Mortal Strike",
+       "id": 135472
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12294?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Mortal Strike",
+        "id": 12294
+       },
+       "description": "A vicious strike that deals weapon damage plus 85 and wounds the target, reducing the effectiveness of any healing by 50% for 10 sec.",
+       "cast_time": "Instant",
+       "power_cost": "30 Rage",
+       "range": "Melee Range",
+       "cooldown": "6 sec cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 7,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 5730
+  },
+  {
+   "id": 105942,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135473?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Hamstring",
+       "id": 135473
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12289?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Hamstring",
+        "id": 12289
+       },
+       "description": "Gives your Hamstring ability a 5% chance to immobilize the target for 5 sec.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135473?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Hamstring",
+       "id": 135473
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12289?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Hamstring",
+        "id": 12289
+       },
+       "description": "Gives your Hamstring ability a 10% chance to immobilize the target for 5 sec.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135473?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Hamstring",
+       "id": 135473
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12289?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Hamstring",
+        "id": 12289
+       },
+       "description": "Gives your Hamstring ability a 15% chance to immobilize the target for 5 sec.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 6,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 5130
+  },
+  {
+   "id": 105944,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135475?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Weaponmaster",
+       "id": 135475
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1290261?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Weaponmaster",
+        "id": 1290261
+       },
+       "description": "Gives your melee weapon attacks a benefit depending on the weapon.\r\n\r\n    Axe/Polearm: Increases your\r\n    critical strike chance by 1%.\r\n\r\n    Mace/Staff: Your attacks ignore\r\n    3% of your target's armor.\r\n\r\n    Sword: Your successful melee \r\n    attacks have a 1% chance to \r\n    trigger an extra attack on the \r\n    target.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135475?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Weaponmaster",
+       "id": 135475
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1290261?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Weaponmaster",
+        "id": 1290261
+       },
+       "description": "Gives your melee weapon attacks a benefit depending on the weapon.\r\n\r\n    Axe/Polearm: Increases your\r\n    critical strike chance by 2%.\r\n\r\n    Mace/Staff: Your attacks ignore\r\n    6% of your target's armor.\r\n\r\n    Sword: Your successful melee \r\n    attacks have a 2% chance to \r\n    trigger an extra attack on the \r\n    target.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135475?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Weaponmaster",
+       "id": 135475
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1290261?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Weaponmaster",
+        "id": 1290261
+       },
+       "description": "Gives your melee weapon attacks a benefit depending on the weapon.\r\n\r\n    Axe/Polearm: Increases your\r\n    critical strike chance by 3%.\r\n\r\n    Mace/Staff: Your attacks ignore\r\n    9% of your target's armor.\r\n\r\n    Sword: Your successful melee \r\n    attacks have a 3% chance to \r\n    trigger an extra attack on the \r\n    target.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135475?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Weaponmaster",
+       "id": 135475
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1290261?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Weaponmaster",
+        "id": 1290261
+       },
+       "description": "Gives your melee weapon attacks a benefit depending on the weapon.\r\n\r\n    Axe/Polearm: Increases your\r\n    critical strike chance by 4%.\r\n\r\n    Mace/Staff: Your attacks ignore\r\n    12% of your target's armor.\r\n\r\n    Sword: Your successful melee \r\n    attacks have a 4% chance to \r\n    trigger an extra attack on the \r\n    target.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135475?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Weaponmaster",
+       "id": 135475
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1290261?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Weaponmaster",
+        "id": 1290261
+       },
+       "description": "Gives your melee weapon attacks a benefit depending on the weapon.\r\n\r\n    Axe/Polearm: Increases your\r\n    critical strike chance by 5%.\r\n\r\n    Mace/Staff: Your attacks ignore\r\n    15% of your target's armor.\r\n\r\n    Sword: Your successful melee \r\n    attacks have a 5% chance to \r\n    trigger an extra attack on the \r\n    target.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105945,
+   "unlocks": [
+    105941
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135476?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Sweeping Strikes",
+       "id": 135476
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12292?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Sweeping Strikes",
+        "id": 12292
+       },
+       "description": "Your next 5 melee attacks strike an additional nearby opponent.",
+       "cast_time": "Instant",
+       "power_cost": "30 Rage",
+       "cooldown": "30 sec cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105947,
+   "locked_by": [
+    105950
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135478?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Impale",
+       "id": 135478
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16493?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Impale",
+        "id": 16493
+       },
+       "description": "Increases the critical strike damage bonus of your abilities by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135478?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Impale",
+       "id": 135478
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16493?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Impale",
+        "id": 16493
+       },
+       "description": "Increases the critical strike damage bonus of your abilities by 20%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105948,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135479?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Two-Handed Weapon Specialization",
+       "id": 135479
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12163?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Two-Handed Weapon Specialization",
+        "id": 12163
+       },
+       "description": "Increases the damage you deal with two-handed melee weapons by 2%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135479?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Two-Handed Weapon Specialization",
+       "id": 135479
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12163?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Two-Handed Weapon Specialization",
+        "id": 12163
+       },
+       "description": "Increases the damage you deal with two-handed melee weapons by 4%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135479?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Two-Handed Weapon Specialization",
+       "id": 135479
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12163?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Two-Handed Weapon Specialization",
+        "id": 12163
+       },
+       "description": "Increases the damage you deal with two-handed melee weapons by 6%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105949,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135480?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Spearing Strike",
+       "id": 135480
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310222?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Spearing Strike",
+        "id": 1310222
+       },
+       "description": "A brutal attack that deals 75% weapon damage. Deals an additional 75% weapon damage against Giants, Dragonkin, and mounted targets. Mounted targets are dismounted.",
+       "cast_time": "Instant",
+       "power_cost": "15 Rage",
+       "range": "Melee Range",
+       "cooldown": "20 sec cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 1,
+   "raw_position_x": 1020,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105950,
+   "locked_by": [
+    105956
+   ],
+   "unlocks": [
+    105947
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135481?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Deep Wounds",
+       "id": 135481
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12834?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Deep Wounds",
+        "id": 12834
+       },
+       "description": "Your critical strikes cause your opponent to Bleed, dealing 20% of your melee weapon's average damage over 12 sec.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135481?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Deep Wounds",
+       "id": 135481
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12834?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Deep Wounds",
+        "id": 12834
+       },
+       "description": "Your critical strikes cause your opponent to Bleed, dealing 40% of your melee weapon's average damage over 12 sec.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135481?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Deep Wounds",
+       "id": 135481
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12834?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Deep Wounds",
+        "id": 12834
+       },
+       "description": "Your critical strikes cause your opponent to Bleed, dealing 60% of your melee weapon's average damage over 12 sec.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105951,
+   "locked_by": [
+    105954
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135482?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Anger Management",
+       "id": 135482
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12296?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Anger Management",
+        "id": 12296
+       },
+       "description": "Generates 1 Rage every 3 sec while in combat, and reduces Rage loss while out of combat by 30%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105952,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135483?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Overpower",
+       "id": 135483
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12290?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Overpower",
+        "id": 12290
+       },
+       "description": "Increases the critical strike chance of your Overpower ability by 25%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135483?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Overpower",
+       "id": 135483
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12290?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Overpower",
+        "id": 12290
+       },
+       "description": "Increases the critical strike chance of your Overpower ability by 50%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 4,
+   "raw_position_x": 2820,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105953,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135484?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Furious Precision",
+       "id": 135484
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1323963?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Furious Precision",
+        "id": 1323963
+       },
+       "description": "Increases your chance to hit with off-hand attacks by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135484?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Furious Precision",
+       "id": 135484
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1323963?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Furious Precision",
+        "id": 1323963
+       },
+       "description": "Increases your chance to hit with off-hand attacks by 7%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135484?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Furious Precision",
+       "id": 135484
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1323963?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Furious Precision",
+        "id": 1323963
+       },
+       "description": "Increases your chance to hit with off-hand attacks by 10%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105954,
+   "unlocks": [
+    105951
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135485?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Tactical Mastery",
+       "id": 135485
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12295?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Tactical Mastery",
+        "id": 12295
+       },
+       "description": "Tactical Mastery lets you retain up to an additional 5 Rage when you change stances.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135485?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Tactical Mastery",
+       "id": 135485
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12295?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Tactical Mastery",
+        "id": 12295
+       },
+       "description": "Tactical Mastery lets you retain up to an additional 10 Rage when you change stances.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135485?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Tactical Mastery",
+       "id": 135485
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12295?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Tactical Mastery",
+        "id": 12295
+       },
+       "description": "Tactical Mastery lets you retain up to an additional 15 Rage when you change stances.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105955,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135486?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Charge",
+       "id": 135486
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12285?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Charge",
+        "id": 12285
+       },
+       "description": "Increases the Rage generated by your Charge ability by 3.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135486?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Charge",
+       "id": 135486
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12285?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Charge",
+        "id": 12285
+       },
+       "description": "Increases the Rage generated by your Charge ability by 6.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 1,
+   "raw_position_x": 1020,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105956,
+   "unlocks": [
+    105950
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135487?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Rend",
+       "id": 135487
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12286?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Rend",
+        "id": 12286
+       },
+       "description": "Increases the Bleed damage done by your Rend ability by 12%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135487?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Rend",
+       "id": 135487
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12286?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Rend",
+        "id": 12286
+       },
+       "description": "Increases the Bleed damage done by your Rend ability by 23%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135487?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Rend",
+       "id": 135487
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12286?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Rend",
+        "id": 12286
+       },
+       "description": "Increases the Bleed damage done by your Rend ability by 35%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 3,
+   "raw_position_x": 2220,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105957,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135488?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Deflection",
+       "id": 135488
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16462?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Deflection",
+        "id": 16462
+       },
+       "description": "Increases your Parry chance by 1%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135488?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Deflection",
+       "id": 135488
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16462?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Deflection",
+        "id": 16462
+       },
+       "description": "Increases your Parry chance by 2%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135488?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Deflection",
+       "id": 135488
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16462?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Deflection",
+        "id": 16462
+       },
+       "description": "Increases your Parry chance by 3%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135488?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Deflection",
+       "id": 135488
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16462?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Deflection",
+        "id": 16462
+       },
+       "description": "Increases your Parry chance by 4%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135488?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Deflection",
+       "id": 135488
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16462?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Deflection",
+        "id": 16462
+       },
+       "description": "Increases your Parry chance by 5%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 2,
+   "raw_position_x": 1620,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105958,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135489?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Heroic Strike",
+       "id": 135489
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12282?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Heroic Strike",
+        "id": 12282
+       },
+       "description": "Reduces the cost of your Heroic Strike ability by 1 Rage.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135489?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Heroic Strike",
+       "id": 135489
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12282?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Heroic Strike",
+        "id": 12282
+       },
+       "description": "Reduces the cost of your Heroic Strike ability by 2 Rage.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135489?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Heroic Strike",
+       "id": 135489
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12282?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Heroic Strike",
+        "id": 12282
+       },
+       "description": "Reduces the cost of your Heroic Strike ability by 3 Rage.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 1,
+   "raw_position_x": 1020,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105959,
+   "locked_by": [
+    105965
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135490?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shield Slam",
+       "id": 135490
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/23922?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shield Slam",
+        "id": 23922
+       },
+       "description": "Slam the target with your shield, causing 421 to 439 damage, increased by your Block Value, and has a 50% chance of dispelling 1 magic effect on the target. Causes a very high amount of threat.",
+       "cast_time": "Instant",
+       "power_cost": "20 Rage",
+       "range": "Melee Range",
+       "cooldown": "6 sec cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 7,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 5730
+  },
+  {
+   "id": 105961,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135492?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Focused Rage",
+       "id": 135492
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/29787?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Focused Rage",
+        "id": 29787
+       },
+       "description": "Reduces the Rage cost of your offensive abilities by 1.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135492?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Focused Rage",
+       "id": 135492
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/29787?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Focused Rage",
+        "id": 29787
+       },
+       "description": "Reduces the Rage cost of your offensive abilities by 2.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135492?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Focused Rage",
+       "id": 135492
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/29787?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Focused Rage",
+        "id": 29787
+       },
+       "description": "Reduces the Rage cost of your offensive abilities by 3.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105962,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135493?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bastion",
+       "id": 135493
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16538?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bastion",
+        "id": 16538
+       },
+       "description": "Increases all damage you deal by 2% while a shield is equipped.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135493?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bastion",
+       "id": 135493
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16538?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bastion",
+        "id": 16538
+       },
+       "description": "Increases all damage you deal by 4% while a shield is equipped.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135493?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bastion",
+       "id": 135493
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16538?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bastion",
+        "id": 16538
+       },
+       "description": "Increases all damage you deal by 6% while a shield is equipped.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135493?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bastion",
+       "id": 135493
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16538?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bastion",
+        "id": 16538
+       },
+       "description": "Increases all damage you deal by 8% while a shield is equipped.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135493?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bastion",
+       "id": 135493
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/16538?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bastion",
+        "id": 16538
+       },
+       "description": "Increases all damage you deal by 10% while a shield is equipped.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 6,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 5130
+  },
+  {
+   "id": 105963,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135494?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shield Bash",
+       "id": 135494
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12311?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shield Bash",
+        "id": 12311
+       },
+       "description": "Gives your Shield Bash ability a 50% chance to Silence the target for 3 sec.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135494?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shield Bash",
+       "id": 135494
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12311?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shield Bash",
+        "id": 12311
+       },
+       "description": "Gives your Shield Bash ability a 100% chance to Silence the target for 3 sec.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105964,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135495?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shield Wall",
+       "id": 135495
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12312?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shield Wall",
+        "id": 12312
+       },
+       "description": "Reduces the cooldown of your Shield Wall ability by 5.5 min.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135495?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Shield Wall",
+       "id": 135495
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12312?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Shield Wall",
+        "id": 12312
+       },
+       "description": "Reduces the cooldown of your Shield Wall ability by 11.0 min.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 14,
+   "raw_position_x": 9080,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105965,
+   "unlocks": [
+    105959
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135496?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Concussion Blow",
+       "id": 135496
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12809?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Concussion Blow",
+        "id": 12809
+       },
+       "description": "Stuns the target for 5 sec.",
+       "cast_time": "Instant",
+       "power_cost": "10 Rage",
+       "range": "Melee Range",
+       "cooldown": "45 sec cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 105966,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135497?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Vanguard",
+       "id": 135497
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310317?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Vanguard",
+        "id": 1310317
+       },
+       "description": "Your Charge ability is now usable while in Defensive Stance.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105967,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135498?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Disarm",
+       "id": 135498
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12313?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Disarm",
+        "id": 12313
+       },
+       "description": "Reduces the cooldown of your Disarm ability by 7 secs.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135498?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Disarm",
+       "id": 135498
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12313?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Disarm",
+        "id": 12313
+       },
+       "description": "Reduces the cooldown of your Disarm ability by 13 secs.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135498?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Disarm",
+       "id": 135498
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12313?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Disarm",
+        "id": 12313
+       },
+       "description": "Reduces the cooldown of your Disarm ability by 20 secs.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105968,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135499?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Sunder Armor",
+       "id": 135499
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12308?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Sunder Armor",
+        "id": 12308
+       },
+       "description": "Reduces the Rage cost of your Sunder Armor ability by 1.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135499?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Sunder Armor",
+       "id": 135499
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12308?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Sunder Armor",
+        "id": 12308
+       },
+       "description": "Reduces the Rage cost of your Sunder Armor ability by 2.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135499?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Sunder Armor",
+       "id": 135499
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12308?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Sunder Armor",
+        "id": 12308
+       },
+       "description": "Reduces the Rage cost of your Sunder Armor ability by 3.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 14,
+   "raw_position_x": 9080,
+   "raw_position_y": 3930
+  },
+  {
+   "id": 105969,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135500?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Revenge",
+       "id": 135500
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12797?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Revenge",
+        "id": 12797
+       },
+       "description": "Increases damage dealt by your Revenge ability by 20%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135500?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Revenge",
+       "id": 135500
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12797?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Revenge",
+        "id": 12797
+       },
+       "description": "Increases damage dealt by your Revenge ability by 40%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135500?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Revenge",
+       "id": 135500
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12797?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Revenge",
+        "id": 12797
+       },
+       "description": "Increases damage dealt by your Revenge ability by 60%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105970,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135501?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Last Stand",
+       "id": 135501
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12975?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Last Stand",
+        "id": 12975
+       },
+       "description": "When activated, this ability temporarily grants you 30% of your maximum health for 20 sec. After the effect expires, the health is lost.",
+       "cast_time": "Instant",
+       "power_cost": null,
+       "cooldown": "3 min cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 14,
+   "raw_position_x": 9080,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105971,
+   "locked_by": [
+    105976
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135502?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master of Defense",
+       "id": 135502
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master of Defense",
+        "id": 1310316
+       },
+       "description": "Grants you a 50% chance to generate 5 Rage when you Dodge or Parry while a shield is equipped.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135502?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Master of Defense",
+       "id": 135502
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310316?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Master of Defense",
+        "id": 1310316
+       },
+       "description": "Grants you a 100% chance to generate 5 Rage when you Dodge or Parry while a shield is equipped.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 105972,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135503?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Thunder Clap",
+       "id": 135503
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12287?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Thunder Clap",
+        "id": 12287
+       },
+       "description": "Reduces the Rage cost of your Thunder Clap ability by 2.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135503?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Thunder Clap",
+       "id": 135503
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12287?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Thunder Clap",
+        "id": 12287
+       },
+       "description": "Reduces the Rage cost of your Thunder Clap ability by 4.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135503?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Thunder Clap",
+       "id": 135503
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12287?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Thunder Clap",
+        "id": 12287
+       },
+       "description": "Reduces the Rage cost of your Thunder Clap ability by 6.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 17,
+   "raw_position_x": 10880,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105974,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135505?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Bloodrage",
+       "id": 135505
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12301?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Bloodrage",
+        "id": 12301
+       },
+       "description": "Increases all the Rage generated by your Bloodrage ability by 25%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135505?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Bloodrage",
+       "id": 135505
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12301?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Bloodrage",
+        "id": 12301
+       },
+       "description": "Increases all the Rage generated by your Bloodrage ability by 50%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 14,
+   "raw_position_x": 9080,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105975,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135506?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Anticipation",
+       "id": 135506
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12297?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Anticipation",
+        "id": 12297
+       },
+       "description": "Increases your Defense Skill by 4.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135506?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Anticipation",
+       "id": 135506
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12297?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Anticipation",
+        "id": 12297
+       },
+       "description": "Increases your Defense Skill by 8.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135506?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Anticipation",
+       "id": 135506
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12297?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Anticipation",
+        "id": 12297
+       },
+       "description": "Increases your Defense Skill by 12.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135506?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Anticipation",
+       "id": 135506
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12297?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Anticipation",
+        "id": 12297
+       },
+       "description": "Increases your Defense Skill by 16.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135506?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Anticipation",
+       "id": 135506
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12297?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Anticipation",
+        "id": 12297
+       },
+       "description": "Increases your Defense Skill by 20.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 14,
+   "raw_position_x": 9080,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 105976,
+   "unlocks": [
+    105971
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135507?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shield Specialization",
+       "id": 135507
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12298?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shield Specialization",
+        "id": 12298
+       },
+       "description": "Increases your chance to Block attacks with your shield by 1% and grants you a 20% chance to generate 5 Rage when you Block.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135507?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shield Specialization",
+       "id": 135507
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12298?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shield Specialization",
+        "id": 12298
+       },
+       "description": "Increases your chance to Block attacks with your shield by 2% and grants you a 40% chance to generate 5 Rage when you Block.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135507?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shield Specialization",
+       "id": 135507
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12298?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shield Specialization",
+        "id": 12298
+       },
+       "description": "Increases your chance to Block attacks with your shield by 3% and grants you a 60% chance to generate 5 Rage when you Block.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135507?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shield Specialization",
+       "id": 135507
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12298?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shield Specialization",
+        "id": 12298
+       },
+       "description": "Increases your chance to Block attacks with your shield by 4% and grants you a 80% chance to generate 5 Rage when you Block.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135507?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Shield Specialization",
+       "id": 135507
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12298?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shield Specialization",
+        "id": 12298
+       },
+       "description": "Increases your chance to Block attacks with your shield by 5% and grants you a 100% chance to generate 5 Rage when you Block.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 15,
+   "raw_position_x": 9680,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 105977,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135508?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Whirlwind",
+       "id": 135508
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310315?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Whirlwind",
+        "id": 1310315
+       },
+       "description": "Reduces the cooldown of your Whirlwind ability by 1 sec and increases the damage it deals to the closest enemy by 15%.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135508?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Whirlwind",
+       "id": 135508
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1310315?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Whirlwind",
+        "id": 1310315
+       },
+       "description": "Reduces the cooldown of your Whirlwind ability by 2 sec and increases the damage it deals to the closest enemy by 30%.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 6,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 5130
+  },
+  {
+   "id": 105978,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135509?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Berserker Rage",
+       "id": 135509
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/20500?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Berserker Rage",
+        "id": 20500
+       },
+       "description": "Your Berserker Rage ability will instantly generate 5 Rage and has a 50% chance to remove all movement impairing effects when activated.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/135509?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Berserker Rage",
+       "id": 135509
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/20500?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Berserker Rage",
+        "id": 20500
+       },
+       "description": "Your Berserker Rage ability will instantly generate 10 Rage and has a 100% chance to remove all movement impairing effects when activated.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 7,
+   "raw_position_x": 5020,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 110524,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/141974?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bloodthrill",
+       "id": 141974
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1289682?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bloodthrill",
+        "id": 1289682
+       },
+       "description": "Grants your Main Hand melee attacks against enemies afflicted by your Rend a 10% chance to allow an activation of Overpower.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/141974?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Bloodthrill",
+       "id": 141974
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1289682?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Bloodthrill",
+        "id": 1289682
+       },
+       "description": "Grants your Main Hand melee attacks against enemies afflicted by your Rend a 20% chance to allow an activation of Overpower.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 1,
+   "raw_position_x": 1020,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 110856,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142602?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Defiance",
+       "id": 142602
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12792?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Defiance",
+        "id": 12792
+       },
+       "description": "Increases all threat generated in Defensive stance by an additional 7% while a shield is equipped.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142602?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Defiance",
+       "id": 142602
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12792?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Defiance",
+        "id": 12792
+       },
+       "description": "Increases all threat generated in Defensive stance by an additional 13% while a shield is equipped.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142602?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Defiance",
+       "id": 142602
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12792?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Defiance",
+        "id": 12792
+       },
+       "description": "Increases all threat generated in Defensive stance by an additional 20% while a shield is equipped.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 3,
+   "display_col": 17,
+   "raw_position_x": 10880,
+   "raw_position_y": 3330
+  },
+  {
+   "id": 110857,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142603?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Lingering Rage",
+       "id": 142603
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1323964?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Lingering Rage",
+        "id": 1323964
+       },
+       "description": "Increases the time before your Rage begins to decay after leaving combat by 2 sec.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142603?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Lingering Rage",
+       "id": 142603
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1323964?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Lingering Rage",
+        "id": 1323964
+       },
+       "description": "Increases the time before your Rage begins to decay after leaving combat by 4 sec.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142603?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Lingering Rage",
+       "id": 142603
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1323964?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Lingering Rage",
+        "id": 1323964
+       },
+       "description": "Increases the time before your Rage begins to decay after leaving combat by 6 sec.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142603?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Lingering Rage",
+       "id": 142603
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1323964?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Lingering Rage",
+        "id": 1323964
+       },
+       "description": "Increases the time before your Rage begins to decay after leaving combat by 8 sec.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142603?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Lingering Rage",
+       "id": 142603
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1323964?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Lingering Rage",
+        "id": 1323964
+       },
+       "description": "Increases the time before your Rage begins to decay after leaving combat by 10 sec.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 2,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 2730
+  },
+  {
+   "id": 110858,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142604?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Slam",
+       "id": 142604
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12862?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Slam",
+        "id": 12862
+       },
+       "description": "Reduces the cooldown of your Slam ability by 2.5 sec, the cast time and global cooldown by 0.25 sec, and Slam no longer interrupts or delays your melee swing.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/142604?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Improved Slam",
+       "id": 142604
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12862?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Improved Slam",
+        "id": 12862
+       },
+       "description": "Reduces the cooldown of your Slam ability by 5.0 sec, the cast time and global cooldown by 0.50 sec, and Slam no longer interrupts or delays your melee swing.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 6,
+   "display_col": 1,
+   "raw_position_x": 1020,
+   "raw_position_y": 5130
+  },
+  {
+   "id": 113569,
+   "locked_by": [
+    105934
+   ],
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/145863?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Gore Drinker",
+       "id": 145863
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1323967?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Gore Drinker",
+        "id": 1323967
+       },
+       "description": "Your Enrage, Berserker Rage, Bloodrage, Death Wish, Reckless Swings, and Bloodthirst abilities cause your next 3 melee attacks to restore 0.5% of your maximum Health.",
+       "cast_time": "Passive"
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/145863?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Gore Drinker",
+       "id": 145863
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1323967?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Gore Drinker",
+        "id": 1323967
+       },
+       "description": "Your Enrage, Berserker Rage, Bloodrage, Death Wish, Reckless Swings, and Bloodthirst abilities cause your next 3 melee attacks to restore 1.0% of your maximum Health.",
+       "cast_time": "Passive"
+      }
+     }
+    }
+   ],
+   "display_row": 5,
+   "display_col": 9,
+   "raw_position_x": 6220,
+   "raw_position_y": 4530
+  },
+  {
+   "id": 113570,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/145864?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Iron Will",
+       "id": 145864
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12962?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Iron Will",
+        "id": 12962
+       },
+       "description": "Reduces the duration of Stun and Fear effects inflicted on you by 3%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 2,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/145864?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Iron Will",
+       "id": 145864
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12962?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Iron Will",
+        "id": 12962
+       },
+       "description": "Reduces the duration of Stun and Fear effects inflicted on you by 6%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 3,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/145864?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Iron Will",
+       "id": 145864
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12962?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Iron Will",
+        "id": 12962
+       },
+       "description": "Reduces the duration of Stun and Fear effects inflicted on you by 9%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 4,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/145864?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Iron Will",
+       "id": 145864
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12962?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Iron Will",
+        "id": 12962
+       },
+       "description": "Reduces the duration of Stun and Fear effects inflicted on you by 12%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    },
+    {
+     "rank": 5,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/145864?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Iron Will",
+       "id": 145864
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/12962?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Iron Will",
+        "id": 12962
+       },
+       "description": "Reduces the duration of Stun and Fear effects inflicted on you by 15%.",
+       "cast_time": "Passive",
+       "power_cost": null
+      }
+     }
+    }
+   ],
+   "display_row": 1,
+   "display_col": 16,
+   "raw_position_x": 10280,
+   "raw_position_y": 2130
+  },
+  {
+   "id": 113636,
+   "node_type": {
+    "id": 0,
+    "type": "ACTIVE"
+   },
+   "ranks": [
+    {
+     "rank": 1,
+     "tooltip": {
+      "talent": {
+       "key": {
+        "href": "https://us.api.blizzard.com/data/wow/talent/145966?namespace=static-1.60.1_70399-forever-us"
+       },
+       "name": "Reckless Swings",
+       "id": 145966
+      },
+      "spell_tooltip": {
+       "spell": {
+        "key": {
+         "href": "https://us.api.blizzard.com/data/wow/spell/1329555?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Reckless Swings",
+        "id": 1329555
+       },
+       "description": "Your next 4 melee attacks generate 5 additional Rage. Lasts 8 sec.",
+       "cast_time": "Instant",
+       "power_cost": null,
+       "cooldown": "15 sec cooldown"
+      }
+     }
+    }
+   ],
+   "display_row": 4,
+   "display_col": 8,
+   "raw_position_x": 5620,
+   "raw_position_y": 3930
+  }
+ ]
+}

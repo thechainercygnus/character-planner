@@ -76,6 +76,19 @@ def enchants_job(session: Session, settings: Settings, http: httpx.Client | None
     )
 
 
+def talents_job(session: Session, settings: Settings, http: httpx.Client | None) -> str:
+    try:
+        result = jobs.refresh_talents(session, settings, http=http)
+    except Busy:
+        return "skipped: already running"
+    if result is None:
+        return "skipped: no synced class yet"
+    notify_upstream(session, settings, "Talent tree refresh", result.errors)
+    return f"{result.class_name}: {result.trees} talent trees, {result.icons} icons" + (
+        f", {len(result.errors)} errors" if result.errors else ""
+    )
+
+
 def notify_upstream(session: Session, settings: Settings, job: str, errors: list[str]) -> None:
     """A system alert for many upstream errors, or for one that stopped the refresh: a
     rate limit, or an upstream list that came back empty (#87)."""
@@ -107,6 +120,8 @@ def default_schedule(settings: Settings) -> Schedule:
             Job("sync", timedelta(hours=settings.sync_every_hours), sync_job),
             Job("pool", timedelta(hours=settings.pool_every_hours), pool_job),
             Job("enchants", timedelta(hours=settings.enchants_every_hours), enchants_job),
+            # Talent trees are static too: on the enchants' weekly schedule (#88).
+            Job("talents", timedelta(hours=settings.enchants_every_hours), talents_job),
         ]
     )
 

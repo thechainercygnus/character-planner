@@ -140,6 +140,23 @@ class ActiveWeightPreset(SQLModel, table=True):
     key: str
 
 
+class TalentTreeData(SQLModel, table=True):
+    """Raw talent tree responses from Blizzard (#88, ADR 0002): the index ("index"), a
+    class tree ("class:1116") and its spec trees ("spec:1116:355")."""
+
+    key: str = Field(primary_key=True)
+    payload: Any = Field(sa_column=Column(JSON, nullable=False))
+    fetched_at: datetime = Field(default_factory=utcnow)
+
+
+class SpellIcon(SQLModel, table=True):
+    """A spell's icon URL from Blizzard's spell media (#88), for talents. None: no icon."""
+
+    spell_id: int = Field(primary_key=True)
+    url: str | None = None
+    fetched_at: datetime = Field(default_factory=utcnow)
+
+
 class JobLease(SQLModel, table=True):
     """A long refresh in progress (#87): taken atomically, so the API, the worker and the
     background loader never run the same refresh at once. Expires, in case a process dies

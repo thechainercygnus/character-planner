@@ -85,6 +85,7 @@ class Profession(BaseModel):
 class Talent(BaseModel):
     name: str
     rank: int | None = None
+    talent_id: int | None = None  # matches the talent trees (#88)
     description: str | None = None
 
 
@@ -336,21 +337,25 @@ def parse_specialization(specializations: Any) -> Specialization | None:
     groups = _get(specializations, "specialization_groups") or []
     active = next((g for g in groups if _get(g, "is_active")), None)
     specs = _get(active, "specializations") or []
-    # Classic-style talents: the tree with the most points is "the" spec.
+    # Classic-style talents: the tree with the most points names the spec, but points in
+    # every tree count, so hybrid builds show whole (#88).
     best = max(specs, key=lambda s: _int(_get(s, "spent_points")) or 0, default=None)
     name = _name(_get(best, "specialization_name"))
     if not name:
         return None
+    spent = [_int(_get(s, "spent_points")) for s in specs]
     return Specialization(
         name=name,
-        spent_points=_int(_get(best, "spent_points")),
+        spent_points=sum(p for p in spent if p is not None) if any(spent) else None,
         talents=[
             Talent(
                 name=talent_name,
                 rank=_int(_get(t, "talent_rank")),
                 description=_name(_get(t, "spell_tooltip", "description")),
+                talent_id=_int(_get(t, "talent", "id")),
             )
-            for t in _get(best, "talents") or []
+            for spec in specs
+            for t in _get(spec, "talents") or []
             if (talent_name := _name(_get(t, "talent", "name")))
         ],
     )

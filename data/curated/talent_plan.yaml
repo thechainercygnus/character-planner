@@ -3,15 +3,19 @@
 # Each step raises one talent to a rank. A talent can appear in several steps
 # (Deflection 2 early, 5 later). Points count from level 10, one per level.
 #
-# Forever's tree differs from Classic and no API gives it, so this is hand-entered.
-# It starts as the 9 points spent at level 18 (from the synced specializations);
-# extend it with the build you're following, here or in the app
-# (Character tab > Talents > Edit plan). Names must match the in-game talent names.
+# The trees come from Blizzard's game data (#88, ADR 0025), so talent_id is each talent's
+# id there; the app fills ids in from names for steps without one, and checks a plan
+# against the trees' rules (prerequisites, 5 points per row) when it's saved.
+# It starts as the 9 points spent at level 18 (from the synced specializations); extend
+# it with the build you're following, here or in the app's talent planner.
 spec: Protection
 steps:
   - talent: Shield Specialization
+    talent_id: 135507
     rank: 5
   - talent: Anticipation
+    talent_id: 135506
     rank: 1
   - talent: Improved Revenge
+    talent_id: 135500
     rank: 3

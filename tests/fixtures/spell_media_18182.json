@@ -1,0 +1,15 @@
+{
+ "_links": {
+  "self": {
+   "href": "https://us.api.blizzard.com/data/wow/media/spell/18182?namespace=static-1.60.1_70399-forever-us"
+  }
+ },
+ "assets": [
+  {
+   "key": "icon",
+   "value": "https://render.worldofwarcraft.com/forever-us/icons/56/136126.jpg",
+   "file_data_id": 136126
+  }
+ ],
+ "id": 18182
+}

@@ -15,7 +15,7 @@ from character_planner import notify
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
 from character_planner.choices import take_target_choices
-from character_planner.classes import current_defaults
+from character_planner.classes import character_class_name, current_defaults
 from character_planner.config import Settings
 from character_planner.curated import GearTargets
 from character_planner.db import (
@@ -39,6 +39,7 @@ from character_planner.pool import (
     resolve_target_ids,
 )
 from character_planner.recommend import PAIRED, SLOT_FOR
+from character_planner.talent_trees import TalentRefresh, refresh_talent_trees, stored_tree
 from character_planner.targets import current_targets, pin_target, save_targets
 from character_planner.views import character_faction, character_level, parse_equipment
 
@@ -200,13 +201,28 @@ def _engine(session: Session) -> Engine:
 
 def missing_data(session: Session) -> list[str]:
     """Static data a fresh instance hasn't loaded yet: "pool" (no dungeon data),
-    "enchants" (no recipes)."""
+    "enchants" (no recipes), "talents" (no trees for the synced class, #88)."""
     missing = []
     if session.exec(select(CompanionDungeon)).first() is None:
         missing.append("pool")
     if session.exec(select(RecipeData)).first() is None:
         missing.append("enchants")
+    class_name = character_class_name(session)
+    if class_name and stored_tree(session, class_name) is None:
+        missing.append("talents")
     return missing
+
+
+def refresh_talents(
+    session: Session, settings: Settings, *, http: httpx.Client | None = None
+) -> TalentRefresh | None:
+    """The synced class's talent trees (#88), one refresh at a time; None before a sync
+    (no class to fetch for)."""
+    class_name = character_class_name(session)
+    if class_name is None:
+        return None
+    with lease(_engine(session), "talents"):
+        return refresh_talent_trees(session, settings, class_name, http=http)
 
 
 def load_missing_data(engine: Engine, settings: Settings, http: httpx.Client | None = None) -> None:
@@ -221,6 +237,8 @@ def load_missing_data(engine: Engine, settings: Settings, http: httpx.Client | N
             try:
                 if name == "pool":
                     refresh_item_pool(session, settings, http=http)
+                elif name == "talents":
+                    refresh_talents(session, settings, http=http)
                 else:
                     refresh_enchants(session, settings, http=http)
             except Busy:
