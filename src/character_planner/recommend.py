@@ -182,6 +182,18 @@ def unusable_reason(
     return None
 
 
+def slots_for(item: PoolItem, rules: UsageRules) -> tuple[str | None, ...]:
+    """The equipment slots an item competes for. Rings and trinkets fill either of two;
+    a one-hand weapon also fits the off hand when the class dual wields it (#80: Rogues
+    and Hunters list Dagger, Sword... in off_hand_types; a Warrior's [Shield] doesn't)."""
+    item_slot = item.item_slot or ""
+    if item_slot in PAIRED:
+        return PAIRED[item_slot]
+    if item_slot == "One-Hand" and item.weapon_type in rules.off_hand_types:
+        return ("MAIN_HAND", "OFF_HAND")
+    return (SLOT_FOR.get(item_slot),)
+
+
 def has_stat_data(item: PoolItem) -> bool:
     return item.armor is not None or bool(item.stats) or item.dps is not None
 
@@ -265,8 +277,7 @@ def recommend(
 
     by_slot: dict[str, list[Candidate]] = {slot: [] for slot in EQUIPMENT_SLOTS}
     for item in scored:
-        item_slot = item.item_slot or ""
-        for slot in PAIRED.get(item_slot, (SLOT_FOR.get(item_slot),)):
+        for slot in slots_for(item, rules):
             if slot is not None:
                 by_slot[slot].append(
                     _candidate(

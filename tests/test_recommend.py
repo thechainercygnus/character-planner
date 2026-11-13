@@ -330,3 +330,24 @@ def test_mail_from_level_forty() -> None:
 def test_warrior_rules_are_unchanged_by_the_new_fields() -> None:
     assert RULES.mail_from_level is None and RULES.two_hand_types is None
     assert unusable_reason(item(1, "Chest", armor_type="Mail"), RULES, 18) is None
+
+
+def test_dual_wielders_get_one_hand_weapons_offered_for_the_off_hand() -> None:
+    rogue = RULES.model_copy(
+        update={
+            "weapon_types": ["Dagger", "Sword", "Mace", "Fist Weapon"],
+            "off_hand_types": ["Dagger", "Sword", "Mace", "Fist Weapon"],
+        }
+    )
+    dagger = item(1, "One-Hand", weapon_type="Dagger", dps=8.0)
+    main_only = item(2, "Main Hand", weapon_type="Sword", dps=9.0)
+    equipped = {"MAIN_HAND": worn("MAIN_HAND", dps=5.0), "OFF_HAND": worn("OFF_HAND", dps=4.0)}
+
+    def ids(rules: UsageRules, slot: str) -> list[int]:
+        rows = recommend(view(dagger, main_only), equipped, WEIGHTS, rules).rows
+        return [c.item.item_id for c in next(r for r in rows if r.slot == slot).candidates]
+
+    assert ids(rogue, "MAIN_HAND") == [2, 1]
+    assert ids(rogue, "OFF_HAND") == [1]  # a main-hand-only sword stays out
+    # A Warrior's off hand takes shields only: one-handers stay main hand.
+    assert ids(RULES, "OFF_HAND") == []
