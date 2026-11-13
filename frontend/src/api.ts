@@ -244,6 +244,63 @@ export interface RulesView {
   off_hand_type_options: string[]
 }
 
+/** Notifications (#12, ADR 0021). */
+export type AlertKind =
+  | 'login_expiring'
+  | 'login_expired'
+  | 'level_up'
+  | 'target_reached'
+  | 'target_in_reach'
+  | 'new_upgrade'
+  | 'job_failed'
+  | 'upstream_errors'
+export type Audience = 'user' | 'system'
+
+export interface AlertInfo {
+  kind: AlertKind
+  audience: Audience
+  label: string
+}
+
+export interface Destination {
+  id: number
+  name: string
+  kind: string
+  audience: Audience
+  /** Masked: the webhook's token is never sent back. */
+  url: string
+  alerts: AlertKind[]
+  enabled: boolean
+  last_sent_at: string | null
+  last_error: string | null
+}
+
+export interface RecentAlert {
+  destination: string
+  kind: AlertKind
+  created_at: string
+  sent_at: string | null
+  failed: boolean
+  attempts: number
+  last_error: string | null
+}
+
+export interface NotificationsView {
+  destinations: Destination[]
+  alerts: AlertInfo[]
+  recent: RecentAlert[]
+  /** System alerts go to user destinations while no system destination exists. */
+  system_alerts_to_user: boolean
+}
+
+export interface SendResult {
+  ok: boolean
+  status: number | null
+  error: string | null
+  retry_after: number | null
+  gone: boolean
+}
+
 export interface WeightsView {
   weights: Record<string, number>
   /** What Reset restores; equal to weights for a preset of your own. */
@@ -563,6 +620,32 @@ export const api = {
       body: JSON.stringify(rules),
     }),
   resetRules: () => request<RulesView>('/api/rules', { method: 'DELETE' }),
+  notifications: () => request<NotificationsView>('/api/notifications'),
+  addDestination: (body: { name: string; url: string; audience: Audience }) =>
+    request<NotificationsView>('/api/notifications/destinations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  updateDestination: ({
+    id,
+    ...change
+  }: {
+    id: number
+    name?: string
+    url?: string
+    alerts?: AlertKind[]
+    enabled?: boolean
+  }) =>
+    request<NotificationsView>(`/api/notifications/destinations/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(change),
+    }),
+  removeDestination: (id: number) =>
+    request<NotificationsView>(`/api/notifications/destinations/${id}`, { method: 'DELETE' }),
+  testDestination: (id: number) =>
+    request<SendResult>(`/api/notifications/destinations/${id}/test`, { method: 'POST' }),
   activatePreset: (key: string) =>
     request<WeightsView>('/api/weights/active', {
       method: 'PUT',

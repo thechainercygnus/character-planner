@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, type SyncResult } from '../api'
+import { NotificationsDialog } from './NotificationsDialog'
 
 function lastSynced(snapshots: Record<string, string>): string {
   const times = Object.values(snapshots)
@@ -56,6 +57,7 @@ export function StatusBar() {
           Log in with Battle.net
         </a>
       )}
+      <NotificationsDialog />
       <details className="menu">
         <summary aria-label="More actions" title="More actions">
           ⋯
