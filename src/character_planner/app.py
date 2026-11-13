@@ -5,16 +5,19 @@ Run locally with: uv run uvicorn character_planner.app:create_app --factory --re
 """
 
 import logging
+import re
 import time
 from collections.abc import Callable, Iterator
 from contextlib import asynccontextmanager
 from dataclasses import asdict
+from importlib.metadata import PackageNotFoundError, version
 from typing import Annotated, Any
+from uuid import uuid4
 
 import httpx
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi import Path as FastAPIPath
-from fastapi.responses import PlainTextResponse, RedirectResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from sqlalchemy.engine import Engine
@@ -69,6 +72,7 @@ from character_planner.jobs import (
     gear_targets,
     sync_character,
 )
+from character_planner.logs import ACCESS_LOGGER, configure_logging, request_id, safe_database_url
 from character_planner.pool import (
     PoolRefresh,
     PoolView,
@@ -135,6 +139,16 @@ from character_planner.views import (
 PENDING_STATE_TTL_SECONDS = 600
 
 logger = logging.getLogger(__name__)
+access_logger = logging.getLogger(ACCESS_LOGGER)
+# An incoming X-Request-ID is reused when it looks like an id, so a proxy's id carries.
+REQUEST_ID_PATTERN = re.compile(r"[A-Za-z0-9._-]{1,64}")
+
+
+def app_version() -> str:
+    try:
+        return version("character-planner")
+    except PackageNotFoundError:
+        return "(not installed)"
 
 
 class ManualSnapshot(BaseModel):
@@ -242,13 +256,26 @@ def create_app(
     engine: Engine | None = None,
     http: httpx.Client | None = None,
 ) -> FastAPI:
-    """Build the app. Tests pass their own settings, engine and mocked HTTP client."""
-    settings = settings or get_settings()
+    """Build the app. Tests pass their own settings, engine and mocked HTTP client; a
+    real run (no settings given) also sets up logging (ADR 0019)."""
+    if settings is None:
+        settings = get_settings()
+        configure_logging(settings, "api")
     engine = engine or make_engine(settings.database_url)
     pending_states: dict[str, float] = {}  # state -> created_at
 
     @asynccontextmanager
     async def lifespan(_: FastAPI):
+        logger.info(
+            "Starting character-planner %s: database %s, curated data in %s, frontend %s, "
+            "log level %s%s",
+            app_version(),
+            safe_database_url(settings.database_url),
+            settings.curated_dir,
+            "built" if (settings.frontend_dist / "index.html").is_file() else "not built",
+            settings.log_level,
+            f", log files in {settings.log_dir}" if settings.log_dir else "",
+        )
         init_db(engine)
         with Session(engine) as session:
             if migrate_stored_weights(session):
@@ -260,6 +287,42 @@ def create_app(
     app = FastAPI(title="Character Planner", lifespan=lifespan)
     app.state.settings = settings
     app.state.engine = engine
+
+    @app.middleware("http")
+    async def log_requests(request: Request, call_next: Callable[[Request], Any]) -> Response:
+        """Give each request an id, log it to the access log, and turn an unhandled error
+        into one logged line and a 500 that carries the id (ADR 0019)."""
+        incoming = request.headers.get("x-request-id", "")
+        rid = incoming if REQUEST_ID_PATTERN.fullmatch(incoming) else uuid4().hex[:12]
+        token = request_id.set(rid)
+        started = time.perf_counter()
+        try:
+            try:
+                response: Response = await call_next(request)
+            except Exception:
+                logger.exception("Unhandled error in %s %s", request.method, request.url.path)
+                response = JSONResponse(
+                    {"detail": "Internal server error", "request_id": rid}, status_code=500
+                )
+            response.headers["X-Request-ID"] = rid
+            elapsed_ms = (time.perf_counter() - started) * 1000
+            query = f"?{request.url.query}" if request.url.query else ""
+            # The container health check runs every 30 seconds: only at DEBUG.
+            level = logging.DEBUG if request.url.path == "/api/healthz" else logging.INFO
+            access_logger.log(
+                level,
+                '%s "%s %s%s" %d %.0fms [%s]',
+                request.client.host if request.client else "-",
+                request.method,
+                request.url.path,
+                query,
+                response.status_code,
+                elapsed_ms,
+                rid,
+            )
+            return response
+        finally:
+            request_id.reset(token)
 
     @app.get("/api/healthz")
     def healthz() -> dict[str, str]:

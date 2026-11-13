@@ -41,6 +41,7 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Stat weights for scoring | `GET`/`PUT`/`DELETE /api/weights` for the active preset (or the **Stat weights** button on the Upgrades and Plan tabs) |
 | Weight presets (Leveling tank, Dungeon tank, Solo DPS, your own) | `PUT /api/weights/active`, `POST /api/weights/presets`, `PATCH`/`DELETE /api/weights/presets/{key}` |
 | API docs | http://localhost:8000/docs |
+| Logs (console; files with `LOG_DIR`) | `LOG_LEVEL=DEBUG` for upstream requests, `LOG_DIR=data/logs` for `server.log` and `access.log` (ADR 0019) |
 | Run scheduled syncs and pool refreshes | `uv run character-planner-worker` (`--once` to run them now) |
 
 ## Deploy

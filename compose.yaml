@@ -12,6 +12,8 @@ x-planner: &planner
   environment:
     DATABASE_URL: sqlite:////data/character-planner.db
     POST_LOGIN_REDIRECT: /
+    # Log files on the data volume, beside the console output (ADR 0019).
+    LOG_DIR: /data/logs
   volumes:
     - planner-data:/data
   restart: unless-stopped

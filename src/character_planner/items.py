@@ -7,6 +7,7 @@ search index; those are cached as not found and fall back to manual data in
 gear_targets.yaml.
 """
 
+import logging
 from collections.abc import Iterable
 from typing import Any
 
@@ -21,6 +22,9 @@ from character_planner.companion import refresh_companion
 from character_planner.config import Settings
 from character_planner.curated import GearTargets
 from character_planner.db import CatalogItem, ItemIcon, catalog_by_name, save_now, utcnow
+from character_planner.logs import JobLog
+
+logger = logging.getLogger(__name__)
 
 SEARCH_PATH = "/data/wow/search/item"
 MAX_SEARCH_PAGES = 3
@@ -121,7 +125,9 @@ def refresh_catalog(
     outcome = RefreshResult()
     token = oauth.client_credentials(settings, client=http)
     with BlizzardClient(settings, token, http=http) as client:
-        for item_name in names:
+        job = JobLog(logger, "Blizzard item search", len(names))
+        for index, item_name in enumerate(names, start=1):
+            job.step(index)
             try:
                 data = search_item(client, settings.static_namespace, item_name)
             except (ItemSearchError, httpx.HTTPError) as error:
@@ -140,17 +146,25 @@ def refresh_catalog(
                 ),
             )
             (outcome.found if data else outcome.missing).append(item_name)
+        job.done(
+            f"{len(outcome.found)} found, {len(outcome.missing)} not found, "
+            f"{len(outcome.errors)} errors",
+            outcome.errors,
+        )
 
         catalog_ids = {row.item_id for row in catalog_by_name(session).values() if row.item_id}
         wanted_icons = catalog_ids | set(equipped_item_ids)
         if not force:
             wanted_icons -= known_icons
-        for item_id in sorted(wanted_icons):
+        icons = JobLog(logger, "Blizzard item icons", len(wanted_icons))
+        for index, item_id in enumerate(sorted(wanted_icons), start=1):
+            icons.step(index)
             media_path = f"/data/wow/media/item/{item_id}"
             result = client.get("item-media", media_path, settings.static_namespace)
             url = icon_url(result.body) if result.ok else None
             save_now(session, ItemIcon(item_id=item_id, url=url, fetched_at=utcnow()))
             outcome.icons += url is not None
+        icons.done(f"{outcome.icons} icons found")
 
     return outcome
 

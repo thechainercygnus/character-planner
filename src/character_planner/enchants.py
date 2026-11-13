@@ -17,6 +17,7 @@ Scopes and armor kits are items whose effect no source serves; their effects com
 data/curated/enchants.yaml and from enchants seen on the character's own gear.
 """
 
+import logging
 import re
 import time
 from collections.abc import Iterable, Mapping
@@ -35,9 +36,12 @@ from character_planner.blizzard.client import BlizzardClient
 from character_planner.companion import CompanionInfo, as_utc, refresh_companion
 from character_planner.config import Settings
 from character_planner.db import RecipeData, save_now, utcnow
+from character_planner.logs import JobLog
 from character_planner.recommend import EQUIPMENT_SLOTS, UsageRules
 from character_planner.scoring import RANGED_DPS, WEAPON_DPS, Weights
 from character_planner.views import EquippedItem
+
+logger = logging.getLogger(__name__)
 
 # Professions that put permanent or temporary enchants on gear.
 PROFESSIONS = ("Enchanting", "Engineering", "Leatherworking", "Blacksmithing")
@@ -351,13 +355,16 @@ def refresh_recipes(
         token = oauth.client_credentials(settings, client=http)
     except httpx.HTTPError as error:
         outcome.errors.append(f"Blizzard token: {error}")
+        logger.warning("Enchant recipes: no Blizzard token: %s", error)
         return outcome
 
     with BlizzardClient(settings, token, http=http) as client:
         index = client.get("profession-index", "/data/wow/profession/index", namespace)
         if not index.ok:
             outcome.errors.append(f"profession index: HTTP {index.status}")
+            logger.warning("Enchant recipes: profession index HTTP %s", index.status)
             return outcome
+        job = JobLog(logger, "Blizzard enchant recipes", None)
         wanted = {p.lower() for p in PROFESSIONS}
         professions = [
             (pid, pname)
@@ -389,6 +396,7 @@ def refresh_recipes(
                         row = cached.get(rid)
                         if row and not force and as_utc(row.fetched_at) >= cutoff:
                             continue
+                        job.step(outcome.recipes_fetched + 1)
                         if pause:
                             time.sleep(pause)
                         recipe = client.get("recipe", f"/data/wow/recipe/{rid}", namespace)
@@ -406,6 +414,11 @@ def refresh_recipes(
                             ),
                         )
                         outcome.recipes_fetched += 1
+        job.done(
+            f"{outcome.recipes_listed} enchant recipes listed, {outcome.recipes_fetched} fetched, "
+            f"{len(outcome.errors)} errors",
+            outcome.errors,
+        )
     return outcome
 
 

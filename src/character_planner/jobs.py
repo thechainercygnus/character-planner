@@ -5,6 +5,7 @@ a schedule. Each takes a session and settings, so neither caller owns the logic.
 """
 
 import logging
+import time
 
 import httpx
 from sqlmodel import Session
@@ -21,6 +22,7 @@ from character_planner.pool import (
     PoolItem,
     PoolRefresh,
     build_pool,
+    level_window,
     pool_view,
     refresh_pool,
     resolve_target_ids,
@@ -117,7 +119,10 @@ def sync_character(
     """
     token = current_token(session)
     if token is None:
+        logger.info("Sync skipped: not logged in, or the login has expired")
         raise NotLoggedIn("Not logged in or token expired; visit /auth/login")
+    started = time.perf_counter()
+    logger.info("Sync %s: started", settings.character_slug)
     with BlizzardClient(settings, token, http=http) as client:
         results = client.all_character_data()
     for result in results:
@@ -125,10 +130,19 @@ def sync_character(
             Snapshot(source="api", kind=result.kind, status=result.status, payload=result.body)
         )
     session.commit()
+    failed = sorted(f"{r.kind} ({r.status})" for r in results if not 200 <= r.status < 300)
+    level, _ = character_context(session)
+    logger.info(
+        "Sync %s: %d endpoints stored in %.1fs, level %s%s",
+        settings.character_slug,
+        len(results),
+        time.perf_counter() - started,
+        level if level is not None else "unknown",
+        f", failed: {', '.join(failed)}" if failed else "",
+    )
     targets = gear_targets(session, settings)
-    items = refresh_item_sources(session, settings, targets, equipped_item_ids(session), http=http)
-    for error in items.errors:
-        logger.warning("Item data refresh after sync: %s", error)
+    # Its own progress and errors are logged by the item search and lookups.
+    refresh_item_sources(session, settings, targets, equipped_item_ids(session), http=http)
     return {result.kind: result.status for result in results}
 
 
@@ -137,7 +151,22 @@ def refresh_item_pool(
 ) -> PoolRefresh:
     """Dungeon drop tables and quest rewards, then item details for the level window."""
     level, faction = character_context(session)
-    return refresh_pool(
+    started = time.perf_counter()
+    if level is None:
+        # No synced character (guest mode on a fresh install): every pool item's details.
+        logger.info(
+            "Item pool refresh: no character level, so fetching details for the whole pool%s",
+            " (forced)" if force else "",
+        )
+    else:
+        logger.info(
+            "Item pool refresh: level %s, window %s, faction %s%s",
+            level,
+            level_window(level),
+            faction or "unknown",
+            " (forced)" if force else "",
+        )
+    result = refresh_pool(
         session,
         level=level,
         faction=faction,
@@ -145,3 +174,16 @@ def refresh_item_pool(
         http=http,
         pause=settings.companion_request_pause,
     )
+    logger.info(
+        "Item pool refresh: done in %.1fs, %d dungeons fetched of %d listed, pool %d items "
+        "(%d wanted), %d item details fetched, %d not found, %d errors",
+        time.perf_counter() - started,
+        result.dungeons_fetched,
+        result.dungeons_listed,
+        result.pool_size,
+        result.in_window,
+        result.items_fetched,
+        len(result.items_not_found),
+        len(result.errors),
+    )
+    return result

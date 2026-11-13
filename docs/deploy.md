@@ -60,6 +60,25 @@ docker compose logs -f worker
 Once the Tailscale container has joined, remove `TS_AUTHKEY` from `.env`. Its state is
 kept on the `tailscale-state` volume.
 
+### Logs
+
+Both containers log to the console (`docker compose logs -f app worker`) and to rotating
+files in `/data/logs` on the data volume (ADR 0019):
+
+- `server.log`: the API, including each refresh's start, progress every 50 items and summary.
+- `access.log`: one line per request, with its id, status and duration. Health checks are left out.
+- `worker.log`: the worker's scheduled jobs.
+
+Read them from the host with:
+
+```bash
+docker compose exec app tail -f /data/logs/server.log
+```
+
+Each file rotates at 5 MB and keeps 5 old copies. `LOG_LEVEL=DEBUG` in `.env` adds every
+upstream request; `LOG_FORMAT=json` writes one JSON object per line for a log collector.
+Tokens, the client secret and OAuth codes are always replaced by `[redacted]`.
+
 ## 3. Log in and sync
 
 Open the app, choose **Log in**, then **Sync now**. The worker picks up from there.
