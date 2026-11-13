@@ -3,7 +3,7 @@
 #
 #   docker compose -f compose.yaml -f compose.tailscale.yaml up -d --build
 #
-# Needs TS_AUTHKEY in .env for the first start (see docs/deploy.md).
+# Needs TS_AUTHKEY in .env for the first start (see docs/self-hosting.md).
 
 services:
   tailscale:

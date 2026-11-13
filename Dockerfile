@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # Character Planner: one image for the API (serving the built frontend) and the worker.
-# See docs/deploy.md and ADR 0011.
+# See docs/self-hosting.md and ADR 0011.
 #
 # Runtimes match CI: Node 26 (LTS) builds the frontend, Python 3.14 runs the app, as in
 # .python-version. Dependabot skips Node majors and Python minors here: runtime upgrades

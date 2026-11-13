@@ -48,10 +48,11 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Logs (console; files with `LOG_DIR`) | `LOG_LEVEL=DEBUG` for upstream requests, `LOG_DIR=data/logs` for `server.log` and `access.log` (ADR 0019) |
 | Run scheduled syncs and pool refreshes | `uv run character-planner-worker` (`--once` to run them now) |
 
-## Deploy
+## Run your own
 
-Docker compose runs the app and the scheduled worker, optionally served over Tailscale.
-See [docs/deploy.md](docs/deploy.md) and [ADR 0011](docs/adr/0011-docker-compose-with-a-worker.md).
+[docs/self-hosting.md](docs/self-hosting.md) takes you from nothing to your own planner
+syncing your character, using the published image. Docker Compose runs the app and the
+scheduled worker, optionally served over Tailscale ([ADR 0011](docs/adr/0011-docker-compose-with-a-worker.md)).
 
 ## Develop
 
