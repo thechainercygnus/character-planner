@@ -42,6 +42,7 @@ export function WeightsDialog() {
     setNaming(null)
     return Promise.all([
       queryClient.invalidateQueries({ queryKey: ['gear'] }),
+      queryClient.invalidateQueries({ queryKey: ['look-ahead'] }),
       queryClient.invalidateQueries({ queryKey: ['recommendations'] }),
       queryClient.invalidateQueries({ queryKey: ['progress'] }), // gear score uses the weights
       queryClient.invalidateQueries({ queryKey: ['enchants'] }),

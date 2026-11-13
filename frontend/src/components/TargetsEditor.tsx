@@ -45,6 +45,7 @@ export function TargetsEditor({ customised }: { customised: boolean }) {
     setDraft(null)
     return Promise.all([
       queryClient.invalidateQueries({ queryKey: ['gear'] }),
+      queryClient.invalidateQueries({ queryKey: ['look-ahead'] }),
       queryClient.invalidateQueries({ queryKey: ['recommendations'] }),
     ])
   }

@@ -36,7 +36,10 @@ export function ClassQuests({ data }: { data: ClassQuestChecklist }) {
   const queryClient = useQueryClient()
   const toggle = useMutation({
     mutationFn: api.setClassQuestDone,
-    onSuccess: (checklist) => queryClient.setQueryData(['class-quests'], checklist),
+    onSuccess: (checklist) => {
+      queryClient.setQueryData(['class-quests'], checklist)
+      return queryClient.invalidateQueries({ queryKey: ['look-ahead'] })
+    },
   })
   const missed = data.rows.filter((row) => row.status === 'missed').length
 
