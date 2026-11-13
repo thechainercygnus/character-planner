@@ -538,3 +538,68 @@ def test_upgrades_rules_edits_are_validated(client: TestClient, change: dict[str
     rules = client.get("/api/rules").json()["rules"]
     assert client.put("/api/rules", json=rules | change).status_code == 422
     assert client.get("/api/rules").json()["customised"] is False
+
+
+@respx.mock
+def test_guest_mode_uses_the_shipped_rules_and_stores_nothing(
+    client: TestClient, engine: Engine
+) -> None:
+    log_in(client)
+    mock_character_api()
+    mock_battlenet()
+    client.post("/api/sync")
+    mock_companion_dungeons()
+    client.post("/api/pool/refresh")
+    with Session(engine) as session:
+        # Give the cape item details (the girdle's: mail, stamina) so it can be scored.
+        details = json.loads((FIXTURES / "companion_item_270230.json").read_text("utf-8"))
+        session.merge(CompanionItem(item_id=5193, found=True, payload=details))
+        session.commit()
+
+    options = client.get("/api/guest").json()
+    assert [c["key"] for c in options["classes"]] == ["warrior"]
+    assert options["presets"][0]["key"] == "leveling-tank"
+    assert options["factions"] == ["alliance", "horde"]
+
+    guest = client.get("/api/guest/recommendations", params={"level": 18}).json()
+    assert (guest["level"], guest["window"]) == (18, [15, 28])
+    assert all(row["equipped"] is None for row in guest["rows"])  # every slot empty
+    assert guest["considered"] == 1
+    waist = next(row for row in guest["rows"] if row["slot"] == "WAIST")
+    assert [c["item"]["item_id"] for c in waist["candidates"]] == [5193]
+
+    # Edits made in the app change the character's upgrades, not the guest's.
+    rules = client.get("/api/rules").json()["rules"]
+    no_armor = rules | {"armor_types": [], "weapon_types": []}
+    assert client.get("/api/recommendations").json()["considered"] == 1
+    assert client.put("/api/rules", json=no_armor).status_code == 200
+    client.put("/api/choices/5193", json={"choice": "dismissed", "name": "Cape"})
+    assert client.get("/api/recommendations").json()["considered"] == 0
+    again = client.get("/api/guest/recommendations", params={"level": 18}).json()
+    assert again == guest
+
+    horde = client.get("/api/guest/recommendations", params={"level": 18, "faction": "horde"})
+    assert horde.status_code == 200
+    preset = client.get("/api/guest/recommendations", params={"level": 18, "preset": "solo-dps"})
+    assert preset.status_code == 200
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        {"level": 18, "class": "mage"},
+        {"level": 18, "preset": "nope"},
+        {"level": 0},
+        {"level": 81},
+        {"level": 18, "faction": "neutral"},
+        {},
+    ],
+)
+def test_guest_mode_choices_are_validated(client: TestClient, params: dict[str, object]) -> None:
+    response = client.get("/api/guest/recommendations", params=params)
+    assert response.status_code == 422
+
+
+def test_guest_mode_works_before_any_login_or_pool(client: TestClient) -> None:
+    guest = client.get("/api/guest/recommendations", params={"level": 30}).json()
+    assert (guest["considered"], guest["unscored"]) == (0, 0)

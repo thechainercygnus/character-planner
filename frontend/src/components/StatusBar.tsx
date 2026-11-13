@@ -61,6 +61,9 @@ export function StatusBar() {
           ⋯
         </summary>
         <div className="menu-items">
+          <a className="button secondary" href="#guest" title="Recommendations for any class and level, without your character">
+            Guest mode
+          </a>
           <button
             type="button"
             className="secondary"

@@ -136,3 +136,24 @@ describe('Recommendations', () => {
     expect(screen.getByText('No item pool yet.', { exact: false })).toBeTruthy()
   })
 })
+
+describe('Recommendations in guest mode', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('leaves out what is worn and the buttons that store choices', () => {
+    stubFetch()
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    render(
+      <QueryClientProvider client={client}>
+        <Recommendations data={recommendations} guest />
+      </QueryClientProvider>,
+    )
+    expect(screen.getByText('Best items for your level')).toBeTruthy()
+    expect(screen.queryByText('Equipped')).toBeNull()
+    fireEvent.click(screen.getAllByRole('button', { name: /^Show details/ })[0])
+    expect(screen.queryByText('Never suggest')).toBeNull()
+    expect(screen.queryByText('Make target')).toBeNull()
+  })
+})

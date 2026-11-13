@@ -185,6 +185,20 @@ export interface GearPlan {
   targets_customised: boolean
 }
 
+/** Guest mode (ADR 0017): classes with rules and the shipped weight presets. */
+export interface GuestOptions {
+  classes: { key: string; name: string }[]
+  presets: { key: string; name: string }[]
+  factions: string[]
+}
+
+export interface GuestQuery {
+  classKey: string
+  level: number
+  faction: string
+  preset: string
+}
+
 export interface Status {
   character: string
   namespace: string
@@ -570,6 +584,11 @@ export const api = {
   deletePreset: (key: string) =>
     request<WeightsView>(`/api/weights/presets/${encodeURIComponent(key)}`, { method: 'DELETE' }),
   recommendations: () => request<Recommendations>('/api/recommendations'),
+  guest: () => request<GuestOptions>('/api/guest'),
+  guestRecommendations: ({ classKey, level, faction, preset }: GuestQuery) =>
+    request<Recommendations>(
+      `/api/guest/recommendations?${new URLSearchParams({ class: classKey, level: String(level), faction, preset })}`,
+    ),
   choices: () => request<ItemChoice[]>('/api/choices'),
   setChoice: ({ itemId, name, choice }: { itemId: number; name: string; choice: ChoiceKind }) =>
     request<ItemChoice[]>(`/api/choices/${itemId}`, {
