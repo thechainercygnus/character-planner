@@ -1,5 +1,6 @@
 import { slotLabel, type EnchantAdvice, type EnchantPick, type SlotEnchants } from '../api'
 import { signed } from '../format'
+import { EffectEditor, OptionCorrections, PerSlotControl } from './EnchantCorrections'
 
 /** "Enchant Bracer - Minor Deflect" -> "Minor Deflect": the slot is already in the row. */
 function shortName(name: string): string {
@@ -25,6 +26,7 @@ function Pick({ pick }: { pick: EnchantPick }) {
       <span className="badge verdict-upgrade" title="Weighted stat score vs the enchant on now">
         {signed(pick.score_gain, 1)}
       </span>
+      <OptionCorrections option={option} />
     </div>
   )
 }
@@ -68,6 +70,7 @@ export function Enchants({ data }: { data: EnchantAdvice }) {
         <h2>
           Enchants <span className="muted">what to look for</span>
         </h2>
+        {data.recipes > 0 && <PerSlotControl perSlot={data.per_slot} corrected={data.per_slot_corrected} />}
       </div>
       {data.recipes === 0 ? (
         <p className="muted">
@@ -94,6 +97,24 @@ export function Enchants({ data }: { data: EnchantAdvice }) {
             </tbody>
           </table>
           {left.length > 0 && <p className="muted no-upgrades">Not ranked: {left.join('; ')}.</p>}
+          {data.missing_effects.length > 0 && (
+            <details className="enchant-corrections missing-effects">
+              <summary>
+                {data.missing_effects.length} crafted enchant{data.missing_effects.length === 1 ? '' : 's'} in reach
+                without a known effect: add {data.missing_effects.length === 1 ? 'it' : 'them'} from the game to rank
+                them
+              </summary>
+              <ul>
+                {data.missing_effects.map((missing) => (
+                  <li key={missing.item_id}>
+                    <strong>{missing.recipe}</strong>{' '}
+                    <small className="muted">{missing.slots.map(slotLabel).join(', ')}</small>
+                    <EffectEditor itemId={missing.item_id} effects={{}} corrected={false} label={missing.recipe} />
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
         </>
       )}
     </section>

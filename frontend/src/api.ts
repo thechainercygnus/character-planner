@@ -632,6 +632,18 @@ export interface RecipeRefresh {
   errors: string[]
 }
 
+/** Where a material's level comes from (#36). */
+export type LevelSource = 'corrected' | 'shipped' | 'item'
+
+/** A material in a recipe, with the level it's commonly found from when known. */
+export interface Reagent {
+  item_id: number
+  name: string
+  quantity: number
+  level: number | null
+  level_source: LevelSource | null
+}
+
 /** An enchant recipe from the catalog (enchants.py EnchantOption). */
 export interface EnchantOption {
   recipe_id: number
@@ -646,8 +658,9 @@ export interface EnchantOption {
   text: string | null
   /** Stat name -> value; "Weapon Damage" is flat damage per hit. */
   effects: Record<string, number>
-  effects_source: 'description' | 'curated' | 'equipped' | null
+  effects_source: 'description' | 'curated' | 'corrected' | 'equipped' | null
   temporary: boolean
+  reagents: Reagent[]
   crafted_item_id: number | null
   season_of_discovery: boolean
   /** From the reagents' material levels; an estimate. */
@@ -682,6 +695,29 @@ export interface SlotEnchants {
   current_is_weaker: boolean
 }
 
+/** A crafted enchant in reach whose effect isn't known: one to fill in (#36). */
+export interface MissingEffect {
+  /** The crafted item: corrections are keyed by it. */
+  item_id: number
+  recipe: string
+  slots: string[]
+}
+
+/** Corrections to the enchant reference data, made in the app (#36). */
+export interface EnchantCorrections {
+  reagent_levels: Record<string, number>
+  crafted_effects: Record<string, Record<string, number>>
+  per_slot: number | null
+}
+
+export interface EnchantCorrectionsView {
+  corrections: EnchantCorrections
+  /** data/curated/enchants.yaml as shipped. */
+  shipped: { reagent_levels: Record<string, number>; crafted_effects: Record<string, Record<string, number>>; per_slot: number }
+  /** The effects a correction may name. */
+  effect_names: string[]
+}
+
 /** GET /api/enchants/recommendations (enchants.py, ADR 0010). */
 export interface EnchantAdvice {
   level: number | null
@@ -693,6 +729,11 @@ export interface EnchantAdvice {
   unscored: number
   /** No level estimate, so left out. */
   unknown_level: number
+  /** Scopes, kits and other crafted enchants in reach without a known effect (#36). */
+  missing_effects: MissingEffect[]
+  /** Enchants listed per slot. */
+  per_slot: number
+  per_slot_corrected: boolean
 }
 
 export class ApiError extends Error {
@@ -788,6 +829,11 @@ export interface ClassQuestChecklist {
   listed: number
   /** By level, then name. */
   rows: ClassQuestRow[]
+}
+
+/** A JSON request body. */
+function json(method: 'PUT' | 'POST', body: unknown): RequestInit {
+  return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -928,6 +974,22 @@ export const api = {
     request<PoolRefresh>(level ? `/api/pool/refresh?level=${level}` : '/api/pool/refresh', { method: 'POST' }),
   refreshEnchants: () => request<RecipeRefresh>('/api/enchants/refresh', { method: 'POST' }),
   enchants: () => request<EnchantAdvice>('/api/enchants/recommendations'),
+  enchantCorrections: () => request<EnchantCorrectionsView>('/api/enchants/corrections'),
+  correctMaterial: ({ itemId, level }: { itemId: number; level: number | null }) =>
+    request<EnchantCorrectionsView>(
+      `/api/enchants/corrections/materials/${itemId}`,
+      level === null ? { method: 'DELETE' } : json('PUT', { level }),
+    ),
+  correctEffect: ({ itemId, effects }: { itemId: number; effects: Record<string, number> | null }) =>
+    request<EnchantCorrectionsView>(
+      `/api/enchants/corrections/crafted/${itemId}`,
+      effects === null ? { method: 'DELETE' } : json('PUT', { effects }),
+    ),
+  correctPerSlot: (perSlot: number | null) =>
+    request<EnchantCorrectionsView>(
+      '/api/enchants/corrections/per-slot',
+      perSlot === null ? { method: 'DELETE' } : json('PUT', { per_slot: perSlot }),
+    ),
 }
 
 /** Backend timestamps are UTC without an offset; mark them as UTC before parsing. */

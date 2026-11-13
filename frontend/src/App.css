@@ -1157,3 +1157,43 @@ ul.upcoming small {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
+.enchant-corrections {
+  margin: 0.2rem 0 0.4rem;
+  font-size: 0.85rem;
+}
+
+.enchant-corrections summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.enchant-corrections .materials {
+  margin: 0.3rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.material,
+.effect-row,
+.effect-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.15rem 0;
+}
+
+.material input,
+.effect-row input {
+  width: 4.5rem;
+}
+
+.per-slot {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.missing-effects li {
+  padding: 0.3rem 0;
+}
