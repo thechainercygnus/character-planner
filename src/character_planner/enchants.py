@@ -31,7 +31,6 @@ from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from character_planner import fields
-from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
 from character_planner.companion import CompanionInfo, as_utc, refresh_companion
 from character_planner.config import Settings
@@ -39,6 +38,7 @@ from character_planner.db import RecipeData, save_now, utcnow
 from character_planner.logs import JobLog
 from character_planner.recommend import EQUIPMENT_SLOTS, UsageRules
 from character_planner.scoring import RANGED_DPS, WEAPON_DPS, Weights
+from character_planner.tokens import CredentialsError, app_token
 from character_planner.views import EquippedItem
 
 logger = logging.getLogger(__name__)
@@ -352,8 +352,8 @@ def refresh_recipes(
     cutoff = utcnow() - RECIPE_MAX_AGE
     cached = {row.recipe_id: row for row in session.exec(select(RecipeData)).all()}
     try:
-        token = oauth.client_credentials(settings, client=http)
-    except httpx.HTTPError as error:
+        token = app_token(session, settings, http)
+    except (httpx.HTTPError, CredentialsError) as error:
         outcome.errors.append(f"Blizzard token: {error}")
         logger.warning("Enchant recipes: no Blizzard token: %s", error)
         return outcome

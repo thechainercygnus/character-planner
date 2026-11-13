@@ -74,8 +74,14 @@ def test_callback_rejects_unknown_state(client: TestClient) -> None:
     assert client.get("/auth/callback?code=c&state=forged").status_code == 400
 
 
-def test_sync_requires_login(client: TestClient) -> None:
-    assert client.post("/api/sync").status_code == 401
+@respx.mock
+def test_sync_fails_clearly_when_battle_net_refuses_the_client(client: TestClient) -> None:
+    """Syncs use the app's own token (#107): no login needed, but a refused client
+    is a 503 that says what to fix."""
+    respx.post(oauth.TOKEN_URL).mock(return_value=httpx.Response(401, json={}))
+    response = client.post("/api/sync")
+    assert response.status_code == 503
+    assert "BNET_CLIENT_ID" in response.json()["detail"]
 
 
 @respx.mock

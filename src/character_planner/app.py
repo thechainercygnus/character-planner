@@ -20,8 +20,9 @@ from fastapi import Path as FastAPIPath
 from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+from sqlalchemy import desc
 from sqlalchemy.engine import Engine
-from sqlmodel import Session
+from sqlmodel import Session, col, select
 
 from character_planner import jobs, leases, notify
 from character_planner.blizzard import oauth
@@ -72,7 +73,6 @@ from character_planner.guest import (
 )
 from character_planner.items import RefreshResult, refresh_item_sources
 from character_planner.jobs import (
-    NotLoggedIn,
     character_context,
     current_token,
     equipped_item_ids,
@@ -132,6 +132,7 @@ from character_planner.targets import (
     unpin_target,
 )
 from character_planner.targets import is_customised as targets_customised
+from character_planner.tokens import CredentialsError
 from character_planner.views import (
     CharacterView,
     EquippedItem,
@@ -406,9 +407,26 @@ def create_app(
     def status(session: SessionDep) -> dict[str, Any]:
         stored = session.get(StoredToken, 1)
         latest = latest_by_kind(session)
+        last_profile = session.exec(
+            select(Snapshot)
+            .where(Snapshot.kind == "profile")
+            .order_by(desc(col(Snapshot.captured_at)), desc(col(Snapshot.id)))
+        ).first()
         return {
             "character": settings.character_slug,
             "namespace": settings.profile_namespace,
+            # Syncs use the app's own token (#107): they need the client, not a login.
+            "can_sync": settings.has_credentials,
+            # The last sync's answer for the character: True, False after a 404 (wrong
+            # name, surname or region), None before any sync or after another failure.
+            "character_found": (
+                True
+                if last_profile is not None and last_profile.status == 200
+                else False
+                if last_profile is not None and last_profile.status == 404
+                else None
+            ),
+            # The optional Battle.net login: only the account's character list needs it.
             "logged_in": current_token(session) is not None,
             "token_expires_at": stored.expires_at if stored else None,
             "latest_snapshots": {k: s.captured_at.isoformat() for k, s in latest.items()},
@@ -426,8 +444,9 @@ def create_app(
         """
         try:
             statuses = sync_character(session, settings, http=http)
-        except NotLoggedIn as error:
-            raise HTTPException(401, str(error)) from error
+        except CredentialsError as error:
+            # The app's own client is missing or refused: nothing a login would fix.
+            raise HTTPException(503, str(error)) from error
         if jobs.missing_data(session):
             background.add_task(jobs.load_missing_data, engine, settings, http)
         return statuses

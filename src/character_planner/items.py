@@ -16,13 +16,13 @@ from pydantic import BaseModel
 from sqlmodel import Session, col, select
 
 from character_planner import fields
-from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
 from character_planner.companion import refresh_companion
 from character_planner.config import Settings
 from character_planner.curated import GearTargets
 from character_planner.db import CatalogItem, ItemIcon, catalog_by_name, save_now, utcnow
 from character_planner.logs import JobLog
+from character_planner.tokens import CredentialsError, app_token
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +123,7 @@ def refresh_catalog(
     names = [n for n in dict.fromkeys(item_names) if force or name_key(n) not in cached]
 
     outcome = RefreshResult()
-    token = oauth.client_credentials(settings, client=http)
+    token = app_token(session, settings, http)
     with BlizzardClient(settings, token, http=http) as client:
         job = JobLog(logger, "Blizzard item search", len(names))
         for index, item_name in enumerate(names, start=1):
@@ -186,7 +186,7 @@ def refresh_item_sources(
         outcome = refresh_catalog(
             session, settings, targets.item_names(), equipped_item_ids, force=force, http=http
         )
-    except httpx.HTTPError as error:
+    except (httpx.HTTPError, CredentialsError) as error:
         outcome = RefreshResult(errors=[f"Blizzard: {error}"])
 
     catalog_ids = [row.item_id for row in catalog_by_name(session).values() if row.item_id]

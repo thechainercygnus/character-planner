@@ -1,6 +1,5 @@
 import json
 import logging
-import time
 from collections.abc import Iterator
 from datetime import timedelta
 
@@ -20,7 +19,6 @@ from character_planner.db import (
     NotificationOutbox,
     NotificationState,
     Snapshot,
-    StoredToken,
     utcnow,
 )
 from character_planner.logs import RedactingFormatter, redact
@@ -94,7 +92,7 @@ def test_urls_are_masked_and_redacted() -> None:
 def test_destinations_can_be_added_changed_and_removed(client: TestClient) -> None:
     empty = client.get("/api/notifications").json()
     assert empty["destinations"] == [] and empty["system_alerts_to_user"] is True
-    assert {a["kind"] for a in empty["alerts"]} >= {"login_expired", "job_failed"}
+    assert {a["kind"] for a in empty["alerts"]} >= {"level_up", "job_failed"}
 
     added = client.post("/api/notifications/destinations", json={"name": " Me ", "url": WEBHOOK})
     assert added.status_code == 201
@@ -203,28 +201,32 @@ def test_disabled_or_unsubscribed_destinations_get_nothing(
         assert outbox(session) == []
 
 
-# --- login ------------------------------------------------------------------------------------
+# --- retired alerts -----------------------------------------------------------------------
 
 
-def test_login_alerts_are_sent_once_per_login(engine: Engine, settings: Settings) -> None:
+def test_login_alerts_are_retired_without_breaking_old_destinations(
+    client: TestClient, engine: Engine
+) -> None:
+    """Syncs no longer need the 24-hour login (#107), so its alerts went. A destination
+    saved with them still loads, and saving it back doesn't fail validation."""
+    assert not {"login_expiring", "login_expired"} & set(notify.USER_ALERTS)
+    added = client.post("/api/notifications/destinations", json={"name": "Me", "url": WEBHOOK})
+    dest_id = added.json()["destinations"][0]["id"]
     with Session(engine) as session:
-        add(session)
-        expires = time.time() + 3600 * 10
-        session.add(StoredToken(id=1, access_token="t", expires_at=expires))
+        stored = session.get(NotificationDestination, dest_id)
+        assert stored is not None
+        stored.alerts = ["login_expiring", "login_expired", "level_up"]
+        session.add(stored)
         session.commit()
 
-        notify.check_login(session, settings, now=expires - 3 * 3600)  # 3h left: quiet
-        assert outbox(session) == []
-        notify.check_login(session, settings, now=expires - 3600)  # 1h left
-        notify.check_login(session, settings, now=expires - 1800)  # again: no repeat
-        (warning,) = outbox(session)
-        assert warning.kind == "login_expiring"
-        assert warning.payload["embeds"][0]["title"].startswith("Login expires in 1h")
-        assert warning.payload["embeds"][0]["url"] == "http://localhost:8000/auth/login"
-
-        notify.check_login(session, settings, now=expires + 5)
-        notify.check_login(session, settings, now=expires + 600)
-        assert [o.kind for o in outbox(session)] == ["login_expiring", "login_expired"]
+    (shown,) = client.get("/api/notifications").json()["destinations"]
+    assert shown["alerts"] == ["level_up"]
+    saved = client.patch(
+        f"/api/notifications/destinations/{dest_id}",
+        json={"alerts": ["login_expired", "level_up", "job_failed"]},
+    )
+    assert saved.status_code == 200
+    assert saved.json()["destinations"][0]["alerts"] == ["level_up", "job_failed"]
 
 
 # --- changes after a sync -----------------------------------------------------------------

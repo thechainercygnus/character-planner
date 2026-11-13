@@ -90,26 +90,13 @@ def test_default_schedule_comes_from_settings(settings: Settings) -> None:
     ]
 
 
-@pytest.mark.parametrize("expires_in", [None, -10])  # never logged in, login expired
-def test_scheduled_sync_is_skipped_without_a_valid_login(
-    engine: Engine, settings: Settings, expires_in: float | None
-) -> None:
-    if expires_in is not None:
-        store_token(engine, expires_in)
-    with Session(engine) as session:
-        with pytest.raises(jobs.NotLoggedIn):
-            jobs.sync_character(session, settings)
-        outcome = worker.sync_job(session, settings, None)
-    assert outcome.startswith("skipped: no valid login")
-
-
 @respx.mock
-def test_scheduled_sync_stores_snapshots_with_the_stored_login(
+def test_scheduled_sync_stores_snapshots_even_with_an_expired_login(
     engine: Engine, settings: Settings
 ) -> None:
-    store_token(engine, 3600)
+    store_token(engine, -10)  # the 24-hour login has expired: syncs carry on (#107)
     mock_character_api()
-    respx.post(oauth.TOKEN_URL).mock(  # app-only token for the item lookups after a sync
+    respx.post(oauth.TOKEN_URL).mock(  # the app's own token, for the sync and lookups
         return_value=httpx.Response(200, json={"access_token": "app", "expires_in": 86399})
     )
     respx.route().mock(return_value=httpx.Response(404, json={"error": "Not found"}))

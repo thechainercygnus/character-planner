@@ -214,11 +214,12 @@ def test_lines_a_request_causes_carry_its_id(
     client: TestClient, caplog: pytest.LogCaptureFixture
 ) -> None:
     caplog.handler.addFilter(RequestIdFilter())
-    with caplog.at_level(logging.INFO):
-        response = client.post("/api/sync")  # not logged in
-    assert response.status_code == 401
-    (skipped,) = [r for r in caplog.records if "Sync skipped" in r.getMessage()]
-    assert skipped.__dict__["request_id"] == response.headers["X-Request-ID"]
+    with caplog.at_level(logging.INFO), respx.mock:
+        respx.post(oauth.TOKEN_URL).mock(return_value=httpx.Response(401, json={}))
+        response = client.post("/api/sync")  # the client is refused: a 503
+    assert response.status_code == 503
+    (started,) = [r for r in caplog.records if r.getMessage().endswith(": started")]
+    assert started.__dict__["request_id"] == response.headers["X-Request-ID"]
 
 
 def test_an_unhandled_error_is_one_logged_line_and_a_500_with_the_id(

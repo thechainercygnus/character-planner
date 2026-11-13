@@ -85,7 +85,7 @@ def build_summary(
 ) -> str:
     lines = [f"# {character}", ""]
     if not latest:
-        lines.append("No snapshots yet. Log in at /auth/login, then POST /api/sync.")
+        lines.append("No snapshots yet. Sync first: POST /api/sync, or Sync now in the app.")
         return "\n".join(lines) + "\n"
 
     view = character_view(latest, icons)
