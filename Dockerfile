@@ -1,16 +1,23 @@
 # syntax=docker/dockerfile:1
 # Character Planner: one image for the API (serving the built frontend) and the worker.
 # See docs/deploy.md and ADR 0011.
+#
+# Runtimes match CI: Node 26 (LTS) builds the frontend, Python 3.14 runs the app, as in
+# .python-version. Dependabot skips Node majors and Python minors here: runtime upgrades
+# are deliberate changes, made together with CI and the dev setup.
 
-FROM node:25-slim AS frontend
+# uv as its own stage so Dependabot can update it (it doesn't read COPY --from images).
+FROM ghcr.io/astral-sh/uv:0.13.8 AS uv
+
+FROM node:26-slim AS frontend
 WORKDIR /frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
 COPY frontend/ ./
 RUN npm run build
 
-FROM python:3.15-slim AS app
-COPY --from=ghcr.io/astral-sh/uv:0.9.17 /uv /bin/uv
+FROM python:3.14-slim AS app
+COPY --from=uv /uv /bin/uv
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=never \
