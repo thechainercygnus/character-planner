@@ -27,7 +27,7 @@ Probe static item endpoints: `uv run character-planner-probe-items` (app-only to
 Look up Forever Companion items by id: `uv run character-planner-probe-companion --ids 270200-270260`.
 Build the item pool with progress: `uv run character-planner-pool` (first run takes a few minutes).
 Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `npm run dev`.
-Coverage (#55), report only for now: `uv run pytest --cov`; `npm run coverage` in `frontend/`. CI puts both in the run's summary.
+Coverage (#55): `uv run pytest --cov`; `npm run coverage` in `frontend/`. CI puts both in the run's summary and fails below the floors (#94): `fail_under` in `pyproject.toml`, `thresholds` in `frontend/vitest.config.ts`. Raise them when coverage grows; never lower them to pass.
 Run scheduled jobs once: `uv run character-planner-worker --once` (sync, then pool refresh).
 Changed a table in `db.py`? Add a migration in the same PR: `uv run alembic revision --autogenerate -m "..."`, then read and correct it (ADR 0022). `tests/test_migrations.py` fails until it matches. `uv run character-planner-db current` shows the schema version.
 Deploy (Docker): `docker compose up -d --build`; over Tailscale add `-f compose.tailscale.yaml`. See `docs/self-hosting.md`.

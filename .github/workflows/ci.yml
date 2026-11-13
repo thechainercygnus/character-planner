@@ -24,9 +24,12 @@ jobs:
       - run: uv run ruff check
       - run: uv run ruff format --check
       - run: uv run pyright
-      # Coverage (#55): report only; #94 sets the floor at Silver's 80% statements.
+      # Coverage (#55): fails below the floor in pyproject.toml (#94).
       - run: uv run pytest --cov --cov-report=term --cov-report=xml
+      # Shown even when the floor fails the step above; fails on its own below OpenSSF
+      # Silver's 80% of statements (#94).
       - name: Coverage summary
+        if: ${{ !cancelled() && hashFiles('coverage.xml') != '' }}
         run: |
           uv run python - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
           import xml.etree.ElementTree as ET
@@ -36,6 +39,9 @@ jobs:
           print()
           print(f"Statements **{lines:.1%}**, branches **{branches:.1%}**.")
           print()
+          if lines < 0.80:
+              print("**Below OpenSSF Silver's 80% of statements.**")
+              raise SystemExit(1)
           EOF
           {
             echo "<details><summary>Per file</summary>"
@@ -44,7 +50,8 @@ jobs:
             echo
             echo "</details>"
           } >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      - if: ${{ !cancelled() && hashFiles('coverage.xml') != '' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: backend-coverage
           path: coverage.xml
@@ -97,10 +104,12 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
-      # Tests with coverage (#55): report only; #94 sets the floor.
+      # Tests with coverage (#55): fails below the floors in vitest.config.ts (#94).
       - run: npm run coverage
-      - run: node scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      - if: ${{ !cancelled() && hashFiles('frontend/coverage/coverage-summary.json') != '' }}
+        run: node scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+      - if: ${{ !cancelled() && hashFiles('frontend/coverage/lcov.info') != '' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: frontend-coverage
           path: frontend/coverage/lcov.info
