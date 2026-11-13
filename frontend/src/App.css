@@ -1059,3 +1059,37 @@ ul.upcoming small {
 .snapshot-time {
   font-size: 0.85rem;
 }
+
+.class-quest-group ul {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.class-quest label {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.35rem 0;
+  cursor: pointer;
+}
+
+.class-quest input {
+  margin-top: 0.25rem;
+}
+
+.class-quest-level {
+  min-width: 1.6rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.class-quest small {
+  display: block;
+  color: var(--muted);
+}
+
+.class-quest.status-done strong {
+  color: var(--muted);
+  text-decoration: line-through;
+}
