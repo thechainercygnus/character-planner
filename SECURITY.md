@@ -35,5 +35,5 @@ Docker image and compose files, and the CI workflows. Examples:
 
 - Blizzard's Battle.net API and Forever Companion's API. Report those to their owners.
 - A self-hosted copy's own setup, for example an instance exposed to the internet without
-  HTTPS, or a leaked `.env`. The [deploy guide](docs/deploy.md) covers safe settings.
+  HTTPS, or a leaked `.env`. The [self-hosting guide](docs/self-hosting.md) covers safe settings.
 - Rate limiting or denial of service against a single-user self-hosted instance.

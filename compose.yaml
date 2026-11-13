@@ -1,5 +1,5 @@
 # Character Planner on one host: the API and the scheduled worker sharing a SQLite volume.
-# See docs/deploy.md and ADR 0011. Add compose.tailscale.yaml to serve it on your tailnet.
+# See docs/self-hosting.md and ADR 0011. Add compose.tailscale.yaml to serve it on your tailnet.
 #
 #   docker compose up -d --build
 #

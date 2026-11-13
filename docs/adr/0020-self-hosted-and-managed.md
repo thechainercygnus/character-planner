@@ -39,6 +39,6 @@ Discord setups and different scale, and should still be the same software.
 ## Consequences
 
 - Every new setting needs a sensible default for a single self-hoster.
-- Docs serve two readers: `docs/self-hosting.md` (#62) for anyone, and `docs/deploy.md`
-  for Bryce's homelab.
+- Docs: one guide, `docs/self-hosting.md` (#62), for anyone; the homelab's specifics are
+  sections of it (Bryce, 2026-11-13: merged rather than kept as a second guide).
 - Breaking changes to `.env` or the database need release notes and a migration.
