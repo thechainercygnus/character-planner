@@ -2,7 +2,7 @@
 # Character Planner: one image for the API (serving the built frontend) and the worker.
 # See docs/deploy.md and ADR 0011.
 
-FROM node:24-slim AS frontend
+FROM node:25-slim AS frontend
 WORKDIR /frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
