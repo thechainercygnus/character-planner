@@ -58,3 +58,17 @@ uv run pytest
 ```
 
 CI runs the same checks plus a gitleaks secret scan and a Docker build with a smoke test.
+
+## License
+
+Character Planner is free software under the [GNU Affero General Public License v3.0 or
+later](LICENSE). You may run, study, share and change it. If you run a modified version
+for other people to use over a network, you must offer them its source code under the same
+license.
+
+The license covers this project's code only:
+
+- World of Warcraft names, game data and icons belong to Blizzard Entertainment and are
+  used under its developer API terms. This project isn't affiliated with Blizzard.
+- Item and dungeon data come from [Forever Companion](https://forevercompanion.io), which
+  gathers them from ForeverChanges, Wowhead and Zockify. Its attribution terms apply.
