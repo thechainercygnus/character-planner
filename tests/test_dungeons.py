@@ -157,3 +157,13 @@ def test_refresh_reports_a_failed_list(engine: Engine) -> None:
     with Session(engine) as session, httpx.Client() as http:
         outcome = refresh_dungeons(session, http, pause=0)
     assert outcome.errors == ["dungeon list: HTTP 503"]
+
+
+def test_a_dungeons_zone_access_and_beta_lock() -> None:
+    hall = parse_dungeon(HALL)
+    assert hall is not None
+    # Inside Ironforge: Forever Companion marks it as the alliance's (#4).
+    assert (hall.zone, hall.access, hall.beta_locked) == ("Ironforge", "alliance", False)
+    deadmines = parse_dungeon(DEADMINES)
+    assert deadmines is not None
+    assert (deadmines.access, deadmines.beta_locked) == (None, False)

@@ -59,6 +59,10 @@ class Dungeon(BaseModel):
     min_level: int | None = None
     max_level: int | None = None
     status: str | None = None  # launch or announced
+    zone: str | None = None
+    # alliance or horde: the entrance is in a capital the other side can't reach (#4).
+    access: str | None = None
+    beta_locked: bool = False  # "not open in the beta yet"
     loot: list[Loot] = []
     rewards: list[QuestReward] = []
     # Every quest it lists, described: chain steps found here need no request (#7).
@@ -87,6 +91,10 @@ def _describe(response: httpx.Response) -> str:
     keys = sorted(body)[:8] if isinstance(body, dict) else type(body).__name__
     size = len(data) if isinstance(data, list | dict) else type(data).__name__
     return f"HTTP {response.status_code}, top-level keys {keys}, data size {size}"
+
+
+def _text(value: Any) -> str | None:
+    return value if isinstance(value, str) and value.strip() else None
 
 
 def _upper(value: Any) -> str | None:
@@ -153,6 +161,9 @@ def parse_dungeon(payload: Any) -> Dungeon | None:
         min_level=fields.as_int(fields.get(data, "minLevel")),
         max_level=fields.as_int(fields.get(data, "maxLevel")),
         status=fields.get(data, "status"),
+        zone=_text(fields.get(data, "zone")),
+        access=_text(fields.get(data, "access")),
+        beta_locked=fields.get(data, "betaLocked") is True,
         loot=loot,
         rewards=rewards,
         quests=quests,
