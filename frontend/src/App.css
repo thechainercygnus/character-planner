@@ -876,3 +876,26 @@ ul.upcoming small {
 .rule-numbers input[type='number'] {
   width: 5rem;
 }
+
+.landing-intro {
+  max-width: 46rem;
+  margin: 0 0 2rem;
+}
+.landing-intro h1 {
+  margin: 0.5rem 0 0.75rem;
+}
+.landing-tabs {
+  padding-left: 1.2rem;
+}
+.landing-tabs li + li {
+  margin-top: 0.3rem;
+}
+.guest-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.4rem;
+  margin: 0 0 0.9rem;
+}
+.guest-form input[type='number'] {
+  width: 4.5rem;
+}
