@@ -11,6 +11,11 @@ export const hallDrop: PoolSource = {
   quest_min_level: null,
   quest: null,
   chain: [],
+  rare_id: null,
+  rare: null,
+  zone: null,
+  spawns: null,
+  elite: false,
 }
 
 export const deadminesQuest: PoolSource = {
@@ -24,6 +29,11 @@ export const deadminesQuest: PoolSource = {
   quest_min_level: 20,
   quest: null,
   chain: [],
+  rare_id: null,
+  rare: null,
+  zone: null,
+  spawns: null,
+  elite: false,
 }
 
 export function poolItem(overrides: Partial<PoolItem>): PoolItem {
