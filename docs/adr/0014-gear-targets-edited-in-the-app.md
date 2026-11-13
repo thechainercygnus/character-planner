@@ -1,6 +1,7 @@
 # 0014: Gear targets edited in the app, one list with pins
 
-Status: accepted (2026-11-12). Replaces the pinned-target part of ADR 0012.
+Status: accepted (2026-11-12). Replaces the pinned-target part of ADR 0012. Brackets are
+replaced by per-target levels in ADR 0015; storage, editing and pins stand.
 
 ## Context
 

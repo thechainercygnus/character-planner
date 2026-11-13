@@ -87,7 +87,7 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/enchants.py`: enchant catalog from Blizzard recipe data and per-slot enchant advice (ADR 0010); gaps filled in `data/curated/enchants.yaml`
 - `src/character_planner/recommend.py`: best upgrades per slot and dungeons worth running, from the pool (ADR 0007); rules in `data/curated/recommend.yaml`
 - `src/character_planner/choices.py`: items dismissed in the app, on top of `exclude_item_ids` (ADR 0012)
-- `src/character_planner/targets.py`: gear targets edited in the app and pins from the Upgrades tab; `gear_targets.yaml` is the default (ADR 0014)
+- `src/character_planner/targets.py`: gear targets edited in the app and pins from the Upgrades tab; `gear_targets.yaml` is the default (ADR 0014); per-target levels (ADR 0015)
 - `src/character_planner/fields.py`: defensive JSON readers used by all parsers
 - `src/character_planner/views.py`: the only code that reads API response shapes; typed views for the frontend
 - `src/character_planner/summary.py`: Markdown rendering of those views, for pasting into a chat

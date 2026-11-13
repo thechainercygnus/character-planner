@@ -95,7 +95,17 @@ def test_login_sync_and_read_end_to_end(client: TestClient) -> None:
     assert character["stats"]["defense"] == 91
 
     gear = client.get("/api/gear").json()
-    assert gear["bracket_min_level"] == 15
+    assert gear["level"] == 18
+    # Level 18: the level-15 targets are current, the level-20 ones are coming up.
+    back = next(row for row in gear["rows"] if row["slot"] == "BACK")
+    assert [u["target"]["item"] for u in back["upcoming"]] == ["Cape of the Brotherhood"]
+    assert [s["slot"] for s in gear["later"]] == [
+        "HEAD",
+        "NECK",
+        "SHOULDER",
+        "FINGER_1",
+        "FINGER_2",
+    ]
     off_hand = next(row for row in gear["rows"] if row["slot"] == "OFF_HAND")
     assert off_hand["equipped"]["name"] == "Burnished Shield"
     assert off_hand["target"]["item"] == "Dwarven Defender"
@@ -125,7 +135,7 @@ def test_login_sync_and_read_end_to_end(client: TestClient) -> None:
     summary = client.get("/api/summary.md").text
     assert "- Level: 18" in summary
     assert "Kindlegem Girdle" in summary
-    assert "downgrade (ilvl 21 -> 17)" in summary
+    assert "outgrown (ilvl 21 -> 17)" in summary
     assert "upgrade (ilvl 14 -> 18, score +9.7); +27 armor, +7 Stamina [companion]" in summary
     assert "Forever Companion" in summary
 
@@ -168,7 +178,7 @@ def test_pool_refresh_lists_items_and_fills_target_ids(client: TestClient) -> No
 
     # Golemguard Chest and Spiritwraith Drape have no item_id in the YAML: the pool fills
     # them in by name.
-    targets = client.get("/api/targets").json()["brackets"][0]["targets"]
+    targets = client.get("/api/targets").json()["targets"]
     ids = {t["item"]: t["item_id"] for t in targets}
     assert ids["Golemguard Chest"] == 271098
     assert ids["Spiritwraith Drape"] == 271097
@@ -379,23 +389,17 @@ def test_gear_targets_can_be_edited_and_reset(client: TestClient) -> None:
     assert client.get("/api/gear").json()["targets_customised"] is False
 
     edited = {
-        "brackets": [
-            {
-                "min_level": 20,
-                "targets": [
-                    {"slot": "BACK", "item": " Cape of the Brotherhood ", "item_id": 5193},
-                    {"slot": "CHEST", "item": "Tunic of Westfall", "source": "Quest"},
-                ],
-            },
-            {"min_level": 10, "targets": [{"slot": "WAIST", "item": "Kindlegem Girdle"}]},
+        "targets": [
+            {"slot": "BACK", "item": "Spiritwraith Drape", "level": 15},
+            {"slot": "CHEST", "item": "Tunic of Westfall", "source": "Quest"},
+            {"slot": "BACK", "item": " Cape of the Brotherhood ", "item_id": 5193, "level": 20},
         ]
     }
     saved = client.put("/api/targets", json=edited).json()
-    assert [b["min_level"] for b in saved["brackets"]] == [10, 20]  # sorted by level
-    later = saved["brackets"][1]["targets"]
-    assert [(t["item"], t["priority"]) for t in later] == [
-        ("Cape of the Brotherhood", 1),
-        ("Tunic of Westfall", 2),
+    assert [(t["item"], t["level"], t["priority"]) for t in saved["targets"]] == [
+        ("Spiritwraith Drape", 15, 1),
+        ("Tunic of Westfall", None, 1),
+        ("Cape of the Brotherhood", 20, 2),
     ]
     assert client.get("/api/targets").json() == saved
     assert client.get("/api/gear").json()["targets_customised"] is True
@@ -405,42 +409,43 @@ def test_gear_targets_can_be_edited_and_reset(client: TestClient) -> None:
 
 
 @pytest.mark.parametrize(
-    "brackets",
+    "target",
     [
-        [{"min_level": 10, "targets": [{"slot": "TABARD", "item": "x"}]}],
-        [{"min_level": 10, "targets": [{"slot": "BACK", "item": ""}]}],
-        [{"min_level": 0, "targets": []}],
-        [{"min_level": 10, "targets": []}, {"min_level": 10, "targets": []}],
+        {"slot": "TABARD", "item": "x"},
+        {"slot": "BACK", "item": ""},
+        {"slot": "BACK", "item": "x", "level": 0},
+        {"slot": "BACK", "item": "x", "level": 81},
     ],
 )
-def test_gear_target_edits_are_validated(client: TestClient, brackets: list[object]) -> None:
-    assert client.put("/api/targets", json={"brackets": brackets}).status_code == 422
+def test_gear_target_edits_are_validated(client: TestClient, target: dict[str, object]) -> None:
+    assert client.put("/api/targets", json={"targets": [target]}).status_code == 422
     assert client.get("/api/gear").json()["targets_customised"] is False
 
 
 @respx.mock
-def test_pinning_adds_pool_items_to_the_current_bracket(client: TestClient) -> None:
+def test_pinning_adds_pool_items_to_their_slot(client: TestClient) -> None:
     log_in(client)
     mock_character_api()
     mock_battlenet()
-    client.post("/api/sync")  # level 18: the level-15 bracket
+    client.post("/api/sync")
     mock_companion_dungeons()
     client.post("/api/pool/refresh")
 
-    pinned = client.post("/api/targets/pins", json={"item_id": 5193, "slot": "BACK"}).json()
-    bracket = pinned["brackets"][0]
-    assert bracket["min_level"] == 15
-    cape = bracket["targets"][-1]
-    assert (cape["slot"], cape["item"], cape["item_id"]) == (
-        "BACK",
-        "Cape of the Brotherhood",
-        5193,
-    )
-    assert "Deadmines" in cape["source"]
-    assert cape["pinned"] is True
+    pinned = client.post("/api/targets/pins", json={"item_id": 2042, "slot": "MAIN_HAND"}).json()
+    main_hand = [t for t in pinned["targets"] if t["slot"] == "MAIN_HAND"]
+    staff = main_hand[-1]
+    assert [t["priority"] for t in main_hand] == [1, 2, 3]  # after the two planned weapons
+    assert (staff["item"], staff["item_id"], staff["level"]) == ("Staff of Westfall", 2042, None)
+    assert "Deadmines" in staff["source"]
+    assert staff["pinned"] is True
     # Pinning again changes nothing.
-    again = client.post("/api/targets/pins", json={"item_id": 5193, "slot": "BACK"}).json()
+    again = client.post("/api/targets/pins", json={"item_id": 2042, "slot": "MAIN_HAND"}).json()
     assert again == pinned
+
+    # A planned target ("Pin" on Upgrades) only gets the mark.
+    marked = client.post("/api/targets/pins", json={"item_id": 5193, "slot": "BACK"}).json()
+    capes = [t for t in marked["targets"] if t["item_id"] == 5193]
+    assert [(c["level"], c["pinned"]) for c in capes] == [(20, True)]
 
     unknown = client.post("/api/targets/pins", json={"item_id": 999999, "slot": "BACK"})
     assert unknown.status_code == 404
@@ -448,7 +453,7 @@ def test_pinning_adds_pool_items_to_the_current_bracket(client: TestClient) -> N
     assert bad_slot.status_code == 422
 
     unpinned = client.delete("/api/targets/pins/5193").json()
-    cape = next(t for t in unpinned["brackets"][0]["targets"] if t["item_id"] == 5193)
+    cape = next(t for t in unpinned["targets"] if t["item_id"] == 5193)
     assert cape["pinned"] is False  # still a target; remove it in the editor
     assert client.delete("/api/targets/pins/5193").status_code == 404
 
@@ -487,6 +492,7 @@ def test_items_pinned_before_targets_were_editable_move_into_them(
         assert jobs.migrate_target_choices(session, settings) == 1
         assert jobs.migrate_target_choices(session, settings) == 0
 
-    targets = client.get("/api/targets").json()["brackets"][0]["targets"]
-    assert [(t["slot"], t["item_id"]) for t in targets][-1] == ("WAIST", 5193)
+    # The cape is already a planned target, so the old pin marks it.
+    targets = client.get("/api/targets").json()["targets"]
+    assert [(t["slot"], t["pinned"]) for t in targets if t["item_id"] == 5193] == [("BACK", True)]
     assert client.get("/api/gear").json()["targets_customised"] is True

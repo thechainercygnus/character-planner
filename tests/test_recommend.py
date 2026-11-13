@@ -3,7 +3,7 @@ from typing import Any
 import pytest
 
 from character_planner.choices import Choices
-from character_planner.curated import Bracket, GearTarget, GearTargets
+from character_planner.curated import GearTarget, GearTargets
 from character_planner.pool import PoolItem, PoolSource, PoolView
 from character_planner.recommend import (
     EQUIPMENT_SLOTS,
@@ -164,14 +164,7 @@ def test_rings_fill_the_weaker_slot_first_without_repeating_its_pick() -> None:
 
 
 def test_marks_gear_targets() -> None:
-    targets = GearTargets(
-        brackets=[
-            Bracket(
-                min_level=15,
-                targets=[GearTarget(slot="BACK", item="Drape", source="x", item_id=1)],
-            )
-        ]
-    )
+    targets = GearTargets(targets=[GearTarget(slot="BACK", item="Drape", source="x", item_id=1)])
     pool = view(item(1, "Back", stats={"Stamina": 3}), item(2, "Back", stats={"Stamina": 2}))
     back = next(r for r in recommend(pool, {}, WEIGHTS, RULES, targets).rows if r.slot == "BACK")
     assert [c.is_target for c in back.candidates] == [True, False]
@@ -222,11 +215,11 @@ def test_dismissed_items_are_never_suggested() -> None:
 
 
 def targets_for(slot: str, *ids: int, pinned: bool = True) -> GearTargets:
-    """A bracket of targets for one slot, pinned unless said otherwise."""
+    """Targets for one slot, pinned unless said otherwise."""
     targets = [
         GearTarget(slot=slot, item=f"Item {i}", source="x", item_id=i, pinned=pinned) for i in ids
     ]
-    return GearTargets(brackets=[Bracket(min_level=15, targets=targets)])
+    return GearTargets(targets=targets)
 
 
 def test_pinned_targets_are_always_listed() -> None:

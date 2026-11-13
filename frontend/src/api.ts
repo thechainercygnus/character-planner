@@ -93,6 +93,8 @@ export interface GearTarget {
   item: string
   source: string
   priority: number | null
+  /** Not before this level (ADR 0015); the item's own level wins when higher or this is null. */
+  level: number | null
   /** Pinned with Make target: always listed on the Upgrades tab until worn (ADR 0014). */
   pinned: boolean
   item_id: number | null
@@ -102,14 +104,9 @@ export interface GearTarget {
   stats: Record<string, number>
 }
 
-export interface Bracket {
-  min_level: number
-  targets: GearTarget[]
-}
-
-/** Gear targets by level bracket: edited in the app, or gear_targets.yaml (ADR 0014). */
+/** Gear targets, one list (ADR 0015): edited in the app, or gear_targets.yaml (ADR 0014). Within a slot, list order is priority. */
 export interface GearTargets {
-  brackets: Bracket[]
+  targets: GearTarget[]
 }
 
 export type SourceName = 'blizzard' | 'companion' | 'manual'
@@ -149,6 +146,26 @@ export interface GearRow {
   score_delta: number | null
   verdict_basis: 'score' | 'item_level' | 'none'
   warning: string | null
+  /** The level the target counts from: planned, or the item's own when higher. */
+  level: number | null
+  /** The slot's next targets above the character's level, nearest first. */
+  upcoming: UpcomingTarget[]
+}
+
+/** A target above the character's level, shown early so you can prepare for it. */
+export interface UpcomingTarget {
+  target: GearTarget
+  target_info: TargetInfo | null
+  level: number | null
+  /** Against what's worn now; null without stat data. */
+  score_delta: number | null
+}
+
+/** A slot whose targets are all above the character's level. */
+export interface SlotOutlook {
+  slot: string
+  equipped: EquippedItem | null
+  upcoming: UpcomingTarget[]
 }
 
 export interface Attribution {
@@ -159,10 +176,10 @@ export interface Attribution {
 
 export interface GearPlan {
   level: number | null
-  bracket_min_level: number | null
-  next_bracket_level: number | null
-  next_bracket_size: number
+  /** Per slot, the target to go for now (ADR 0015). */
   rows: GearRow[]
+  /** Slots with nothing to go for yet. */
+  later: SlotOutlook[]
   attributions: Attribution[]
   /** Targets edited in the app rather than gear_targets.yaml. */
   targets_customised: boolean
@@ -257,7 +274,7 @@ export interface Candidate {
   stat_deltas: Record<string, number>
   /** False when the item needs a few more levels. */
   usable_now: boolean
-  /** A gear target in any bracket. */
+  /** One of the gear targets. */
   is_target: boolean
   /** A pinned target: listed even when it isn't a top pick. */
   pinned: boolean

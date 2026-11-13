@@ -6,7 +6,7 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
 from character_planner.companion import BASE_URL, CompanionInfo
-from character_planner.curated import Bracket, GearTarget, GearTargets
+from character_planner.curated import GearTarget, GearTargets
 from character_planner.dungeons import Dungeon, Loot, QuestReward, parse_dungeon
 from character_planner.pool import (
     build_pool,
@@ -86,20 +86,15 @@ def test_resolve_target_ids_by_unique_name() -> None:
         ]
     )
     targets = GearTargets(
-        brackets=[
-            Bracket(
-                min_level=18,
-                targets=[
-                    GearTarget(slot="CHEST", item="golemguard chest", source="HoT"),
-                    GearTarget(slot="LEGS", item="Twin Name", source="?"),
-                    GearTarget(slot="CHEST", item="Golemguard Chest", source="?", item_id=5),
-                ],
-            )
+        targets=[
+            GearTarget(slot="CHEST", item="golemguard chest", source="HoT"),
+            GearTarget(slot="LEGS", item="Twin Name", source="?"),
+            GearTarget(slot="CHEST", item="Golemguard Chest", source="?", item_id=5),
         ]
     )
-    resolved = resolve_target_ids(targets, pool).brackets[0].targets
+    resolved = resolve_target_ids(targets, pool).targets
     assert [t.item_id for t in resolved] == [271098, None, 5]  # ambiguous: left alone
-    assert targets.brackets[0].targets[0].item_id is None  # original untouched
+    assert targets.targets[0].item_id is None  # original untouched
 
 
 @respx.mock

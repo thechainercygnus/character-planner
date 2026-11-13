@@ -260,13 +260,10 @@ def resolve_target_ids(targets: GearTargets, pool: Mapping[int, PoolItem]) -> Ge
     for item in pool.values():
         by_name.setdefault(item.name.casefold().strip(), []).append(item.item_id)
 
-    brackets = []
-    for bracket in targets.brackets:
-        resolved = []
-        for target in bracket.targets:
-            matches = by_name.get(target.item.casefold().strip(), [])
-            if target.item_id is None and len(matches) == 1:
-                target = target.model_copy(update={"item_id": matches[0]})
-            resolved.append(target)
-        brackets.append(bracket.model_copy(update={"targets": resolved}))
-    return targets.model_copy(update={"brackets": brackets})
+    resolved = []
+    for target in targets.targets:
+        matches = by_name.get(target.item.casefold().strip(), [])
+        if target.item_id is None and len(matches) == 1:
+            target = target.model_copy(update={"item_id": matches[0]})
+        resolved.append(target)
+    return targets.model_copy(update={"targets": resolved})

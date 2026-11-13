@@ -1,9 +1,10 @@
-"""Hand-curated planning data (gear targets) kept as YAML in data/curated/."""
+"""Gear targets: data/curated/gear_targets.yaml is the default (ADR 0014, 0015)."""
 
 from pathlib import Path
+from typing import Any
 
 import yaml
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 
 class GearTarget(BaseModel):
@@ -11,6 +12,9 @@ class GearTarget(BaseModel):
     item: str
     source: str
     priority: int | None = None
+    # Not before this level (ADR 0015): when you plan to go for it. The item's own level
+    # (required level, or its quest or dungeon level) wins when it's higher or this is blank.
+    level: int | None = None
     # Pinned with "Make target" on the Upgrades tab (ADR 0014): always listed there until
     # worn, whatever its rank. Targets from the YAML aren't pinned; they're only tagged.
     pinned: bool = False
@@ -35,40 +39,57 @@ class GearTarget(BaseModel):
         )
 
 
-class Bracket(BaseModel):
-    min_level: int
+class GearTargets(BaseModel):
+    """One flat list of targets (ADR 0015). Within a slot, list order is priority."""
+
     targets: list[GearTarget]
 
+    @model_validator(mode="before")
+    @classmethod
+    def _from_brackets(cls, data: Any) -> Any:
+        """Read targets saved in level brackets (ADR 0014): each target takes its
+        bracket's level as its own, and a slot keeps bracket order, then priority."""
+        if not isinstance(data, dict) or "brackets" not in data or "targets" in data:
+            return data
+        brackets = sorted(data["brackets"], key=lambda b: b.get("min_level", 0))
+        targets = []
+        for bracket in brackets:
+            ranked = sorted(
+                bracket.get("targets", []),
+                key=lambda t: (t.get("priority") is None, t.get("priority") or 0),
+            )
+            for target in ranked:
+                targets.append({"level": bracket.get("min_level"), **target})
+        return {"targets": targets}
 
-class GearTargets(BaseModel):
-    brackets: list[Bracket]
+    @model_validator(mode="after")
+    def _rank(self) -> GearTargets:
+        """Priority is a target's position among its slot's targets, from 1."""
+        seen: dict[str, int] = {}
+        for target in self.targets:
+            seen[target.slot] = seen.get(target.slot, 0) + 1
+            target.priority = seen[target.slot]
+        return self
 
-    def for_level(self, level: int) -> Bracket | None:
-        """The highest bracket at or below the level: what to chase right now."""
-        eligible = [b for b in self.brackets if b.min_level <= level]
-        return max(eligible, key=lambda b: b.min_level, default=None)
+    def for_slot(self, slot: str) -> list[GearTarget]:
+        """A slot's targets in priority order."""
+        return [t for t in self.targets if t.slot == slot]
 
-    def next_after(self, level: int) -> Bracket | None:
-        upcoming = [b for b in self.brackets if b.min_level > level]
-        return min(upcoming, key=lambda b: b.min_level, default=None)
+    def slots(self) -> list[str]:
+        """Slots with targets, in order of first appearance."""
+        return list(dict.fromkeys(t.slot for t in self.targets))
 
     def item_ids(self) -> list[int]:
-        """Hand-entered item ids across all brackets, deduplicated."""
-        ids = (t.item_id for b in self.brackets for t in b.targets if t.item_id is not None)
-        return list(dict.fromkeys(ids))
+        """Hand-entered item ids, deduplicated."""
+        return list(dict.fromkeys(t.item_id for t in self.targets if t.item_id is not None))
 
     def pinned_ids(self) -> set[int]:
-        """Item ids of pinned targets, in any bracket."""
-        return {
-            t.item_id
-            for b in self.brackets
-            for t in b.targets
-            if t.pinned and t.item_id is not None
-        }
+        """Item ids of pinned targets."""
+        return {t.item_id for t in self.targets if t.pinned and t.item_id is not None}
 
     def item_names(self) -> list[str]:
-        """Every target item name across all brackets, deduplicated, in file order."""
-        return list(dict.fromkeys(t.item for b in self.brackets for t in b.targets))
+        """Every target item name, deduplicated, in list order."""
+        return list(dict.fromkeys(t.item for t in self.targets))
 
 
 def load_gear_targets(path: Path) -> GearTargets:

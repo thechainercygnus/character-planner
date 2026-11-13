@@ -2,7 +2,7 @@ import json
 from typing import Any
 
 from character_planner.companion import CompanionInfo
-from character_planner.curated import Bracket, GearTarget, GearTargets
+from character_planner.curated import GearTarget, GearTargets
 from character_planner.db import CatalogItem, Snapshot
 from character_planner.scoring import Weights
 from character_planner.views import (
@@ -88,7 +88,7 @@ def _latest() -> dict[str, Snapshot]:
 
 
 def _targets(*targets: GearTarget) -> GearTargets:
-    return GearTargets(brackets=[Bracket(min_level=15, targets=list(targets))])
+    return GearTargets(targets=list(targets))
 
 
 def _catalog(name: str, data: dict[str, Any] | None) -> dict[str, CatalogItem]:
@@ -291,3 +291,75 @@ def test_equipment_reads_enchantments_and_weapon_speed() -> None:
     assert items["MAIN_HAND"].attack_speed == 2.1
     assert items["CHEST"].enchantments == []
     assert items["CHEST"].attack_speed is None
+
+
+# --- current and upcoming targets per slot (ADR 0015) ---------------------------------------
+
+
+def _legs(name: str, level: int | None = None, **fields: Any) -> GearTarget:
+    return GearTarget(slot="LEGS", item=name, source="?", level=level, **fields)
+
+
+def test_the_current_target_is_the_last_one_reached_by_level() -> None:
+    # The character is level 18.
+    targets = _targets(_legs("Early", 12), _legs("Now", 15), _legs("Next", 20), _legs("Later", 25))
+    plan = gear_plan(_latest(), targets)
+    (row,) = plan.rows
+    assert (row.target.item, row.level) == ("Now", 15)
+    assert [(u.target.item, u.level) for u in row.upcoming] == [("Next", 20), ("Later", 25)]
+    assert plan.later == []
+
+
+def test_targets_are_ordered_by_level_then_list_order() -> None:
+    targets = _targets(_legs("Late", 17), _legs("First", 15), _legs("Second", 15))
+    plan = gear_plan(_latest(), targets)
+    assert plan.rows[0].target.item == "Late"
+    second = gear_plan(_latest(), _targets(_legs("First", 15), _legs("Second", 15)))
+    assert second.rows[0].target.item == "Second"  # the last reached, ties in list order
+
+
+def test_slots_with_only_higher_targets_are_coming_up() -> None:
+    targets = _targets(
+        GearTarget(slot="HEAD", item="Helm", source="Crafted", level=20),
+        GearTarget(slot="NECK", item="Locket", source="?", level=19),
+    )
+    plan = gear_plan(_latest(), targets)
+    assert plan.rows == []
+    assert [(s.slot, [u.target.item for u in s.upcoming]) for s in plan.later] == [
+        ("NECK", ["Locket"]),
+        ("HEAD", ["Helm"]),
+    ]  # nearest first
+    assert plan.later[1].equipped is not None  # Flying Tiger Goggles
+
+
+def test_the_items_own_level_wins_when_higher() -> None:
+    # Planned for 15, but the item needs 19 (Blizzard) or 22 (the pool): coming up.
+    catalog = _catalog("Pants", {"id": 7, "required_level": 19})
+    plan = gear_plan(_latest(), _targets(_legs("Pants", 15)), catalog)
+    assert [u.level for s in plan.later for u in s.upcoming] == [19]
+    pool = gear_plan(_latest(), _targets(_legs("Pool Pants", 15, item_id=8)), item_levels={8: 22})
+    assert [u.level for s in pool.later for u in s.upcoming] == [22]
+    # Without a planned level, the item's own level places it.
+    own = gear_plan(_latest(), _targets(_legs("Own", item_id=8)), item_levels={8: 16})
+    assert own.rows[0].level == 16
+    # Nothing known at all: reachable now.
+    assert gear_plan(_latest(), _targets(_legs("Unknown"))).rows[0].level is None
+
+
+def test_wearing_a_later_target_moves_the_slot_on() -> None:
+    targets = _targets(_legs("Now", 15), _legs("Stormwind Guard Leggings", 20), _legs("After", 25))
+    (row,) = gear_plan(_latest(), targets).rows
+    assert (row.target.item, row.verdict) == ("Stormwind Guard Leggings", "reached")
+    assert [u.target.item for u in row.upcoming] == ["After"]
+
+
+def test_upcoming_is_capped_per_slot_and_scored_against_whats_worn() -> None:
+    companion = {1: CompanionInfo(item_id=1, armor=200, stats={"Stamina": 5})}
+    targets = _targets(
+        _legs("Now", 15),
+        *(_legs(f"Up {n}", 20 + n, item_id=1 if n == 0 else None) for n in range(5)),
+    )
+    (row,) = gear_plan(_latest(), targets, companion=companion, weights=WEIGHTS).rows
+    assert [u.target.item for u in row.upcoming] == ["Up 0", "Up 1", "Up 2"]
+    assert row.upcoming[0].score_delta is not None and row.upcoming[0].score_delta > 0
+    assert row.upcoming[1].score_delta is None  # no item data

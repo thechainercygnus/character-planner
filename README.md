@@ -1,7 +1,8 @@
 # character-planner
 
 Planner for a WoW Forever character: pulls data from the Battle.net Profile API, keeps a
-history of snapshots, and compares gear against curated targets for each level bracket.
+history of snapshots, and compares gear against curated targets: per slot, the one to go for
+at your level and the ones coming up.
 
 The Forever API is undocumented, so the app stores raw responses and models them only
 after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
@@ -31,7 +32,7 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Item pool for your level window (JSON) | `/api/pool` |
 | Best upgrades per slot + dungeons worth running | `/api/recommendations` (rules in `data/curated/recommend.yaml`) |
 | Edit gear targets (YAML is the default) | `PUT`/`DELETE /api/targets` (or **Edit targets** on the Plan tab) |
-| Pin an item as a target for your level | `POST /api/targets/pins`, `DELETE /api/targets/pins/{item_id}` (or **Make target** in an expanded Upgrades row) |
+| Pin an item as a target | `POST /api/targets/pins`, `DELETE /api/targets/pins/{item_id}` (or **Make target** in an expanded Upgrades row) |
 | Never suggest an item | `GET /api/choices`, `PUT`/`DELETE /api/choices/{item_id}` (or **Never suggest**) |
 | Progress over time (one point per sync, gear changes, level-ups) | `/api/progress` |
 | Talent plan vs synced talents (next point, off-plan points) | `/api/talents`, plan in `data/curated/talent_plan.yaml` or edit it in the app |

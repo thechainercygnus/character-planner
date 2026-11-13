@@ -1,9 +1,15 @@
-# Gear targets per level bracket, Alliance Protection Warrior.
+# Gear targets, Alliance Protection Warrior: one list, grouped by slot (ADR 0015).
 # The default: targets edited in the app (Plan tab > Edit targets, or Make target on the
 # Upgrades tab) are saved in the database and win until Reset (ADR 0014).
 # Source: Timesaver's WoW Forever leveling gear list
 # https://timesaver.gg/tools/wow-forever/leveling-gear/warrior/protection
 # Copied from the Leveling Playbook doc; update both until the playbook moves into the repo.
+#
+# The Plan tab shows, per slot, the target you can go for now and the ones coming up.
+# level: not before this level, i.e. when you plan to go for it. The item's own level
+# (required level, else its quest or dungeon level) wins when it's higher or level is left
+# out. The levels below are the guide's brackets (15 and 20).
+# Within a slot, list order is priority among targets at the same level.
 #
 # slot values are Battle.net equipment slot types (HEAD, NECK, OFF_HAND, FINGER_1...).
 #
@@ -13,37 +19,32 @@
 # or in the item's Wowhead URL (wowhead.com/forever/item=<id>).
 # Forever-new items (Hall of Thanes drops) aren't in that search, so add what you know by
 # hand from Wowhead or ForeverDB; every field is optional:
-#   {slot: WAIST, item: Kindlegem Girdle, source: "...", item_level: 22, armor_type: Mail,
-#    armor: 120, stats: {Stamina: 5, Strength: 3}}
+#   {slot: WAIST, item: Kindlegem Girdle, source: "...", level: 15, item_level: 22,
+#    armor_type: Mail, armor: 120, stats: {Stamina: 5, Strength: 3}}
 
-brackets:
-  - min_level: 15
-    targets:
-      - {slot: OFF_HAND, item: Dwarven Defender, item_id: 6187, source: "Quest: In Defense of the King's Lands (Loch Modan)", priority: 1}
-      - {slot: WAIST, item: Kindlegem Girdle, item_id: 270230, source: "Hall of Thanes - Magmatus", priority: 2}
-      - {slot: LEGS, item: Direhammer Leggings, item_id: 270260, source: "Hall of Thanes - Durgen Dirgehammer", priority: 3}
-      - {slot: WRIST, item: Cryptwalker Bracers, source: "Quest: The Restless Dead (Hall of Thanes)", priority: 4}
-      - {slot: HANDS, item: Flamefist Grips, item_id: 270231, source: "Hall of Thanes - Magmatus", priority: 5}
-      - {slot: MAIN_HAND, item: "Durgen's Crescent Axe", item_id: 270256, source: "Hall of Thanes - Durgen Dirgehammer", priority: 6}
-      - {slot: RANGED, item: Calibrated Blunderbuss, source: "Quest: Old Ironforge Incursion (Hall of Thanes)", priority: 7}
-      - {slot: CHEST, item: Golemguard Chest, source: "Hall of Thanes - Plunder", priority: 8}
-      - {slot: FEET, item: Treads of the Protector Golem, item_id: 270229, source: "Hall of Thanes - Plunder", priority: 9}
-      - {slot: BACK, item: Spiritwraith Drape, source: "Hall of Thanes - Faldrim Anvilmar", priority: 10}
-
-  - min_level: 20
-    targets:
-      - {slot: HEAD, item: "Guard's Silvered Chain Helm", item_id: 250529, source: "Crafted: Blacksmithing (AH)"}
-      - {slot: NECK, item: Tarnished Locket, source: "Quest: Remember That I Love You (Riverglades)"}
-      - {slot: SHOULDER, item: Durable Chain Shoulders, item_id: 6189, source: "Quest: WANTED: Chok'sul (Loch Modan)"}
-      - {slot: BACK, item: Cape of the Brotherhood, item_id: 5193, source: "Deadmines - Edwin VanCleef"}
-      - {slot: CHEST, item: Tunic of Westfall, item_id: 2041, source: "Quest: The Defias Brotherhood (Deadmines)"}
-      - {slot: WRIST, item: Bandsaw Wristbands, source: "Deadmines - Sneed"}
-      - {slot: HANDS, item: Gloves of the Fang, source: "Wailing Caverns - Druid of the Fang"}
-      - {slot: WAIST, item: "Cobrahn's Grasp", item_id: 6460, source: "Wailing Caverns - Lord Cobrahn"}
-      - {slot: LEGS, item: Leggings of the Fang, source: "Wailing Caverns - Lord Cobrahn"}
-      - {slot: FEET, item: Footpads of the Fang, source: "Wailing Caverns - Lord Serpentis"}
-      - {slot: FINGER_1, item: First Mate Band, source: "Deadmines - Mr. Smite"}
-      - {slot: FINGER_2, item: "Slain Baron's Signet", source: "Quest: Abominable Creatures (Ruins of Lordaeron)"}
-      - {slot: MAIN_HAND, item: "Butcher's Cleaver", item_id: 1292, source: "Shadowfang Keep - Razorclaw the Butcher"}
-      - {slot: OFF_HAND, item: "Kresh's Back", source: "Wailing Caverns - Kresh"}
-      - {slot: RANGED, item: Dull Sawblade, source: "Deadmines - Sneed's Shredder"}
+targets:
+  - {slot: HEAD, item: Guard's Silvered Chain Helm, item_id: 250529, source: "Crafted: Blacksmithing (AH)", level: 20}
+  - {slot: NECK, item: Tarnished Locket, source: "Quest: Remember That I Love You (Riverglades)", level: 20}
+  - {slot: SHOULDER, item: Durable Chain Shoulders, item_id: 6189, source: "Quest: WANTED: Chok'sul (Loch Modan)", level: 20}
+  - {slot: BACK, item: Spiritwraith Drape, source: "Hall of Thanes - Faldrim Anvilmar", level: 15}
+  - {slot: BACK, item: Cape of the Brotherhood, item_id: 5193, source: "Deadmines - Edwin VanCleef", level: 20}
+  - {slot: CHEST, item: Golemguard Chest, source: "Hall of Thanes - Plunder", level: 15}
+  - {slot: CHEST, item: Tunic of Westfall, item_id: 2041, source: "Quest: The Defias Brotherhood (Deadmines)", level: 20}
+  - {slot: WRIST, item: Cryptwalker Bracers, source: "Quest: The Restless Dead (Hall of Thanes)", level: 15}
+  - {slot: WRIST, item: Bandsaw Wristbands, source: "Deadmines - Sneed", level: 20}
+  - {slot: HANDS, item: Flamefist Grips, item_id: 270231, source: "Hall of Thanes - Magmatus", level: 15}
+  - {slot: HANDS, item: Gloves of the Fang, source: "Wailing Caverns - Druid of the Fang", level: 20}
+  - {slot: WAIST, item: Kindlegem Girdle, item_id: 270230, source: "Hall of Thanes - Magmatus", level: 15}
+  - {slot: WAIST, item: Cobrahn's Grasp, item_id: 6460, source: "Wailing Caverns - Lord Cobrahn", level: 20}
+  - {slot: LEGS, item: Direhammer Leggings, item_id: 270260, source: "Hall of Thanes - Durgen Dirgehammer", level: 15}
+  - {slot: LEGS, item: Leggings of the Fang, source: "Wailing Caverns - Lord Cobrahn", level: 20}
+  - {slot: FEET, item: Treads of the Protector Golem, item_id: 270229, source: "Hall of Thanes - Plunder", level: 15}
+  - {slot: FEET, item: Footpads of the Fang, source: "Wailing Caverns - Lord Serpentis", level: 20}
+  - {slot: FINGER_1, item: First Mate Band, source: "Deadmines - Mr. Smite", level: 20}
+  - {slot: FINGER_2, item: Slain Baron's Signet, source: "Quest: Abominable Creatures (Ruins of Lordaeron)", level: 20}
+  - {slot: MAIN_HAND, item: Durgen's Crescent Axe, item_id: 270256, source: "Hall of Thanes - Durgen Dirgehammer", level: 15}
+  - {slot: MAIN_HAND, item: Butcher's Cleaver, item_id: 1292, source: "Shadowfang Keep - Razorclaw the Butcher", level: 20}
+  - {slot: OFF_HAND, item: Dwarven Defender, item_id: 6187, source: "Quest: In Defense of the King's Lands (Loch Modan)", level: 15}
+  - {slot: OFF_HAND, item: Kresh's Back, source: "Wailing Caverns - Kresh", level: 20}
+  - {slot: RANGED, item: Calibrated Blunderbuss, source: "Quest: Old Ironforge Incursion (Hall of Thanes)", level: 15}
+  - {slot: RANGED, item: Dull Sawblade, source: "Deadmines - Sneed's Shredder", level: 20}

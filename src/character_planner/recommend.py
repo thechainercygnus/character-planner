@@ -85,7 +85,7 @@ class Candidate(BaseModel):
     armor_delta: int | None = None
     stat_deltas: dict[str, int] = {}
     usable_now: bool  # required level reached
-    is_target: bool = False  # a gear target in any bracket
+    is_target: bool = False  # one of the gear targets
     pinned: bool = False  # a pinned target: listed even below the top picks
 
 

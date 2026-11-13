@@ -786,22 +786,32 @@ button.link {
   width: min(960px, calc(100vw - 2rem));
 }
 
-.target-bracket {
+.target-slot {
   border: 1px solid var(--border);
   border-radius: 8px;
   margin: 0 0 0.9rem;
   padding: 0.5rem 0.9rem 0.7rem;
 }
-
-.target-bracket legend {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
+.target-slot legend {
   padding: 0 0.4rem;
+  font-weight: 600;
 }
-
-.target-bracket legend input {
-  width: 4rem;
+.target-rows .level-input {
+  width: 4.5rem;
+}
+.add-slot {
+  margin: 0 0 0.9rem;
+}
+ul.upcoming {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+ul.upcoming li + li {
+  margin-top: 0.3rem;
+}
+ul.upcoming small {
+  display: block;
 }
 
 .target-rows {

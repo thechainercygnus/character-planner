@@ -11,6 +11,7 @@ function target(slot: string, item: string, overrides: Partial<GearTarget> = {})
     item,
     source: 'Somewhere',
     priority: null,
+    level: null,
     pinned: false,
     item_id: null,
     item_level: null,
@@ -22,8 +23,10 @@ function target(slot: string, item: string, overrides: Partial<GearTarget> = {})
 }
 
 const targets: GearTargets = {
-  brackets: [
-    { min_level: 15, targets: [target('WAIST', 'Old Belt'), target('BACK', 'Old Cape', { item_id: 7, armor: 20 })] },
+  targets: [
+    target('WAIST', 'Old Belt', { level: 15 }),
+    target('BACK', 'Old Cape', { item_id: 7, armor: 20, level: 15 }),
+    target('BACK', 'New Cape', { level: 20 }),
   ],
 }
 const pool: PoolView = { level: 18, faction: 'alliance', window: [15, 28], items: [girdle] }
@@ -45,7 +48,7 @@ async function openEditor(customised = false) {
     </QueryClientProvider>,
   )
   fireEvent.click(screen.getByRole('button', { name: /^Edit targets/ }))
-  await screen.findByLabelText('Bracket 1 target 1 item')
+  await screen.findByLabelText('Back target 1 item')
 }
 
 function savedBody(fetchMock: ReturnType<typeof stubFetch>): GearTargets {
@@ -58,54 +61,54 @@ describe('TargetsEditor', () => {
     vi.unstubAllGlobals()
   })
 
-  it('reorders, removes and adds targets, keeping hand-entered fields', async () => {
+  it('reorders within a slot, removes and adds targets, keeping hand-entered fields', async () => {
     const fetchMock = stubFetch()
     await openEditor()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Move bracket 1 target 2 up' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Remove bracket 1 target 2' })) // Old Belt
+    fireEvent.click(screen.getByRole('button', { name: 'Move Back target 2 up' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Waist target 1' }))
+    fireEvent.change(screen.getByLabelText('Slot for a new target'), { target: { value: 'NECK' } })
     fireEvent.click(screen.getByText('Add target'))
-    fireEvent.change(screen.getByLabelText('Bracket 1 target 2 slot'), { target: { value: 'NECK' } })
-    fireEvent.change(screen.getByLabelText('Bracket 1 target 2 item'), { target: { value: 'Locket' } })
-    fireEvent.click(screen.getAllByLabelText('Pinned')[1])
+    fireEvent.change(screen.getByLabelText('Neck target 1 item'), { target: { value: 'Locket' } })
+    fireEvent.change(screen.getByLabelText('Neck target 1 level'), { target: { value: '22' } })
+    fireEvent.change(screen.getByLabelText('Back target 1 level'), { target: { value: '' } })
+    fireEvent.click(screen.getByLabelText('Neck target 1 pinned'))
     fireEvent.click(screen.getByText('Save'))
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/targets', expect.objectContaining({ method: 'PUT' })))
-    const saved = savedBody(fetchMock)
-    expect(saved.brackets[0].min_level).toBe(15)
-    expect(saved.brackets[0].targets.map((t) => [t.slot, t.item, t.item_id, t.armor, t.pinned])).toEqual([
-      ['BACK', 'Old Cape', 7, 20, false],
-      ['NECK', 'Locket', null, null, true],
+    expect(savedBody(fetchMock).targets.map((t) => [t.slot, t.item, t.item_id, t.armor, t.level, t.pinned])).toEqual([
+      ['BACK', 'New Cape', null, null, null, false],
+      ['BACK', 'Old Cape', 7, 20, 15, false],
+      ['NECK', 'Locket', null, null, 22, true],
     ])
   })
 
-  it('fills the item id and source from the pool by name', async () => {
+  it('fills the item id and source from the pool by name, and shows its level', async () => {
     const fetchMock = stubFetch()
     await openEditor()
 
-    fireEvent.click(screen.getByText('Add target'))
-    fireEvent.change(screen.getByLabelText('Bracket 1 target 3 item'), { target: { value: 'kindlegem girdle' } })
-    expect((screen.getByLabelText('Bracket 1 target 3 source') as HTMLInputElement).value).toBe(
-      'Hall of Thanes – Plunder',
+    fireEvent.click(screen.getByText('Add waist target'))
+    fireEvent.change(screen.getByLabelText('Waist target 2 item'), { target: { value: 'kindlegem girdle' } })
+    expect((screen.getByLabelText('Waist target 2 source') as HTMLInputElement).value).toBe('Hall of Thanes – Plunder')
+    expect((screen.getByLabelText('Waist target 2 level') as HTMLInputElement).placeholder).toBe(
+      String(girdle.effective_level ?? 'auto'),
     )
     fireEvent.click(screen.getByText('Save'))
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/targets', expect.objectContaining({ method: 'PUT' })))
-    expect(savedBody(fetchMock).brackets[0].targets[2].item_id).toBe(girdle.item_id)
+    expect(savedBody(fetchMock).targets[3].item_id).toBe(girdle.item_id)
   })
 
-  it('adds a bracket above the highest and blocks bad levels and blank names', async () => {
+  it('blocks bad levels and blank names', async () => {
     stubFetch()
     await openEditor()
 
-    fireEvent.click(screen.getByText('Add bracket'))
-    expect((screen.getByLabelText('Bracket 2 level') as HTMLInputElement).value).toBe('20')
-    fireEvent.change(screen.getByLabelText('Bracket 2 level'), { target: { value: '15' } })
-    expect(screen.getByText('There are two brackets for level 15.')).toBeTruthy()
+    fireEvent.change(screen.getByLabelText('Back target 1 level'), { target: { value: '81' } })
+    expect(screen.getByText('Levels must be whole numbers from 1 to 80, or blank.')).toBeTruthy()
     expect((screen.getByText('Save') as HTMLButtonElement).disabled).toBe(true)
 
-    fireEvent.click(screen.getAllByText('Remove bracket')[1])
-    fireEvent.click(screen.getByText('Add target'))
+    fireEvent.change(screen.getByLabelText('Back target 1 level'), { target: { value: '15' } })
+    fireEvent.click(screen.getByText('Add back target'))
     expect(screen.getByText('Every target needs an item name.')).toBeTruthy()
   })
 

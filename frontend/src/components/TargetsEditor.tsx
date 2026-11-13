@@ -3,34 +3,21 @@ import { useRef, useState } from 'react'
 import { api, EQUIPMENT_SLOTS, slotLabel, type GearTarget, type GearTargets, type PoolItem } from '../api'
 import { sourceText } from '../format'
 
-/** A target as edited: the level is text until saved; everything else rides along. */
-type DraftBracket = { minLevel: string; targets: GearTarget[] }
-
-function toDraft(targets: GearTargets): DraftBracket[] {
-  return targets.brackets.map((b) => ({ minLevel: String(b.min_level), targets: b.targets }))
+/** An error message for the first problem, or null when the targets can be saved. */
+function problem(targets: GearTarget[]): string | null {
+  if (targets.some((t) => t.item.trim() === '')) return 'Every target needs an item name.'
+  if (targets.some((t) => t.level !== null && (!Number.isInteger(t.level) || t.level < 1 || t.level > 80)))
+    return 'Levels must be whole numbers from 1 to 80, or blank.'
+  return null
 }
 
-/** Saveable targets, or an error message for the first problem. */
-function parseDraft(draft: DraftBracket[]): GearTargets | string {
-  const levels = new Set<number>()
-  const brackets = []
-  for (const bracket of draft) {
-    const level = Number(bracket.minLevel)
-    if (!Number.isInteger(level) || level < 1 || level > 80) return 'Bracket levels must be whole numbers from 1 to 80.'
-    if (levels.has(level)) return `There are two brackets for level ${level}.`
-    levels.add(level)
-    if (bracket.targets.some((t) => t.item.trim() === '')) return 'Every target needs an item name.'
-    brackets.push({ min_level: level, targets: bracket.targets })
-  }
-  return { brackets }
-}
-
-function blankTarget(): GearTarget {
+function blankTarget(slot: string): GearTarget {
   return {
-    slot: 'HEAD',
+    slot,
     item: '',
     source: '',
     priority: null,
+    level: null,
     pinned: false,
     item_id: null,
     item_level: null,
@@ -40,14 +27,18 @@ function blankTarget(): GearTarget {
   }
 }
 
-/** Plan tab: edit the gear targets in a modal (ADR 0014). The YAML stays the default. */
+/**
+ * Plan tab: edit the gear targets in a modal (ADR 0014, 0015). One list, shown by slot; a
+ * slot's order breaks ties between targets at the same level. The YAML stays the default.
+ */
 export function TargetsEditor({ customised }: { customised: boolean }) {
   const queryClient = useQueryClient()
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [open, setOpen] = useState(false)
   const targets = useQuery({ queryKey: ['targets'], queryFn: api.targets, enabled: open })
   const pool = useQuery({ queryKey: ['pool'], queryFn: api.pool, enabled: open })
-  const [draft, setDraft] = useState<DraftBracket[] | null>(null)
+  const [draft, setDraft] = useState<GearTarget[] | null>(null)
+  const [newSlot, setNewSlot] = useState<string>(EQUIPMENT_SLOTS[0])
 
   const onSaved = (saved: GearTargets) => {
     queryClient.setQueryData(['targets'], saved)
@@ -60,36 +51,31 @@ export function TargetsEditor({ customised }: { customised: boolean }) {
   const save = useMutation({ mutationFn: api.saveTargets, onSuccess: onSaved })
   const reset = useMutation({ mutationFn: api.resetTargets, onSuccess: onSaved })
 
-  const brackets = draft ?? (targets.data ? toDraft(targets.data) : [])
-  const parsed = parseDraft(brackets)
-  const byName = new Map<string, PoolItem>((pool.data?.items ?? []).map((item) => [item.name.toLowerCase(), item]))
+  const list = draft ?? targets.data?.targets ?? []
+  const error = problem(list)
+  const poolItems = pool.data?.items ?? []
+  const byName = new Map<string, PoolItem>(poolItems.map((item) => [item.name.toLowerCase(), item]))
+  const byId = new Map<number, PoolItem>(poolItems.map((item) => [item.item_id, item]))
+  // Slots with targets, in equipment order.
+  const slots = EQUIPMENT_SLOTS.filter((slot) => list.some((t) => t.slot === slot))
 
-  const setBracket = (index: number, bracket: DraftBracket) =>
-    setDraft(brackets.map((b, i) => (i === index ? bracket : b)))
-  const setTarget = (b: number, t: number, change: Partial<GearTarget>) =>
-    setBracket(b, {
-      ...brackets[b],
-      targets: brackets[b].targets.map((target, i) => (i === t ? { ...target, ...change } : target)),
-    })
-  const rename = (b: number, t: number, item: string) => {
+  const setTarget = (index: number, change: Partial<GearTarget>) =>
+    setDraft(list.map((target, i) => (i === index ? { ...target, ...change } : target)))
+  const rename = (index: number, item: string) => {
     // A pool item's name fills in its id, and its source when there's none yet.
     const match = byName.get(item.trim().toLowerCase())
-    const current = brackets[b].targets[t]
-    setTarget(b, t, {
+    const current = list[index]
+    setTarget(index, {
       item,
       item_id: match?.item_id ?? null,
       source: match && !current.source ? match.sources.map(sourceText).join('; ') : current.source,
     })
   }
-  const move = (b: number, t: number, by: number) => {
-    const next = [...brackets[b].targets]
-    const [row] = next.splice(t, 1)
-    next.splice(t + by, 0, row)
-    setBracket(b, { ...brackets[b], targets: next })
-  }
-  const addBracket = () => {
-    const highest = Math.max(0, ...brackets.map((b) => Number(b.minLevel) || 0))
-    setDraft([...brackets, { minLevel: String(highest + 5), targets: [] }])
+  /** Swap a target with another in the same slot. */
+  const swap = (index: number, other: number) => {
+    const next = [...list]
+    ;[next[index], next[other]] = [next[other], next[index]]
+    setDraft(next)
   }
 
   return (
@@ -116,7 +102,7 @@ export function TargetsEditor({ customised }: { customised: boolean }) {
         <form
           onSubmit={(event) => {
             event.preventDefault()
-            if (typeof parsed !== 'string') save.mutate(parsed)
+            if (error === null) save.mutate({ targets: list })
           }}
         >
           <header className="weights-dialog-header">
@@ -128,125 +114,126 @@ export function TargetsEditor({ customised }: { customised: boolean }) {
             </button>
           </header>
           <p className="muted">
-            Each bracket applies from its level until the next one. Order sets priority. Names from the item pool fill
-            in the item id and source. Pinned targets are always listed on the Upgrades tab until worn;{' '}
-            <strong>Make target</strong> there adds a pinned one to your current bracket.
+            The Plan tab shows each slot's target for your level and the ones coming up. <strong>Level</strong> is when
+            you plan to go for an item: leave it blank to use the item's own level, which also wins when it's higher.
+            Within a slot, order breaks ties. Names from the item pool fill in the item id and source. Pinned targets are
+            always listed on the Upgrades tab until worn.
           </p>
           {targets.isPending && <p className="muted">Loading targets…</p>}
           {targets.isError && <p className="error">Couldn't load targets: {targets.error.message}</p>}
 
           <datalist id="pool-items">
-            {(pool.data?.items ?? []).map((item) => (
+            {poolItems.map((item) => (
               <option key={item.item_id} value={item.name} />
             ))}
           </datalist>
 
-          {brackets.map((bracket, b) => (
-            // Brackets and rows have no stable id; index keys are fine because the inputs are controlled.
-            <fieldset key={b} className="target-bracket">
-              <legend>
-                <label>
-                  From level{' '}
-                  <input
-                    aria-label={`Bracket ${b + 1} level`}
-                    type="number"
-                    min={1}
-                    max={80}
-                    value={bracket.minLevel}
-                    onChange={(event) => setBracket(b, { ...bracket, minLevel: event.target.value })}
-                  />
-                </label>
-                <button
-                  type="button"
-                  className="link"
-                  onClick={() => setDraft(brackets.filter((_, i) => i !== b))}
-                >
-                  Remove bracket
+          {slots.map((slot) => {
+            const label = slotLabel(slot)
+            const indices = list.flatMap((target, i) => (target.slot === slot ? [i] : []))
+            return (
+              <fieldset key={slot} className="target-slot">
+                <legend>{label}</legend>
+                <ol className="target-rows">
+                  {indices.map((index, n) => {
+                    const target = list[index]
+                    const name = `${label} target ${n + 1}`
+                    const ownLevel = target.item_id !== null ? byId.get(target.item_id)?.effective_level : null
+                    return (
+                      // Rows have no stable id; index keys are fine because the inputs are controlled.
+                      <li key={index}>
+                        <input
+                          aria-label={`${name} item`}
+                          list="pool-items"
+                          placeholder="Item name"
+                          value={target.item}
+                          onChange={(event) => rename(index, event.target.value)}
+                        />
+                        <input
+                          aria-label={`${name} source`}
+                          placeholder="Where it comes from"
+                          value={target.source}
+                          onChange={(event) => setTarget(index, { source: event.target.value })}
+                        />
+                        <input
+                          aria-label={`${name} level`}
+                          className="level-input"
+                          type="number"
+                          min={1}
+                          max={80}
+                          placeholder={ownLevel ? String(ownLevel) : 'auto'}
+                          title="Not before this level. Blank: the item's own level."
+                          value={target.level ?? ''}
+                          onChange={(event) =>
+                            setTarget(index, { level: event.target.value === '' ? null : Number(event.target.value) })
+                          }
+                        />
+                        <label className="pin-toggle" title="Always list it on the Upgrades tab until worn">
+                          <input
+                            type="checkbox"
+                            aria-label={`${name} pinned`}
+                            checked={target.pinned}
+                            onChange={(event) => setTarget(index, { pinned: event.target.checked })}
+                          />{' '}
+                          Pinned
+                        </label>
+                        <button
+                          type="button"
+                          className="secondary"
+                          aria-label={`Move ${name} up`}
+                          disabled={n === 0}
+                          onClick={() => swap(index, indices[n - 1])}
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          className="secondary"
+                          aria-label={`Move ${name} down`}
+                          disabled={n === indices.length - 1}
+                          onClick={() => swap(index, indices[n + 1])}
+                        >
+                          ↓
+                        </button>
+                        <button
+                          type="button"
+                          className="secondary"
+                          aria-label={`Remove ${name}`}
+                          onClick={() => setDraft(list.filter((_, i) => i !== index))}
+                        >
+                          ✕
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ol>
+                <button type="button" className="link" onClick={() => setDraft([...list, blankTarget(slot)])}>
+                  Add {label.toLowerCase()} target
                 </button>
-              </legend>
-              <ol className="target-rows">
-                {bracket.targets.map((target, t) => (
-                  <li key={t}>
-                    <select
-                      aria-label={`Bracket ${b + 1} target ${t + 1} slot`}
-                      value={target.slot}
-                      onChange={(event) => setTarget(b, t, { slot: event.target.value })}
-                    >
-                      {EQUIPMENT_SLOTS.map((slot) => (
-                        <option key={slot} value={slot}>
-                          {slotLabel(slot)}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      aria-label={`Bracket ${b + 1} target ${t + 1} item`}
-                      list="pool-items"
-                      placeholder="Item name"
-                      value={target.item}
-                      onChange={(event) => rename(b, t, event.target.value)}
-                    />
-                    <input
-                      aria-label={`Bracket ${b + 1} target ${t + 1} source`}
-                      placeholder="Where it comes from"
-                      value={target.source}
-                      onChange={(event) => setTarget(b, t, { source: event.target.value })}
-                    />
-                    <label className="pin-toggle" title="Always list it on the Upgrades tab until worn">
-                      <input
-                        type="checkbox"
-                        checked={target.pinned}
-                        onChange={(event) => setTarget(b, t, { pinned: event.target.checked })}
-                      />{' '}
-                      Pinned
-                    </label>
-                    <button
-                      type="button"
-                      className="secondary"
-                      aria-label={`Move bracket ${b + 1} target ${t + 1} up`}
-                      disabled={t === 0}
-                      onClick={() => move(b, t, -1)}
-                    >
-                      ↑
-                    </button>
-                    <button
-                      type="button"
-                      className="secondary"
-                      aria-label={`Move bracket ${b + 1} target ${t + 1} down`}
-                      disabled={t === bracket.targets.length - 1}
-                      onClick={() => move(b, t, 1)}
-                    >
-                      ↓
-                    </button>
-                    <button
-                      type="button"
-                      className="secondary"
-                      aria-label={`Remove bracket ${b + 1} target ${t + 1}`}
-                      onClick={() =>
-                        setBracket(b, { ...bracket, targets: bracket.targets.filter((_, i) => i !== t) })
-                      }
-                    >
-                      ✕
-                    </button>
-                  </li>
-                ))}
-              </ol>
-              <button
-                type="button"
-                className="link"
-                onClick={() => setBracket(b, { ...bracket, targets: [...bracket.targets, blankTarget()] })}
+              </fieldset>
+            )
+          })}
+          {targets.data && (
+            <div className="add-slot">
+              <select
+                aria-label="Slot for a new target"
+                value={newSlot}
+                onChange={(event) => setNewSlot(event.target.value)}
               >
+                {EQUIPMENT_SLOTS.map((slot) => (
+                  <option key={slot} value={slot}>
+                    {slotLabel(slot)}
+                  </option>
+                ))}
+              </select>{' '}
+              <button type="button" className="secondary" onClick={() => setDraft([...list, blankTarget(newSlot)])}>
                 Add target
               </button>
-            </fieldset>
-          ))}
-          {targets.data && (
-            <button type="button" className="secondary" onClick={addBracket}>
-              Add bracket
-            </button>
+            </div>
           )}
 
           <footer className="weights-actions">
-            <button type="submit" disabled={draft === null || typeof parsed === 'string' || save.isPending}>
+            <button type="submit" disabled={draft === null || error !== null || save.isPending}>
               {save.isPending ? 'Saving…' : 'Save'}
             </button>
             <button type="button" className="secondary" disabled={draft === null} onClick={() => setDraft(null)}>
@@ -260,7 +247,7 @@ export function TargetsEditor({ customised }: { customised: boolean }) {
             >
               Reset to defaults
             </button>
-            {draft !== null && typeof parsed === 'string' && <span className="error">{parsed}</span>}
+            {draft !== null && error !== null && <span className="error">{error}</span>}
             {save.isError && <span className="error">{save.error.message}</span>}
             {reset.isError && <span className="error">{reset.error.message}</span>}
           </footer>

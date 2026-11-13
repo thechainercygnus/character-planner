@@ -433,7 +433,7 @@ def create_app(
 
     @app.put("/api/targets")
     def put_targets(edited: EditedTargets, session: SessionDep) -> GearTargets:
-        """Replace the gear targets. Priority follows each bracket's order."""
+        """Replace the gear targets. Priority follows each slot's order."""
         try:
             save_targets(session, edited.to_targets())
         except TargetsError as error:
@@ -448,15 +448,15 @@ def create_app(
 
     @app.post("/api/targets/pins")
     def post_pin(pin: Pin, session: SessionDep, gear: TargetsDep) -> GearTargets:
-        """Pin a pool item as a target for the character's level ("Make target")."""
-        level, faction = character_context(session)
+        """Pin a pool item as a target ("Make target")."""
+        faction = character_context(session)[1]
         item = next(
             (i for i in pool_view(session, None, faction).items if i.item_id == pin.item_id), None
         )
         if item is None:
             raise HTTPException(404, f"Item {pin.item_id} isn't in the item pool")
         try:
-            save_targets(session, pin_target(gear, item, pin.slot, level))
+            save_targets(session, pin_target(gear, item, pin.slot))
         except TargetsError as error:
             raise HTTPException(422, str(error)) from error
         return targets_changed(session)
@@ -483,6 +483,7 @@ def create_app(
             icons_by_id(session),
             companion_by_id(session),
             current_weights(session, presets),
+            jobs.item_levels(session),
         )
 
     @app.get("/api/character")
@@ -498,6 +499,7 @@ def create_app(
             icons_by_id(session),
             companion_by_id(session),
             current_weights(session, presets),
+            jobs.item_levels(session),
         )
         return plan.model_copy(update={"targets_customised": targets_customised(session)})
 

@@ -26,6 +26,7 @@ function target(slot: string, item: string): GearTarget {
     item,
     source: 'Hall of Thanes',
     priority: null,
+    level: null,
     pinned: false,
     item_id: null,
     item_level: null,
@@ -64,6 +65,8 @@ const downgrade: GearRow = {
   score_delta: null,
   verdict_basis: 'item_level',
   warning: null,
+  level: 15,
+  upcoming: [],
 }
 
 const unknown: GearRow = {
@@ -79,6 +82,8 @@ const unknown: GearRow = {
   score_delta: null,
   verdict_basis: 'item_level',
   warning: null,
+  level: null,
+  upcoming: [],
 }
 
 const manualUpgrade: GearRow = {
@@ -119,10 +124,8 @@ const companionUpgrade: GearRow = {
 
 const plan: GearPlan = {
   level: 18,
-  bracket_min_level: 15,
-  next_bracket_level: 20,
-  next_bracket_size: 15,
   rows: [downgrade, unknown, manualUpgrade],
+  later: [],
   attributions: [],
   targets_customised: false,
 }
@@ -140,7 +143,7 @@ describe('GearTable', () => {
   it('labels each verdict with its item level change', () => {
     render(<GearTable plan={plan} />)
 
-    expect(screen.getByText(/already better/).textContent).toBe('already better (-4 ilvl)')
+    expect(screen.getByText(/outgrown/).textContent).toBe('outgrown (-4 ilvl)')
     expect(screen.getByText(/^upgrade/).textContent).toBe('upgrade (+9 ilvl)')
     expect(screen.getByText('unknown')).toBeTruthy()
     expect(screen.getByText('Leather replacing Mail')).toBeTruthy()
@@ -171,13 +174,41 @@ describe('GearTable', () => {
 
   it('summarises upgrades and gaps', () => {
     render(<GearTable plan={plan} />)
-    expect(screen.getByText(/1 upgrade to chase, 1 without item data\./)).toBeTruthy()
-    expect(screen.getByText(/Next bracket at level 20/)).toBeTruthy()
+    expect(screen.getByText(/1 upgrade to chase now, 1 without item data\./)).toBeTruthy()
   })
 
-  it('handles levels with no bracket', () => {
-    render(<GearTable plan={{ ...plan, bracket_min_level: null, rows: [] }} />)
-    expect(screen.getByText(/No gear targets for this level/)).toBeTruthy()
+  it('shows what comes next in each slot, and slots with nothing to go for yet', () => {
+    const cape: GearRow = {
+      ...unknown,
+      slot: 'BACK',
+      target: target('BACK', 'Spiritwraith Drape'),
+      upcoming: [
+        {
+          target: { ...target('BACK', 'Cape of the Brotherhood'), pinned: true },
+          target_info: null,
+          level: 20,
+          score_delta: 4.2,
+        },
+      ],
+    }
+    const later = {
+      slot: 'HEAD',
+      equipped: null,
+      upcoming: [{ target: target('HEAD', "Guard's Silvered Chain Helm"), target_info: null, level: 20, score_delta: null }],
+    }
+    render(<GearTable plan={{ ...plan, rows: [cape], later: [later] }} />)
+
+    expect(screen.getByText('Cape of the Brotherhood')).toBeTruthy()
+    expect(screen.getByText('(pinned)')).toBeTruthy()
+    expect(screen.getByText('level 20 · +4.2 score · Hall of Thanes')).toBeTruthy()
+    expect(screen.getByText('Coming up in other slots')).toBeTruthy()
+    expect(screen.getByText("Guard's Silvered Chain Helm")).toBeTruthy()
+    expect(screen.getByText('Head')).toBeTruthy()
+  })
+
+  it('handles having no targets', () => {
+    render(<GearTable plan={{ ...plan, rows: [], later: [] }} />)
+    expect(screen.getByText(/No gear targets yet/)).toBeTruthy()
   })
 })
 
