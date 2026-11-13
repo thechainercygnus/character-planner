@@ -48,14 +48,17 @@ def class_key(name: str) -> str:
     return "-".join(name.casefold().split())
 
 
-def _class_file(curated_dir: Path, key: str) -> Path:
-    return curated_dir / "classes" / f"{key}.yaml"
+def _class_files(curated_dir: Path) -> dict[str, Path]:
+    """The class files that exist, by key. A key from outside (a guest's choice, the class
+    name in a Blizzard profile) is only ever looked up here, never made into a path, so it
+    can't point outside classes/."""
+    return {path.stem: path for path in (curated_dir / "classes").glob("*.yaml")}
 
 
 def supported_classes(curated_dir: Path) -> list[PlayableClass]:
     """Classes with shipped defaults: the Warrior, then every classes/*.yaml by name."""
     others = []
-    for path in sorted((curated_dir / "classes").glob("*.yaml")):
+    for path in sorted(_class_files(curated_dir).values()):
         with path.open(encoding="utf-8") as handle:
             data = yaml.safe_load(handle) or {}
         others.append(PlayableClass(key=path.stem, name=str(data.get("name", path.stem.title()))))
@@ -65,8 +68,8 @@ def supported_classes(curated_dir: Path) -> list[PlayableClass]:
 
 def load_class_defaults(curated_dir: Path, key: str) -> ClassDefaults:
     """A class's shipped defaults; the Warrior's for "warrior" or a class with no file."""
-    path = _class_file(curated_dir, key)
-    if key == WARRIOR or not path.is_file():
+    path = _class_files(curated_dir).get(key)
+    if key == WARRIOR or path is None:
         return ClassDefaults(
             playable=PlayableClass(key=WARRIOR, name="Warrior"),
             rules=load_rules(curated_dir / "recommend.yaml"),

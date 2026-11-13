@@ -138,3 +138,25 @@ def test_guest_mode_offers_each_class_with_its_presets(client: TestClient) -> No
     assert warrior_preset.status_code == 422  # presets belong to their class
     unknown = client.get("/api/guest/recommendations", params={"level": 20, "class": "mage"})
     assert unknown.status_code == 422
+
+
+@pytest.mark.parametrize(
+    "key", ["../recommend", "..\recommend", "../../pyproject", "/etc/passwd", "warlock/../x", ""]
+)
+def test_a_key_can_only_name_a_shipped_class_file(key: str) -> None:
+    """Keys come from outside (guest mode, a Blizzard profile): one that isn't a shipped
+    class gets the Warrior's defaults, never a file elsewhere."""
+    assert load_class_defaults(CURATED, key).playable.key == "warrior"
+
+
+def test_an_odd_class_name_in_a_profile_is_harmless(engine: Engine) -> None:
+    with Session(engine) as session:
+        profile(session, "../../Recommend")
+        assert current_defaults(session, CURATED).playable.key == "warrior"
+
+
+def test_guest_mode_refuses_a_path_as_a_class(client: TestClient) -> None:
+    response = client.get(
+        "/api/guest/recommendations", params={"level": 20, "class": "../recommend"}
+    )
+    assert response.status_code == 422
