@@ -30,7 +30,8 @@ after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
 | Re-run item lookups | `POST /api/items/refresh?force=true` |
 | Build the item pool (dungeon drops + quest rewards) | `uv run character-planner-pool` or `POST /api/pool/refresh` |
 | Item pool for your level window (JSON) | `/api/pool` |
-| Best upgrades per slot + dungeons worth running | `/api/recommendations` (rules in `data/curated/recommend.yaml`) |
+| Best upgrades per slot + dungeons worth running | `/api/recommendations` |
+| What you can wear and how Upgrades lists items (YAML is the default) | `GET`/`PUT`/`DELETE /api/rules` (or **Upgrades settings** on the Upgrades tab) |
 | Edit gear targets (YAML is the default) | `PUT`/`DELETE /api/targets` (or **Edit targets** on the Plan tab) |
 | Pin an item as a target | `POST /api/targets/pins`, `DELETE /api/targets/pins/{item_id}` (or **Make target** in an expanded Upgrades row) |
 | Never suggest an item | `GET /api/choices`, `PUT`/`DELETE /api/choices/{item_id}` (or **Never suggest**) |
