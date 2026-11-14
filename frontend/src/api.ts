@@ -321,6 +321,12 @@ function isSyncState(value: SyncResult | SyncState): value is SyncState {
   return typeof (value as SyncState).state === 'string'
 }
 
+/** A refresh the API queued instead of running (#17, ADR 0039): the status bar's
+ * "refreshing" list follows it, and the page reloads when it's done. */
+export function isQueued(value: object | undefined): value is SyncState {
+  return value !== undefined && typeof (value as SyncState).state === 'string'
+}
+
 /**
  * Sync the selected character. Without a job queue the API answers with the result; with
  * one (202) the sync is queued, so follow it until it finishes or fails.
@@ -1005,7 +1011,7 @@ export const api = {
   character: () => request<CharacterView>('/api/character'),
   gear: () => request<GearPlan>('/api/gear'),
   sync: (wait: (ms: number) => Promise<void> = sleep) => syncAndWait(wait),
-  refreshItems: () => request<RefreshResult>('/api/items/refresh?force=true', { method: 'POST' }),
+  refreshItems: () => request<RefreshResult | SyncState>('/api/items/refresh?force=true', { method: 'POST' }),
   weights: () => request<WeightsView>('/api/weights'),
   saveWeights: (weights: Record<string, number>) =>
     request<WeightsView>('/api/weights', {
@@ -1119,8 +1125,10 @@ export const api = {
   talentTree: () => request<TalentTreeView>('/api/talents/tree'),
   /** With a level, only that level's window (guest mode, #48); else the character's. */
   refreshPool: (level?: number) =>
-    request<PoolRefresh>(level ? `/api/pool/refresh?level=${level}` : '/api/pool/refresh', { method: 'POST' }),
-  refreshEnchants: () => request<RecipeRefresh>('/api/enchants/refresh', { method: 'POST' }),
+    request<PoolRefresh | SyncState>(level ? `/api/pool/refresh?level=${level}` : '/api/pool/refresh', {
+      method: 'POST',
+    }),
+  refreshEnchants: () => request<RecipeRefresh | SyncState>('/api/enchants/refresh', { method: 'POST' }),
   enchants: () => request<EnchantAdvice>('/api/enchants/recommendations'),
   enchantCorrections: () => request<EnchantCorrectionsView>('/api/enchants/corrections'),
   correctMaterial: ({ itemId, level }: { itemId: number; level: number | null }) =>

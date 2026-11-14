@@ -411,6 +411,10 @@ With the queue, every process shares one request budget per upstream (ADR 0040).
 
 So however many people sync at once, the planner stays within both.
 
+The admin's refreshes in the ⋯ menu queue too, and the status bar shows them until
+they're done. Each can be started by hand at most once per 10 minutes
+(`REFRESH_COOLDOWN_MINUTES`; 0 turns it off). The worker's schedule isn't limited.
+
 **How often a character can be synced by hand:** once per 15 minutes, counted from its
 last sync, scheduled ones included. Change it with `SYNC_COOLDOWN_MINUTES` in `.env`; 0
 turns it off.

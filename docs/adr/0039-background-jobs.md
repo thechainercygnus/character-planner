@@ -44,12 +44,25 @@ Redis with a job library. Bryce chose Redis with a job library (2026-11-14).
      again.
    - It applies with and without the queue.
 
+6. **The admin's bulk refreshes queue too** (#17 step 2b): the item pool, enchants,
+   items and talents.
+   - With `REDIS_URL`, each one answers 202 and runs on the job worker, one job per kind.
+   - Queued and running refreshes join the status bar's "refreshing" list, which already
+     reloads the page when it empties.
+   - Without Redis, they run in the request, as before. Leases (ADR 0024) still keep each
+     refresh to one at a time either way.
+7. **Each refresh can be started by hand at most once per 10 minutes**
+   (`REFRESH_COOLDOWN_MINUTES`; 0 turns it off).
+   - Within that it answers 429 with `Retry-After`. That holds for the admin too, and
+     completes #17's "operator-only and rate-limited".
+   - The worker's schedule isn't limited.
+   - The cooldown is a lease that's never released: every process sees it, and it
+     simply expires.
+
 ## Consequences
 
 - **A shared instance runs three more pieces:** Valkey, plus the job worker inside the
   worker container.
-- **The admin's refreshes still run in the request.** Moving them onto the queue, and
-  holding every job to Battle.net's and Forever Companion's rate limits, is #17's next
-  step.
+- **Every job is within the upstream budget** (ADR 0040).
 - **Scaling:** more job workers mean more replicas of the worker container. Each also
   runs the schedule, and its leases (ADR 0024) keep the refreshes one at a time.

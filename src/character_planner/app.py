@@ -138,7 +138,14 @@ from character_planner.pool import (
     pool_view,
 )
 from character_planner.progress import Progress, progress
-from character_planner.queue import SyncState, enqueue_sync, sync_state
+from character_planner.queue import (
+    Refresh,
+    SyncState,
+    enqueue_refresh,
+    enqueue_sync,
+    sync_state,
+    waiting_refreshes,
+)
 from character_planner.recommend import Recommendations, UsageRules, recommend
 from character_planner.rules import (
     EditedRules,
@@ -722,7 +729,9 @@ def create_app(
             "token_expires_at": stored.expires_at if stored else None,
             "latest_snapshots": {k: s.captured_at.isoformat() for k, s in latest.items()},
             # Refreshes running now, from any process: "pool", "enchants" (#87).
-            "refreshing": leases.running(engine),
+            "refreshing": sorted(
+                {*leases.running(engine), *(waiting_refreshes(redis) if redis else [])}
+            ),
         }
 
     @app.post("/api/sync", response_model=dict[str, int] | SyncState)
@@ -771,14 +780,33 @@ def create_app(
             return SyncState(state="idle")
         return sync_state(redis, character_id)
 
-    @app.post("/api/items/refresh")
+    def refresh_gate(kind: Refresh, **options: Any) -> JSONResponse | None:
+        """Before a manual refresh (#17): its cooldown (429), then the job queue when
+        there is one (202, ADR 0039). None: run it here, in the request."""
+        wait = leases.cool_down(engine, kind, settings.refresh_cooldown_minutes)
+        if wait > 0:
+            minutes = max(1, round(wait / 60))
+            raise HTTPException(
+                429,
+                f"Refreshed recently: again in about {minutes} minute{'' if minutes == 1 else 's'}",
+                headers={"Retry-After": str(int(wait) + 1)},
+            )
+        if redis is not None:
+            queued = enqueue_refresh(redis, kind, **options)
+            return JSONResponse(queued.model_dump(), status_code=202)
+        return None
+
+    @app.post("/api/items/refresh", response_model=RefreshResult | SyncState)
     def refresh_items(
         session: SessionDep, character_id: CharacterIdDep, gear: TargetsDep, force: bool = False
-    ) -> RefreshResult:
+    ) -> RefreshResult | JSONResponse:
         """Refresh item data from every source. force=true refetches everything.
 
-        Source failures are reported in `errors` rather than failing the request.
+        Source failures are reported in `errors` rather than failing the request. At most
+        once per REFRESH_COOLDOWN_MINUTES; queued with REDIS_URL (#17).
         """
+        if queued := refresh_gate("items", force=force, character_id=character_id):
+            return queued
         return refresh_item_sources(
             session,
             settings,
@@ -788,26 +816,32 @@ def create_app(
             http=http,
         )
 
-    @app.post("/api/pool/refresh")
+    @app.post("/api/pool/refresh", response_model=PoolRefresh | SyncState)
     def refresh_item_pool(
         session: SessionDep,
         force: bool = False,
         level: Annotated[int | None, Query(ge=1, le=80)] = None,
-    ) -> PoolRefresh:
+    ) -> PoolRefresh | JSONResponse:
         """Refresh dungeon drop tables and quest rewards, then item details for a level
         window: `level`'s (guest mode asks for its own), else the character's, else the
         whole pool. The first run takes a few minutes (paced under Forever Companion's
         rate limit); `uv run character-planner-pool` does the same with progress output.
+        At most once per REFRESH_COOLDOWN_MINUTES; queued with REDIS_URL (#17).
         """
+        if queued := refresh_gate("pool", force=force, level=level):
+            return queued
         try:
             return jobs.refresh_item_pool(session, settings, force=force, http=http, level=level)
         except leases.Busy as error:
             raise HTTPException(409, str(error)) from error
 
-    @app.post("/api/enchants/refresh")
-    def refresh_enchants(session: SessionDep, force: bool = False) -> RecipeRefresh:
+    @app.post("/api/enchants/refresh", response_model=RecipeRefresh | SyncState)
+    def refresh_enchants(session: SessionDep, force: bool = False) -> RecipeRefresh | JSONResponse:
         """Enchant recipes from Blizzard's profession data, plus their reagents and crafted
-        items from Forever Companion (ADR 0010)."""
+        items from Forever Companion (ADR 0010). At most once per REFRESH_COOLDOWN_MINUTES;
+        queued with REDIS_URL (#17)."""
+        if queued := refresh_gate("enchants", force=force):
+            return queued
         try:
             return jobs.refresh_enchants(session, settings, force=force, http=http)
         except leases.Busy as error:
@@ -1467,9 +1501,14 @@ def create_app(
             loading="talents" in leases.running(engine),
         )
 
-    @app.post("/api/talents/refresh")
-    def refresh_talents(session: SessionDep, character_id: CharacterIdDep) -> TalentRefresh:
-        """Fetch the synced class's talent trees and icons again."""
+    @app.post("/api/talents/refresh", response_model=TalentRefresh | SyncState)
+    def refresh_talents(
+        session: SessionDep, character_id: CharacterIdDep
+    ) -> TalentRefresh | JSONResponse:
+        """Fetch the synced class's talent trees and icons again. At most once per
+        REFRESH_COOLDOWN_MINUTES; queued with REDIS_URL (#17)."""
+        if queued := refresh_gate("talents", character_id=character_id):
+            return queued
         try:
             result = jobs.refresh_talents(session, settings, character_id, http=http)
         except leases.Busy as error:

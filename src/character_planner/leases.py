@@ -20,6 +20,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, col, select
 
+from character_planner.companion import as_utc
 from character_planner.db import JobLease, utcnow
 
 logger = logging.getLogger(__name__)
@@ -42,10 +43,12 @@ def _holder() -> str:
     return f"{socket.gethostname()}:{os.getpid()}:{uuid4().hex[:8]}"
 
 
-def acquire(engine: Engine, name: str, holder: str, now: datetime | None = None) -> bool:
+def acquire(
+    engine: Engine, name: str, holder: str, now: datetime | None = None, ttl: timedelta = TTL
+) -> bool:
     now = now or utcnow()
     with Session(engine) as session:
-        session.add(JobLease(name=name, holder=holder, expires_at=now + TTL))
+        session.add(JobLease(name=name, holder=holder, expires_at=now + ttl))
         try:
             session.commit()
             return True
@@ -55,7 +58,7 @@ def acquire(engine: Engine, name: str, holder: str, now: datetime | None = None)
         result = session.exec(  # type: ignore[call-overload]
             update(JobLease)
             .where(col(JobLease.name) == name, col(JobLease.expires_at) < now)
-            .values(holder=holder, expires_at=now + TTL)
+            .values(holder=holder, expires_at=now + ttl)
         )
         session.commit()
         return result.rowcount == 1
@@ -82,8 +85,27 @@ def lease(engine: Engine, name: str) -> Generator[None]:
 
 
 def running(engine: Engine, now: datetime | None = None) -> list[str]:
-    """Refreshes running now (unexpired leases), by name."""
+    """Refreshes running now (unexpired leases), by name. Cooldowns aren't refreshes."""
     now = now or utcnow()
     with Session(engine) as session:
         rows = session.exec(select(JobLease).where(col(JobLease.expires_at) >= now)).all()
-        return sorted(row.name for row in rows)
+        return sorted(row.name for row in rows if not row.name.startswith(COOLDOWN))
+
+
+COOLDOWN = "cooldown:"
+
+
+def cool_down(engine: Engine, name: str, minutes: float, now: datetime | None = None) -> float:
+    """A manual refresh's rate limit (#17): 0 when it may start, which starts its cooldown,
+    else the seconds left. Kept as a lease that's never released, so every process sees
+    it and it simply expires."""
+    if minutes <= 0:
+        return 0
+    now = now or utcnow()
+    key = f"{COOLDOWN}{name}"
+    if acquire(engine, key, _holder(), now, timedelta(minutes=minutes)):
+        return 0
+    with Session(engine) as session:
+        held = session.get(JobLease, key)
+        left = (as_utc(held.expires_at) - now).total_seconds() if held else 0
+    return max(left, 0.0)

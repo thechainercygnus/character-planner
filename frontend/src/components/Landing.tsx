@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { api, type GuestQuery, type Recommendations as RecommendationsData } from '../api'
+import { api, isQueued, type GuestQuery, type Recommendations as RecommendationsData } from '../api'
 import { Dungeons } from './Dungeons'
 import { Recommendations } from './Recommendations'
 
@@ -20,7 +20,9 @@ function MissingItemData({ data, level }: { data: RecommendationsData; level: nu
   const levels = data.window ? `levels ${data.window[0]}–${data.window[1]}` : `level ${level}`
   return (
     <div className="missing-data">
-      {fetchData.isSuccess ? (
+      {fetchData.isSuccess && isQueued(fetchData.data) ? (
+        <p className="muted">Queued: the item data for {levels} loads in the background, and this updates when it's done.</p>
+      ) : fetchData.isSuccess && !isQueued(fetchData.data) ? (
         <p className="muted">
           Fetched details for {fetchData.data.items_fetched} items for {levels}
           {fetchData.data.errors.length > 0 && `, with ${fetchData.data.errors.length} errors`}.
