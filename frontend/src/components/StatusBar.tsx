@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
-import { api, ApiError, selectCharacter, type SyncResult } from '../api'
+import { api, ApiError, isQueued, selectCharacter, type SyncResult } from '../api'
 import { CharacterSwitcher } from './CharacterSwitcher'
 import { NotificationsDialog } from './NotificationsDialog'
 
@@ -17,6 +17,21 @@ function failures(result: SyncResult): string[] {
   return Object.entries(result)
     .filter(([, status]) => status < 200 || status >= 300)
     .map(([kind, status]) => `${kind} (${status})`)
+}
+
+/** A refresh the job queue will run (#17): the "Loading … in the background" note follows it. */
+function Queued() {
+  return <span className="muted">Queued: it runs in the background.</span>
+}
+
+/** A refresh that failed, or is cooling down (429, #17): the cooldown isn't a failure. */
+function Failure({ what, error }: { what: string; error: Error }) {
+  if (error instanceof ApiError && error.status === 429) return <span className="muted">{error.message}</span>
+  return (
+    <span className="error">
+      {what} failed: {error.message}
+    </span>
+  )
 }
 
 const REFRESH_LABEL: Record<string, string> = { pool: 'the item pool', enchants: 'enchant data' }
@@ -162,10 +177,9 @@ export function StatusBar() {
       {refreshEnchants.isPending && (
         <span className="muted">Fetching enchant data… (first run takes a few minutes)</span>
       )}
-      {refreshEnchants.isError && (
-        <span className="error">Enchant refresh failed: {refreshEnchants.error.message}</span>
-      )}
-      {refreshEnchants.data && (
+      {refreshEnchants.isError && <Failure what="Enchant refresh" error={refreshEnchants.error} />}
+      {isQueued(refreshEnchants.data) && <Queued />}
+      {refreshEnchants.data && !isQueued(refreshEnchants.data) && (
         <span className="muted">
           Enchants: {refreshEnchants.data.recipes_listed} recipes, {refreshEnchants.data.recipes_fetched} fetched
           {refreshEnchants.data.errors.length > 0 && `, ${refreshEnchants.data.errors.length} errors`}
@@ -177,16 +191,18 @@ export function StatusBar() {
         ) : (
           <span className="error">Sync failed: {sync.error.message}</span>
         ))}
-      {refreshItems.isError && <span className="error">Item lookup failed: {refreshItems.error.message}</span>}
-      {refreshItems.data && (
+      {refreshItems.isError && <Failure what="Item lookup" error={refreshItems.error} />}
+      {isQueued(refreshItems.data) && <Queued />}
+      {refreshItems.data && !isQueued(refreshItems.data) && (
         <span className="muted">
           Blizzard found {refreshItems.data.found.length}, Forever Companion fetched{' '}
           {refreshItems.data.companion_fetched}
           {refreshItems.data.errors.length > 0 && `, ${refreshItems.data.errors.length} errors`}
         </span>
       )}
-      {refreshPool.isError && <span className="error">Pool refresh failed: {refreshPool.error.message}</span>}
-      {refreshPool.data && (
+      {refreshPool.isError && <Failure what="Pool refresh" error={refreshPool.error} />}
+      {isQueued(refreshPool.data) && <Queued />}
+      {refreshPool.data && !isQueued(refreshPool.data) && (
         <span className="muted">
           Pool: {refreshPool.data.in_window} items in reach, {refreshPool.data.items_fetched} fetched
           {refreshPool.data.errors.length > 0 && `, ${refreshPool.data.errors.length} errors`}

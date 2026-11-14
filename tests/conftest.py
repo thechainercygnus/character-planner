@@ -69,6 +69,7 @@ def settings(tmp_path: Path, request: pytest.FixtureRequest) -> Settings:
         companion_request_pause=0,
         planner_hosts="testserver",  # the test client's host name
         sync_cooldown_minutes=0,  # tests sync back to back; test_queue.py tests the cooldown
+        refresh_cooldown_minutes=0,  # likewise for refreshes; test_refresh_jobs.py tests it
     )
 
 

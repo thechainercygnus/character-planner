@@ -137,3 +137,80 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+# --- the admin's refreshes (#17 step 2b) ---------------------------------------------------
+
+Refresh = Literal["pool", "enchants", "items", "talents"]
+REFRESHES: tuple[Refresh, ...] = ("pool", "enchants", "items", "talents")
+REFRESH_TIMEOUT_SECONDS = 3600  # a whole-pool refresh takes ~20 minutes
+
+
+def refresh_job_id(kind: Refresh) -> str:
+    return f"refresh-{kind}"
+
+
+def enqueue_refresh(redis: Redis, kind: Refresh, **options: Any) -> SyncState:
+    """Queue a refresh, unless one of its kind is already waiting or running."""
+    job_id = refresh_job_id(kind)
+    try:
+        if Job.fetch(job_id, connection=redis).get_status() in WAITING:
+            return SyncState(state="queued")
+    except NoSuchJobError:
+        pass
+    Queue(QUEUE, connection=redis).enqueue(
+        run_refresh,
+        kind,
+        options,
+        job_id=job_id,
+        job_timeout=REFRESH_TIMEOUT_SECONDS,
+        result_ttl=KEEP_RESULT_SECONDS,
+        failure_ttl=KEEP_RESULT_SECONDS,
+    )
+    logger.info("Refresh queued: %s", kind)
+    return SyncState(state="queued")
+
+
+def waiting_refreshes(redis: Redis) -> list[str]:
+    """Refreshes queued or running on the job queue, for the status bar."""
+    waiting: list[str] = []
+    for kind in REFRESHES:
+        try:
+            if Job.fetch(refresh_job_id(kind), connection=redis).get_status() in WAITING:
+                waiting.append(kind)
+        except NoSuchJobError:
+            continue
+    return waiting
+
+
+def run_refresh(kind: Refresh, options: dict[str, Any]) -> dict[str, Any]:
+    """The queued job: one of the admin's bulk refreshes, within the upstream budget."""
+    from character_planner.items import refresh_item_sources
+    from character_planner.leases import Busy
+
+    settings = get_settings()
+    engine = _worker_engine()
+    character_id: int | None = options.get("character_id")
+    force: bool = options.get("force", False)
+    with Session(engine) as session, upstream.client() as http:
+        try:
+            if kind == "pool":
+                pool = jobs.refresh_item_pool(
+                    session, settings, force=force, http=http, level=options.get("level")
+                )
+                return pool.model_dump()
+            if kind == "enchants":
+                return jobs.refresh_enchants(session, settings, force=force, http=http).model_dump()
+            if kind == "items":
+                return refresh_item_sources(
+                    session,
+                    settings,
+                    jobs.gear_targets(session, settings, character_id),
+                    jobs.equipped_item_ids(session, character_id),
+                    force=force,
+                    http=http,
+                ).model_dump()
+            talents = jobs.refresh_talents(session, settings, character_id, http=http)
+            return talents.model_dump() if talents else {"skipped": "no synced class yet"}
+        except Busy as error:
+            return {"skipped": str(error)}

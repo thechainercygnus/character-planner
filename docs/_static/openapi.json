@@ -6259,7 +6259,7 @@
     },
     "/api/enchants/refresh": {
       "post": {
-        "description": "Enchant recipes from Blizzard's profession data, plus their reagents and crafted\nitems from Forever Companion (ADR 0010).",
+        "description": "Enchant recipes from Blizzard's profession data, plus their reagents and crafted\nitems from Forever Companion (ADR 0010). At most once per REFRESH_COOLDOWN_MINUTES;\nqueued with REDIS_URL (#17).",
         "operationId": "refresh_enchants_api_enchants_refresh_post",
         "parameters": [
           {
@@ -6278,7 +6278,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RecipeRefresh"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/RecipeRefresh"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SyncState"
+                    }
+                  ],
+                  "title": "Response Refresh Enchants Api Enchants Refresh Post"
                 }
               }
             },
@@ -6470,7 +6478,7 @@
     },
     "/api/items/refresh": {
       "post": {
-        "description": "Refresh item data from every source. force=true refetches everything.\n\nSource failures are reported in `errors` rather than failing the request.",
+        "description": "Refresh item data from every source. force=true refetches everything.\n\nSource failures are reported in `errors` rather than failing the request. At most\nonce per REFRESH_COOLDOWN_MINUTES; queued with REDIS_URL (#17).",
         "operationId": "refresh_items_api_items_refresh_post",
         "parameters": [
           {
@@ -6506,7 +6514,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RefreshResult"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/RefreshResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SyncState"
+                    }
+                  ],
+                  "title": "Response Refresh Items Api Items Refresh Post"
                 }
               }
             },
@@ -6851,7 +6867,7 @@
     },
     "/api/pool/refresh": {
       "post": {
-        "description": "Refresh dungeon drop tables and quest rewards, then item details for a level\nwindow: `level`'s (guest mode asks for its own), else the character's, else the\nwhole pool. The first run takes a few minutes (paced under Forever Companion's\nrate limit); `uv run character-planner-pool` does the same with progress output.",
+        "description": "Refresh dungeon drop tables and quest rewards, then item details for a level\nwindow: `level`'s (guest mode asks for its own), else the character's, else the\nwhole pool. The first run takes a few minutes (paced under Forever Companion's\nrate limit); `uv run character-planner-pool` does the same with progress output.\nAt most once per REFRESH_COOLDOWN_MINUTES; queued with REDIS_URL (#17).",
         "operationId": "refresh_item_pool_api_pool_refresh_post",
         "parameters": [
           {
@@ -6888,7 +6904,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PoolRefresh"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/PoolRefresh"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SyncState"
+                    }
+                  ],
+                  "title": "Response Refresh Item Pool Api Pool Refresh Post"
                 }
               }
             },
@@ -7675,7 +7699,7 @@
     },
     "/api/talents/refresh": {
       "post": {
-        "description": "Fetch the synced class's talent trees and icons again.",
+        "description": "Fetch the synced class's talent trees and icons again. At most once per\nREFRESH_COOLDOWN_MINUTES; queued with REDIS_URL (#17).",
         "operationId": "refresh_talents_api_talents_refresh_post",
         "parameters": [
           {
@@ -7701,7 +7725,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TalentRefresh"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/TalentRefresh"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SyncState"
+                    }
+                  ],
+                  "title": "Response Refresh Talents Api Talents Refresh Post"
                 }
               }
             },

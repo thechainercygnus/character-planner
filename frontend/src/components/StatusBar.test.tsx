@@ -89,4 +89,31 @@ describe('StatusBar', () => {
     expect(note.className).toBe('muted')
     expect(screen.queryByText(/Sync failed/)).toBeNull()
   })
+
+  it('says a refresh is queued, or cooling down, without calling it a failure (#17)', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        if (url === '/api/pool/refresh' && init?.method === 'POST') {
+          return Response.json({ state: 'queued', result: null, error: null }, { status: 202 })
+        }
+        if (url === '/api/enchants/refresh' && init?.method === 'POST') {
+          return Response.json({ detail: 'Refreshed recently: again in about 7 minutes' }, { status: 429 })
+        }
+        return Response.json(url === '/api/status' ? status([]) : [])
+      }),
+    )
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    render(
+      <QueryClientProvider client={client}>
+        <StatusBar />
+      </QueryClientProvider>,
+    )
+    fireEvent.click(await screen.findByRole('button', { name: 'Refresh item pool' }))
+    expect(await screen.findByText('Queued: it runs in the background.')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh enchant data' }))
+    const note = await screen.findByText('Refreshed recently: again in about 7 minutes')
+    expect(note.className).toBe('muted')
+    expect(screen.queryByText(/failed/)).toBeNull()
+  })
 })

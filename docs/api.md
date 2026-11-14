@@ -223,13 +223,13 @@ Best enchants in reach per slot, against the one on now (ADR 0010).
 
 ### `POST /api/enchants/refresh`
 
-Enchant recipes from Blizzard's profession data, plus their reagents and crafted items from Forever Companion (ADR 0010).
+Enchant recipes from Blizzard's profession data, plus their reagents and crafted items from Forever Companion (ADR 0010). At most once per REFRESH_COOLDOWN_MINUTES; queued with REDIS_URL (#17).
 
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `force` | query | boolean | no | false |
 
-**200:** [RecipeRefresh](#schema-reciperefresh)
+**200:** [RecipeRefresh](#schema-reciperefresh) or [SyncState](#schema-syncstate)
 
 ## `gear`
 
@@ -276,14 +276,14 @@ Healthz
 
 ### `POST /api/items/refresh`
 
-Refresh item data from every source. force=true refetches everything. Source failures are reported in `errors` rather than failing the request.
+Refresh item data from every source. force=true refetches everything. Source failures are reported in `errors` rather than failing the request. At most once per REFRESH_COOLDOWN_MINUTES; queued with REDIS_URL (#17).
 
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `force` | query | boolean | no | false |
 | `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
-**200:** [RefreshResult](#schema-refreshresult)
+**200:** [RefreshResult](#schema-refreshresult) or [SyncState](#schema-syncstate)
 
 ## `logout`
 
@@ -376,14 +376,14 @@ Dungeon drops and quest rewards for the character's level window.
 
 ### `POST /api/pool/refresh`
 
-Refresh dungeon drop tables and quest rewards, then item details for a level window: `level`'s (guest mode asks for its own), else the character's, else the whole pool. The first run takes a few minutes (paced under Forever Companion's rate limit); `uv run character-planner-pool` does the same with progress output.
+Refresh dungeon drop tables and quest rewards, then item details for a level window: `level`'s (guest mode asks for its own), else the character's, else the whole pool. The first run takes a few minutes (paced under Forever Companion's rate limit); `uv run character-planner-pool` does the same with progress output. At most once per REFRESH_COOLDOWN_MINUTES; queued with REDIS_URL (#17).
 
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `force` | query | boolean | no | false |
 | `level` | query | integer (minimum 1, maximum 80) or null | no |  |
 
-**200:** [PoolRefresh](#schema-poolrefresh)
+**200:** [PoolRefresh](#schema-poolrefresh) or [SyncState](#schema-syncstate)
 
 ## `professions`
 
@@ -561,13 +561,13 @@ Go back to data/curated/talent_plan.yaml.
 
 ### `POST /api/talents/refresh`
 
-Fetch the synced class's talent trees and icons again.
+Fetch the synced class's talent trees and icons again. At most once per REFRESH_COOLDOWN_MINUTES; queued with REDIS_URL (#17).
 
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
-**200:** [TalentRefresh](#schema-talentrefresh)
+**200:** [TalentRefresh](#schema-talentrefresh) or [SyncState](#schema-syncstate)
 
 ### `GET /api/talents/tree`
 

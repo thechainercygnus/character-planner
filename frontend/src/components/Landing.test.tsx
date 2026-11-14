@@ -178,6 +178,20 @@ describe('Landing', () => {
     expect(screen.queryByText('No item data for this level yet.')).toBeNull()
   })
 
+  it('says when the item data is queued instead of fetched (#17)', async () => {
+    stubFetch(false, noData)
+    const real = vi.mocked(fetch).getMockImplementation()
+    vi.mocked(fetch).mockImplementation(async (url, init) =>
+      String(url).startsWith('/api/pool/refresh') && init?.method === 'POST'
+        ? Response.json({ state: 'queued', result: null, error: null }, { status: 202 })
+        : real!(url, init),
+    )
+    renderLanding()
+    await screen.findByText(/There's no item data for levels/)
+    fireEvent.click(screen.getByRole('button', { name: /^Fetch item data for levels/ }))
+    expect(await screen.findByText(/^Queued: the item data for levels .* loads in the background/)).toBeTruthy()
+  })
+
   it('says how many items near the level have no details yet', async () => {
     stubFetch(false, { ...recommendations, unscored: 12 })
     renderLanding()

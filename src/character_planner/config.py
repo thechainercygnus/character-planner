@@ -75,6 +75,9 @@ class Settings(BaseSettings):
     # Minutes between syncs of one character by hand, to share the Battle.net budget
     # (#17). Counts from its last sync, scheduled ones included. 0 turns it off.
     sync_cooldown_minutes: float = 15
+    # Minutes between manual starts of each bulk refresh (item pool, enchants, items,
+    # talents), operator or not (#17). The worker's schedule isn't limited. 0 turns it off.
+    refresh_cooldown_minutes: float = 10
 
     @property
     def trusted_hosts(self) -> list[str]:
