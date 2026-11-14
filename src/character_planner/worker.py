@@ -188,7 +188,7 @@ def tick_notifications(engine: Engine, settings: Settings, http: httpx.Client) -
     """Each pass: send what's queued (#12)."""
     try:
         with Session(engine) as session:
-            notify.deliver_due(session, http)
+            notify.deliver_due(session, http, settings=settings)
     except Exception:
         logger.exception("Notifications failed")
 

@@ -291,7 +291,7 @@ def send_sync_alerts(session: Session, settings: Settings, character: Character)
     try:
         if notify.after_sync(session, settings, character):
             with notify.new_client() as client:
-                notify.deliver_due(session, client)
+                notify.deliver_due(session, client, settings=settings)
     except Exception:
         session.rollback()
         logger.exception("Notifications after the sync failed")

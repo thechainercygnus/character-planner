@@ -174,7 +174,7 @@ def test_system_alerts_go_to_user_destinations_until_a_system_one_exists(
         assert [o.destination_id for o in outbox(session)] == [user, system]
 
         # User alerts never go to a system destination.
-        notify.notify(session, "level_up", "level_up:20", notify._message("x", "y", 1))
+        notify.notify(session, "level_up", "level_up:20", notify.build_message("x", "y", 1))
         assert [o.destination_id for o in outbox(session)][-1] == user
 
 
@@ -339,7 +339,7 @@ def test_a_failing_alert_never_fails_a_sync(
 
 
 def _queue_one(session: Session, key: str = "k") -> NotificationOutbox:
-    notify.notify(session, "level_up", key, notify._message("t", "d", 1))
+    notify.notify(session, "level_up", key, notify.build_message("t", "d", 1))
     return outbox(session)[-1]
 
 

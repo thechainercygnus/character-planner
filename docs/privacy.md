@@ -18,6 +18,7 @@ This page repeats what the notice says, and covers what an operator needs to do.
 - what's set in the app: gear targets, talent plan, stat weights, rules, dismissed items
   and class quests marked done;
 - the Discord webhooks added for alerts, and the alerts waiting to be sent;
+- a Discord account linked for DMs: its id and name only, until it's unlinked;
 - with users on (`PLANNER_USERS`): each user's Battle.net account id, when they signed
   in, their sign-in sessions (only a hash of each), and which characters are theirs;
 - the Battle.net sign-in token, if someone signs in. With it, the planner can list the
@@ -34,7 +35,8 @@ them.
 
 **Who can see it:** anyone who can open the instance's address. The planner has no
 accounts of its own, so it's meant for your own computer or a private network
-([Self-hosting](self-hosting.md)). Alerts go to the Discord channels chosen for them.
+([Self-hosting](self-hosting.md)). Alerts go to the Discord channels chosen for them,
+and DMs to the Discord account linked for them.
 With users on, a character added to its guild's view (the Guild tab) is shown to the
 other members who joined it: its name, level, spec, role and upgrades. Leaving the view
 stops that.
@@ -82,8 +84,8 @@ Settings go back to the shipped defaults. The shared game-data caches stay, sinc
 in them is about the character.
 
 **With users on,** the Privacy page also has **Delete my account**. It deletes your
-characters with all their data and settings, your sign-in sessions, your Battle.net token
-and your account. The admin can delete theirs only once nobody else uses the instance.
+characters with all their data and settings, your sign-in sessions, your Battle.net token,
+a linked Discord account and your account. The admin can delete theirs only once nobody else uses the instance.
 An operator handling a request can do it for anyone:
 
 ```

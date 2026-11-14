@@ -90,6 +90,12 @@ UPSTREAM_ERROR_THRESHOLD = 10  # errors in one refresh before it's worth an aler
 MAX_ATTEMPTS = 5
 BACKOFF = [timedelta(minutes=m) for m in (1, 5, 15, 60)]
 COLOR = {"user": 0x3BA55C, "system": 0xED4245}
+DM = "discord_dm"  # a user's Discord DMs (#58, ADR 0044); the rest are webhooks
+DM_DAILY_CAP = 12  # DMs a day to one user: a sync's digest each, never a broadcast
+DM_REFUSED = (
+    "Discord refused the DM: the bot can only message you if you share its server and "
+    "allow direct messages from server members. Fix that, then send a test to resume."
+)
 
 
 class NotifyError(ValueError):
@@ -130,8 +136,11 @@ def default_alerts(audience: Audience) -> list[str]:
 
 
 def _recipients(session: Session, kind: str) -> list[NotificationDestination]:
+    # A user's DMs only get their own characters' alerts, from after_sync (#58).
     enabled = session.exec(
-        select(NotificationDestination).where(col(NotificationDestination.enabled))
+        select(NotificationDestination).where(
+            col(NotificationDestination.enabled), NotificationDestination.kind != DM
+        )
     ).all()
     subscribed = [d for d in enabled if kind in (d.alerts or [])]
     if AUDIENCE.get(kind) == "user":
@@ -168,7 +177,7 @@ def _queue(
     return True
 
 
-def _message(title: str, description: str, color: int, url: str | None = None) -> Message:
+def build_message(title: str, description: str, color: int, url: str | None = None) -> Message:
     embed: dict[str, Any] = {
         "title": title[:256],
         "description": description[:4000],
@@ -202,7 +211,7 @@ def job_failed(session: Session, settings: Settings, job: str, error: str) -> No
         session,
         "job_failed",
         f"job_failed:{job}:{hour}",
-        _message(f"Scheduled {job} failed", error[:500], COLOR["system"], app_url(settings)),
+        build_message(f"Scheduled {job} failed", error[:500], COLOR["system"], app_url(settings)),
     )
 
 
@@ -218,7 +227,7 @@ def upstream_errors(
         session,
         "upstream_errors",
         f"upstream_errors:{job}:{hour}",
-        _message(
+        build_message(
             f"{job}: {len(errors)} upstream errors",
             f"{head}First few:\n{sample}",
             COLOR["system"],
@@ -379,8 +388,17 @@ def after_sync(session: Session, settings: Settings, character: Character) -> in
         wanted = [k for k in sections if k in (destination.alerts or [])]
         if not wanted:
             continue
+        if destination.kind == DM:
+            # Only the owner's own characters, and few a day (ADR 0043).
+            if destination.user_id != character.user_id:
+                continue
+            if sent_today(session, destination) >= DM_DAILY_CAP:
+                logger.info("Notifications: a user's daily DM cap is reached; skipped")
+                continue
         name = f"{character.name} {character.surname}".strip()
-        message = _message(f"{name}: what changed", "", COLOR["user"], app_url(settings, "plan"))
+        message = build_message(
+            f"{name}: what changed", "", COLOR["user"], app_url(settings, "plan")
+        )
         message["embeds"][0]["fields"] = [
             {"name": titles[k], "value": sections[k][:1000], "inline": False} for k in wanted
         ]
@@ -398,7 +416,8 @@ class SendResult(BaseModel):
     status: int | None = None
     error: str | None = None
     retry_after: float | None = None
-    gone: bool = False  # the webhook no longer exists or isn't allowed
+    gone: bool = False  # the webhook no longer exists or isn't allowed; a DM was refused
+    bot: bool = False  # Discord refused the bot's token (DMs): the operator must fix it
 
 
 def send(http: httpx.Client, url: str, message: Message) -> SendResult:
@@ -420,8 +439,43 @@ def send(http: httpx.Client, url: str, message: Message) -> SendResult:
     )
 
 
-def deliver_due(session: Session, http: httpx.Client, now: datetime | None = None) -> int:
-    """Send every queued message that's due; how many were sent."""
+def sent_today(session: Session, destination: NotificationDestination) -> int:
+    """Messages queued for a destination in the last day."""
+    since = utcnow() - timedelta(days=1)
+    return len(
+        session.exec(
+            select(NotificationOutbox.id).where(
+                NotificationOutbox.destination_id == destination.id,
+                col(NotificationOutbox.created_at) >= since,
+            )
+        ).all()
+    )
+
+
+def deliver(
+    settings: Settings | None,
+    http: httpx.Client,
+    destination: NotificationDestination,
+    message: Message,
+) -> SendResult:
+    """Send one message to a destination: its webhook, or the user's DMs."""
+    if destination.kind != DM:
+        return send(http, destination.url, message)
+    if settings is None or not settings.discord_dms or not destination.discord_user_id:
+        return SendResult(ok=False, error="Discord DMs aren't set up on this instance")
+    from character_planner.discord import send_dm  # discord builds on this module
+
+    return send_dm(settings, http, destination.discord_user_id, message)
+
+
+def deliver_due(
+    session: Session,
+    http: httpx.Client,
+    now: datetime | None = None,
+    settings: Settings | None = None,
+) -> int:
+    """Send every queued message that's due; how many were sent. DMs need the settings
+    (the bot's token): without them they wait for the worker's next pass."""
     now = now or utcnow()
     due = session.exec(
         select(NotificationOutbox)
@@ -440,12 +494,28 @@ def deliver_due(session: Session, http: httpx.Client, now: datetime | None = Non
             session.add(item)
             session.commit()
             continue
-        result = send(http, destination.url, item.payload)
+        result = deliver(settings, http, destination, item.payload)
         item.attempts += 1
         if result.ok:
             item.sent_at = utcnow()
             destination.last_sent_at, destination.last_error = item.sent_at, None
             sent += 1
+        elif result.gone and destination.kind == DM:
+            # Refused: paused, not retried, so refusals don't count toward Discord's
+            # invalid-request ban (ADR 0043). A test that gets through resumes it.
+            item.failed, item.last_error = True, result.error
+            destination.enabled, destination.last_error = False, DM_REFUSED
+            logger.warning("Notifications: Discord refused a DM (%s); paused", result.error)
+        elif result.bot:
+            # The bot's token is wrong: nothing DMs until the operator fixes it.
+            item.attempts -= 1  # not this message's fault
+            item.next_attempt_at = utcnow() + BACKOFF[-1]
+            item.last_error = result.error
+            session.add(item)
+            session.commit()
+            if settings is not None:
+                job_failed(session, settings, "Discord DMs", "Discord refused DISCORD_BOT_TOKEN")
+            break
         elif result.gone:
             item.failed, item.last_error = True, result.error
             destination.last_error = f"{result.error}: the webhook may have been deleted"
@@ -557,12 +627,18 @@ def _view(d: NotificationDestination) -> DestinationView:
 
 
 def notifications_view(session: Session) -> NotificationsView:
+    # The admin's webhooks. Users' DMs are their own (#58): not listed here.
     destinations = session.exec(
-        select(NotificationDestination).order_by(col(NotificationDestination.id))
+        select(NotificationDestination)
+        .where(NotificationDestination.kind != DM)
+        .order_by(col(NotificationDestination.id))
     ).all()
     names = {d.id: d.name for d in destinations}
     recent = session.exec(
-        select(NotificationOutbox).order_by(col(NotificationOutbox.id).desc()).limit(20)
+        select(NotificationOutbox)
+        .where(col(NotificationOutbox.destination_id).in_([i for i in names if i is not None]))
+        .order_by(col(NotificationOutbox.id).desc())
+        .limit(20)
     ).all()
     return NotificationsView(
         destinations=[_view(d) for d in destinations],
@@ -630,7 +706,7 @@ def send_test(
     result = send(
         http,
         destination.url,
-        _message(
+        build_message(
             "Test alert from Character Planner",
             f"Alerts for **{destination.name}** will arrive here.",
             COLOR[_audience(destination)],
