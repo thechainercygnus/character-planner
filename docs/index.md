@@ -30,7 +30,9 @@ Report security problems privately, as
 [SECURITY.md](https://github.com/thechainercygnus/character-planner/blob/main/SECURITY.md)
 explains.
 
-Item and dungeon data come from [Forever Companion](https://forevercompanion.io). Fan-made,
+Character and game data come from Blizzard Entertainment's
+[Battle.net API](https://develop.battle.net/). Item and dungeon data come from
+[Forever Companion](https://forevercompanion.io). Fan-made,
 not affiliated with Blizzard Entertainment.
 
 ```{toctree}
