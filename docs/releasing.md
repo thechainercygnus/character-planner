@@ -34,6 +34,15 @@ Releases are tags. Pushing a tag `vX.Y.Z` that matches `pyproject.toml`'s versio
 4. **Watch the run** (`gh run watch`), then read the release. If the scan fails, fix the
    image (usually a base image or dependency update), merge, and tag the next patch version.
    A tag that failed isn't reused.
+5. **Pin the Portainer stack to it.** In a small PR, set `deploy/portainer.yaml`'s default
+   image to the new release, by tag and digest:
+
+   ```bash
+   docker buildx imagetools inspect ghcr.io/thechainercygnus/character-planner:X.Y.Z
+   ```
+
+   The digest exists only once the image is published, so this comes after the release.
+   Test releases (rc) can be pinned the same way while they're being tried.
 
 ### Test releases
 
