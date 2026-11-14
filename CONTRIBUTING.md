@@ -81,6 +81,9 @@ uv run pytest
 cd frontend && npm run lint && npm run typecheck && npm test
 ```
 
+For layout changes, also run `npm run e2e` in `frontend/`. It checks the built app at
+phone sizes in Chromium (the first time, run `npx playwright install chromium`).
+
 If you change a route or an API model, regenerate the [API reference](docs/api.md) with
 `uv run character-planner-api-docs`; a test fails until it matches the code.
 

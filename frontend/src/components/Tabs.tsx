@@ -3,6 +3,12 @@ import type { Tab } from '../useHashTab'
 // A default prop made once, not on every render (oxlint react/no-object-type-as-default-prop).
 const NO_COUNTS = {}
 
+/** On a phone the tab bar scrolls sideways (#153): bring the active tab into view. A ref
+ * callback, so it runs when the active tab changes; made once, so not on every render. */
+function keepInView(tab: HTMLButtonElement | null) {
+  tab?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' })
+}
+
 export function TabBar<Id extends string>({
   tabs,
   active,
@@ -19,6 +25,7 @@ export function TabBar<Id extends string>({
       {tabs.map((tab) => (
         <button
           key={tab.id}
+          ref={tab.id === active ? keepInView : undefined}
           type="button"
           role="tab"
           aria-selected={tab.id === active}
