@@ -405,6 +405,12 @@ docker compose -f compose.yaml -f compose.redis.yaml up -d
 It adds Valkey, the BSD-licensed, Redis-compatible server, and the worker container
 works the queue. Combine it with `compose.postgres.yaml` for a shared instance.
 
+With the queue, every process shares one request budget per upstream (ADR 0040).
+- **Forever Companion:** 100 requests a minute, under its 120.
+- **Battle.net:** 50 a second and 30,000 an hour, under Blizzard's limits.
+
+So however many people sync at once, the planner stays within both.
+
 **How often a character can be synced by hand:** once per 15 minutes, counted from its
 last sync, scheduled ones included. Change it with `SYNC_COOLDOWN_MINUTES` in `.env`; 0
 turns it off.

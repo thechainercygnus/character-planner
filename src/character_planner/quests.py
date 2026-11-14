@@ -22,7 +22,7 @@ import httpx
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
-from character_planner import fields
+from character_planner import fields, upstream
 from character_planner.companion import BASE_URL, USER_AGENT, as_utc
 from character_planner.db import CompanionQuest, save_now, utcnow
 from character_planner.logs import JobLog
@@ -159,7 +159,7 @@ def refresh_quests(
         return outcome
 
     own_http = http is None
-    client = http or httpx.Client(timeout=20, headers={"User-Agent": USER_AGENT})
+    client = http or upstream.client(headers={"User-Agent": USER_AGENT})
     job = JobLog(logger, "Forever Companion quest chain steps", len(wanted))
     try:
         for index, quest_id in enumerate(wanted, start=1):

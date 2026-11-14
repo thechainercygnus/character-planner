@@ -11,6 +11,7 @@ from urllib.parse import urlencode
 
 import httpx
 
+from character_planner import upstream
 from character_planner.config import Settings
 
 AUTHORIZE_URL = "https://oauth.battle.net/authorize"
@@ -64,7 +65,7 @@ def client_credentials(settings: Settings, client: httpx.Client | None = None) -
 
 def _request_token(settings: Settings, data: dict[str, str], client: httpx.Client | None) -> Token:
     own_client = client is None
-    http = client or httpx.Client(timeout=15)
+    http = client or upstream.client(timeout=15)
     try:
         response = http.post(
             TOKEN_URL,

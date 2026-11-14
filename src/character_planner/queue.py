@@ -13,7 +13,6 @@ import sys
 from functools import cache
 from typing import Any, Literal
 
-import httpx
 from pydantic import BaseModel
 from redis import Redis
 from rq import Queue, SimpleWorker
@@ -22,7 +21,7 @@ from rq.job import Job, JobStatus
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
-from character_planner import jobs
+from character_planner import jobs, upstream
 from character_planner.config import get_settings
 from character_planner.db import Character, init_db, make_engine
 from character_planner.logs import configure_logging
@@ -109,7 +108,7 @@ def run_sync(character_id: int) -> dict[str, int]:
     """The queued job: sync one character, then load what a fresh instance lacks."""
     settings = get_settings()
     engine = _worker_engine()
-    with Session(engine) as session, httpx.Client(timeout=20) as http:
+    with Session(engine) as session, upstream.client() as http:
         character = session.get(Character, character_id)
         if character is None:
             raise LookupError(f"No character {character_id}: it was deleted")
@@ -129,6 +128,7 @@ def main() -> int:
         print("Set REDIS_URL to run the job worker (ADR 0039)")
         return 2
     init_db(_worker_engine())
+    upstream.configure(settings)
     redis = connect(settings.redis_url)
     logger.info("Job worker started on queue %s", QUEUE)
     SimpleWorker([Queue(QUEUE, connection=redis)], connection=redis).work()

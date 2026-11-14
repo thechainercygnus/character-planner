@@ -23,7 +23,7 @@ import httpx
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
-from character_planner import fields
+from character_planner import fields, upstream
 from character_planner.db import CompanionItem, save_now, utcnow
 from character_planner.logs import JobLog
 
@@ -191,7 +191,7 @@ def refresh_companion(
     ]
 
     own_http = http is None
-    client = http or httpx.Client(timeout=20, headers={"User-Agent": USER_AGENT})
+    client = http or upstream.client(headers={"User-Agent": USER_AGENT})
     job = JobLog(logger, "Forever Companion items", len(wanted))
     try:
         for index, item_id in enumerate(wanted, start=1):
