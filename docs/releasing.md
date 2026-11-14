@@ -47,6 +47,21 @@ The first publish creates the package on GitHub as **private**. Make it public o
 the package's settings (Package settings, Danger zone, Change visibility), so others can
 pull it without logging in.
 
+## Reproducible builds
+
+What's in an image, and whether building the same commit again gives the same bytes:
+
+- **The web app** is built by Vite from `package-lock.json`. Two clean builds of the same
+  commit give a bit-for-bit identical bundle, and CI checks that on every push
+  (`frontend` job, "Reproducible build").
+- **The Python code** isn't compiled. The image runs the source as committed, with
+  dependencies installed from `uv.lock` (exact versions and hashes, `uv sync --locked`).
+- **Base images** are pinned by digest, and the GitHub Actions that build them by commit.
+- **The image as a whole** isn't bit-for-bit reproducible: layers carry build timestamps
+  and file metadata. Its contents are fixed by the points above, and each released image
+  carries signed build provenance that ties it to the commit and the workflow run that
+  built it (below).
+
 ## Verifying an image
 
 Both checks need the image's digest, from the release notes or

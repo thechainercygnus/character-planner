@@ -27,6 +27,7 @@ Probe static item endpoints: `uv run character-planner-probe-items` (app-only to
 Look up Forever Companion items by id: `uv run character-planner-probe-companion --ids 270200-270260`.
 Build the item pool with progress: `uv run character-planner-pool` (first run takes a few minutes).
 Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `npm run dev`.
+Changed a route or an API model? Regenerate the docs site's API reference: `uv run character-planner-api-docs` (writes `docs/api.md` and `docs/_static/openapi.json`); `tests/test_api_reference.py` fails until they match.
 Custom Semgrep rules (#57) in `.semgrep/`: `uvx --from semgrep semgrep --test --config .semgrep/rules .semgrep/tests` tests them, and `uvx --from semgrep semgrep scan --error --config .semgrep/rules src` runs them, as CI's `semgrep` workflow does.
 Coverage (#55): `uv run pytest --cov`; `npm run coverage` in `frontend/`. CI puts both in the run's summary and fails below the floors (#94): `fail_under` in `pyproject.toml`, `thresholds` in `frontend/vitest.config.ts`. Raise them when coverage grows; never lower them to pass.
 Run scheduled jobs once: `uv run character-planner-worker --once` (sync, then pool refresh).

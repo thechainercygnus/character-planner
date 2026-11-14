@@ -19,6 +19,7 @@ It's free software (AGPL-3.0-or-later) that you host yourself.
   an image before running it.
 - **How it works:** the [architecture](architecture.md) shows the parts and how data flows
   between them; the [assurance case](assurance-case.md) covers its security.
+- **API:** the [API reference](api.md) lists every endpoint and the data it takes and returns.
 - **Decisions:** the [architecture decision records](adr/index.md) say why things are the way
   they are.
 
@@ -39,5 +40,6 @@ self-hosting
 releasing
 architecture
 assurance-case
+api
 adr/index
 ```

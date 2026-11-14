@@ -81,6 +81,9 @@ uv run pytest
 cd frontend && npm run lint && npm run typecheck && npm test
 ```
 
+If you change a route or an API model, regenerate the [API reference](docs/api.md) with
+`uv run character-planner-api-docs`; a test fails until it matches the code.
+
 The repository's own [Semgrep](https://semgrep.dev) rules (#57) live in `.semgrep/`, each
 with test cases, and run in CI. To run them locally:
 `uvx --from semgrep semgrep scan --error --config .semgrep/rules src`.

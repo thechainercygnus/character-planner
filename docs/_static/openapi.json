@@ -1,0 +1,6906 @@
+{
+  "components": {
+    "schemas": {
+      "About": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/DataCredit"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "source_url",
+          "data"
+        ],
+        "title": "About",
+        "type": "object"
+      },
+      "AlertInfo": {
+        "properties": {
+          "audience": {
+            "enum": [
+              "user",
+              "system"
+            ],
+            "title": "Audience",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "level_up",
+              "target_reached",
+              "target_in_reach",
+              "new_upgrade",
+              "job_failed",
+              "upstream_errors"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "audience",
+          "label"
+        ],
+        "title": "AlertInfo",
+        "type": "object"
+      },
+      "Candidate": {
+        "properties": {
+          "armor_delta": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor Delta"
+          },
+          "is_target": {
+            "default": false,
+            "title": "Is Target",
+            "type": "boolean"
+          },
+          "item": {
+            "$ref": "#/components/schemas/PoolItem"
+          },
+          "item_level_delta": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Level Delta"
+          },
+          "pinned": {
+            "default": false,
+            "title": "Pinned",
+            "type": "boolean"
+          },
+          "score_gain": {
+            "title": "Score Gain",
+            "type": "number"
+          },
+          "stat_deltas": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Stat Deltas",
+            "type": "object"
+          },
+          "usable_now": {
+            "title": "Usable Now",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "item",
+          "score_gain",
+          "usable_now"
+        ],
+        "title": "Candidate",
+        "type": "object"
+      },
+      "CharacterView": {
+        "properties": {
+          "captured_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captured At"
+          },
+          "character_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Class"
+          },
+          "equipment": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EquippedItem"
+            },
+            "title": "Equipment",
+            "type": "array"
+          },
+          "equipped_item_level": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Equipped Item Level"
+          },
+          "gear_slots_filled": {
+            "default": 0,
+            "title": "Gear Slots Filled",
+            "type": "integer"
+          },
+          "guild": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guild"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "professions": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Profession"
+            },
+            "title": "Professions",
+            "type": "array"
+          },
+          "race": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Race"
+          },
+          "specialization": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Specialization"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stats": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Stats"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "surname": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Surname"
+          }
+        },
+        "title": "CharacterView",
+        "type": "object"
+      },
+      "ChoiceUpdate": {
+        "properties": {
+          "choice": {
+            "const": "dismissed",
+            "title": "Choice",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "choice",
+          "name"
+        ],
+        "title": "ChoiceUpdate",
+        "type": "object"
+      },
+      "ClassQuestChecklist": {
+        "properties": {
+          "class_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Class Name"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "listed": {
+            "title": "Listed",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/ClassQuestRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "soon_levels": {
+            "default": 5,
+            "title": "Soon Levels",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "class_name",
+          "level",
+          "listed",
+          "rows"
+        ],
+        "title": "ClassQuestChecklist",
+        "type": "object"
+      },
+      "ClassQuestRow": {
+        "properties": {
+          "class_key": {
+            "title": "Class Key",
+            "type": "string"
+          },
+          "done": {
+            "default": false,
+            "title": "Done",
+            "type": "boolean"
+          },
+          "essential": {
+            "default": false,
+            "title": "Essential",
+            "type": "boolean"
+          },
+          "faction": {
+            "default": "both",
+            "title": "Faction",
+            "type": "string"
+          },
+          "giver": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Giver"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "level": {
+            "title": "Level",
+            "type": "integer"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "races": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Races"
+          },
+          "reward": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reward"
+          },
+          "status": {
+            "enum": [
+              "done",
+              "missed",
+              "now",
+              "soon",
+              "later"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "class_key",
+          "level",
+          "name",
+          "status"
+        ],
+        "title": "ClassQuestRow",
+        "type": "object"
+      },
+      "ClassQuestUpdate": {
+        "properties": {
+          "done": {
+            "title": "Done",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "done"
+        ],
+        "title": "ClassQuestUpdate",
+        "type": "object"
+      },
+      "ClassTree": {
+        "properties": {
+          "class_name": {
+            "title": "Class Name",
+            "type": "string"
+          },
+          "specs": {
+            "items": {
+              "$ref": "#/components/schemas/SpecTree"
+            },
+            "title": "Specs",
+            "type": "array"
+          },
+          "tree_id": {
+            "title": "Tree Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "class_name",
+          "tree_id",
+          "specs"
+        ],
+        "title": "ClassTree",
+        "type": "object"
+      },
+      "CorrectionsView": {
+        "description": "What's corrected, what ships, and the effect names a correction may use.",
+        "properties": {
+          "corrections": {
+            "$ref": "#/components/schemas/EnchantCorrections"
+          },
+          "effect_names": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Effect Names",
+            "type": "array"
+          },
+          "shipped": {
+            "$ref": "#/components/schemas/EnchantData"
+          }
+        },
+        "required": [
+          "corrections",
+          "shipped",
+          "effect_names"
+        ],
+        "title": "CorrectionsView",
+        "type": "object"
+      },
+      "CreditLink": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "url"
+        ],
+        "title": "CreditLink",
+        "type": "object"
+      },
+      "CurrentEnchant": {
+        "properties": {
+          "effects": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Effects",
+            "type": "object"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "effects",
+          "score"
+        ],
+        "title": "CurrentEnchant",
+        "type": "object"
+      },
+      "DataCredit": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/CreditLink"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "url",
+          "sources"
+        ],
+        "title": "DataCredit",
+        "type": "object"
+      },
+      "DestinationUpdate": {
+        "properties": {
+          "alerts": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alerts"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "title": "DestinationUpdate",
+        "type": "object"
+      },
+      "DestinationView": {
+        "description": "A destination as the app shows it: the URL masked.",
+        "properties": {
+          "alerts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Alerts",
+            "type": "array"
+          },
+          "audience": {
+            "enum": [
+              "user",
+              "system"
+            ],
+            "title": "Audience",
+            "type": "string"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "last_sent_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sent At"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "audience",
+          "url",
+          "alerts",
+          "enabled",
+          "last_sent_at",
+          "last_error"
+        ],
+        "title": "DestinationView",
+        "type": "object"
+      },
+      "DungeonUpgrade": {
+        "properties": {
+          "item": {
+            "$ref": "#/components/schemas/PoolItem"
+          },
+          "score_gain": {
+            "title": "Score Gain",
+            "type": "number"
+          },
+          "slot": {
+            "title": "Slot",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/PoolSource"
+          }
+        },
+        "required": [
+          "slot",
+          "item",
+          "score_gain",
+          "source"
+        ],
+        "title": "DungeonUpgrade",
+        "type": "object"
+      },
+      "DungeonValue": {
+        "properties": {
+          "dungeon": {
+            "title": "Dungeon",
+            "type": "string"
+          },
+          "dungeon_id": {
+            "title": "Dungeon Id",
+            "type": "string"
+          },
+          "max_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Level"
+          },
+          "min_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Level"
+          },
+          "total_gain": {
+            "title": "Total Gain",
+            "type": "number"
+          },
+          "upgrades": {
+            "items": {
+              "$ref": "#/components/schemas/DungeonUpgrade"
+            },
+            "title": "Upgrades",
+            "type": "array"
+          }
+        },
+        "required": [
+          "dungeon_id",
+          "dungeon",
+          "min_level",
+          "max_level",
+          "total_gain",
+          "upgrades"
+        ],
+        "title": "DungeonValue",
+        "type": "object"
+      },
+      "EditedRules": {
+        "description": "Rules as the editor sends them, bounded.",
+        "properties": {
+          "armor_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Armor Types",
+            "type": "array"
+          },
+          "dual_wield_from_level": {
+            "anyOf": [
+              {
+                "maximum": 80.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dual Wield From Level"
+          },
+          "levels_ahead": {
+            "maximum": 20.0,
+            "minimum": 0.0,
+            "title": "Levels Ahead",
+            "type": "integer"
+          },
+          "mail_from_level": {
+            "anyOf": [
+              {
+                "maximum": 80.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mail From Level"
+          },
+          "min_gain": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Min Gain",
+            "type": "number"
+          },
+          "off_hand_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Off Hand Types",
+            "type": "array"
+          },
+          "per_slot": {
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Per Slot",
+            "type": "integer"
+          },
+          "plate_from_level": {
+            "anyOf": [
+              {
+                "maximum": 80.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plate From Level"
+          },
+          "two_hand_types": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Two Hand Types"
+          },
+          "two_handers": {
+            "default": false,
+            "title": "Two Handers",
+            "type": "boolean"
+          },
+          "weapon_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Weapon Types",
+            "type": "array"
+          }
+        },
+        "required": [
+          "weapon_types",
+          "armor_types",
+          "off_hand_types",
+          "levels_ahead",
+          "per_slot",
+          "min_gain"
+        ],
+        "title": "EditedRules",
+        "type": "object"
+      },
+      "EditedTarget": {
+        "description": "A target as the editor sends it: bounded text, the rest as in GearTarget.",
+        "properties": {
+          "armor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor"
+          },
+          "armor_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor Type"
+          },
+          "item": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Item",
+            "type": "string"
+          },
+          "item_id": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Id"
+          },
+          "item_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Level"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "maximum": 80.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "pinned": {
+            "default": false,
+            "title": "Pinned",
+            "type": "boolean"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "slot": {
+            "title": "Slot",
+            "type": "string"
+          },
+          "source": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Source",
+            "type": "string"
+          },
+          "stats": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Stats",
+            "type": "object"
+          }
+        },
+        "required": [
+          "slot",
+          "item"
+        ],
+        "title": "EditedTarget",
+        "type": "object"
+      },
+      "EditedTargets": {
+        "properties": {
+          "targets": {
+            "items": {
+              "$ref": "#/components/schemas/EditedTarget"
+            },
+            "title": "Targets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "targets"
+        ],
+        "title": "EditedTargets",
+        "type": "object"
+      },
+      "EffectsUpdate": {
+        "properties": {
+          "effects": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "minProperties": 1,
+            "title": "Effects",
+            "type": "object"
+          }
+        },
+        "required": [
+          "effects"
+        ],
+        "title": "EffectsUpdate",
+        "type": "object"
+      },
+      "EnchantAdvice": {
+        "properties": {
+          "considered": {
+            "title": "Considered",
+            "type": "integer"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "missing_effects": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/MissingEffect"
+            },
+            "title": "Missing Effects",
+            "type": "array"
+          },
+          "per_slot": {
+            "default": 3,
+            "title": "Per Slot",
+            "type": "integer"
+          },
+          "per_slot_corrected": {
+            "default": false,
+            "title": "Per Slot Corrected",
+            "type": "boolean"
+          },
+          "recipes": {
+            "title": "Recipes",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/SlotEnchants"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "unknown_level": {
+            "title": "Unknown Level",
+            "type": "integer"
+          },
+          "unscored": {
+            "title": "Unscored",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "level",
+          "recipes",
+          "rows",
+          "considered",
+          "unscored",
+          "unknown_level"
+        ],
+        "title": "EnchantAdvice",
+        "type": "object"
+      },
+      "EnchantCorrections": {
+        "properties": {
+          "crafted_effects": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "type": "object"
+            },
+            "default": {},
+            "title": "Crafted Effects",
+            "type": "object"
+          },
+          "per_slot": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Per Slot"
+          },
+          "reagent_levels": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Reagent Levels",
+            "type": "object"
+          }
+        },
+        "title": "EnchantCorrections",
+        "type": "object"
+      },
+      "EnchantData": {
+        "description": "data/curated/enchants.yaml, with any corrections made in the app on top (#36).",
+        "properties": {
+          "corrected_crafted": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Corrected Crafted",
+            "type": "array",
+            "uniqueItems": true
+          },
+          "corrected_reagents": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Corrected Reagents",
+            "type": "array",
+            "uniqueItems": true
+          },
+          "crafted_effects": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "type": "object"
+            },
+            "default": {},
+            "title": "Crafted Effects",
+            "type": "object"
+          },
+          "per_slot": {
+            "default": 3,
+            "title": "Per Slot",
+            "type": "integer"
+          },
+          "per_slot_corrected": {
+            "default": false,
+            "title": "Per Slot Corrected",
+            "type": "boolean"
+          },
+          "reagent_levels": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Reagent Levels",
+            "type": "object"
+          }
+        },
+        "title": "EnchantData",
+        "type": "object"
+      },
+      "EnchantOption": {
+        "properties": {
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "crafted_item_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crafted Item Id"
+          },
+          "effects": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Effects",
+            "type": "object"
+          },
+          "effects_source": {
+            "anyOf": [
+              {
+                "enum": [
+                  "description",
+                  "curated",
+                  "corrected",
+                  "equipped"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effects Source"
+          },
+          "estimated_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Level"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "profession": {
+            "title": "Profession",
+            "type": "string"
+          },
+          "reagents": {
+            "items": {
+              "$ref": "#/components/schemas/Reagent"
+            },
+            "title": "Reagents",
+            "type": "array"
+          },
+          "recipe_id": {
+            "title": "Recipe Id",
+            "type": "integer"
+          },
+          "season_of_discovery": {
+            "default": false,
+            "title": "Season Of Discovery",
+            "type": "boolean"
+          },
+          "shield_only": {
+            "default": false,
+            "title": "Shield Only",
+            "type": "boolean"
+          },
+          "slots": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Slots",
+            "type": "array"
+          },
+          "temporary": {
+            "default": false,
+            "title": "Temporary",
+            "type": "boolean"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "two_handed": {
+            "default": false,
+            "title": "Two Handed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "recipe_id",
+          "name",
+          "profession",
+          "category",
+          "slots",
+          "text",
+          "effects",
+          "reagents"
+        ],
+        "title": "EnchantOption",
+        "type": "object"
+      },
+      "EnchantPick": {
+        "properties": {
+          "can_make": {
+            "title": "Can Make",
+            "type": "boolean"
+          },
+          "option": {
+            "$ref": "#/components/schemas/EnchantOption"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "score_gain": {
+            "title": "Score Gain",
+            "type": "number"
+          },
+          "usable_now": {
+            "title": "Usable Now",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "option",
+          "score",
+          "score_gain",
+          "usable_now",
+          "can_make"
+        ],
+        "title": "EnchantPick",
+        "type": "object"
+      },
+      "Enchantment": {
+        "description": "An enchant on an equipped item, as the equipment endpoint reports it.",
+        "properties": {
+          "enchantment_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enchantment Id"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
+          },
+          "source_item": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Item"
+          },
+          "source_item_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Item Id"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "Enchantment",
+        "type": "object"
+      },
+      "EquippedItem": {
+        "properties": {
+          "armor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor"
+          },
+          "armor_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor Type"
+          },
+          "attack_speed": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attack Speed"
+          },
+          "dps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dps"
+          },
+          "enchantments": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Enchantment"
+            },
+            "title": "Enchantments",
+            "type": "array"
+          },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Icon Url"
+          },
+          "item_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Id"
+          },
+          "item_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Level"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality"
+          },
+          "quality_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality Name"
+          },
+          "slot": {
+            "title": "Slot",
+            "type": "string"
+          },
+          "stats": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ItemStat"
+            },
+            "title": "Stats",
+            "type": "array"
+          }
+        },
+        "required": [
+          "slot",
+          "name"
+        ],
+        "title": "EquippedItem",
+        "type": "object"
+      },
+      "GearChange": {
+        "properties": {
+          "after": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After"
+          },
+          "before": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
+          },
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "item_level_after": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Level After"
+          },
+          "item_level_before": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Level Before"
+          },
+          "score_change": {
+            "title": "Score Change",
+            "type": "number"
+          },
+          "slot": {
+            "title": "Slot",
+            "type": "string"
+          }
+        },
+        "required": [
+          "captured_at",
+          "slot",
+          "before",
+          "after",
+          "score_change"
+        ],
+        "title": "GearChange",
+        "type": "object"
+      },
+      "GearPlan": {
+        "description": "Per slot (ADR 0015): the target to go for now, in rows, and what's coming up.",
+        "properties": {
+          "attributions": {
+            "default": [],
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "title": "Attributions",
+            "type": "array"
+          },
+          "later": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/SlotOutlook"
+            },
+            "title": "Later",
+            "type": "array"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/GearRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "targets_customised": {
+            "default": false,
+            "title": "Targets Customised",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "level",
+          "rows"
+        ],
+        "title": "GearPlan",
+        "type": "object"
+      },
+      "GearRow": {
+        "properties": {
+          "armor_delta": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor Delta"
+          },
+          "equipped": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EquippedItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "item_level_delta": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Level Delta"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "reached": {
+            "title": "Reached",
+            "type": "boolean"
+          },
+          "score_delta": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score Delta"
+          },
+          "slot": {
+            "title": "Slot",
+            "type": "string"
+          },
+          "stat_deltas": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Stat Deltas",
+            "type": "object"
+          },
+          "target": {
+            "$ref": "#/components/schemas/GearTarget"
+          },
+          "target_info": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TargetInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "upcoming": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/UpcomingTarget"
+            },
+            "title": "Upcoming",
+            "type": "array"
+          },
+          "verdict": {
+            "enum": [
+              "reached",
+              "upgrade",
+              "sidegrade",
+              "downgrade",
+              "unknown"
+            ],
+            "title": "Verdict",
+            "type": "string"
+          },
+          "verdict_basis": {
+            "default": "none",
+            "enum": [
+              "score",
+              "item_level",
+              "none"
+            ],
+            "title": "Verdict Basis",
+            "type": "string"
+          },
+          "warning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warning"
+          }
+        },
+        "required": [
+          "slot",
+          "equipped",
+          "target",
+          "target_info",
+          "reached",
+          "verdict",
+          "item_level_delta",
+          "warning"
+        ],
+        "title": "GearRow",
+        "type": "object"
+      },
+      "GearTarget": {
+        "properties": {
+          "armor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor"
+          },
+          "armor_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor Type"
+          },
+          "item": {
+            "title": "Item",
+            "type": "string"
+          },
+          "item_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Id"
+          },
+          "item_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Level"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "pinned": {
+            "default": false,
+            "title": "Pinned",
+            "type": "boolean"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "slot": {
+            "title": "Slot",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "stats": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Stats",
+            "type": "object"
+          }
+        },
+        "required": [
+          "slot",
+          "item",
+          "source"
+        ],
+        "title": "GearTarget",
+        "type": "object"
+      },
+      "GearTargets": {
+        "description": "One flat list of targets (ADR 0015). Within a slot, list order is priority.",
+        "properties": {
+          "targets": {
+            "items": {
+              "$ref": "#/components/schemas/GearTarget"
+            },
+            "title": "Targets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "targets"
+        ],
+        "title": "GearTargets",
+        "type": "object"
+      },
+      "GuestClass": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "presets": {
+            "items": {
+              "$ref": "#/components/schemas/PresetOption"
+            },
+            "title": "Presets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "key",
+          "name",
+          "presets"
+        ],
+        "title": "GuestClass",
+        "type": "object"
+      },
+      "GuestOptions": {
+        "description": "What a guest can choose from.",
+        "properties": {
+          "classes": {
+            "items": {
+              "$ref": "#/components/schemas/GuestClass"
+            },
+            "title": "Classes",
+            "type": "array"
+          },
+          "factions": {
+            "default": [
+              "alliance",
+              "horde"
+            ],
+            "items": {
+              "enum": [
+                "alliance",
+                "horde"
+              ],
+              "type": "string"
+            },
+            "title": "Factions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "classes"
+        ],
+        "title": "GuestOptions",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "ItemChoiceView": {
+        "properties": {
+          "choice": {
+            "const": "dismissed",
+            "title": "Choice",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "item_id": {
+            "title": "Item Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "item_id",
+          "name",
+          "choice",
+          "created_at"
+        ],
+        "title": "ItemChoiceView",
+        "type": "object"
+      },
+      "ItemStat": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "value"
+        ],
+        "title": "ItemStat",
+        "type": "object"
+      },
+      "LevelGroup": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/LookAheadEvent"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "level": {
+            "title": "Level",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "level",
+          "events"
+        ],
+        "title": "LevelGroup",
+        "type": "object"
+      },
+      "LevelUp": {
+        "properties": {
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "level": {
+            "title": "Level",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "captured_at",
+          "level"
+        ],
+        "title": "LevelUp",
+        "type": "object"
+      },
+      "LevelUpdate": {
+        "properties": {
+          "level": {
+            "maximum": 60.0,
+            "minimum": 1.0,
+            "title": "Level",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "level"
+        ],
+        "title": "LevelUpdate",
+        "type": "object"
+      },
+      "LookAhead": {
+        "properties": {
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/LevelGroup"
+            },
+            "title": "Groups",
+            "type": "array"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "levels": {
+            "title": "Levels",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "level",
+          "levels",
+          "groups"
+        ],
+        "title": "LookAhead",
+        "type": "object"
+      },
+      "LookAheadEvent": {
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "essential": {
+            "default": false,
+            "title": "Essential",
+            "type": "boolean"
+          },
+          "kind": {
+            "enum": [
+              "dungeon",
+              "target",
+              "talent",
+              "class_quest",
+              "profession"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link"
+          },
+          "locked": {
+            "default": false,
+            "title": "Locked",
+            "type": "boolean"
+          },
+          "pinned": {
+            "default": false,
+            "title": "Pinned",
+            "type": "boolean"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "title"
+        ],
+        "title": "LookAheadEvent",
+        "type": "object"
+      },
+      "ManualSnapshot": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "payload": {
+            "title": "Payload"
+          }
+        },
+        "required": [
+          "kind",
+          "payload"
+        ],
+        "title": "ManualSnapshot",
+        "type": "object"
+      },
+      "MissingEffect": {
+        "description": "A scope, kit or other crafted enchant in reach whose effect isn't known (#36).",
+        "properties": {
+          "item_id": {
+            "title": "Item Id",
+            "type": "integer"
+          },
+          "recipe": {
+            "title": "Recipe",
+            "type": "string"
+          },
+          "slots": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Slots",
+            "type": "array"
+          }
+        },
+        "required": [
+          "item_id",
+          "recipe",
+          "slots"
+        ],
+        "title": "MissingEffect",
+        "type": "object"
+      },
+      "NewDestination": {
+        "properties": {
+          "alerts": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alerts"
+          },
+          "audience": {
+            "default": "user",
+            "enum": [
+              "user",
+              "system"
+            ],
+            "title": "Audience",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "url"
+        ],
+        "title": "NewDestination",
+        "type": "object"
+      },
+      "NewPreset": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "weights": {
+            "additionalProperties": {
+              "maximum": 10.0,
+              "minimum": -10.0,
+              "type": "number"
+            },
+            "default": {},
+            "title": "Weights",
+            "type": "object"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "NewPreset",
+        "type": "object"
+      },
+      "NextPoint": {
+        "properties": {
+          "level": {
+            "title": "Level",
+            "type": "integer"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "talent": {
+            "title": "Talent",
+            "type": "string"
+          },
+          "talent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Talent Id"
+          }
+        },
+        "required": [
+          "talent",
+          "rank",
+          "level"
+        ],
+        "title": "NextPoint",
+        "type": "object"
+      },
+      "NextRank": {
+        "properties": {
+          "level_ready": {
+            "title": "Level Ready",
+            "type": "boolean"
+          },
+          "max_skill": {
+            "title": "Max Skill",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "skill_ready": {
+            "title": "Skill Ready",
+            "type": "boolean"
+          },
+          "train_at_level": {
+            "title": "Train At Level",
+            "type": "integer"
+          },
+          "train_at_skill": {
+            "title": "Train At Skill",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "max_skill",
+          "train_at_skill",
+          "train_at_level",
+          "skill_ready",
+          "level_ready"
+        ],
+        "title": "NextRank",
+        "type": "object"
+      },
+      "NotificationsView": {
+        "properties": {
+          "alerts": {
+            "default": [
+              {
+                "audience": "user",
+                "kind": "level_up",
+                "label": "Level-ups"
+              },
+              {
+                "audience": "user",
+                "kind": "target_reached",
+                "label": "Gear target reached"
+              },
+              {
+                "audience": "user",
+                "kind": "target_in_reach",
+                "label": "Coming-up target now in reach"
+              },
+              {
+                "audience": "user",
+                "kind": "new_upgrade",
+                "label": "New upgrades worth having"
+              },
+              {
+                "audience": "system",
+                "kind": "job_failed",
+                "label": "A scheduled job failed"
+              },
+              {
+                "audience": "system",
+                "kind": "upstream_errors",
+                "label": "Upstream errors"
+              }
+            ],
+            "items": {
+              "$ref": "#/components/schemas/AlertInfo"
+            },
+            "title": "Alerts",
+            "type": "array"
+          },
+          "destinations": {
+            "items": {
+              "$ref": "#/components/schemas/DestinationView"
+            },
+            "title": "Destinations",
+            "type": "array"
+          },
+          "recent": {
+            "items": {
+              "$ref": "#/components/schemas/RecentView"
+            },
+            "title": "Recent",
+            "type": "array"
+          },
+          "system_alerts_to_user": {
+            "title": "System Alerts To User",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "destinations",
+          "recent",
+          "system_alerts_to_user"
+        ],
+        "title": "NotificationsView",
+        "type": "object"
+      },
+      "OffPlan": {
+        "properties": {
+          "current": {
+            "title": "Current",
+            "type": "integer"
+          },
+          "planned": {
+            "title": "Planned",
+            "type": "integer"
+          },
+          "talent": {
+            "title": "Talent",
+            "type": "string"
+          },
+          "talent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Talent Id"
+          }
+        },
+        "required": [
+          "talent",
+          "current",
+          "planned"
+        ],
+        "title": "OffPlan",
+        "type": "object"
+      },
+      "PerSlotUpdate": {
+        "properties": {
+          "per_slot": {
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Per Slot",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "per_slot"
+        ],
+        "title": "PerSlotUpdate",
+        "type": "object"
+      },
+      "Pin": {
+        "properties": {
+          "item_id": {
+            "exclusiveMinimum": 0.0,
+            "title": "Item Id",
+            "type": "integer"
+          },
+          "slot": {
+            "title": "Slot",
+            "type": "string"
+          }
+        },
+        "required": [
+          "item_id",
+          "slot"
+        ],
+        "title": "Pin",
+        "type": "object"
+      },
+      "PlanStep": {
+        "properties": {
+          "rank": {
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Rank",
+            "type": "integer"
+          },
+          "talent": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Talent",
+            "type": "string"
+          },
+          "talent_id": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Talent Id"
+          }
+        },
+        "required": [
+          "talent",
+          "rank"
+        ],
+        "title": "PlanStep",
+        "type": "object"
+      },
+      "PoolItem": {
+        "properties": {
+          "armor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor"
+          },
+          "armor_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor Type"
+          },
+          "dps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dps"
+          },
+          "effective_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The level this item can be had at: its required level, else (many quest rewards\nhave none) the easiest source's level (PoolSource.start_level).",
+            "readOnly": true,
+            "title": "Effective Level"
+          },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Icon Url"
+          },
+          "item_id": {
+            "title": "Item Id",
+            "type": "integer"
+          },
+          "item_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Level"
+          },
+          "item_slot": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Slot"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality"
+          },
+          "required_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Required Level"
+          },
+          "slot": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slot"
+          },
+          "sources": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/PoolSource"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "stats": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Stats",
+            "type": "object"
+          },
+          "weapon_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weapon Type"
+          },
+          "wowhead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wowhead"
+          }
+        },
+        "required": [
+          "item_id",
+          "name",
+          "effective_level"
+        ],
+        "title": "PoolItem",
+        "type": "object"
+      },
+      "PoolRefresh": {
+        "properties": {
+          "class_quests_listed": {
+            "default": 0,
+            "title": "Class Quests Listed",
+            "type": "integer"
+          },
+          "dungeons_fetched": {
+            "default": 0,
+            "title": "Dungeons Fetched",
+            "type": "integer"
+          },
+          "dungeons_listed": {
+            "default": 0,
+            "title": "Dungeons Listed",
+            "type": "integer"
+          },
+          "errors": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "in_window": {
+            "default": 0,
+            "title": "In Window",
+            "type": "integer"
+          },
+          "items_fetched": {
+            "default": 0,
+            "title": "Items Fetched",
+            "type": "integer"
+          },
+          "items_not_found": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Items Not Found",
+            "type": "array"
+          },
+          "pool_size": {
+            "default": 0,
+            "title": "Pool Size",
+            "type": "integer"
+          },
+          "quests_fetched": {
+            "default": 0,
+            "title": "Quests Fetched",
+            "type": "integer"
+          },
+          "rares_listed": {
+            "default": 0,
+            "title": "Rares Listed",
+            "type": "integer"
+          }
+        },
+        "title": "PoolRefresh",
+        "type": "object"
+      },
+      "PoolSource": {
+        "properties": {
+          "chain": {
+            "default": [],
+            "items": {
+              "items": {
+                "$ref": "#/components/schemas/QuestStep"
+              },
+              "type": "array"
+            },
+            "title": "Chain",
+            "type": "array"
+          },
+          "choice": {
+            "default": false,
+            "title": "Choice",
+            "type": "boolean"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "dungeon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dungeon"
+          },
+          "dungeon_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dungeon Id"
+          },
+          "elite": {
+            "default": false,
+            "title": "Elite",
+            "type": "boolean"
+          },
+          "kind": {
+            "enum": [
+              "drop",
+              "quest",
+              "rare",
+              "crafted"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "max_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Level"
+          },
+          "min_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Level"
+          },
+          "profession": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profession"
+          },
+          "quest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QuestStep"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "quest_min_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quest Min Level"
+          },
+          "rare": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rare"
+          },
+          "rare_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rare Id"
+          },
+          "recipe": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipe"
+          },
+          "spawns": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spawns"
+          },
+          "zone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "PoolSource",
+        "type": "object"
+      },
+      "PoolView": {
+        "properties": {
+          "faction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Faction"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PoolItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "window": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Window"
+          }
+        },
+        "required": [
+          "level",
+          "faction",
+          "window",
+          "items"
+        ],
+        "title": "PoolView",
+        "type": "object"
+      },
+      "PresetChoice": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key"
+        ],
+        "title": "PresetChoice",
+        "type": "object"
+      },
+      "PresetOption": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "name"
+        ],
+        "title": "PresetOption",
+        "type": "object"
+      },
+      "PresetRename": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "PresetRename",
+        "type": "object"
+      },
+      "PresetSummary": {
+        "properties": {
+          "customised": {
+            "title": "Customised",
+            "type": "boolean"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "shipped": {
+            "title": "Shipped",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "key",
+          "name",
+          "shipped",
+          "customised"
+        ],
+        "title": "PresetSummary",
+        "type": "object"
+      },
+      "Profession": {
+        "properties": {
+          "max_skill": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Skill"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "primary": {
+            "title": "Primary",
+            "type": "boolean"
+          },
+          "skill": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skill"
+          }
+        },
+        "required": [
+          "name",
+          "primary"
+        ],
+        "title": "Profession",
+        "type": "object"
+      },
+      "ProfessionRow": {
+        "properties": {
+          "crafted_gear": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Crafted Gear",
+            "type": "array"
+          },
+          "known_recipes": {
+            "title": "Known Recipes",
+            "type": "integer"
+          },
+          "max_skill": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Skill"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "next_rank": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NextRank"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "primary": {
+            "title": "Primary",
+            "type": "boolean"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "skill": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skill"
+          }
+        },
+        "required": [
+          "name",
+          "primary",
+          "skill",
+          "max_skill",
+          "rank",
+          "next_rank",
+          "known_recipes",
+          "crafted_gear"
+        ],
+        "title": "ProfessionRow",
+        "type": "object"
+      },
+      "ProfessionsView": {
+        "properties": {
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "professions": {
+            "items": {
+              "$ref": "#/components/schemas/ProfessionRow"
+            },
+            "title": "Professions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "level",
+          "professions"
+        ],
+        "title": "ProfessionsView",
+        "type": "object"
+      },
+      "Progress": {
+        "properties": {
+          "gear_changes": {
+            "items": {
+              "$ref": "#/components/schemas/GearChange"
+            },
+            "title": "Gear Changes",
+            "type": "array"
+          },
+          "level_ups": {
+            "items": {
+              "$ref": "#/components/schemas/LevelUp"
+            },
+            "title": "Level Ups",
+            "type": "array"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/ProgressPoint"
+            },
+            "title": "Points",
+            "type": "array"
+          }
+        },
+        "required": [
+          "points",
+          "gear_changes",
+          "level_ups"
+        ],
+        "title": "Progress",
+        "type": "object"
+      },
+      "ProgressPoint": {
+        "properties": {
+          "armor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor"
+          },
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "gear_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gear Score"
+          },
+          "health": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Health"
+          },
+          "item_level": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Level"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "stamina": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stamina"
+          }
+        },
+        "required": [
+          "captured_at"
+        ],
+        "title": "ProgressPoint",
+        "type": "object"
+      },
+      "QuestStep": {
+        "description": "One quest in a chain. Only quest_id and name are always known.",
+        "properties": {
+          "dungeon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dungeon"
+          },
+          "giver": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Giver"
+          },
+          "known": {
+            "default": false,
+            "title": "Known",
+            "type": "boolean"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location"
+          },
+          "min_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Level"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "quest_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quest Id"
+          },
+          "wowhead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wowhead"
+          },
+          "zone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "QuestStep",
+        "type": "object"
+      },
+      "Reagent": {
+        "properties": {
+          "item_id": {
+            "title": "Item Id",
+            "type": "integer"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "level_source": {
+            "anyOf": [
+              {
+                "enum": [
+                  "corrected",
+                  "shipped",
+                  "item"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level Source"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "quantity": {
+            "title": "Quantity",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "item_id",
+          "name",
+          "quantity"
+        ],
+        "title": "Reagent",
+        "type": "object"
+      },
+      "RecentView": {
+        "properties": {
+          "attempts": {
+            "title": "Attempts",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "destination": {
+            "title": "Destination",
+            "type": "string"
+          },
+          "failed": {
+            "title": "Failed",
+            "type": "boolean"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "sent_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sent At"
+          }
+        },
+        "required": [
+          "destination",
+          "kind",
+          "created_at",
+          "sent_at",
+          "failed",
+          "attempts",
+          "last_error"
+        ],
+        "title": "RecentView",
+        "type": "object"
+      },
+      "RecipeRefresh": {
+        "properties": {
+          "errors": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "items_fetched": {
+            "default": 0,
+            "title": "Items Fetched",
+            "type": "integer"
+          },
+          "items_not_found": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Items Not Found",
+            "type": "array"
+          },
+          "professions": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Professions",
+            "type": "array"
+          },
+          "recipes_fetched": {
+            "default": 0,
+            "title": "Recipes Fetched",
+            "type": "integer"
+          },
+          "recipes_listed": {
+            "default": 0,
+            "title": "Recipes Listed",
+            "type": "integer"
+          }
+        },
+        "title": "RecipeRefresh",
+        "type": "object"
+      },
+      "Recommendations": {
+        "properties": {
+          "attributions": {
+            "default": [],
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "title": "Attributions",
+            "type": "array"
+          },
+          "considered": {
+            "title": "Considered",
+            "type": "integer"
+          },
+          "dungeons": {
+            "items": {
+              "$ref": "#/components/schemas/DungeonValue"
+            },
+            "title": "Dungeons",
+            "type": "array"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/SlotRecommendation"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "unscored": {
+            "title": "Unscored",
+            "type": "integer"
+          },
+          "window": {
+            "anyOf": [
+              {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Window"
+          }
+        },
+        "required": [
+          "level",
+          "window",
+          "rows",
+          "dungeons",
+          "considered",
+          "unscored"
+        ],
+        "title": "Recommendations",
+        "type": "object"
+      },
+      "RefreshResult": {
+        "properties": {
+          "companion_fetched": {
+            "default": 0,
+            "title": "Companion Fetched",
+            "type": "integer"
+          },
+          "companion_not_found": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Companion Not Found",
+            "type": "array"
+          },
+          "errors": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "found": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Found",
+            "type": "array"
+          },
+          "icons": {
+            "default": 0,
+            "title": "Icons",
+            "type": "integer"
+          },
+          "missing": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing",
+            "type": "array"
+          }
+        },
+        "title": "RefreshResult",
+        "type": "object"
+      },
+      "RulesView": {
+        "properties": {
+          "armor_type_options": {
+            "default": [
+              "cloth",
+              "leather",
+              "mail"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "title": "Armor Type Options",
+            "type": "array"
+          },
+          "customised": {
+            "title": "Customised",
+            "type": "boolean"
+          },
+          "defaults": {
+            "$ref": "#/components/schemas/UsageRules"
+          },
+          "off_hand_type_options": {
+            "default": [
+              "Shield",
+              "Miscellaneous",
+              "Axe",
+              "Mace",
+              "Sword",
+              "Dagger",
+              "Fist Weapon"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "title": "Off Hand Type Options",
+            "type": "array"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/UsageRules"
+          },
+          "two_hand_type_options": {
+            "default": [
+              "Axe",
+              "Mace",
+              "Polearm",
+              "Staff",
+              "Sword"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "title": "Two Hand Type Options",
+            "type": "array"
+          },
+          "weapon_type_options": {
+            "default": [
+              "Axe",
+              "Mace",
+              "Sword",
+              "Dagger",
+              "Fist Weapon",
+              "Polearm",
+              "Staff",
+              "Bow",
+              "Crossbow",
+              "Gun",
+              "Thrown",
+              "Wand",
+              "Shield"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "title": "Weapon Type Options",
+            "type": "array"
+          }
+        },
+        "required": [
+          "rules",
+          "defaults",
+          "customised"
+        ],
+        "title": "RulesView",
+        "type": "object"
+      },
+      "SendResult": {
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "gone": {
+            "default": false,
+            "title": "Gone",
+            "type": "boolean"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "retry_after": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retry After"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "required": [
+          "ok"
+        ],
+        "title": "SendResult",
+        "type": "object"
+      },
+      "SlotEnchants": {
+        "properties": {
+          "current": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CurrentEnchant"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "current_is_weaker": {
+            "title": "Current Is Weaker",
+            "type": "boolean"
+          },
+          "item": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item"
+          },
+          "picks": {
+            "items": {
+              "$ref": "#/components/schemas/EnchantPick"
+            },
+            "title": "Picks",
+            "type": "array"
+          },
+          "slot": {
+            "title": "Slot",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slot",
+          "item",
+          "current",
+          "picks",
+          "current_is_weaker"
+        ],
+        "title": "SlotEnchants",
+        "type": "object"
+      },
+      "SlotOutlook": {
+        "description": "A slot whose targets are all above the character's level.",
+        "properties": {
+          "equipped": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EquippedItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "slot": {
+            "title": "Slot",
+            "type": "string"
+          },
+          "upcoming": {
+            "items": {
+              "$ref": "#/components/schemas/UpcomingTarget"
+            },
+            "title": "Upcoming",
+            "type": "array"
+          }
+        },
+        "required": [
+          "slot",
+          "equipped",
+          "upcoming"
+        ],
+        "title": "SlotOutlook",
+        "type": "object"
+      },
+      "SlotRecommendation": {
+        "properties": {
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/Candidate"
+            },
+            "title": "Candidates",
+            "type": "array"
+          },
+          "equipped": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EquippedItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "slot": {
+            "title": "Slot",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slot",
+          "equipped",
+          "candidates"
+        ],
+        "title": "SlotRecommendation",
+        "type": "object"
+      },
+      "SpecTree": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/TalentNode"
+            },
+            "title": "Nodes",
+            "type": "array"
+          },
+          "spec_id": {
+            "title": "Spec Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "spec_id",
+          "name",
+          "nodes"
+        ],
+        "title": "SpecTree",
+        "type": "object"
+      },
+      "Specialization": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "spent_points": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spent Points"
+          },
+          "talents": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Talent"
+            },
+            "title": "Talents",
+            "type": "array"
+          },
+          "trees": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/TreePoints"
+            },
+            "title": "Trees",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "Specialization",
+        "type": "object"
+      },
+      "Stats": {
+        "properties": {
+          "agility": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agility"
+          },
+          "armor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor"
+          },
+          "attack_power": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attack Power"
+          },
+          "block": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Block"
+          },
+          "crit": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crit"
+          },
+          "defense": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Defense"
+          },
+          "dodge": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dodge"
+          },
+          "health": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Health"
+          },
+          "intellect": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intellect"
+          },
+          "parry": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parry"
+          },
+          "spirit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spirit"
+          },
+          "stamina": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stamina"
+          },
+          "strength": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strength"
+          }
+        },
+        "title": "Stats",
+        "type": "object"
+      },
+      "StepStatus": {
+        "properties": {
+          "current": {
+            "title": "Current",
+            "type": "integer"
+          },
+          "first_point": {
+            "title": "First Point",
+            "type": "integer"
+          },
+          "level": {
+            "title": "Level",
+            "type": "integer"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "state": {
+            "enum": [
+              "done",
+              "partial",
+              "pending"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "talent": {
+            "title": "Talent",
+            "type": "string"
+          },
+          "talent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Talent Id"
+          }
+        },
+        "required": [
+          "talent",
+          "rank",
+          "points",
+          "current",
+          "state",
+          "first_point",
+          "level"
+        ],
+        "title": "StepStatus",
+        "type": "object"
+      },
+      "Talent": {
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "talent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Talent Id"
+          },
+          "tree": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tree"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "Talent",
+        "type": "object"
+      },
+      "TalentNode": {
+        "properties": {
+          "col": {
+            "title": "Col",
+            "type": "integer"
+          },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Icon Url"
+          },
+          "max_rank": {
+            "title": "Max Rank",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "node_id": {
+            "title": "Node Id",
+            "type": "integer"
+          },
+          "ranks": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Ranks",
+            "type": "array"
+          },
+          "requires": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Requires",
+            "type": "array"
+          },
+          "row": {
+            "title": "Row",
+            "type": "integer"
+          },
+          "spell_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spell Id"
+          },
+          "talent_id": {
+            "title": "Talent Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "node_id",
+          "talent_id",
+          "name",
+          "spell_id",
+          "row",
+          "col",
+          "max_rank",
+          "ranks",
+          "requires"
+        ],
+        "title": "TalentNode",
+        "type": "object"
+      },
+      "TalentPlan": {
+        "properties": {
+          "spec": {
+            "title": "Spec",
+            "type": "string"
+          },
+          "steps": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/PlanStep"
+            },
+            "title": "Steps",
+            "type": "array"
+          }
+        },
+        "required": [
+          "spec"
+        ],
+        "title": "TalentPlan",
+        "type": "object"
+      },
+      "TalentPlanView": {
+        "properties": {
+          "available": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Available"
+          },
+          "current_spec": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Spec"
+          },
+          "customised": {
+            "title": "Customised",
+            "type": "boolean"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "next": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NextPoint"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "off_plan": {
+            "items": {
+              "$ref": "#/components/schemas/OffPlan"
+            },
+            "title": "Off Plan",
+            "type": "array"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/TalentPlan"
+          },
+          "planned_points": {
+            "title": "Planned Points",
+            "type": "integer"
+          },
+          "spec": {
+            "title": "Spec",
+            "type": "string"
+          },
+          "spent": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spent"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/StepStatus"
+            },
+            "title": "Steps",
+            "type": "array"
+          }
+        },
+        "required": [
+          "plan",
+          "spec",
+          "current_spec",
+          "level",
+          "available",
+          "spent",
+          "planned_points",
+          "steps",
+          "next",
+          "off_plan",
+          "customised"
+        ],
+        "title": "TalentPlanView",
+        "type": "object"
+      },
+      "TalentRefresh": {
+        "properties": {
+          "class_name": {
+            "title": "Class Name",
+            "type": "string"
+          },
+          "errors": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "icons": {
+            "default": 0,
+            "title": "Icons",
+            "type": "integer"
+          },
+          "trees": {
+            "default": 0,
+            "title": "Trees",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "class_name"
+        ],
+        "title": "TalentRefresh",
+        "type": "object"
+      },
+      "TalentTreeView": {
+        "properties": {
+          "class_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Class Name"
+          },
+          "loading": {
+            "title": "Loading",
+            "type": "boolean"
+          },
+          "tree": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ClassTree"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "class_name",
+          "tree",
+          "loading"
+        ],
+        "title": "TalentTreeView",
+        "type": "object"
+      },
+      "TargetInfo": {
+        "description": "What we know about a target item, merged from every source (ADR 0004).\n\nPrecedence per field: manual (gear_targets.yaml) > Blizzard > Forever Companion.",
+        "properties": {
+          "armor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor"
+          },
+          "armor_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Armor Type"
+          },
+          "conflicts": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Conflicts",
+            "type": "array"
+          },
+          "dps": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dps"
+          },
+          "drops": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Drops",
+            "type": "array"
+          },
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Icon Url"
+          },
+          "item_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Id"
+          },
+          "item_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Item Level"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality"
+          },
+          "required_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Required Level"
+          },
+          "rewards": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Rewards",
+            "type": "array"
+          },
+          "sources": {
+            "items": {
+              "enum": [
+                "blizzard",
+                "companion",
+                "manual"
+              ],
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "stats": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ItemStat"
+            },
+            "title": "Stats",
+            "type": "array"
+          },
+          "verified": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verified"
+          },
+          "wowhead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wowhead"
+          }
+        },
+        "required": [
+          "sources"
+        ],
+        "title": "TargetInfo",
+        "type": "object"
+      },
+      "TreePoints": {
+        "description": "Points spent in one talent tree. Blizzard lists only trees with points in them.",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "spent_points": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spent Points"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "TreePoints",
+        "type": "object"
+      },
+      "UpcomingTarget": {
+        "description": "A target above the character's level: shown early so you can prepare for it.",
+        "properties": {
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "score_delta": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score Delta"
+          },
+          "target": {
+            "$ref": "#/components/schemas/GearTarget"
+          },
+          "target_info": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TargetInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "target",
+          "target_info",
+          "level"
+        ],
+        "title": "UpcomingTarget",
+        "type": "object"
+      },
+      "UsageRules": {
+        "description": "What the character can and wants to wear, and how many upgrades to list.",
+        "properties": {
+          "armor_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Armor Types",
+            "type": "array"
+          },
+          "dual_wield_from_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dual Wield From Level"
+          },
+          "levels_ahead": {
+            "default": 3,
+            "title": "Levels Ahead",
+            "type": "integer"
+          },
+          "mail_from_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mail From Level"
+          },
+          "min_gain": {
+            "default": 1.0,
+            "title": "Min Gain",
+            "type": "number"
+          },
+          "off_hand_types": {
+            "default": [
+              "Shield"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "title": "Off Hand Types",
+            "type": "array"
+          },
+          "per_slot": {
+            "default": 3,
+            "title": "Per Slot",
+            "type": "integer"
+          },
+          "plate_from_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": 40,
+            "title": "Plate From Level"
+          },
+          "two_hand_types": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Two Hand Types"
+          },
+          "two_handers": {
+            "default": false,
+            "title": "Two Handers",
+            "type": "boolean"
+          },
+          "weapon_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Weapon Types",
+            "type": "array"
+          }
+        },
+        "required": [
+          "weapon_types",
+          "armor_types"
+        ],
+        "title": "UsageRules",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "WeightsUpdate": {
+        "properties": {
+          "weights": {
+            "additionalProperties": {
+              "maximum": 10.0,
+              "minimum": -10.0,
+              "type": "number"
+            },
+            "title": "Weights",
+            "type": "object"
+          }
+        },
+        "required": [
+          "weights"
+        ],
+        "title": "WeightsUpdate",
+        "type": "object"
+      },
+      "WeightsView": {
+        "description": "The active preset's weights, its defaults, and every preset to switch to.",
+        "properties": {
+          "customised": {
+            "title": "Customised",
+            "type": "boolean"
+          },
+          "defaults": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Defaults",
+            "type": "object"
+          },
+          "preset": {
+            "title": "Preset",
+            "type": "string"
+          },
+          "presets": {
+            "items": {
+              "$ref": "#/components/schemas/PresetSummary"
+            },
+            "title": "Presets",
+            "type": "array"
+          },
+          "weights": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Weights",
+            "type": "object"
+          }
+        },
+        "required": [
+          "weights",
+          "defaults",
+          "customised",
+          "preset",
+          "presets"
+        ],
+        "title": "WeightsView",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Character Planner",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/about": {
+      "get": {
+        "description": "What the page footer shows (#43): the data credits, the source link (AGPL) and\nthe version. Needs no character data, so guest mode has it too.",
+        "operationId": "about_api_about_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/About"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "About"
+      }
+    },
+    "/api/character": {
+      "get": {
+        "operationId": "character_api_character_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CharacterView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Character"
+      }
+    },
+    "/api/choices": {
+      "get": {
+        "description": "Items dismissed in the app, newest first (ADR 0012).",
+        "operationId": "get_choices_api_choices_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ItemChoiceView"
+                  },
+                  "title": "Response Get Choices Api Choices Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Choices"
+      }
+    },
+    "/api/choices/{item_id}": {
+      "delete": {
+        "description": "Suggest a dismissed item again.",
+        "operationId": "delete_choice_api_choices__item_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ItemChoiceView"
+                  },
+                  "title": "Response Delete Choice Api Choices  Item Id  Delete",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Choice"
+      },
+      "put": {
+        "description": "Dismiss an item: never suggest it. Pinning is POST /api/targets/pins.",
+        "operationId": "put_choice_api_choices__item_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChoiceUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ItemChoiceView"
+                  },
+                  "title": "Response Put Choice Api Choices  Item Id  Put",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Choice"
+      }
+    },
+    "/api/class-quests": {
+      "get": {
+        "description": "The synced character's class quests: missed, now, soon, later and done (#8).",
+        "operationId": "get_class_quests_api_class_quests_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassQuestChecklist"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Class Quests"
+      }
+    },
+    "/api/class-quests/{quest_id}": {
+      "put": {
+        "description": "Mark a class quest done, or not done.",
+        "operationId": "put_class_quest_api_class_quests__quest_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "quest_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9-]{1,100}$",
+              "title": "Quest Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassQuestUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassQuestChecklist"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Class Quest"
+      }
+    },
+    "/api/enchants": {
+      "get": {
+        "description": "Every enchant recipe that maps to a gear slot, with parsed effects.",
+        "operationId": "enchant_catalog_api_enchants_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "include_sod",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Sod",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EnchantOption"
+                  },
+                  "title": "Response Enchant Catalog Api Enchants Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Enchant Catalog"
+      }
+    },
+    "/api/enchants/corrections": {
+      "get": {
+        "description": "Corrections to enchants.yaml made in the app, and the shipped values (#36).",
+        "operationId": "get_enchant_corrections_api_enchants_corrections_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Enchant Corrections"
+      }
+    },
+    "/api/enchants/corrections/crafted/{item_id}": {
+      "delete": {
+        "description": "Go back to the shipped effect, or none.",
+        "operationId": "delete_crafted_effects_api_enchants_corrections_crafted__item_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Crafted Effects"
+      },
+      "put": {
+        "description": "Add or fix the effect of a crafted enchant (a scope, an armor kit).",
+        "operationId": "put_crafted_effects_api_enchants_corrections_crafted__item_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EffectsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Crafted Effects"
+      }
+    },
+    "/api/enchants/corrections/materials/{item_id}": {
+      "delete": {
+        "description": "Go back to the shipped level (or the item's own).",
+        "operationId": "delete_material_level_api_enchants_corrections_materials__item_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Material Level"
+      },
+      "put": {
+        "description": "Correct the level a material is commonly found from.",
+        "operationId": "put_material_level_api_enchants_corrections_materials__item_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LevelUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Material Level"
+      }
+    },
+    "/api/enchants/corrections/per-slot": {
+      "delete": {
+        "description": "Go back to the shipped number.",
+        "operationId": "delete_per_slot_api_enchants_corrections_per_slot_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Delete Per Slot"
+      },
+      "put": {
+        "description": "How many enchants to list per slot.",
+        "operationId": "put_per_slot_api_enchants_corrections_per_slot_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PerSlotUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Per Slot"
+      }
+    },
+    "/api/enchants/recommendations": {
+      "get": {
+        "description": "Best enchants in reach per slot, against the one on now (ADR 0010).",
+        "operationId": "enchant_recommendations_api_enchants_recommendations_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnchantAdvice"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Enchant Recommendations"
+      }
+    },
+    "/api/enchants/refresh": {
+      "post": {
+        "description": "Enchant recipes from Blizzard's profession data, plus their reagents and crafted\nitems from Forever Companion (ADR 0010).",
+        "operationId": "refresh_enchants_api_enchants_refresh_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "force",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Force",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeRefresh"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Refresh Enchants"
+      }
+    },
+    "/api/gear": {
+      "get": {
+        "operationId": "gear_api_gear_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GearPlan"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Gear"
+      }
+    },
+    "/api/guest": {
+      "get": {
+        "description": "What guest mode offers: classes with shipped defaults, and their presets.",
+        "operationId": "get_guest_options_api_guest_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuestOptions"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Guest Options"
+      }
+    },
+    "/api/guest/recommendations": {
+      "get": {
+        "description": "Guest mode (ADR 0017): the best items per slot and dungeons for a class and\nlevel, from the shipped rules and weights. Reads no character data; stores nothing.",
+        "operationId": "get_guest_recommendations_api_guest_recommendations_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "level",
+            "required": true,
+            "schema": {
+              "maximum": 80,
+              "minimum": 1,
+              "title": "Level",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "class",
+            "required": false,
+            "schema": {
+              "default": "warrior",
+              "title": "Class",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "faction",
+            "required": false,
+            "schema": {
+              "default": "alliance",
+              "enum": [
+                "alliance",
+                "horde"
+              ],
+              "title": "Faction",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "preset",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Preset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recommendations"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Guest Recommendations"
+      }
+    },
+    "/api/healthz": {
+      "get": {
+        "operationId": "healthz_api_healthz_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Healthz Api Healthz Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Healthz"
+      }
+    },
+    "/api/items/refresh": {
+      "post": {
+        "description": "Refresh item data from every source. force=true refetches everything.\n\nSource failures are reported in `errors` rather than failing the request.",
+        "operationId": "refresh_items_api_items_refresh_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "force",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Force",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Refresh Items"
+      }
+    },
+    "/api/look-ahead": {
+      "get": {
+        "description": "What each of the next `levels` levels brings (#4): dungeons opening, gear\ntargets, talent points, class quests and profession ranks.",
+        "operationId": "get_look_ahead_api_look_ahead_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "levels",
+            "required": false,
+            "schema": {
+              "default": 5,
+              "maximum": 10,
+              "minimum": 1,
+              "title": "Levels",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LookAhead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Look Ahead"
+      }
+    },
+    "/api/notifications": {
+      "get": {
+        "description": "Alert destinations (webhook URLs masked), the alerts on offer, recent sends.",
+        "operationId": "get_notifications_api_notifications_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Notifications"
+      }
+    },
+    "/api/notifications/destinations": {
+      "post": {
+        "description": "Add a Discord webhook destination (#12).",
+        "operationId": "post_destination_api_notifications_destinations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewDestination"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Destination"
+      }
+    },
+    "/api/notifications/destinations/{destination_id}": {
+      "delete": {
+        "operationId": "delete_destination_api_notifications_destinations__destination_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "destination_id",
+            "required": true,
+            "schema": {
+              "title": "Destination Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Destination"
+      },
+      "patch": {
+        "operationId": "patch_destination_api_notifications_destinations__destination_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "destination_id",
+            "required": true,
+            "schema": {
+              "title": "Destination Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DestinationUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Patch Destination"
+      }
+    },
+    "/api/notifications/destinations/{destination_id}/test": {
+      "post": {
+        "description": "Send a test message to the destination now.",
+        "operationId": "test_destination_api_notifications_destinations__destination_id__test_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "destination_id",
+            "required": true,
+            "schema": {
+              "title": "Destination Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Test Destination"
+      }
+    },
+    "/api/pool": {
+      "get": {
+        "description": "Dungeon drops and quest rewards for the character's level window.",
+        "operationId": "item_pool_api_pool_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoolView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Item Pool"
+      }
+    },
+    "/api/pool/refresh": {
+      "post": {
+        "description": "Refresh dungeon drop tables and quest rewards, then item details for a level\nwindow: `level`'s (guest mode asks for its own), else the character's, else the\nwhole pool. The first run takes a few minutes (paced under Forever Companion's\nrate limit); `uv run character-planner-pool` does the same with progress output.",
+        "operationId": "refresh_item_pool_api_pool_refresh_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "force",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Force",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "level",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 80,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Level"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoolRefresh"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Refresh Item Pool"
+      }
+    },
+    "/api/professions": {
+      "get": {
+        "description": "Each synced profession: skill, rank, the next rank and crafted gear (#10).",
+        "operationId": "get_professions_api_professions_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfessionsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Professions"
+      }
+    },
+    "/api/progress": {
+      "get": {
+        "description": "One point per sync, plus gear changes and level-ups (ADR 0008).",
+        "operationId": "progress_over_time_api_progress_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Progress"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Progress Over Time"
+      }
+    },
+    "/api/recommendations": {
+      "get": {
+        "description": "Best upgrades in reach for each slot, from the item pool (ADR 0007).",
+        "operationId": "recommendations_api_recommendations_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recommendations"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Recommendations"
+      }
+    },
+    "/api/rules": {
+      "delete": {
+        "description": "Go back to data/curated/recommend.yaml.",
+        "operationId": "delete_rules_api_rules_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RulesView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Delete Rules"
+      },
+      "get": {
+        "description": "The Upgrades rules, their defaults, and what the editor can offer (ADR 0016).",
+        "operationId": "get_rules_view_api_rules_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RulesView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Rules View"
+      },
+      "put": {
+        "description": "Replace the Upgrades rules.",
+        "operationId": "put_rules_api_rules_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditedRules"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RulesView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Rules"
+      }
+    },
+    "/api/snapshots/latest": {
+      "get": {
+        "operationId": "latest_api_snapshots_latest_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Latest Api Snapshots Latest Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Latest"
+      }
+    },
+    "/api/snapshots/manual": {
+      "post": {
+        "description": "Fallback for data the API doesn't return: store it in the same shape.",
+        "operationId": "add_manual_api_snapshots_manual_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualSnapshot"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "title": "Response Add Manual Api Snapshots Manual Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Manual"
+      }
+    },
+    "/api/status": {
+      "get": {
+        "operationId": "status_api_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Status Api Status Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Status"
+      }
+    },
+    "/api/summary.md": {
+      "get": {
+        "operationId": "summary_api_summary_md_get",
+        "responses": {
+          "200": {
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Summary"
+      }
+    },
+    "/api/sync": {
+      "post": {
+        "description": "Pull every endpoint and store each response, failures included.\n\nThen look up any target items not in the item catalog yet. That step is\nbest-effort: a catalog failure never fails the sync. On a fresh instance, the item\npool and enchant data then load in the background (#87).",
+        "operationId": "sync_api_sync_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "title": "Response Sync Api Sync Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Sync"
+      }
+    },
+    "/api/talents": {
+      "get": {
+        "description": "The talent plan compared with the synced talents (ADR 0009).",
+        "operationId": "get_talents_api_talents_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TalentPlanView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Talents"
+      }
+    },
+    "/api/talents/plan": {
+      "delete": {
+        "description": "Go back to data/curated/talent_plan.yaml.",
+        "operationId": "delete_talent_plan_api_talents_plan_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TalentPlanView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Delete Talent Plan"
+      },
+      "put": {
+        "description": "Replace the talent plan. With the talent trees loaded, a plan that breaks their\nrules (unknown talents, prerequisites, points per row) is refused (#88).",
+        "operationId": "put_talent_plan_api_talents_plan_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TalentPlan"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TalentPlanView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Talent Plan"
+      }
+    },
+    "/api/talents/refresh": {
+      "post": {
+        "description": "Fetch the synced class's talent trees and icons again.",
+        "operationId": "refresh_talents_api_talents_refresh_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TalentRefresh"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Refresh Talents"
+      }
+    },
+    "/api/talents/tree": {
+      "get": {
+        "description": "The synced class's talent trees (#88). `tree` is null until they're loaded:\nafter the first sync, in the background.",
+        "operationId": "get_talent_tree_api_talents_tree_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TalentTreeView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Talent Tree"
+      }
+    },
+    "/api/targets": {
+      "delete": {
+        "description": "Go back to data/curated/gear_targets.yaml.",
+        "operationId": "delete_targets_api_targets_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GearTargets"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Delete Targets"
+      },
+      "get": {
+        "description": "The gear targets in use: edited in the app, or gear_targets.yaml (ADR 0014).",
+        "operationId": "targets_api_targets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GearTargets"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Targets"
+      },
+      "put": {
+        "description": "Replace the gear targets. Priority follows each slot's order.",
+        "operationId": "put_targets_api_targets_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditedTargets"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GearTargets"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Targets"
+      }
+    },
+    "/api/targets/pins": {
+      "post": {
+        "description": "Pin a pool item as a target (\"Make target\").",
+        "operationId": "post_pin_api_targets_pins_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Pin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GearTargets"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Pin"
+      }
+    },
+    "/api/targets/pins/{item_id}": {
+      "delete": {
+        "description": "Take the pin off a target (\"Unpin\"); it stays a target.",
+        "operationId": "delete_pin_api_targets_pins__item_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "exclusiveMinimum": 0,
+              "title": "Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GearTargets"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Pin"
+      }
+    },
+    "/api/weights": {
+      "delete": {
+        "description": "Reset the active shipped preset to its curated file.",
+        "operationId": "delete_weights_api_weights_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Delete Weights"
+      },
+      "get": {
+        "description": "The active preset's weights, its defaults and every preset (ADR 0013).",
+        "operationId": "get_weights_api_weights_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Weights"
+      },
+      "put": {
+        "description": "Replace the active preset's weights. Stats left out fall back to their default.",
+        "operationId": "put_weights_api_weights_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeightsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Weights"
+      }
+    },
+    "/api/weights/active": {
+      "put": {
+        "description": "Switch presets: every score uses the active one.",
+        "operationId": "put_active_preset_api_weights_active_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresetChoice"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Active Preset"
+      }
+    },
+    "/api/weights/presets": {
+      "post": {
+        "description": "Save weights as a preset of your own (\"Save as\") and switch to it.",
+        "operationId": "post_preset_api_weights_presets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPreset"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Preset"
+      }
+    },
+    "/api/weights/presets/{key}": {
+      "delete": {
+        "description": "Delete a preset of your own; if it was active, Leveling tank takes over.",
+        "operationId": "delete_weight_preset_api_weights_presets__key__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "title": "Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Weight Preset"
+      },
+      "patch": {
+        "description": "Rename a preset of your own.",
+        "operationId": "patch_preset_api_weights_presets__key__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "title": "Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresetRename"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Patch Preset"
+      }
+    },
+    "/auth/callback": {
+      "get": {
+        "operationId": "callback_auth_callback_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Callback"
+      }
+    },
+    "/auth/login": {
+      "get": {
+        "operationId": "login_auth_login_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Login"
+      }
+    }
+  }
+}

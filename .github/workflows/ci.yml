@@ -115,6 +115,14 @@ jobs:
           path: frontend/coverage/lcov.info
           retention-days: 14
       - run: npm run build
+      # The bundle is reproducible (OpenSSF build_repeatable, #86): a second clean build
+      # must give the same bytes, file for file.
+      - name: Reproducible build
+        run: |
+          (cd dist && find . -type f -exec sha256sum {} + | sort -k2) > ../first.sha256
+          rm -rf dist node_modules/.vite node_modules/.tmp
+          npm run build
+          (cd dist && find . -type f -exec sha256sum {} + | sort -k2) | diff ../first.sha256 -
 
   docker:
     runs-on: ubuntu-latest
