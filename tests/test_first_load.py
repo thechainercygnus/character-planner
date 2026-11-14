@@ -18,7 +18,7 @@ from character_planner.config import Settings
 from character_planner.db import CompanionDungeon, RecipeData, utcnow
 from character_planner.dungeons import refresh_dungeons
 
-from .conftest import api_client
+from .conftest import api_client, tracked
 from .test_dungeons import LIST
 
 
@@ -77,11 +77,11 @@ def test_the_api_answers_409_while_a_refresh_runs(client: TestClient, engine: En
 
 def test_missing_data_names_what_a_fresh_instance_lacks(engine: Engine) -> None:
     with Session(engine) as session:
-        assert jobs.missing_data(session) == ["pool", "enchants"]
+        assert jobs.missing_data(session, tracked(session)) == ["pool", "enchants"]
         session.add(CompanionDungeon(dungeon_id="hall-of-thanes", payload={}))
         session.add(RecipeData(recipe_id=1, profession="Enchanting", category="", payload={}))
         session.commit()
-        assert jobs.missing_data(session) == []
+        assert jobs.missing_data(session, tracked(session)) == []
 
 
 @respx.mock

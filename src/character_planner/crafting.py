@@ -179,19 +179,19 @@ def _crafted_ids(session: Session) -> dict[int, int]:
     return out
 
 
-def _professions_payload(session: Session) -> Any:
-    snapshot = latest_by_kind(session).get("professions")
+def _professions_payload(session: Session, character_id: int | None) -> Any:
+    snapshot = latest_by_kind(session, character_id).get("professions")
     return snapshot.payload if snapshot else None
 
 
-def crafted_items(session: Session) -> list[CraftedItem]:
+def crafted_items(session: Session, character_id: int | None) -> list[CraftedItem]:
     """Equippable items from the recipes the synced character knows."""
     crafted_ids = _crafted_ids(session)
     items = {
         row.item_id: row.payload for row in session.exec(select(BlizzardItem)).all() if row.found
     }
     out: dict[int, CraftedItem] = {}
-    for recipe in known_recipes(_professions_payload(session)):
+    for recipe in known_recipes(_professions_payload(session, character_id)):
         item_id = crafted_ids.get(recipe.recipe_id)
         info = item_info(items.get(item_id)) if item_id is not None else None
         if item_id is None or info is None or item_id in out:
@@ -215,13 +215,15 @@ def _rank_for(cap: int | None, ranks: list[Rank]) -> tuple[Rank | None, Rank | N
     return current, (later[0] if later else None)
 
 
-def professions_view(session: Session, data: ProfessionData, level: int | None) -> ProfessionsView:
+def professions_view(
+    session: Session, data: ProfessionData, level: int | None, character_id: int | None
+) -> ProfessionsView:
     """Each synced profession: skill against its cap, the rank and the next one."""
     ranks = sorted(data.ranks, key=lambda r: r.max_skill)
     gear: dict[str, list[str]] = {}
-    for item in crafted_items(session):
+    for item in crafted_items(session, character_id):
         gear.setdefault(item.profession, []).append(item.name)
-    payload = _professions_payload(session)
+    payload = _professions_payload(session, character_id)
     known = known_recipes(payload)
     rows: list[ProfessionRow] = []
     for entry, primary in _professions(payload):
@@ -263,6 +265,7 @@ class CraftingRefresh(BaseModel):
 def refresh_crafting(
     session: Session,
     settings: Settings,
+    character_id: int | None,
     *,
     http: httpx.Client | None = None,
     force: bool = False,
@@ -271,7 +274,7 @@ def refresh_crafting(
     """Fetch the recipes the character knows, then the items they make, where not cached
     in the last 30 days. Best effort: errors are returned, never raised."""
     outcome = CraftingRefresh()
-    recipes = known_recipes(_professions_payload(session))
+    recipes = known_recipes(_professions_payload(session, character_id))
     if not recipes:
         return outcome
     cutoff = utcnow() - CRAFTING_MAX_AGE

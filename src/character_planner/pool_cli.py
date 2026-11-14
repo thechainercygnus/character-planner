@@ -15,6 +15,7 @@ from collections import Counter
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
+from character_planner.characters import first_character
 from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, latest_by_kind, make_engine
 from character_planner.pool import pool_view, refresh_pool
@@ -39,7 +40,8 @@ def refresh(engine: Engine, settings: Settings, *, level: int | None, force: boo
     """Refresh the pool and print what happened; 1 when anything failed."""
     init_db(engine)
     with Session(engine) as session:
-        profile = latest_by_kind(session).get("profile")
+        character = first_character(session)
+        profile = latest_by_kind(session, character.id if character else None).get("profile")
         payload = profile.payload if profile else None
         level = level if level is not None else character_level(payload)
         faction = character_faction(payload)

@@ -28,6 +28,7 @@ from character_planner.companion import as_utc
 from character_planner.db import (
     BlizzardItem,
     CatalogItem,
+    Character,
     CraftingRecipe,
     ItemIcon,
     NotificationOutbox,
@@ -86,18 +87,31 @@ def archive_progress(session: Session, before: datetime) -> int:
             col(Snapshot.status) < 300,
         )
     ).all()
-    # The score depends on today's weights, so it isn't archived: empty weights will do.
-    points = build_progress(rows, Weights(weights={})).points
+    by_character: dict[int | None, list[Snapshot]] = {}
+    for row in rows:
+        by_character.setdefault(row.character_id, []).append(row)
     archived = 0
-    for point in points:
-        if as_utc(point.captured_at) >= before:
-            continue
-        session.merge(
-            ProgressHistory(
-                captured_at=point.captured_at, level=point.level, item_level=point.item_level
+    for character_id, own in by_character.items():
+        kept = {
+            as_utc(row.captured_at)
+            for row in session.exec(
+                select(ProgressHistory).where(col(ProgressHistory.character_id) == character_id)
+            ).all()
+        }
+        # The score depends on today's weights, so it isn't archived: empty weights will do.
+        for point in build_progress(own, Weights(weights={})).points:
+            moment = as_utc(point.captured_at)
+            if moment >= before or moment in kept:
+                continue
+            session.add(
+                ProgressHistory(
+                    character_id=character_id,
+                    captured_at=point.captured_at,
+                    level=point.level,
+                    item_level=point.item_level,
+                )
             )
-        )
-        archived += 1
+            archived += 1
     return archived
 
 
@@ -141,11 +155,15 @@ def prune(session: Session, now: datetime | None = None) -> PruneResult:
     return result
 
 
-def stored_slug(session: Session) -> str | None:
-    """The character the stored snapshots are about: name-surname, lowercased."""
+def stored_slug(session: Session, character_id: int | None) -> str | None:
+    """Who the character's stored snapshots are about: name-surname, lowercased."""
     snapshot = session.exec(
         select(Snapshot)
-        .where(col(Snapshot.kind) == "profile", col(Snapshot.status) == 200)
+        .where(
+            col(Snapshot.character_id) == character_id,
+            col(Snapshot.kind) == "profile",
+            col(Snapshot.status) == 200,
+        )
         .order_by(col(Snapshot.captured_at).desc())
     ).first()
     payload = snapshot.payload if snapshot else None
@@ -155,16 +173,20 @@ def stored_slug(session: Session) -> str | None:
     return f"{name}-{surname}".lower() if isinstance(surname, str) else name.lower()
 
 
-def forget_character(session: Session, slug: str) -> int:
+def forget_character(session: Session, character: Character) -> int:
     """Delete a character Blizzard no longer has (§2 item 18): its snapshots, archived
-    progress and alert state. Only when the stored data is about that same character, so
-    a mistyped name in .env never deletes the real one's history. Returns rows deleted."""
-    if stored_slug(session) != slug:
+    progress and alert state. Only when its stored data is about that same name, so a
+    rename or a typo never deletes a real history. Returns rows deleted."""
+    slug = character.slug
+    if stored_slug(session, character.id) != slug:
         return 0
     deleted = 0
     for statement in (
-        delete(Snapshot).where(col(Snapshot.source) == "api"),
-        delete(ProgressHistory),
+        delete(Snapshot).where(
+            col(Snapshot.character_id) == character.id, col(Snapshot.source) == "api"
+        ),
+        delete(ProgressHistory).where(col(ProgressHistory.character_id) == character.id),
+        # Alert state is still one set for the instance; per character in #14's next step.
         delete(NotificationState),
     ):
         deleted += _delete(session, statement)

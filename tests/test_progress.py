@@ -10,7 +10,7 @@ from character_planner.db import Snapshot
 from character_planner.progress import build_progress, progress, sync_batches
 from character_planner.scoring import Weights
 
-from .conftest import FIXTURES
+from .conftest import FIXTURES, tracked
 
 WEIGHTS = Weights(weights={"Stamina": 1.0, "Armor": 0.1})
 T0 = datetime(2026, 11, 11, 19, 0, tzinfo=UTC)
@@ -98,12 +98,14 @@ def test_no_snapshots_no_progress() -> None:
 
 def test_reads_successful_snapshots_from_the_database(engine: Engine) -> None:
     failed = Snapshot(source="api", kind="profile", status=404, payload={}, captured_at=T0)
+    appearance = Snapshot(source="api", kind="appearance", status=200, payload={}, captured_at=T0)
     with Session(engine) as session:
-        session.add_all([*sync(T0, **first_sync()), failed])
-        session.add(
-            Snapshot(source="api", kind="appearance", status=200, payload={}, captured_at=T0)
-        )
+        me = tracked(session)
+        rows = [*sync(T0, **first_sync()), failed, appearance]
+        for row in rows:
+            row.character_id = me
+        session.add_all(rows)
         session.commit()
-        result = progress(session, WEIGHTS)
+        result = progress(session, WEIGHTS, me)
     assert len(result.points) == 1
     assert result.points[0].level == 18

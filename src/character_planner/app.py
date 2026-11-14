@@ -27,6 +27,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from character_planner import jobs, leases, notify
 from character_planner.blizzard import oauth
+from character_planner.characters import current_character
 from character_planner.choices import (
     ChoiceKind,
     ItemChoiceView,
@@ -59,6 +60,7 @@ from character_planner.crafting import (
 )
 from character_planner.curated import GearTargets
 from character_planner.db import (
+    Character,
     NotificationDestination,
     Snapshot,
     StoredToken,
@@ -239,15 +241,27 @@ def get_session(request: Request) -> Iterator[Session]:
 SessionDep = Annotated[Session, Depends(get_session)]
 
 
-def get_targets(request: Request, session: SessionDep) -> GearTargets:
+def get_character_id(request: Request, session: SessionDep) -> int | None:
+    """The character this request is about (#14, ADR 0036): the current one until the app
+    can switch. None on a fresh install with no character named."""
+    character = current_character(session, request.app.state.settings)
+    return character.id if character else None
+
+
+CharacterIdDep = Annotated[int | None, Depends(get_character_id)]
+
+
+def get_targets(request: Request, session: SessionDep, character_id: CharacterIdDep) -> GearTargets:
     """gear_targets.yaml, with item ids filled in from the item pool where it has them."""
-    return gear_targets(session, request.app.state.settings)
+    return gear_targets(session, request.app.state.settings, character_id)
 
 
-def get_class_defaults(request: Request, session: SessionDep) -> ClassDefaults:
+def get_class_defaults(
+    request: Request, session: SessionDep, character_id: CharacterIdDep
+) -> ClassDefaults:
     """The synced character's class's shipped defaults (#80, ADR 0023)."""
     settings: Settings = request.app.state.settings
-    return current_defaults(session, settings.curated_dir)
+    return current_defaults(session, settings.curated_dir, character_id)
 
 
 ClassDefaultsDep = Annotated[ClassDefaults, Depends(get_class_defaults)]
@@ -292,8 +306,8 @@ def get_enchant_data(session: SessionDep, shipped: ShippedEnchantDataDep) -> Enc
     return apply_corrections(shipped, stored_corrections(session))
 
 
-def equipped_items(session: Session) -> dict[str, EquippedItem]:
-    equipment = latest_by_kind(session).get("equipment")
+def equipped_items(session: Session, character_id: int | None) -> dict[str, EquippedItem]:
+    equipment = latest_by_kind(session, character_id).get("equipment")
     return {item.slot: item for item in parse_equipment(equipment.payload if equipment else None)}
 
 
@@ -381,7 +395,10 @@ def create_app(
         with Session(engine) as session:
             if migrate_stored_weights(session):
                 logger.info("Moved saved stat weights into the Leveling tank preset")
-            if moved := jobs.migrate_target_choices(session, settings):
+            # Seeds the first character from .env on a database that has none (ADR 0036).
+            character = current_character(session, settings)
+            character_id = character.id if character else None
+            if moved := jobs.migrate_target_choices(session, settings, character_id):
                 logger.info("Moved %d pinned items into the gear targets", moved)
         yield
         if owns_engine:  # a caller's engine is the caller's to close
@@ -493,17 +510,18 @@ def create_app(
         return RedirectResponse(settings.post_login_redirect, status_code=303)
 
     @app.get("/api/status")
-    def status(session: SessionDep) -> dict[str, Any]:
+    def status(session: SessionDep, character_id: CharacterIdDep) -> dict[str, Any]:
         stored = session.get(StoredToken, 1)
-        latest = latest_by_kind(session)
+        latest = latest_by_kind(session, character_id)
+        character = session.get(Character, character_id) if character_id is not None else None
         last_profile = session.exec(
             select(Snapshot)
-            .where(Snapshot.kind == "profile")
+            .where(col(Snapshot.character_id) == character_id, Snapshot.kind == "profile")
             .order_by(desc(col(Snapshot.captured_at)), desc(col(Snapshot.id)))
         ).first()
         return {
-            "character": settings.character_slug,
-            "namespace": settings.profile_namespace,
+            "character": character.slug if character else None,
+            "namespace": f"profile-forever-{character.region}" if character else None,
             # Syncs use the app's own token (#107): they need the client, not a login.
             "can_sync": settings.has_credentials,
             # The last sync's answer for the character: True, False after a 404 (wrong
@@ -524,30 +542,42 @@ def create_app(
         }
 
     @app.post("/api/sync")
-    def sync(session: SessionDep, background: BackgroundTasks) -> dict[str, int]:
+    def sync(
+        session: SessionDep, character_id: CharacterIdDep, background: BackgroundTasks
+    ) -> dict[str, int]:
         """Pull every endpoint and store each response, failures included.
 
         Then look up any target items not in the item catalog yet. That step is
         best-effort: a catalog failure never fails the sync. On a fresh instance, the item
         pool and enchant data then load in the background (#87).
         """
+        character = session.get(Character, character_id) if character_id is not None else None
+        if character is None:
+            raise HTTPException(409, "No character to sync: CHARACTER_NAME in .env names the first")
         try:
-            statuses = sync_character(session, settings, http=http)
+            statuses = sync_character(session, settings, character, http=http)
         except CredentialsError as error:
             # The app's own client is missing or refused: nothing a login would fix.
             raise HTTPException(503, str(error)) from error
-        if jobs.missing_data(session):
+        if jobs.missing_data(session, character_id):
             background.add_task(jobs.load_missing_data, engine, settings, http)
         return statuses
 
     @app.post("/api/items/refresh")
-    def refresh_items(session: SessionDep, gear: TargetsDep, force: bool = False) -> RefreshResult:
+    def refresh_items(
+        session: SessionDep, character_id: CharacterIdDep, gear: TargetsDep, force: bool = False
+    ) -> RefreshResult:
         """Refresh item data from every source. force=true refetches everything.
 
         Source failures are reported in `errors` rather than failing the request.
         """
         return refresh_item_sources(
-            session, settings, gear, equipped_item_ids(session), force=force, http=http
+            session,
+            settings,
+            gear,
+            equipped_item_ids(session, character_id),
+            force=force,
+            http=http,
         )
 
     @app.post("/api/pool/refresh")
@@ -577,7 +607,10 @@ def create_app(
 
     @app.get("/api/enchants")
     def enchant_catalog(
-        session: SessionDep, data: EnchantDataDep, include_sod: bool = False
+        session: SessionDep,
+        character_id: CharacterIdDep,
+        data: EnchantDataDep,
+        include_sod: bool = False,
     ) -> list[EnchantOption]:
         """Every enchant recipe that maps to a gear slot, with parsed effects."""
         return catalog(
@@ -585,7 +618,7 @@ def create_app(
             companion_by_id(session),
             include_sod=include_sod,
             data=data,
-            equipped_effects=equipped_effects(equipped_items(session).values()),
+            equipped_effects=equipped_effects(equipped_items(session, character_id).values()),
         )
 
     @app.get("/api/enchants/corrections")
@@ -659,11 +692,15 @@ def create_app(
 
     @app.get("/api/enchants/recommendations")
     def enchant_recommendations(
-        session: SessionDep, data: EnchantDataDep, presets: PresetsDep, rules: RulesDep
+        session: SessionDep,
+        character_id: CharacterIdDep,
+        data: EnchantDataDep,
+        presets: PresetsDep,
+        rules: RulesDep,
     ) -> EnchantAdvice:
         """Best enchants in reach per slot, against the one on now (ADR 0010)."""
-        equipped = equipped_items(session)
-        professions = latest_by_kind(session).get("professions")
+        equipped = equipped_items(session, character_id)
+        professions = latest_by_kind(session, character_id).get("professions")
         options = catalog(
             session,
             companion_by_id(session),
@@ -675,43 +712,52 @@ def create_app(
             equipped,
             current_weights(session, presets),
             rules,
-            character_context(session)[0],
+            character_context(session, character_id)[0],
             known_recipe_ids(professions.payload if professions else None),
             data,
         )
 
     @app.get("/api/pool")
-    def item_pool(session: SessionDep) -> PoolView:
+    def item_pool(session: SessionDep, character_id: CharacterIdDep) -> PoolView:
         """Dungeon drops and quest rewards for the character's level window."""
-        level, faction = character_context(session)
-        return pool_view(session, level, faction, crafted_items(session))
+        level, faction = character_context(session, character_id)
+        return pool_view(session, level, faction, crafted_items(session, character_id))
 
     @app.get("/api/professions")
     def get_professions(
-        session: SessionDep, data: Annotated[ProfessionData, Depends(get_profession_data)]
+        session: SessionDep,
+        character_id: CharacterIdDep,
+        data: Annotated[ProfessionData, Depends(get_profession_data)],
     ) -> ProfessionsView:
         """Each synced profession: skill, rank, the next rank and crafted gear (#10)."""
-        return professions_view(session, data, jobs.character_context(session)[0])
+        level = jobs.character_context(session, character_id)[0]
+        return professions_view(session, data, level, character_id)
 
     @app.get("/api/progress")
-    def progress_over_time(session: SessionDep, presets: PresetsDep) -> Progress:
+    def progress_over_time(
+        session: SessionDep, character_id: CharacterIdDep, presets: PresetsDep
+    ) -> Progress:
         """One point per sync, plus gear changes and level-ups (ADR 0008)."""
-        return progress(session, current_weights(session, presets))
+        return progress(session, current_weights(session, presets), character_id)
 
     @app.get("/api/recommendations")
     def recommendations(
-        session: SessionDep, targets: TargetsDep, presets: PresetsDep, rules: RulesDep
+        session: SessionDep,
+        character_id: CharacterIdDep,
+        targets: TargetsDep,
+        presets: PresetsDep,
+        rules: RulesDep,
     ) -> Recommendations:
         """Best upgrades in reach for each slot, from the item pool (ADR 0007)."""
-        level, faction = character_context(session)
+        level, faction = character_context(session, character_id)
         icons = icons_by_id(session)
-        equipment = latest_by_kind(session).get("equipment")
+        equipment = latest_by_kind(session, character_id).get("equipment")
         equipped = {
             item.slot: item.model_copy(update={"icon_url": icons.get(item.item_id or 0)})
             for item in parse_equipment(equipment.payload if equipment else None)
         }
         return recommend(
-            pool_view(session, level, faction, crafted_items(session)),
+            pool_view(session, level, faction, crafted_items(session, character_id)),
             equipped,
             current_weights(session, presets),
             rules,
@@ -742,22 +788,33 @@ def create_app(
         return list_choices(session)
 
     @app.post("/api/snapshots/manual", status_code=201)
-    def add_manual(entry: ManualSnapshot, session: SessionDep) -> dict[str, int | None]:
-        """Fallback for data the API doesn't return: store it in the same shape."""
-        snapshot = Snapshot(source="manual", kind=entry.kind, status=200, payload=entry.payload)
+    def add_manual(
+        entry: ManualSnapshot, session: SessionDep, character_id: CharacterIdDep
+    ) -> dict[str, int | None]:
+        """Fallback for data the API doesn't return: store it in the same shape, for the
+        current character."""
+        if character_id is None:
+            raise HTTPException(409, "No character: CHARACTER_NAME in .env names the first")
+        snapshot = Snapshot(
+            character_id=character_id,
+            source="manual",
+            kind=entry.kind,
+            status=200,
+            payload=entry.payload,
+        )
         session.add(snapshot)
         session.commit()
         return {"id": snapshot.id}
 
     @app.get("/api/snapshots/latest")
-    def latest(session: SessionDep) -> dict[str, Any]:
+    def latest(session: SessionDep, character_id: CharacterIdDep) -> dict[str, Any]:
         return {
             kind: {
                 "captured_at": s.captured_at.isoformat(),
                 "source": s.source,
                 "payload": s.payload,
             }
-            for kind, s in latest_by_kind(session).items()
+            for kind, s in latest_by_kind(session, character_id).items()
         }
 
     @app.get("/api/targets")
@@ -765,32 +822,38 @@ def create_app(
         """The gear targets in use: edited in the app, or gear_targets.yaml (ADR 0014)."""
         return gear
 
-    def targets_changed(session: Session) -> GearTargets:
-        return jobs.gear_targets(session, settings)
+    def targets_changed(session: Session, character_id: int | None) -> GearTargets:
+        return jobs.gear_targets(session, settings, character_id)
 
     @app.put("/api/targets")
-    def put_targets(edited: EditedTargets, session: SessionDep) -> GearTargets:
+    def put_targets(
+        edited: EditedTargets, session: SessionDep, character_id: CharacterIdDep
+    ) -> GearTargets:
         """Replace the gear targets. Priority follows each slot's order."""
         try:
             save_targets(session, edited.to_targets())
         except TargetsError as error:
             raise HTTPException(422, str(error)) from error
-        return targets_changed(session)
+        return targets_changed(session, character_id)
 
     @app.delete("/api/targets")
-    def delete_targets(session: SessionDep) -> GearTargets:
+    def delete_targets(session: SessionDep, character_id: CharacterIdDep) -> GearTargets:
         """Go back to data/curated/gear_targets.yaml."""
         reset_targets(session)
-        return targets_changed(session)
+        return targets_changed(session, character_id)
 
     @app.post("/api/targets/pins")
-    def post_pin(pin: Pin, session: SessionDep, gear: TargetsDep) -> GearTargets:
+    def post_pin(
+        pin: Pin, session: SessionDep, character_id: CharacterIdDep, gear: TargetsDep
+    ) -> GearTargets:
         """Pin a pool item as a target ("Make target")."""
-        faction = character_context(session)[1]
+        faction = character_context(session, character_id)[1]
         item = next(
             (
                 i
-                for i in pool_view(session, None, faction, crafted_items(session)).items
+                for i in pool_view(
+                    session, None, faction, crafted_items(session, character_id)
+                ).items
                 if i.item_id == pin.item_id
             ),
             None,
@@ -801,36 +864,42 @@ def create_app(
             save_targets(session, pin_target(gear, item, pin.slot))
         except TargetsError as error:
             raise HTTPException(422, str(error)) from error
-        return targets_changed(session)
+        return targets_changed(session, character_id)
 
     @app.delete("/api/targets/pins/{item_id}")
     def delete_pin(
-        item_id: Annotated[int, FastAPIPath(gt=0)], session: SessionDep, gear: TargetsDep
+        item_id: Annotated[int, FastAPIPath(gt=0)],
+        session: SessionDep,
+        character_id: CharacterIdDep,
+        gear: TargetsDep,
     ) -> GearTargets:
         """Take the pin off a target ("Unpin"); it stays a target."""
         unpinned = unpin_target(gear, item_id)
         if unpinned is None:
             raise HTTPException(404, f"Item {item_id} isn't a pinned target")
         save_targets(session, unpinned)
-        return targets_changed(session)
+        return targets_changed(session, character_id)
 
     @app.get("/api/summary.md", response_class=PlainTextResponse)
-    def summary(session: SessionDep, gear: TargetsDep, presets: PresetsDep) -> str:
-        name = f"{settings.character_name} {settings.character_surname}"
+    def summary(
+        session: SessionDep, character_id: CharacterIdDep, gear: TargetsDep, presets: PresetsDep
+    ) -> str:
+        character = session.get(Character, character_id) if character_id is not None else None
+        name = f"{character.name} {character.surname}".strip() if character else "No character"
         return build_summary(
             name,
-            latest_by_kind(session),
+            latest_by_kind(session, character_id),
             gear,
             catalog_by_name(session),
             icons_by_id(session),
             companion_by_id(session),
             current_weights(session, presets),
-            jobs.item_levels(session),
+            jobs.item_levels(session, character_id),
         )
 
     @app.get("/api/character")
-    def character(session: SessionDep) -> CharacterView:
-        return character_view(latest_by_kind(session), icons_by_id(session))
+    def character(session: SessionDep, character_id: CharacterIdDep) -> CharacterView:
+        return character_view(latest_by_kind(session, character_id), icons_by_id(session))
 
     @app.delete("/api/character")
     def erase(session: SessionDep) -> Erased:
@@ -842,26 +911,29 @@ def create_app(
         return Erased(removed=removed)
 
     def build_gear_plan(
-        session: Session, targets: GearTargets, presets: ShippedPresets
+        session: Session, character_id: int | None, targets: GearTargets, presets: ShippedPresets
     ) -> GearPlan:
         return gear_plan(
-            latest_by_kind(session),
+            latest_by_kind(session, character_id),
             targets,
             catalog_by_name(session),
             icons_by_id(session),
             companion_by_id(session),
             current_weights(session, presets),
-            jobs.item_levels(session),
+            jobs.item_levels(session, character_id),
         )
 
     @app.get("/api/gear")
-    def gear(session: SessionDep, targets: TargetsDep, presets: PresetsDep) -> GearPlan:
-        plan = build_gear_plan(session, targets, presets)
+    def gear(
+        session: SessionDep, character_id: CharacterIdDep, targets: TargetsDep, presets: PresetsDep
+    ) -> GearPlan:
+        plan = build_gear_plan(session, character_id, targets, presets)
         return plan.model_copy(update={"targets_customised": targets_customised(session)})
 
     @app.get("/api/look-ahead")
     def get_look_ahead(
         session: SessionDep,
+        character_id: CharacterIdDep,
         targets: TargetsDep,
         presets: PresetsDep,
         default_plan: DefaultPlanDep,
@@ -870,16 +942,16 @@ def create_app(
     ) -> LookAhead:
         """What each of the next `levels` levels brings (#4): dungeons opening, gear
         targets, talent points, class quests and profession ranks."""
-        level, faction = jobs.character_context(session)
+        level, faction = jobs.character_context(session, character_id)
         return look_ahead(
             level,
             levels,
             faction=faction,
             dungeons=stored_dungeons(session),
-            gear=build_gear_plan(session, targets, presets),
-            talents=talents_view(session, default_plan),
-            class_quests=checklist(session),
-            professions=professions_view(session, professions, level),
+            gear=build_gear_plan(session, character_id, targets, presets),
+            talents=talents_view(session, character_id, default_plan),
+            class_quests=checklist(session, character_id),
+            professions=professions_view(session, professions, level, character_id),
         )
 
     def preset_errors(action: Callable[[], object]) -> None:
@@ -937,12 +1009,14 @@ def create_app(
         preset_errors(lambda: delete_preset(session, presets, key))
         return weights_view(session, presets)
 
-    def talents_view(session: Session, default: TalentPlan) -> TalentPlanView:
-        latest = latest_by_kind(session)
+    def talents_view(
+        session: Session, character_id: int | None, default: TalentPlan
+    ) -> TalentPlanView:
+        latest = latest_by_kind(session, character_id)
         profile, specs = latest.get("profile"), latest.get("specializations")
         stored = current_plan(session, default)
         # Ids filled in from the trees by name, for plans written before #88.
-        plan = with_talent_ids(stored, talent_tree(session))
+        plan = with_talent_ids(stored, talent_tree(session, character_id))
         return compare(
             plan,
             parse_specialization(specs.payload if specs else None),
@@ -950,8 +1024,8 @@ def create_app(
             customised=stored != default,
         )
 
-    def talent_tree(session: Session) -> ClassTree | None:
-        class_name = character_class_name(session)
+    def talent_tree(session: Session, character_id: int | None) -> ClassTree | None:
+        class_name = character_class_name(session, character_id)
         return stored_tree(session, class_name) if class_name else None
 
     @app.get("/api/guest")
@@ -1049,46 +1123,49 @@ def create_app(
         return rules_view(session, default)
 
     @app.get("/api/class-quests")
-    def get_class_quests(session: SessionDep) -> ClassQuestChecklist:
+    def get_class_quests(session: SessionDep, character_id: CharacterIdDep) -> ClassQuestChecklist:
         """The synced character's class quests: missed, now, soon, later and done (#8)."""
-        return checklist(session)
+        return checklist(session, character_id)
 
     @app.put("/api/class-quests/{quest_id}")
     def put_class_quest(
         quest_id: Annotated[str, FastAPIPath(pattern=r"^[a-z0-9-]{1,100}$")],
         update: ClassQuestUpdate,
         session: SessionDep,
+        character_id: CharacterIdDep,
     ) -> ClassQuestChecklist:
         """Mark a class quest done, or not done."""
         try:
             set_done(session, quest_id, update.done)
         except UnknownClassQuest:
             raise HTTPException(404, f"No class quest {quest_id}") from None
-        return checklist(session)
+        return checklist(session, character_id)
 
     @app.get("/api/talents")
-    def get_talents(session: SessionDep, default: DefaultPlanDep) -> TalentPlanView:
+    def get_talents(
+        session: SessionDep, character_id: CharacterIdDep, default: DefaultPlanDep
+    ) -> TalentPlanView:
         """The talent plan compared with the synced talents (ADR 0009)."""
-        return talents_view(session, default)
+        return talents_view(session, character_id, default)
 
     @app.put("/api/talents/plan")
     def put_talent_plan(
-        plan: TalentPlan, session: SessionDep, default: DefaultPlanDep
+        plan: TalentPlan, session: SessionDep, character_id: CharacterIdDep, default: DefaultPlanDep
     ) -> TalentPlanView:
         """Replace the talent plan. With the talent trees loaded, a plan that breaks their
         rules (unknown talents, prerequisites, points per row) is refused (#88)."""
-        tree = talent_tree(session)
+        tree = talent_tree(session, character_id)
         problems = plan_problems(plan, tree)
         if problems:
             raise HTTPException(422, "; ".join(problems))
         save_plan(session, with_talent_ids(plan, tree))
-        return talents_view(session, default)
+        return talents_view(session, character_id, default)
 
     @app.get("/api/talents/tree")
-    def get_talent_tree(session: SessionDep) -> TalentTreeView:
+    def get_talent_tree(session: SessionDep, character_id: CharacterIdDep) -> TalentTreeView:
         """The synced class's talent trees (#88). `tree` is null until they're loaded:
         after the first sync, in the background."""
-        class_name = character_class_name(session)
+        class_name = character_class_name(session, character_id)
         return TalentTreeView(
             class_name=class_name,
             tree=stored_tree(session, class_name) if class_name else None,
@@ -1096,10 +1173,10 @@ def create_app(
         )
 
     @app.post("/api/talents/refresh")
-    def refresh_talents(session: SessionDep) -> TalentRefresh:
+    def refresh_talents(session: SessionDep, character_id: CharacterIdDep) -> TalentRefresh:
         """Fetch the synced class's talent trees and icons again."""
         try:
-            result = jobs.refresh_talents(session, settings, http=http)
+            result = jobs.refresh_talents(session, settings, character_id, http=http)
         except leases.Busy as error:
             raise HTTPException(409, str(error)) from error
         if result is None:
@@ -1107,10 +1184,12 @@ def create_app(
         return result
 
     @app.delete("/api/talents/plan")
-    def delete_talent_plan(session: SessionDep, default: DefaultPlanDep) -> TalentPlanView:
+    def delete_talent_plan(
+        session: SessionDep, character_id: CharacterIdDep, default: DefaultPlanDep
+    ) -> TalentPlanView:
         """Go back to data/curated/talent_plan.yaml."""
         reset_plan(session)
-        return talents_view(session, default)
+        return talents_view(session, character_id, default)
 
     # Serve the built frontend (npm run build) from the same origin, after every API
     # route so those win. In development Vite serves it instead and proxies to us.

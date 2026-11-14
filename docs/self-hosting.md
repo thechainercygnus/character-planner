@@ -209,8 +209,9 @@ Besides the client:
 
 - `BNET_REGION`: your account's region, `us`, `eu`, `kr` or `tw`.
 - `CHARACTER_NAME` and `CHARACTER_SURNAME`: your character's first name and surname, as
-  shown in game. Forever looks characters up by both, and the planner syncs that
-  character.
+  shown in game. Forever looks characters up by both. They name the **first** character
+  only: on its first start the planner saves that character, with `BNET_REGION`, in its
+  database, and reads these settings no more (ADR 0036).
 - `PLANNER_IMAGE`: the release to run, for example
   `PLANNER_IMAGE=ghcr.io/thechainercygnus/character-planner:0.1`. `0.1` follows the
   latest `0.1.x`; `0.1.0` stays put.
@@ -352,7 +353,7 @@ To check that an image really comes from this project before running it, see
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `Sync failed: Battle.net refused the client ID and secret (HTTP 401)` | A typo in `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET`, or the client was deleted or its secret changed | Copy both again from the developer portal, then `docker compose up -d` |
-| The status bar says `Battle.net can't find …`, and the logs say `character … not found` | Name, surname or region doesn't match the character | Check `CHARACTER_NAME`, `CHARACTER_SURNAME` and `BNET_REGION`, then `docker compose up -d` and sync again |
+| The status bar says `Battle.net can't find …`, and the logs say `character … not found` | Name, surname or region doesn't match the character | Fix `CHARACTER_NAME`, `CHARACTER_SURNAME` or `BNET_REGION` in `.env`. The mistyped character is already saved, so remove it with `docker compose exec app character-planner-db erase --yes` (it has no data to lose), then `docker compose up -d` and sync again |
 | The status bar says `No Battle.net client`, and `worker.log` says `skipped: no Battle.net client` | `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET` is empty, or Compose didn't read `.env` | Fill in `.env` beside `compose.yaml`, then `docker compose up -d` |
 | The page says `Invalid host header` | The planner doesn't answer to the name in your address bar (#124) | Add that name to `PLANNER_HOSTS` in `.env` (comma separated), then `docker compose up -d` |
 | Upgrades and Dungeons stay empty after the first sync | Item data is still loading | Wait for the status bar's note to clear. `server.log` shows progress every 50 items |

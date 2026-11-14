@@ -6305,7 +6305,7 @@
     },
     "/api/snapshots/manual": {
       "post": {
-        "description": "Fallback for data the API doesn't return: store it in the same shape.",
+        "description": "Fallback for data the API doesn't return: store it in the same shape, for the\ncurrent character.",
         "operationId": "add_manual_api_snapshots_manual_post",
         "requestBody": {
           "content": {

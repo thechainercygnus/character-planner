@@ -11,6 +11,7 @@ from character_planner.companion import BASE_URL
 from character_planner.config import Settings
 from character_planner.db import Snapshot, init_db, make_engine
 
+from .conftest import tracked
 from .test_app import fixture
 from .test_dungeons import mock_companion_dungeons
 from .test_migrations import head
@@ -59,7 +60,15 @@ def store_profile(settings: Settings) -> None:
     engine: Engine = make_engine(settings.database_url)
     init_db(engine)
     with Session(engine) as session:
-        session.add(Snapshot(source="api", kind="profile", status=200, payload=fixture("profile")))
+        session.add(
+            Snapshot(
+                character_id=tracked(session),
+                source="api",
+                kind="profile",
+                status=200,
+                payload=fixture("profile"),
+            )
+        )
         session.commit()
     engine.dispose()
 

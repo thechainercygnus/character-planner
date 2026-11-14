@@ -35,7 +35,7 @@ from character_planner.talent_trees import (
 from character_planner.talents import TalentPlan, plan_problems, with_talent_ids
 from character_planner.views import parse_specialization
 
-from .conftest import FIXTURES, api_client
+from .conftest import FIXTURES, api_client, tracked
 
 API = "https://us.api.blizzard.com/data/wow"
 
@@ -70,6 +70,7 @@ def store(session: Session, tree_id: int) -> None:
 def profile(session: Session, class_name: str) -> None:
     session.add(
         Snapshot(
+            character_id=tracked(session),
             source="api",
             kind="profile",
             status=200,
@@ -260,11 +261,11 @@ def client(settings: Settings, engine: Engine) -> Iterator[TestClient]:
 
 def test_missing_data_includes_the_synced_classs_trees(engine: Engine) -> None:
     with Session(engine) as session:
-        assert "talents" not in jobs.missing_data(session)  # no class yet
+        assert "talents" not in jobs.missing_data(session, tracked(session))  # no class yet
         profile(session, "Warrior")
-        assert "talents" in jobs.missing_data(session)
+        assert "talents" in jobs.missing_data(session, tracked(session))
         store(session, 1117)
-        assert "talents" not in jobs.missing_data(session)
+        assert "talents" not in jobs.missing_data(session, tracked(session))
 
 
 def test_the_tree_endpoint_waits_for_the_trees(client: TestClient, engine: Engine) -> None:

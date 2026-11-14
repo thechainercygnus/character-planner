@@ -17,8 +17,29 @@ def utcnow() -> datetime:
     return datetime.now(UTC)
 
 
+class Character(SQLModel, table=True):
+    """A tracked character (#14, ADR 0036). Region and slug find it on Battle.net; the
+    rest is copied from its newest profile at each sync, for lists and class defaults."""
+
+    __table_args__ = (UniqueConstraint("region", "slug"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    region: str  # us, eu, kr, tw
+    slug: str  # Forever's route key: name-surname, lowercase
+    name: str
+    surname: str = ""
+    blizzard_id: int | None = None
+    character_class: str | None = None
+    race: str | None = None
+    faction: str | None = None  # ALLIANCE or HORDE
+    created_at: datetime = Field(default_factory=utcnow)
+
+
 class Snapshot(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    # Whose data this is (ADR 0036). None only for rows from before #14, until the first
+    # character adopts them.
+    character_id: int | None = Field(default=None, foreign_key="character.id", index=True)
     captured_at: datetime = Field(default_factory=utcnow, index=True)
     source: str = Field(index=True)  # "api" or "manual"
     kind: str = Field(index=True)  # e.g. "profile", "equipment"
@@ -31,7 +52,11 @@ class ProgressHistory(SQLModel, table=True):
     (#131, ADR 0034): the date, level and average item level. No item names, stats or
     raw responses: those are Blizzard's and kept 30 days at most."""
 
-    captured_at: datetime = Field(primary_key=True)
+    __table_args__ = (UniqueConstraint("character_id", "captured_at"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    character_id: int | None = Field(default=None, foreign_key="character.id", index=True)
+    captured_at: datetime
     level: int | None = None
     item_level: float | None = None
 
@@ -365,11 +390,17 @@ def init_db(engine: Engine) -> None:
         command.upgrade(config, "head")
 
 
-def latest_by_kind(session: Session) -> dict[str, Snapshot]:
-    """Newest successful snapshot of each kind."""
+def latest_by_kind(session: Session, character_id: int | None) -> dict[str, Snapshot]:
+    """The character's newest successful snapshot of each kind; none without a character."""
+    if character_id is None:
+        return {}
     rows = session.exec(
         select(Snapshot)
-        .where(col(Snapshot.status) >= 200, col(Snapshot.status) < 300)
+        .where(
+            col(Snapshot.character_id) == character_id,
+            col(Snapshot.status) >= 200,
+            col(Snapshot.status) < 300,
+        )
         .order_by(desc(col(Snapshot.captured_at)), desc(col(Snapshot.id)))
     ).all()
     latest: dict[str, Snapshot] = {}

@@ -20,7 +20,7 @@ from character_planner.config import Settings
 from character_planner.db import ActiveWeightPreset, Snapshot
 from character_planner.rules import ARMOR_TYPES, OFF_HAND_TYPES, TWO_HAND_TYPES, WEAPON_TYPES
 
-from .conftest import FIXTURES, REPO_ROOT, api_client
+from .conftest import FIXTURES, REPO_ROOT, api_client, tracked
 
 CURATED = REPO_ROOT / "data" / "curated"
 
@@ -28,6 +28,7 @@ CURATED = REPO_ROOT / "data" / "curated"
 def profile(session: Session, class_name: str, level: int = 20) -> None:
     session.add(
         Snapshot(
+            character_id=tracked(session),
             source="api",
             kind="profile",
             status=200,
@@ -142,11 +143,13 @@ def test_a_class_without_defaults_gets_the_warriors() -> None:
 
 def test_the_class_comes_from_the_synced_profile(engine: Engine, settings: Settings) -> None:
     with Session(engine) as session:
-        assert character_class_key(session) is None
-        assert current_defaults(session, CURATED).playable.key == "warrior"  # before a sync
+        assert character_class_key(session, tracked(session)) is None
+        assert (
+            current_defaults(session, CURATED, tracked(session)).playable.key == "warrior"
+        )  # before a sync
         profile(session, "Warlock")
-        assert character_class_key(session) == "warlock"
-        assert current_defaults(session, CURATED).playable.key == "warlock"
+        assert character_class_key(session, tracked(session)) == "warlock"
+        assert current_defaults(session, CURATED, tracked(session)).playable.key == "warlock"
 
 
 def test_a_warlock_gets_warlock_defaults_everywhere(client: TestClient, engine: Engine) -> None:
@@ -213,7 +216,7 @@ def test_a_key_can_only_name_a_shipped_class_file(key: str) -> None:
 def test_an_odd_class_name_in_a_profile_is_harmless(engine: Engine) -> None:
     with Session(engine) as session:
         profile(session, "../../Recommend")
-        assert current_defaults(session, CURATED).playable.key == "warrior"
+        assert current_defaults(session, CURATED, tracked(session)).playable.key == "warrior"
 
 
 def test_guest_mode_refuses_a_path_as_a_class(client: TestClient) -> None:

@@ -13,6 +13,7 @@ from character_planner.config import Settings
 from character_planner.db import Snapshot, StoredToken
 from character_planner.pool import PoolRefresh
 
+from .conftest import tracked
 from .test_app import mock_character_api
 
 START = datetime(2026, 11, 12, 18, 0, tzinfo=UTC)
@@ -124,12 +125,20 @@ def test_pool_refresh_runs_once_a_level_is_synced(
     levels: list[int | None] = []
 
     def fake_refresh(session: Session, _settings: Settings, **_: object) -> PoolRefresh:
-        levels.append(jobs.character_context(session)[0])
+        levels.append(jobs.character_context(session, jobs.current_id(session))[0])
         return PoolRefresh(pool_size=120, in_window=40, items_fetched=3)
 
     monkeypatch.setattr(jobs, "refresh_item_pool", fake_refresh)
     with Session(engine) as session:
-        session.add(Snapshot(source="api", kind="profile", status=200, payload={"level": 19}))
+        session.add(
+            Snapshot(
+                character_id=tracked(session),
+                source="api",
+                kind="profile",
+                status=200,
+                payload={"level": 19},
+            )
+        )
         session.commit()
         outcome = worker.pool_job(session, settings, None)
     assert levels == [19]

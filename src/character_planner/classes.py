@@ -105,20 +105,22 @@ def load_class_defaults(curated_dir: Path, key: str) -> ClassDefaults:
     )
 
 
-def character_class_key(session: Session) -> str | None:
+def character_class_key(session: Session, character_id: int | None) -> str | None:
     """The synced character's class, from the latest profile; None before any sync."""
-    name = character_view(latest_by_kind(session)).character_class
+    name = character_view(latest_by_kind(session, character_id)).character_class
     return class_key(name) if name else None
 
 
-def character_class_name(session: Session) -> str | None:
+def character_class_name(session: Session, character_id: int | None) -> str | None:
     """The synced character's class as Blizzard names it ("Warlock"); None before a sync."""
-    return character_view(latest_by_kind(session)).character_class
+    return character_view(latest_by_kind(session, character_id)).character_class
 
 
-def current_defaults(session: Session, curated_dir: Path) -> ClassDefaults:
+def current_defaults(
+    session: Session, curated_dir: Path, character_id: int | None
+) -> ClassDefaults:
     """The defaults for the synced character's class (the Warrior's until it's known)."""
-    key = character_class_key(session) or WARRIOR
+    key = character_class_key(session, character_id) or WARRIOR
     defaults = load_class_defaults(curated_dir, key)
     if defaults.playable.key != key:
         logger.warning("No shipped defaults for the %s class yet: using the Warrior's", key)

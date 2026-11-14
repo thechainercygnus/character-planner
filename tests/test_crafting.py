@@ -24,7 +24,7 @@ from character_planner.db import BlizzardItem, CraftingRecipe, Snapshot
 from character_planner.pool import build_pool
 from character_planner.targets import source_text
 
-from .conftest import FIXTURES, REPO_ROOT
+from .conftest import FIXTURES, REPO_ROOT, tracked
 from .test_app import client  # noqa: F401 (the client fixture)
 from .test_items import ITEM, RECIPE, mock_battlenet
 
@@ -39,7 +39,15 @@ DATA = load_profession_data(REPO_ROOT / "data" / "curated" / "professions.yaml")
 
 
 def store_professions(session: Session) -> None:
-    session.add(Snapshot(source="api", kind="professions", status=200, payload=PROFESSIONS))
+    session.add(
+        Snapshot(
+            character_id=tracked(session),
+            source="api",
+            kind="professions",
+            status=200,
+            payload=PROFESSIONS,
+        )
+    )
     session.commit()
 
 
@@ -90,11 +98,11 @@ def test_refresh_fetches_known_recipes_then_their_items_once(
     recipes = respx.routes  # the recipe and item routes from mock_battlenet
     with Session(engine) as session:
         store_professions(session)
-        first = refresh_crafting(session, settings)
-        again = refresh_crafting(session, settings)
+        first = refresh_crafting(session, settings, tracked(session))
+        again = refresh_crafting(session, settings, tracked(session))
         stored = session.exec(select(CraftingRecipe)).all()
         items = {row.item_id: row.found for row in session.exec(select(BlizzardItem)).all()}
-        crafted = crafted_items(session)
+        crafted = crafted_items(session, tracked(session))
 
     # 43 known recipes; three have fixtures, the rest answer 404 and are cached as such.
     assert (first.recipes_fetched, first.items_fetched, first.errors) == (43, 3, [])
@@ -119,7 +127,7 @@ def test_a_failed_lookup_is_reported_and_tried_again(engine: Engine, settings: S
     mock_battlenet()
     with Session(engine) as session:
         store_professions(session)
-        result = refresh_crafting(session, settings)
+        result = refresh_crafting(session, settings, tracked(session))
         assert session.get(CraftingRecipe, 2430) is None  # not cached: tried next time
     assert result.errors == ["recipe 2430: HTTP 503"]
 
@@ -130,14 +138,14 @@ def test_no_client_no_requests(engine: Engine, settings: Settings) -> None:
     )
     with Session(engine) as session:
         store_professions(session)
-        result = refresh_crafting(session, no_client)
+        result = refresh_crafting(session, no_client, tracked(session))
     assert result.errors and result.errors[0].startswith("Blizzard token:")
 
 
 def test_nothing_to_do_before_a_sync(engine: Engine, settings: Settings) -> None:
     with Session(engine) as session:
-        assert refresh_crafting(session, settings).errors == []
-        assert crafted_items(session) == []
+        assert refresh_crafting(session, settings, tracked(session)).errors == []
+        assert crafted_items(session, tracked(session)) == []
 
 
 @respx.mock
@@ -145,9 +153,9 @@ def test_profession_milestones(engine: Engine, settings: Settings) -> None:
     mock_battlenet()
     with Session(engine) as session:
         store_professions(session)
-        refresh_crafting(session, settings)
-        view = professions_view(session, DATA, level=18)
-        at_twenty = professions_view(session, DATA, level=20)
+        refresh_crafting(session, settings, tracked(session))
+        view = professions_view(session, DATA, 18, tracked(session))
+        at_twenty = professions_view(session, DATA, 20, tracked(session))
 
     rows = {row.name: row for row in view.professions}
     assert list(rows) == ["Mining", "Engineering", "Cooking", "First Aid"]
@@ -175,7 +183,7 @@ def test_profession_milestones(engine: Engine, settings: Settings) -> None:
 
 def test_milestones_before_a_sync(engine: Engine) -> None:
     with Session(engine) as session:
-        assert professions_view(session, DATA, level=None).professions == []
+        assert professions_view(session, DATA, None, tracked(session)).professions == []
 
 
 def test_crafted_gear_joins_the_pool() -> None:

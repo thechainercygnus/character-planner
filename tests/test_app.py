@@ -18,7 +18,7 @@ from character_planner.config import Settings
 from character_planner.db import CompanionItem, ItemChoice
 from character_planner.recommend import UsageRules
 
-from .conftest import FIXTURES, api_client
+from .conftest import FIXTURES, api_client, tracked
 from .test_dungeons import mock_companion_dungeons
 from .test_enchants import blizzard
 from .test_enchants import store as store_recipes
@@ -506,8 +506,8 @@ def test_items_pinned_before_targets_were_editable_move_into_them(
         session.add(ItemChoice(item_id=5193, choice="target", name="Cape of the Brotherhood"))
         session.add(ItemChoice(item_id=999999, choice="target", name="Not in the pool"))
         session.commit()
-        assert jobs.migrate_target_choices(session, settings) == 1
-        assert jobs.migrate_target_choices(session, settings) == 0
+        assert jobs.migrate_target_choices(session, settings, tracked(session)) == 1
+        assert jobs.migrate_target_choices(session, settings, tracked(session)) == 0
 
     # The cape is already a planned target, so the old pin marks it.
     targets = client.get("/api/targets").json()["targets"]

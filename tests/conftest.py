@@ -6,9 +6,10 @@ import pytest
 from fastapi.testclient import TestClient
 from pydantic import SecretStr
 from sqlalchemy.engine import Engine
+from sqlmodel import Session, col, select
 
 from character_planner.config import Settings
-from character_planner.db import init_db, make_engine
+from character_planner.db import Character, init_db, make_engine
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
@@ -51,3 +52,25 @@ APP_HEADERS = {"X-Requested-With": "character-planner"}
 def api_client(app: Any) -> TestClient:
     """A test client that sends the web app's header on every request."""
     return TestClient(app, headers=APP_HEADERS)
+
+
+def tracked(session: Session) -> int:
+    """The test character's id: Brumboldt Doomlet in the US, as the settings fixture names
+    it, so the app finds the same one (ADR 0036). Created on first use."""
+    existing = session.exec(select(Character).order_by(col(Character.id))).first()
+    if existing is not None and existing.id is not None:
+        return existing.id
+    character = Character(
+        region="us", slug="brumboldt-doomlet", name="Brumboldt", surname="Doomlet"
+    )
+    session.add(character)
+    session.commit()
+    assert character.id is not None
+    return character.id
+
+
+def tracked_character(session: Session) -> Character:
+    """The test character's row, for calls that take a Character (sync)."""
+    character = session.get(Character, tracked(session))
+    assert character is not None
+    return character
