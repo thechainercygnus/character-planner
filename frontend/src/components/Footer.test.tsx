@@ -7,6 +7,7 @@ import { Footer } from './Footer'
 const about: About = {
   version: '0.1.0',
   source_url: 'https://git.example.org/me/planner',
+  operator_contact: '',
   data: {
     name: 'Forever Companion',
     url: 'https://forevercompanion.io',
@@ -41,7 +42,7 @@ describe('Footer', () => {
         'Item and dungeon data from Forever Companion, gathered from ForeverChanges, Wowhead and Zockify and ' +
         'checked in game by players.' +
         'Fan-made, not affiliated with or endorsed by Blizzard Entertainment.' +
-        'Character Planner 0.1.0 · Source (AGPL-3.0)',
+        'Character Planner 0.1.0 · Source (AGPL-3.0) · Privacy',
     )
     const link = (name: string) => screen.getByRole('link', { name }).getAttribute('href')
     // Blizzard's API terms (§2 item 13): Blizzard named as the source, with a link.
@@ -50,5 +51,7 @@ describe('Footer', () => {
     expect(link('Zockify')).toBe('https://www.zockify.com/forever/')
     // SOURCE_URL: a fork links its own code.
     expect(link('Source')).toBe('https://git.example.org/me/planner')
+    // The privacy notice (#133), on every page.
+    expect(link('Privacy')).toBe('#privacy')
   })
 })

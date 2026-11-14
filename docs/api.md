@@ -29,6 +29,12 @@ Character
 
 **200:** [CharacterView](#schema-characterview)
 
+### `DELETE /api/character`
+
+Delete everything stored for the character (#133): snapshots, history, plans, settings edited in the app, alerts and tokens. Shared game data stays. The next sync, by hand or on the worker's schedule, fetches the character again.
+
+**200:** [Erased](#schema-erased)
+
 ## `choices`
 
 ### `GET /api/choices`
@@ -543,6 +549,7 @@ Login
 | `version` | string | yes |
 | `source_url` | string | yes |
 | `data` | [DataCredit](#schema-datacredit) | yes |
+| `operator_contact` | string | no |
 
 (schema-alertinfo)=
 ### AlertInfo
@@ -878,6 +885,13 @@ An enchant on an equipped item, as the equipment endpoint reports it.
 | `attack_speed` | number or null | no |
 | `enchantments` | list of [Enchantment](#schema-enchantment) | no |
 | `icon_url` | string or null | no |
+
+(schema-erased)=
+### Erased
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `removed` | map of integer | yes |
 
 (schema-gearchange)=
 ### GearChange

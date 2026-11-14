@@ -95,6 +95,7 @@ from character_planner.enchants import (
     equipped_effects,
     load_enchant_data,
 )
+from character_planner.erase import erase_character
 from character_planner.guest import (
     Faction,
     GuestError,
@@ -211,6 +212,13 @@ class About(BaseModel):
     version: str
     source_url: str
     data: DataCredit
+    # The privacy notice's contact (#133); empty when the operator set none.
+    operator_contact: str = ""
+
+
+class Erased(BaseModel):
+    # Rows deleted per table; tables that were already empty are left out.
+    removed: dict[str, int]
 
 
 class ManualSnapshot(BaseModel):
@@ -456,6 +464,7 @@ def create_app(
                 url=str(COMPANION_ATTRIBUTION["url"]),
                 sources=[CreditLink(**source) for source in COMPANION_SOURCES],
             ),
+            operator_contact=settings.operator_contact,
         )
 
     @app.get("/auth/login")
@@ -822,6 +831,15 @@ def create_app(
     @app.get("/api/character")
     def character(session: SessionDep) -> CharacterView:
         return character_view(latest_by_kind(session), icons_by_id(session))
+
+    @app.delete("/api/character")
+    def erase(session: SessionDep) -> Erased:
+        """Delete everything stored for the character (#133): snapshots, history, plans,
+        settings edited in the app, alerts and tokens. Shared game data stays. The next
+        sync, by hand or on the worker's schedule, fetches the character again."""
+        removed = erase_character(session)
+        logger.info("Erased the character's data: %d rows", sum(removed.values()))
+        return Erased(removed=removed)
 
     def build_gear_plan(
         session: Session, targets: GearTargets, presets: ShippedPresets

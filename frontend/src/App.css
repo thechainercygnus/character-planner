@@ -1197,3 +1197,12 @@ ul.upcoming small {
 .missing-effects li {
   padding: 0.3rem 0;
 }
+
+/* The privacy notice (#133). */
+.privacy {
+  max-width: 46rem;
+}
+
+.erase-data {
+  margin-top: 0.5rem;
+}
