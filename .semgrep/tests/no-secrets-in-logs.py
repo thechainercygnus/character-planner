@@ -19,7 +19,7 @@ def tokens(token, settings, stored):
 
     secret = settings.bnet_client_secret.get_secret_value()
     # ruleid: no-secrets-in-logs
-    logger.debug("client secret is %s", secret)
+    logger.debug("client secret is %s", redact(secret))
 
     # ruleid: no-secrets-in-logs
     print(token.access_token)
