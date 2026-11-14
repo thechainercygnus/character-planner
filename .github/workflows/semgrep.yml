@@ -1,0 +1,47 @@
+# Custom Semgrep rules (#57): the repository's own rules in .semgrep/, starting with
+# "never log tokens or the client secret" (CLAUDE.md). The rules' tests run first, then
+# the scan: findings go to Security > Code scanning beside CodeQL and fail the check.
+name: semgrep
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions: {}
+
+# A newer push to the same branch or PR replaces a scan still running.
+concurrency:
+  group: semgrep-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned: a new Semgrep can change what a rule matches. Dependabot doesn't track uvx
+  # tools, so bump this by hand.
+  SEMGREP: semgrep==1.185.0
+
+jobs:
+  rules:
+    name: rules (custom)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # upload SARIF
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+      - name: The rules' own tests
+        run: uvx --from "$SEMGREP" semgrep --test --metrics=off --config .semgrep/rules .semgrep/tests
+      - name: Scan
+        # --error fails the step on any finding; the SARIF is written either way.
+        run: >-
+          uvx --from "$SEMGREP" semgrep scan --metrics=off --error
+          --config .semgrep/rules --sarif-output=semgrep.sarif src
+      - if: ${{ !cancelled() && hashFiles('semgrep.sarif') != '' }}
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep-custom
