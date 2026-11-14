@@ -406,7 +406,9 @@ SQLITE_BUSY_TIMEOUT_MS = 10_000
 
 def make_engine(database_url: str) -> Engine:
     if not database_url.startswith("sqlite:///"):
-        return create_engine(database_url)
+        # Postgres (#44, ADR 0038): check a pooled connection before use, so a restarted
+        # database server doesn't fail the next request.
+        return create_engine(database_url, pool_pre_ping=True)
     Path(database_url.removeprefix("sqlite:///")).parent.mkdir(parents=True, exist_ok=True)
     engine = create_engine(database_url, connect_args={"check_same_thread": False})
 

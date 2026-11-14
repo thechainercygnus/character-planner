@@ -1,0 +1,45 @@
+# Run the planner on Postgres instead of SQLite (#44, ADR 0038): for several users syncing
+# and editing at once (#17). Plain compose.yaml stays on SQLite.
+#
+#   docker compose -f compose.yaml -f compose.postgres.yaml up -d --build
+#
+# Needs POSTGRES_PASSWORD in .env. Moving an existing SQLite instance over: see
+# docs/self-hosting.md, "Moving to Postgres".
+
+x-postgres-url: &postgres-url
+  DATABASE_URL: postgresql+psycopg://planner:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/planner
+
+services:
+  postgres:
+    image: postgres:17-alpine@sha256:778d0b486d6daa02b77434d0358ec57a1b21fd8b6d22ac2eef56a33e816928f6 # 17-alpine
+    environment:
+      POSTGRES_USER: planner
+      POSTGRES_DB: planner
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - planner-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U planner -d planner"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    # Not published: only the planner's containers reach it.
+
+  migrate:
+    environment:
+      <<: *postgres-url
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  app:
+    environment:
+      <<: *postgres-url
+
+  worker:
+    environment:
+      <<: *postgres-url
+
+volumes:
+  planner-postgres:

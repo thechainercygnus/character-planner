@@ -12,6 +12,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
+import pytest
 import respx
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
@@ -19,7 +20,13 @@ from sqlmodel import Session
 from character_planner.companion import BASE_URL, refresh_companion
 from character_planner.config import Settings
 
+from .conftest import TEST_DATABASE_URL
 from .test_companion import CAPE, girdle
+
+# SQLite's single writer (ADR 0018) is what this guards; Postgres has no such lock (#44).
+pytestmark = pytest.mark.skipif(
+    bool(TEST_DATABASE_URL), reason="SQLite's write lock; Postgres has none"
+)
 
 
 def db_path(settings: Settings) -> Path:

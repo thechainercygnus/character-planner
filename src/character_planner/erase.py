@@ -32,8 +32,10 @@ SHARED = frozenset(
 
 
 def erased_tables() -> list[str]:
-    """The tables erase_character empties, in a stable order."""
-    return sorted(name for name in SQLModel.metadata.tables if name not in SHARED)
+    """The tables erase_character empties, children before the tables they point at, so
+    foreign keys hold on a database that enforces them (Postgres, #44)."""
+    ordered = reversed(SQLModel.metadata.sorted_tables)
+    return [table.name for table in ordered if table.name not in SHARED]
 
 
 def erase_character(session: Session) -> dict[str, int]:

@@ -1,3 +1,5 @@
+import os
+import uuid
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
@@ -5,6 +7,7 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import SecretStr
+from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, col, select
 
@@ -15,8 +18,31 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
 
+# Set TEST_DATABASE_URL (postgresql+psycopg://...) to run the suite on Postgres (#44): each
+# test then gets a schema of its own, dropped afterwards. Unset, each gets a SQLite file.
+TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL", "")
+
+
+def database_url(tmp_path: Path, request: pytest.FixtureRequest) -> str:
+    if not TEST_DATABASE_URL:
+        return f"sqlite:///{tmp_path / 'test.db'}"
+    schema = f"t_{uuid.uuid4().hex[:16]}"
+    admin = create_engine(TEST_DATABASE_URL)
+    with admin.begin() as connection:
+        connection.execute(text(f'CREATE SCHEMA "{schema}"'))
+
+    def drop() -> None:
+        with admin.begin() as connection:
+            connection.execute(text(f'DROP SCHEMA "{schema}" CASCADE'))
+        admin.dispose()
+
+    request.addfinalizer(drop)
+    joiner = "&" if "?" in TEST_DATABASE_URL else "?"
+    return f"{TEST_DATABASE_URL}{joiner}options=-csearch_path%3D{schema}"
+
+
 @pytest.fixture
-def settings(tmp_path: Path) -> Settings:
+def settings(tmp_path: Path, request: pytest.FixtureRequest) -> Settings:
     # _env_file=None: tests must never read a developer's real .env
     return Settings(
         _env_file=None,  # pyright: ignore[reportCallIssue]
@@ -26,7 +52,7 @@ def settings(tmp_path: Path) -> Settings:
         bnet_redirect_uri="http://localhost:8000/auth/callback",
         character_name="Brumboldt",
         character_surname="Doomlet",
-        database_url=f"sqlite:///{tmp_path / 'test.db'}",
+        database_url=database_url(tmp_path, request),
         curated_dir=REPO_ROOT / "data" / "curated",
         post_login_redirect="http://localhost:5173/",
         frontend_dist=tmp_path / "no-frontend-build",
