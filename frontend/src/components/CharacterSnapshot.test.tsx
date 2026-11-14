@@ -97,7 +97,7 @@ describe('CharacterSnapshot', () => {
 
     expect(screen.queryByRole('heading', { name: 'Stats' })).toBeNull()
     expect(screen.queryByRole('heading', { name: 'Professions' })).toBeNull()
-    expect(screen.queryByText('As of the last sync', { exact: false })).toBeNull()
+    expect(screen.queryByText('as of the last sync', { exact: false })).toBeNull()
     expect(screen.getByRole('heading', { name: 'Equipped' })).toBeTruthy()
   })
 })

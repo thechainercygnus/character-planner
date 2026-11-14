@@ -98,7 +98,9 @@ license.
 
 The license covers this project's code only:
 
-- World of Warcraft names, game data and icons belong to Blizzard Entertainment and are
-  used under its developer API terms. This project isn't affiliated with Blizzard.
+- Character and game data come from Blizzard Entertainment's
+  [Battle.net API](https://develop.battle.net/). World of Warcraft names, game data and
+  icons belong to Blizzard and are used under its developer API terms (ADR 0034). This
+  project isn't affiliated with or endorsed by Blizzard.
 - Item and dungeon data come from [Forever Companion](https://forevercompanion.io), which
   gathers them from ForeverChanges, Wowhead and Zockify. Its attribution terms apply.

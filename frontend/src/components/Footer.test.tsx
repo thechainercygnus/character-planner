@@ -23,7 +23,7 @@ describe('Footer', () => {
     vi.unstubAllGlobals()
   })
 
-  it('credits Forever Companion and its sources once, and links the source code', async () => {
+  it('credits Blizzard, Forever Companion and its sources once, and links the source code', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => Response.json(about)),
@@ -37,11 +37,15 @@ describe('Footer', () => {
 
     const footer = await screen.findByRole('contentinfo')
     expect(footer.textContent).toBe(
-      'Item and dungeon data from Forever Companion, gathered from ForeverChanges, Wowhead and Zockify and ' +
-        'checked in game by players. Fan-made, not affiliated with Blizzard Entertainment.' +
+      "Character and game data from Blizzard Entertainment's Battle.net API. " +
+        'Item and dungeon data from Forever Companion, gathered from ForeverChanges, Wowhead and Zockify and ' +
+        'checked in game by players.' +
+        'Fan-made, not affiliated with or endorsed by Blizzard Entertainment.' +
         'Character Planner 0.1.0 · Source (AGPL-3.0)',
     )
     const link = (name: string) => screen.getByRole('link', { name }).getAttribute('href')
+    // Blizzard's API terms (§2 item 13): Blizzard named as the source, with a link.
+    expect(link("Blizzard Entertainment's Battle.net API")).toBe('https://develop.battle.net/')
     expect(link('Forever Companion')).toBe('https://forevercompanion.io')
     expect(link('Zockify')).toBe('https://www.zockify.com/forever/')
     // SOURCE_URL: a fork links its own code.
