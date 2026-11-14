@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { EnchantAdvice, EnchantCorrectionsView, EnchantOption } from '../api'
+import { APP_HEADER } from '../api'
 import { enchantAdvice } from '../test/fixtures'
 import { Enchants } from './Enchants'
 
@@ -101,7 +102,7 @@ describe('Enchant corrections', () => {
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith('/api/enchants/corrections/materials/10940', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...APP_HEADER, 'Content-Type': 'application/json' },
         body: JSON.stringify({ level: 5 }),
       }),
     )
@@ -109,7 +110,7 @@ describe('Enchant corrections', () => {
     const essence = screen.getByLabelText('Level of Lesser Magic Essence').closest('li')!
     fireEvent.click(within(essence).getByRole('button', { name: 'Reset' }))
     await waitFor(() =>
-      expect(fetchMock).toHaveBeenCalledWith('/api/enchants/corrections/materials/10938', { method: 'DELETE' }),
+      expect(fetchMock).toHaveBeenCalledWith('/api/enchants/corrections/materials/10938', { method: 'DELETE', headers: APP_HEADER }),
     )
   })
 
@@ -130,7 +131,7 @@ describe('Enchant corrections', () => {
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith('/api/enchants/corrections/crafted/4405', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...APP_HEADER, 'Content-Type': 'application/json' },
         body: JSON.stringify({ effects: { 'Weapon Damage': 2 } }),
       }),
     )
@@ -163,7 +164,7 @@ describe('Enchant corrections', () => {
     const control = screen.getByRole('combobox', { name: /per slot/ }).closest('label')!
     fireEvent.click(within(control).getByRole('button', { name: 'Reset' }))
     await waitFor(() =>
-      expect(fetchMock).toHaveBeenCalledWith('/api/enchants/corrections/per-slot', { method: 'DELETE' }),
+      expect(fetchMock).toHaveBeenCalledWith('/api/enchants/corrections/per-slot', { method: 'DELETE', headers: APP_HEADER }),
     )
   })
 })

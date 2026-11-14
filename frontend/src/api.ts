@@ -836,8 +836,15 @@ function json(method: 'PUT' | 'POST', body: unknown): RequestInit {
   return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
 }
 
+/**
+ * Sent with every request. The API refuses state-changing requests without it (#124): a
+ * cross-site form can't set a header, and another site's script would need a CORS
+ * preflight, which the API never grants.
+ */
+export const APP_HEADER = { 'X-Requested-With': 'character-planner' } as const
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(path, init)
+  const response = await fetch(path, { ...init, headers: { ...APP_HEADER, ...init?.headers } })
   if (!response.ok) {
     let detail = response.statusText
     try {

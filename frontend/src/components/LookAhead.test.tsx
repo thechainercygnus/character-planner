@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { LookAhead as LookAheadData, LookAheadEvent } from '../api'
+import { APP_HEADER } from '../api'
 import { LookAhead } from './LookAhead'
 
 function event(overrides: Partial<LookAheadEvent>): LookAheadEvent {
@@ -84,7 +85,7 @@ describe('LookAhead', () => {
     expect(within(later).getByText('pinned')).toBeTruthy()
     expect(within(later).getByText('not open yet')).toBeTruthy()
     expect(within(later).getByText('essential')).toBeTruthy()
-    expect(fetchMock).toHaveBeenCalledWith('/api/look-ahead?levels=5', undefined)
+    expect(fetchMock).toHaveBeenCalledWith('/api/look-ahead?levels=5', { headers: APP_HEADER })
   })
 
   it('asks for another range and remembers it', async () => {
@@ -93,14 +94,14 @@ describe('LookAhead', () => {
 
     fireEvent.change(screen.getByRole('combobox'), { target: { value: '8' } })
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/look-ahead?levels=8', undefined))
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/look-ahead?levels=8', { headers: APP_HEADER }))
     expect(window.localStorage.getItem('look-ahead-levels')).toBe('8')
   })
 
   it('starts from the remembered range', async () => {
     window.localStorage.setItem('look-ahead-levels', '3')
     renderLookAhead()
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/look-ahead?levels=3', undefined))
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/look-ahead?levels=3', { headers: APP_HEADER }))
   })
 
   it('explains an empty look-ahead', async () => {
