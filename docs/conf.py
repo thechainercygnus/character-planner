@@ -27,6 +27,9 @@ myst_heading_anchors = 3
 # ```bash fences and pipe tables are already standard Markdown; these add ::: fences.
 myst_enable_extensions = ["colon_fence"]
 
+# docs/_static/openapi.json at a stable URL, for tools; the API reference page also links it.
+html_static_path = ["_static"]
+
 html_theme = "furo"
 html_title = "Character Planner"
 html_theme_options = {

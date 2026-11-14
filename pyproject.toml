@@ -24,6 +24,7 @@ character-planner-pool = "character_planner.pool_cli:main"
 character-planner-probe-recipes = "character_planner.probe_recipes:main"
 character-planner-worker = "character_planner.worker:main"
 character-planner-db = "character_planner.dbcli:main"
+character-planner-api-docs = "character_planner.api_reference:main"
 
 [dependency-groups]
 dev = [
