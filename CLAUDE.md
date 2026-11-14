@@ -109,6 +109,7 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/rules.py`: the Upgrades rules edited in the app; `data/curated/recommend.yaml` is the default (ADR 0016)
 - `src/character_planner/guest.py`: guest mode, recommendations for a class and level from the shipped defaults; reads no character data, stores nothing (ADR 0017)
 - `src/character_planner/erase.py`: deletes everything stored for the character, from the Privacy page or `character-planner-db erase --yes`; every table but the shared game-data caches in `SHARED` (#133, ADR 0034)
+- `src/character_planner/account.py`: the signed-in account's characters (`/profile/user/wow`), to pick ones to track; fetched each time, never stored (#15, ADR 0036)
 - `src/character_planner/choices.py`: items dismissed in the app, on top of `exclude_item_ids` (ADR 0012)
 - `src/character_planner/targets.py`: gear targets edited in the app and pins from the Upgrades tab; `gear_targets.yaml` is the default (ADR 0014); per-target levels (ADR 0015)
 - `src/character_planner/fields.py`: defensive JSON readers used by all parsers

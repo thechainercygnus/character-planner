@@ -223,6 +223,21 @@ export interface CharacterList {
 
 export type Region = 'us' | 'eu' | 'kr' | 'tw'
 
+/** A character on the signed-in Battle.net account (#15). Never stored by the API. */
+export interface AccountCharacter {
+  blizzard_id: number | null
+  name: string
+  surname: string
+  slug: string
+  region: string
+  character_class: string | null
+  race: string | null
+  faction: string | null
+  level: number | null
+  /** Already tracked on this instance. */
+  tracked: boolean
+}
+
 export interface NewCharacter {
   name: string
   surname: string
@@ -932,6 +947,7 @@ export const api = {
   about: () => request<About>('/api/about'),
   eraseCharacter: () => request<Erased>('/api/character', { method: 'DELETE' }),
   characters: () => request<CharacterList>('/api/characters'),
+  accountCharacters: () => request<{ characters: AccountCharacter[] }>('/api/account/characters'),
   addCharacter: (character: NewCharacter) =>
     request<CharacterSummary>('/api/characters', json('POST', character)),
   status: () => request<Status>('/api/status'),

@@ -98,7 +98,10 @@ export function Privacy() {
           marked done.
         </li>
         <li>The Discord webhooks you add for alerts, and the alerts waiting to be sent.</li>
-        <li>If you sign in with Battle.net, the sign-in token.</li>
+        <li>
+          If you sign in with Battle.net, the sign-in token. With it, the planner can list your account's characters to
+          pick from; that list isn't stored, only the characters you pick are tracked.
+        </li>
       </ul>
       <p>It also caches game data that's the same for every character: items, dungeons, recipes and talent trees.</p>
 

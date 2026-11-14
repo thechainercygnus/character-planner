@@ -28,6 +28,115 @@
         "title": "About",
         "type": "object"
       },
+      "AccountCharacter": {
+        "properties": {
+          "blizzard_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blizzard Id"
+          },
+          "character_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Class"
+          },
+          "faction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Faction"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "race": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Race"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "surname": {
+            "title": "Surname",
+            "type": "string"
+          },
+          "tracked": {
+            "default": false,
+            "title": "Tracked",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "blizzard_id",
+          "name",
+          "surname",
+          "slug",
+          "region",
+          "character_class",
+          "race",
+          "faction",
+          "level"
+        ],
+        "title": "AccountCharacter",
+        "type": "object"
+      },
+      "AccountCharacters": {
+        "properties": {
+          "characters": {
+            "items": {
+              "$ref": "#/components/schemas/AccountCharacter"
+            },
+            "title": "Characters",
+            "type": "array"
+          }
+        },
+        "required": [
+          "characters"
+        ],
+        "title": "AccountCharacters",
+        "type": "object"
+      },
       "AlertInfo": {
         "properties": {
           "audience": {
@@ -5222,6 +5331,25 @@
           }
         },
         "summary": "About"
+      }
+    },
+    "/api/account/characters": {
+      "get": {
+        "description": "The characters on the signed-in Battle.net account (#15), to pick ones to\ntrack. Fetched each time and never stored: the list names every character on the\naccount (ADR 0034). Needs the optional Battle.net sign-in.",
+        "operationId": "account_characters_api_account_characters_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountCharacters"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Account Characters"
       }
     },
     "/api/character": {

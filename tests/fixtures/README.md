@@ -4,8 +4,12 @@
 captured by the spike on 2026-11-11 (`samples/20261111T185331Z`), with `_links` removed.
 Only the response body is kept.
 
-The account response (`/profile/user/wow`) is deliberately not here: it lists every
-character on the account.
+The raw account response (`/profile/user/wow`) is deliberately not here: it lists every
+character on the account. `forever_account.json` is a redacted stand-in (#15). Its
+structure is the real response's, from the same capture, which listed six characters on
+one WoW account. It keeps Brumboldt, whose id is already in `forever_profile.json`, and
+two characters whose names, surnames, ids and levels are made up. Their classes and races
+are real game data, and the account ids are 1.
 
 To refresh: run `uv run character-planner-spike`, then
 `jq 'del(.. | ._links?) | .body' samples/<ts>/<kind>.json > tests/fixtures/forever_<kind>.json`.

@@ -1236,3 +1236,24 @@ ul.upcoming small {
 .add-character input {
   width: 9rem;
 }
+
+/* Picking from the Battle.net account (#15). */
+.add-character-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex-basis: 100%;
+}
+
+.add-character-panel p {
+  margin: 0;
+}
+
+.account-characters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
