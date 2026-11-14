@@ -155,9 +155,16 @@ Alternatively add a container for your reverse proxy of choice or add the requir
 | How | Open it at | In `.env` |
 | --- | --- | --- |
 | This machine only (default) | `http://localhost:8000` | nothing else |
-| Your home network | `http://<the server's address>:8000` | `PLANNER_BIND=0.0.0.0` |
+| Your home network | `http://<the server's address>:8000` | `PLANNER_BIND=0.0.0.0` and `PLANNER_HOSTS=<the server's address>` |
 | Tailscale (HTTPS on your tailnet) | `https://character-planner.<tailnet>.ts.net` | `TS_AUTHKEY`, optionally `TS_HOSTNAME` |
-| Your own reverse proxy with HTTPS, on the same machine | `https://planner.example.com` | nothing else; the proxy forwards to `127.0.0.1:8000` |
+| Your own reverse proxy with HTTPS, on the same machine | `https://planner.example.com` | `PLANNER_HOSTS=planner.example.com`; the proxy forwards to `127.0.0.1:8000` |
+
+The planner only answers to the names it's opened at: `localhost`, `127.0.0.1`, your
+tailnet name, and what you list in `PLANNER_HOSTS` (comma separated, for example
+`PLANNER_HOSTS=192.168.1.20,planner.local`). Any other name gets "Invalid host header".
+That stops a malicious web page from reaching your planner through your own browser (DNS
+rebinding). If you see that message, add the name in your address bar to `PLANNER_HOSTS`
+and restart.
 
 To change the port, set `PLANNER_PORT`. You don't sign in to Battle.net through the
 planner, so the address doesn't go into your Battle.net client.
@@ -335,6 +342,7 @@ To check that an image really comes from this project before running it, see
 | `Sync failed: Battle.net refused the client ID and secret (HTTP 401)` | A typo in `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET`, or the client was deleted or its secret changed | Copy both again from the developer portal, then `docker compose up -d` |
 | The status bar says `Battle.net can't find …`, and the logs say `character … not found` | Name, surname or region doesn't match the character | Check `CHARACTER_NAME`, `CHARACTER_SURNAME` and `BNET_REGION`, then `docker compose up -d` and sync again |
 | The status bar says `No Battle.net client`, and `worker.log` says `skipped: no Battle.net client` | `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET` is empty, or Compose didn't read `.env` | Fill in `.env` beside `compose.yaml`, then `docker compose up -d` |
+| The page says `Invalid host header` | The planner doesn't answer to the name in your address bar (#124) | Add that name to `PLANNER_HOSTS` in `.env` (comma separated), then `docker compose up -d` |
 | Upgrades and Dungeons stay empty after the first sync | Item data is still loading | Wait for the status bar's note to clear. `server.log` shows progress every 50 items |
 | `migrate` exited with an error, and the app doesn't start | The schema update failed | `docker compose logs migrate`. Restore your backup if needed, and [report it](https://github.com/thechainercygnus/character-planner/issues) |
 | `pull access denied` for the image | A typo in `PLANNER_IMAGE`, or a version that doesn't exist | Copy the image name from the release notes |

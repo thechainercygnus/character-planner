@@ -7,7 +7,7 @@ Run locally with: uv run uvicorn character_planner.app:create_app --factory --re
 import logging
 import re
 import time
-from collections.abc import Callable, Iterator
+from collections.abc import Awaitable, Callable, Iterator
 from contextlib import asynccontextmanager
 from dataclasses import asdict
 from importlib.metadata import PackageNotFoundError, version
@@ -23,6 +23,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import desc
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, col, select
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from character_planner import jobs, leases, notify
 from character_planner.blizzard import oauth
@@ -179,6 +180,10 @@ from character_planner.views import (
 )
 
 PENDING_STATE_TTL_SECONDS = 600
+# The header the web app sends with every request; state-changing ones need it (#124).
+APP_HEADER = "X-Requested-With"
+APP_HEADER_VALUE = "character-planner"
+STATE_CHANGING = frozenset({"POST", "PUT", "PATCH", "DELETE"})
 
 logger = logging.getLogger(__name__)
 access_logger = logging.getLogger(ACCESS_LOGGER)
@@ -375,6 +380,27 @@ def create_app(
             engine.dispose()
 
     app = FastAPI(title="Character Planner", lifespan=lifespan)
+
+    @app.middleware("http")
+    async def require_app_header(  # pyright: ignore[reportUnusedFunction]
+        request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
+        """State-changing API requests must carry the header the web app sends (#124). A
+        cross-site form can't set it, and a cross-site script would need a CORS
+        preflight, which this app never grants."""
+        if (
+            request.method in STATE_CHANGING
+            and request.url.path.startswith("/api/")
+            and request.headers.get(APP_HEADER) != APP_HEADER_VALUE
+        ):
+            return JSONResponse(
+                {"detail": f"Missing the {APP_HEADER} header the web app sends"},
+                status_code=403,
+            )
+        return await call_next(request)
+
+    # Added last, so it runs first: an unknown Host never reaches the app (#124).
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.trusted_hosts)
     app.state.settings = settings
     app.state.engine = engine
 

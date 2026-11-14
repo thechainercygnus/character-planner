@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { ClassQuestChecklist, ClassQuestRow } from '../api'
+import { APP_HEADER } from '../api'
 import { ClassQuests } from './ClassQuests'
 
 function row(overrides: Partial<ClassQuestRow>): ClassQuestRow {
@@ -98,7 +99,7 @@ describe('ClassQuests', () => {
     await waitFor(() => expect(fetchMock).toHaveBeenCalledOnce())
     expect(fetchMock).toHaveBeenCalledWith('/api/class-quests/warrior-defensive-stance-dwarf', {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...APP_HEADER, 'Content-Type': 'application/json' },
       body: JSON.stringify({ done: true }),
     })
   })

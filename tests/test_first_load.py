@@ -18,12 +18,13 @@ from character_planner.config import Settings
 from character_planner.db import CompanionDungeon, RecipeData, utcnow
 from character_planner.dungeons import refresh_dungeons
 
+from .conftest import api_client
 from .test_dungeons import LIST
 
 
 @pytest.fixture
 def client(settings: Settings, engine: Engine) -> Iterator[TestClient]:
-    with TestClient(create_app(settings, engine)) as test_client:
+    with api_client(create_app(settings, engine)) as test_client:
         yield test_client
 
 

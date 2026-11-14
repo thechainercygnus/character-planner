@@ -24,7 +24,7 @@ from character_planner.db import (
 from character_planner.logs import RedactingFormatter, redact
 from character_planner.notify import Digest
 
-from .conftest import FIXTURES
+from .conftest import FIXTURES, api_client
 
 # A made-up webhook, built at run time so no webhook URL sits in the source.
 HOOK_ID = "123456789012345678"
@@ -35,7 +35,7 @@ OTHER = f"https://discord.com/api/webhooks/987654321098765432/{HOOK_TOKEN}"
 
 @pytest.fixture
 def client(settings: Settings, engine: Engine) -> Iterator[TestClient]:
-    with TestClient(create_app(settings, engine)) as test_client:
+    with api_client(create_app(settings, engine)) as test_client:
         yield test_client
 
 
@@ -440,7 +440,7 @@ def test_no_upgrade_alerts_without_a_level(engine: Engine, settings: Settings) -
     """With no level the pool isn't windowed: don't suggest every item in the game."""
     from .test_dungeons import mock_companion_dungeons
 
-    with respx.mock, TestClient(create_app(settings, engine)) as client:
+    with respx.mock, api_client(create_app(settings, engine)) as client:
         mock_companion_dungeons()
         respx.get(url__startswith="https://forevercompanion.io/api/v1/items/").mock(
             return_value=httpx.Response(404, json={})

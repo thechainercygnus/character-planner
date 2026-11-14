@@ -1,7 +1,9 @@
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 import pytest
+from fastapi.testclient import TestClient
 from pydantic import SecretStr
 from sqlalchemy.engine import Engine
 
@@ -28,6 +30,7 @@ def settings(tmp_path: Path) -> Settings:
         post_login_redirect="http://localhost:5173/",
         frontend_dist=tmp_path / "no-frontend-build",
         companion_request_pause=0,
+        planner_hosts="testserver",  # the test client's host name
     )
 
 
@@ -39,3 +42,12 @@ def engine(settings: Settings) -> Iterator[Engine]:
     init_db(engine)
     yield engine
     engine.dispose()
+
+
+# The header the web app sends (#124): API tests send it too, as the browser would.
+APP_HEADERS = {"X-Requested-With": "character-planner"}
+
+
+def api_client(app: Any) -> TestClient:
+    """A test client that sends the web app's header on every request."""
+    return TestClient(app, headers=APP_HEADERS)

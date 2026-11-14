@@ -21,6 +21,9 @@ services:
   app:
     # Share the sidecar's network: Tailscale serve proxies to 127.0.0.1:8000.
     network_mode: service:tailscale
+    environment:
+      # Answer to the tailnet name (<TS_HOSTNAME>.<tailnet>.ts.net), plus any you set (#124).
+      PLANNER_HOSTS: "*.ts.net,${PLANNER_HOSTS:-}"
     ports: !reset []
     depends_on:
       - tailscale

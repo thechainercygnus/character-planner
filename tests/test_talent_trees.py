@@ -35,7 +35,7 @@ from character_planner.talent_trees import (
 from character_planner.talents import TalentPlan, plan_problems, with_talent_ids
 from character_planner.views import parse_specialization
 
-from .conftest import FIXTURES
+from .conftest import FIXTURES, api_client
 
 API = "https://us.api.blizzard.com/data/wow"
 
@@ -254,7 +254,7 @@ def test_a_class_without_a_tree_is_reported(engine: Engine, settings: Settings) 
 
 @pytest.fixture
 def client(settings: Settings, engine: Engine) -> Iterator[TestClient]:
-    with TestClient(create_app(settings, engine)) as test_client:
+    with api_client(create_app(settings, engine)) as test_client:
         yield test_client
 
 

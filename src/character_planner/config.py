@@ -9,6 +9,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Region = Literal["us", "eu", "kr", "tw"]
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
+LOCAL_HOSTS = ("localhost", "127.0.0.1", "[::1]")
 
 
 class Settings(BaseSettings):
@@ -50,6 +51,17 @@ class Settings(BaseSettings):
     # The page footer's Source link (#43). The AGPL asks a hosted, modified copy to offer
     # its users its source: point this at your fork if you change the code.
     source_url: str = "https://github.com/thechainercygnus/character-planner"
+
+    # Host names the API answers to (#124): a request for any other name gets 400, which
+    # stops DNS rebinding. localhost, 127.0.0.1 and [::1] always work; add the names you
+    # open it at, comma separated: a LAN address, your proxy's name. "*.ts.net" covers
+    # Tailscale names (compose.tailscale.yaml sets it).
+    planner_hosts: str = ""
+
+    @property
+    def trusted_hosts(self) -> list[str]:
+        extra = [host.strip().lower() for host in self.planner_hosts.split(",") if host.strip()]
+        return [*LOCAL_HOSTS, *extra]
 
     @field_validator("source_url")
     @classmethod

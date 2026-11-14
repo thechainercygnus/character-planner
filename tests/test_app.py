@@ -18,7 +18,7 @@ from character_planner.config import Settings
 from character_planner.db import CompanionItem, ItemChoice
 from character_planner.recommend import UsageRules
 
-from .conftest import FIXTURES
+from .conftest import FIXTURES, api_client
 from .test_dungeons import mock_companion_dungeons
 from .test_enchants import blizzard
 from .test_enchants import store as store_recipes
@@ -33,7 +33,7 @@ def fixture(kind: str) -> object:
 
 @pytest.fixture
 def client(settings: Settings, engine: Engine):
-    with TestClient(create_app(settings, engine)) as test_client:
+    with api_client(create_app(settings, engine)) as test_client:
         yield test_client
 
 
@@ -319,7 +319,7 @@ def test_serves_built_frontend_when_present(
     (dist / "index.html").write_text("<!doctype html><title>planner</title>", encoding="utf-8")
     app = create_app(settings.model_copy(update={"frontend_dist": dist}), engine)
 
-    with TestClient(app) as client:
+    with api_client(app) as client:
         assert "<title>planner</title>" in client.get("/").text
         assert client.get("/api/healthz").json() == {"status": "ok"}  # API still wins
 
@@ -668,7 +668,7 @@ def test_about_gives_the_footer_its_credits_source_and_version(
     settings: Settings, engine: Engine
 ) -> None:
     """#43: one footer credits Forever Companion and its sources and links the source."""
-    with TestClient(create_app(settings, engine)) as client:
+    with api_client(create_app(settings, engine)) as client:
         about = client.get("/api/about").json()
     assert about["source_url"] == "https://github.com/thechainercygnus/character-planner"
     assert about["version"]
@@ -685,7 +685,7 @@ def test_about_gives_the_footer_its_credits_source_and_version(
 
 def test_a_fork_points_the_source_link_at_itself(settings: Settings, engine: Engine) -> None:
     fork = settings.model_copy(update={"source_url": "https://git.example.org/me/planner"})
-    with TestClient(create_app(fork, engine)) as client:
+    with api_client(create_app(fork, engine)) as client:
         assert client.get("/api/about").json()["source_url"] == "https://git.example.org/me/planner"
 
 

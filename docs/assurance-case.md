@@ -50,14 +50,16 @@ named, and `tests/test_security.py` holds the ones written for this page.
   - A cross-site HTML form can only send form encodings or `text/plain`, and FastAPI
     parses a JSON body only when the content type is JSON, so a forged body is refused
     with 422 (`test_a_form_cant_send_a_json_body`).
-  - **Gap:** the few `POST`s with no body (sync, the data refreshes, a test alert) can
-    still be triggered by a cross-site form. The effect is a refresh or a test message,
-    not a change to data or a leak; refreshes run one at a time under a lease
-    (ADR 0024).
-- **Threat: DNS rebinding.** **Gap:** the API doesn't check the `Host` header, so a page
-  that rebinds its own name to `127.0.0.1` could reach a local-only instance from the
-  player's browser. Behind Tailscale or a proxy that checks the host name, this doesn't
-  apply.
+  - Every state-changing API request (`POST`, `PUT`, `PATCH`, `DELETE`) must carry the
+    `X-Requested-With: character-planner` header the web app sends. A form can't set a
+    header, so even the `POST`s with no body (sync, the refreshes, a test alert) are
+    refused cross-site with 403 (#124, `test_state_changing_requests_need_the_app_header`).
+- **Threat: DNS rebinding.** A page that rebinds its own name to `127.0.0.1` would
+  reach a local-only instance from the player's browser. The API answers only to
+  `localhost`, `127.0.0.1`, `[::1]`, `*.ts.net` behind the Tailscale overlay, and the
+  names listed in `PLANNER_HOSTS`. Any other `Host` gets 400 before a route runs, reads
+  included (#124, `test_an_unknown_host_is_refused`). Nobody outside Tailscale can point
+  a `ts.net` name at an address, so the wildcard can't be used for rebinding.
 - **Threat: script injection (XSS, CWE-79).** The web app is React, which escapes all
   text. It doesn't use `dangerouslySetInnerHTML` or `innerHTML`, and links opened in a
   new tab carry `rel="noreferrer"` (CWE-1022).
@@ -142,7 +144,8 @@ named, and `tests/test_security.py` holds the ones written for this page.
 | CWE-79 Cross-site scripting | React escaping; no raw HTML |
 | CWE-89 SQL injection | SQLModel bound parameters; no raw SQL |
 | CWE-20 Improper input validation | Pydantic models on every route |
-| CWE-352 Cross-site request forgery | No CORS; JSON bodies need a JSON content type; OAuth `state`. Gap: body-less `POST`s |
+| CWE-352 Cross-site request forgery | No CORS; the app's header on every state-changing request; JSON bodies need a JSON content type; OAuth `state` |
+| CWE-346 Origin validation error (DNS rebinding) | `Host` allow-list |
 | CWE-200, CWE-532 Exposure of secrets, in logs | Redaction on every log line; masked webhook URLs; `SecretStr` |
 | CWE-295 Improper certificate validation | `httpx` defaults; never disabled |
 | CWE-306 Missing authentication | The network boundary (localhost, Tailscale, a proxy with a password). Gap: no login in the app itself |
