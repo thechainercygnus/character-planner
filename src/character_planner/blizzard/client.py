@@ -11,6 +11,7 @@ from typing import Any
 
 import httpx
 
+from character_planner import upstream
 from character_planner.blizzard.oauth import Token
 from character_planner.config import Settings
 
@@ -44,7 +45,7 @@ class BlizzardClient:
     def __init__(self, settings: Settings, token: Token, http: httpx.Client | None = None):
         self._settings = settings
         self._own_http = http is None
-        self._http = http or httpx.Client(timeout=20)
+        self._http = http or upstream.client()
         self._headers = {"Authorization": f"Bearer {token.access_token}"}
 
     def __enter__(self) -> BlizzardClient:

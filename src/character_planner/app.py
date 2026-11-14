@@ -25,7 +25,7 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session, col, select
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from character_planner import fields, jobs, leases, notify
+from character_planner import fields, jobs, leases, notify, upstream
 from character_planner import queue as job_queue
 from character_planner.account import AccountCharacter, parse_account
 from character_planner.blizzard import oauth
@@ -461,6 +461,7 @@ def create_app(
     if settings is None:
         settings = get_settings()
         configure_logging(settings, "api")
+        upstream.configure(settings)  # the shared upstream budget (ADR 0040)
     owns_engine = engine is None
     engine = engine or make_engine(settings.database_url)
     pending_states: dict[str, float] = {}  # state -> created_at

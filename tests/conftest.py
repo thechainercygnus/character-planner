@@ -11,11 +11,21 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, col, select
 
+from character_planner import upstream
 from character_planner.config import Settings
 from character_planner.db import Character, init_db, make_engine
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
+
+
+@pytest.fixture(autouse=True)
+def unlimited_upstream_budget() -> Iterator[None]:
+    """Tests make many mocked upstream requests: no budget waits, except where
+    test_upstream.py sets a small one on purpose (ADR 0040)."""
+    upstream.use(upstream.Budget(upstream.LocalStore(), budgets={}))
+    yield
+    upstream.use(upstream.Budget(upstream.LocalStore(), budgets={}))
 
 
 # Set TEST_DATABASE_URL (postgresql+psycopg://...) to run the suite on Postgres (#44): each

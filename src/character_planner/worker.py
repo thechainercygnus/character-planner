@@ -23,7 +23,7 @@ import httpx
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
-from character_planner import jobs, notify, retention
+from character_planner import jobs, notify, retention, upstream
 from character_planner.characters import all_characters, current_character
 from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, make_engine, utcnow
@@ -199,6 +199,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     settings = get_settings()
     configure_logging(settings, "worker")
+    upstream.configure(settings)  # the shared upstream budget (ADR 0040)
     engine = make_engine(settings.database_url)
     try:
         return run(engine, settings, once=args.once)

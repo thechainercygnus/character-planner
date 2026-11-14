@@ -118,6 +118,7 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/guest.py`: guest mode, recommendations for a class and level from the shipped defaults; reads no character data, stores nothing (ADR 0017)
 - `src/character_planner/erase.py`: deletes everything stored for the character, from the Privacy page or `character-planner-db erase --yes`; every table but the shared game-data caches in `SHARED` (#133, ADR 0034)
 - `src/character_planner/queue.py`: background jobs on Redis with RQ, optional (`REDIS_URL`); one sync per character, polled with `GET /api/sync`; `character-planner-jobs` (#17, ADR 0039)
+- `src/character_planner/upstream.py`: the upstream budget; every Battle.net and Forever Companion client comes from `upstream.client()`, which waits for room (shared through Redis with `REDIS_URL`); tests run with no budget (#17, ADR 0040)
 - `src/character_planner/users.py`: users, server-side sessions and per-user tokens when `PLANNER_USERS` is on; the first sign-in is the admin; characters belong to a user and requests resolve them through the signed-in user (#16, ADR 0037)
 - `src/character_planner/account.py`: the signed-in account's characters (`/profile/user/wow`), to pick ones to track; fetched each time, never stored (#15, ADR 0036)
 - `src/character_planner/choices.py`: items dismissed in the app, on top of `exclude_item_ids` (ADR 0012)

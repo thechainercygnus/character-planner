@@ -17,7 +17,7 @@ import httpx
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
-from character_planner import fields
+from character_planner import fields, upstream
 from character_planner.companion import BASE_URL, USER_AGENT, as_utc
 from character_planner.db import CompanionDungeon, save_now, utcnow
 from character_planner.logs import JobLog
@@ -267,4 +267,4 @@ def refresh_dungeons(
 
 
 def new_client() -> httpx.Client:
-    return httpx.Client(timeout=20, headers={"User-Agent": USER_AGENT})
+    return upstream.client(headers={"User-Agent": USER_AGENT})
