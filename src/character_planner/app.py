@@ -6,6 +6,7 @@ Run locally with: uv run uvicorn character_planner.app:create_app --factory --re
 
 import logging
 import re
+import secrets
 import time
 from collections.abc import Awaitable, Callable, Iterator
 from contextlib import asynccontextmanager
@@ -132,6 +133,8 @@ from character_planner.logs import ACCESS_LOGGER, configure_logging, request_id,
 from character_planner.lookahead import DEFAULT_LEVELS as DEFAULT_LOOK_AHEAD
 from character_planner.lookahead import MAX_LEVELS as MAX_LOOK_AHEAD
 from character_planner.lookahead import LookAhead, look_ahead
+from character_planner.metrics import CONTENT_TYPE as METRICS_CONTENT_TYPE
+from character_planner.metrics import Metrics, readiness
 from character_planner.pool import (
     PoolRefresh,
     PoolView,
@@ -220,11 +223,26 @@ from character_planner.views import (
 )
 
 PENDING_STATE_TTL_SECONDS = 600
+QUIET_PATHS = frozenset({"/api/healthz", "/api/readyz", "/api/metrics"})
+
+
+def route_label(request: Request) -> str:
+    """A request's route template for metrics ("/api/choices/{item_id}"), so ids never
+    become labels. The web app's own files are one label."""
+    path: str | None = getattr(request.scope.get("route"), "path", None)
+    if path and path.startswith(("/api/", "/auth/")):
+        return path
+    return "static" if request.method == "GET" else "unmatched"
+
+
 # On the 404 for an X-Character-Id that isn't (or isn't yours): the web app then forgets it.
 UNKNOWN_CHARACTER = "X-Character-Unknown"
 # With users on, what needs no sign-in (ADR 0037): health, the footer, who's signed in and
 # guest mode, which reads no character data (ADR 0017).
-PUBLIC_API = frozenset({"/api/healthz", "/api/about", "/api/me"})
+PUBLIC_API = frozenset(
+    # /api/metrics checks its own token (ADR 0041).
+    {"/api/healthz", "/api/readyz", "/api/metrics", "/api/about", "/api/me"}
+)
 PUBLIC_PREFIXES = ("/api/guest",)
 # Instance-wide: the admin's alone. Alert webhooks are secret-like, so even reading them.
 ADMIN_ALWAYS = ("/api/notifications",)
@@ -474,6 +492,7 @@ def create_app(
     pending_states: dict[str, float] = {}  # state -> created_at
     # Background jobs when REDIS_URL is set (#17, ADR 0039); syncs run in the request without.
     redis = job_queue.connect(settings.redis_url) if settings.redis_url else None
+    metrics = Metrics(app_version())
 
     @asynccontextmanager
     async def lifespan(_: FastAPI):
@@ -569,8 +588,14 @@ def create_app(
             response.headers["X-Request-ID"] = rid
             elapsed_ms = (time.perf_counter() - started) * 1000
             query = f"?{request.url.query}" if request.url.query else ""
-            # The container health check runs every 30 seconds: only at DEBUG.
-            level = logging.DEBUG if request.url.path == "/api/healthz" else logging.INFO
+            # Health checks and metric scrapes come every few seconds: only at DEBUG.
+            level = logging.DEBUG if request.url.path in QUIET_PATHS else logging.INFO
+            metrics.observe(
+                request.method,
+                route_label(request),
+                response.status_code,
+                time.perf_counter() - started,
+            )
             access_logger.log(
                 level,
                 '%s "%s %s%s" %d %.0fms [%s]',
@@ -592,6 +617,27 @@ def create_app(
     ) -> JSONResponse:
         """A setting saved before any character exists (ADR 0036)."""
         return JSONResponse({"detail": str(error)}, status_code=409)
+
+    @app.get("/api/readyz")
+    def readyz() -> JSONResponse:
+        """Whether this instance can serve (ADR 0041): the database answers at the newest
+        migration, and the job queue answers when there is one. 503 names what failed."""
+        ready = readiness(engine, redis)
+        return JSONResponse(ready.model_dump(), status_code=200 if ready.ready else 503)
+
+    @app.get("/api/metrics", response_class=Response)
+    def prometheus(request: Request) -> Response:
+        """Prometheus metrics (ADR 0041). Off (404) unless METRICS_TOKEN is set; then it
+        needs "Authorization: Bearer <METRICS_TOKEN>"."""
+        expected = settings.metrics_token.get_secret_value()
+        if not expected:
+            raise HTTPException(404, "Metrics are off: set METRICS_TOKEN to turn them on")
+        sent = request.headers.get("authorization", "").removeprefix("Bearer ").strip()
+        if not secrets.compare_digest(sent.encode(), expected.encode()):
+            raise HTTPException(
+                401, "Metrics need the METRICS_TOKEN", headers={"WWW-Authenticate": "Bearer"}
+            )
+        return Response(metrics.render(engine, redis), media_type=METRICS_CONTENT_TYPE)
 
     @app.get("/api/healthz")
     def healthz() -> dict[str, str]:
