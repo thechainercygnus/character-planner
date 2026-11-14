@@ -41,6 +41,7 @@ from character_planner.pool import (
 )
 from character_planner.rares import stored_rares
 from character_planner.recommend import PAIRED, SLOT_FOR
+from character_planner.retention import forget_character, prune
 from character_planner.talent_trees import TalentRefresh, refresh_talent_trees, stored_tree
 from character_planner.targets import current_targets, pin_target, save_targets
 from character_planner.tokens import CredentialsError, app_token
@@ -162,6 +163,9 @@ def sync_character(
             settings.character_slug,
             settings.bnet_region,
         )
+        # Blizzard's terms: a character that no longer exists is deleted (#131, ADR 0034).
+        # Only when the stored data is about this same character, never on a typo.
+        forget_character(session, settings.character_slug)
     for result in results:
         session.add(
             Snapshot(source="api", kind=result.kind, status=result.status, payload=result.body)
@@ -182,7 +186,18 @@ def sync_character(
     refresh_item_sources(session, settings, targets, equipped_item_ids(session), http=http)
     refresh_crafted_gear(session, settings, http)
     send_sync_alerts(session, settings)
+    prune_old_data(session)
     return {result.kind: result.status for result in results}
+
+
+def prune_old_data(session: Session) -> None:
+    """Delete Blizzard data older than 30 days (#131). Best effort after a sync: the
+    worker's daily job runs it too."""
+    try:
+        prune(session)
+    except Exception:
+        session.rollback()
+        logger.exception("Pruning data older than 30 days failed")
 
 
 def refresh_crafted_gear(

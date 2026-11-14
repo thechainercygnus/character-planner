@@ -3,7 +3,11 @@
 Every sync stores one snapshot per endpoint, a few milliseconds apart. Snapshots within
 SYNC_GAP of each other form one sync; each sync becomes a point (level, item level, gear
 score, health, armor, stamina). Comparing consecutive syncs gives the gear changes and
-level-ups. Nothing new is stored: history is whatever has been synced.
+level-ups.
+
+Snapshots are deleted after 30 days (#131, ADR 0034). Before that, each sync's date,
+level and average item level are archived (ProgressHistory), so the chart keeps its
+history. Older points carry no score, stats or gear changes: those need the snapshots.
 """
 
 from collections.abc import Iterable, Mapping
@@ -13,7 +17,7 @@ from typing import Any
 from pydantic import BaseModel
 from sqlmodel import Session, col, select
 
-from character_planner.db import Snapshot
+from character_planner.db import ProgressHistory, Snapshot
 from character_planner.scoring import Weights, score
 from character_planner.views import (
     GEAR_SLOTS,
@@ -147,6 +151,34 @@ def build_progress(snapshots: Iterable[Snapshot], weights: Weights) -> Progress:
     return Progress(points=points, gear_changes=changes, level_ups=level_ups)
 
 
+def level_ups_from(points: Iterable[ProgressPoint]) -> list[LevelUp]:
+    """Level-ups along points in time order, newest first."""
+    ups: list[LevelUp] = []
+    previous: int | None = None
+    for point in points:
+        if point.level is not None and previous is not None and point.level > previous:
+            ups.append(LevelUp(captured_at=point.captured_at, level=point.level))
+        previous = point.level if point.level is not None else previous
+    return sorted(ups, key=lambda u: u.captured_at, reverse=True)
+
+
+def with_history(live: Progress, archived: Iterable[ProgressHistory]) -> Progress:
+    """Archived points before the live ones (a live point wins on the same moment), and
+    level-ups across both."""
+    live_moments = {_naive(p.captured_at) for p in live.points}
+    older = [
+        ProgressPoint(captured_at=row.captured_at, level=row.level, item_level=row.item_level)
+        for row in archived
+        if _naive(row.captured_at) not in live_moments
+    ]
+    points = sorted([*older, *live.points], key=lambda p: _naive(p.captured_at))
+    return live.model_copy(update={"points": points, "level_ups": level_ups_from(points)})
+
+
+def _naive(moment: datetime) -> datetime:
+    return moment.replace(tzinfo=None)
+
+
 def progress(session: Session, weights: Weights) -> Progress:
     rows = session.exec(
         select(Snapshot).where(
@@ -155,4 +187,5 @@ def progress(session: Session, weights: Weights) -> Progress:
             col(Snapshot.status) < 300,
         )
     ).all()
-    return build_progress(rows, weights)
+    archived = session.exec(select(ProgressHistory)).all()
+    return with_history(build_progress(rows, weights), archived)

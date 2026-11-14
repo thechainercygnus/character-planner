@@ -17,11 +17,12 @@ from sqlmodel import Session, col, select
 
 from character_planner import fields
 from character_planner.blizzard.client import BlizzardClient
-from character_planner.companion import refresh_companion
+from character_planner.companion import as_utc, refresh_companion
 from character_planner.config import Settings
 from character_planner.curated import GearTargets
 from character_planner.db import CatalogItem, ItemIcon, catalog_by_name, save_now, utcnow
 from character_planner.logs import JobLog
+from character_planner.retention import fresh_since
 from character_planner.tokens import CredentialsError, app_token
 
 logger = logging.getLogger(__name__)
@@ -118,8 +119,14 @@ def refresh_catalog(
     http: httpx.Client | None = None,
 ) -> RefreshResult:
     """Look up target items and icons not cached yet (or all of them, with force)."""
-    cached = catalog_by_name(session)
-    known_icons = set(session.exec(select(col(ItemIcon.item_id))).all())
+    # Rows past REFRESH_AFTER count as missing: fetched again before the 30-day prune.
+    fresh = fresh_since()
+    cached = {
+        k: row for k, row in catalog_by_name(session).items() if as_utc(row.fetched_at) >= fresh
+    }
+    known_icons = set(
+        session.exec(select(col(ItemIcon.item_id)).where(col(ItemIcon.fetched_at) >= fresh)).all()
+    )
     names = [n for n in dict.fromkeys(item_names) if force or name_key(n) not in cached]
 
     outcome = RefreshResult()

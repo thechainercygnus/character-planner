@@ -21,7 +21,6 @@ import logging
 import re
 import time
 from collections.abc import Iterable, Mapping
-from datetime import timedelta
 from pathlib import Path
 from typing import Any, Literal
 
@@ -37,6 +36,7 @@ from character_planner.config import Settings
 from character_planner.db import RecipeData, save_now, utcnow
 from character_planner.logs import JobLog
 from character_planner.recommend import EQUIPMENT_SLOTS, UsageRules
+from character_planner.retention import REFRESH_AFTER
 from character_planner.scoring import RANGED_DPS, WEAPON_DPS, Weights
 from character_planner.tokens import CredentialsError, app_token
 from character_planner.views import EquippedItem
@@ -50,7 +50,8 @@ PROFESSIONS = ("Enchanting", "Engineering", "Leatherworking", "Blacksmithing")
 ENCHANT_CATEGORIES = ("enchants", "scopes", "weapon stones", "armor kits")
 ENCHANT_NAMES = ("enchant ", "scope", "armor kit", "spike", "sharpening", "weightstone")
 SEASON_OF_DISCOVERY = "season of discovery"
-RECIPE_MAX_AGE = timedelta(days=30)  # static game data
+# Static game data, but Blizzard's: refreshed before the terms' 30 days (#131, ADR 0034).
+RECIPE_MAX_AGE = REFRESH_AFTER
 
 PRIMARY_STATS = ("Strength", "Agility", "Stamina", "Intellect", "Spirit")
 RESISTANCES = ("Fire", "Frost", "Nature", "Shadow", "Arcane")

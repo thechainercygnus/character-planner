@@ -17,7 +17,6 @@ Trainer ranks aren't in either API: data/curated/professions.yaml holds Classic'
 import logging
 import time
 from collections.abc import Iterable, Mapping
-from datetime import timedelta
 from pathlib import Path
 from typing import Any
 
@@ -32,11 +31,13 @@ from character_planner.companion import CompanionInfo, as_utc
 from character_planner.config import Settings
 from character_planner.db import BlizzardItem, CraftingRecipe, latest_by_kind, save_now, utcnow
 from character_planner.logs import JobLog
+from character_planner.retention import REFRESH_AFTER
 from character_planner.tokens import CredentialsError, app_token
 
 logger = logging.getLogger(__name__)
 
-CRAFTING_MAX_AGE = timedelta(days=30)  # static game data, as enchant recipes (ADR 0010)
+# Refreshed before the terms' 30 days (#131, ADR 0034).
+CRAFTING_MAX_AGE = REFRESH_AFTER
 # Inventory types that are equippable but not gear: Crafted Heavy Shot is "AMMO".
 NOT_GEAR = ("AMMO",)
 
