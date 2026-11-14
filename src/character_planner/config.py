@@ -69,6 +69,13 @@ class Settings(BaseSettings):
     # With users on, whether new Battle.net accounts may sign up after the first.
     planner_signups: bool = False
 
+    # Background jobs (#17, ADR 0039). Empty: a Sync runs in the web request. Set
+    # (redis://...): it's queued and worked by `character-planner-jobs`.
+    redis_url: str = ""
+    # Minutes between syncs of one character by hand, to share the Battle.net budget
+    # (#17). Counts from its last sync, scheduled ones included. 0 turns it off.
+    sync_cooldown_minutes: float = 15
+
     @property
     def trusted_hosts(self) -> list[str]:
         extra = [host.strip().lower() for host in self.planner_hosts.split(",") if host.strip()]

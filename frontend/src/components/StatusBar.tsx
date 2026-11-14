@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
-import { api, selectCharacter, type SyncResult } from '../api'
+import { api, ApiError, selectCharacter, type SyncResult } from '../api'
 import { CharacterSwitcher } from './CharacterSwitcher'
 import { NotificationsDialog } from './NotificationsDialog'
 
@@ -54,7 +54,7 @@ export function StatusBar() {
     }
   }, [refreshing.length, queryClient])
   const sync = useMutation({
-    mutationFn: api.sync,
+    mutationFn: () => api.sync(),
     onSuccess: () => {
       setWatchUntil(Date.now() + 60_000)
       return queryClient.invalidateQueries()
@@ -171,7 +171,12 @@ export function StatusBar() {
           {refreshEnchants.data.errors.length > 0 && `, ${refreshEnchants.data.errors.length} errors`}
         </span>
       )}
-      {sync.isError && <span className="error">Sync failed: {sync.error.message}</span>}
+      {sync.isError &&
+        (sync.error instanceof ApiError && sync.error.status === 429 ? (
+          <span className="muted">{sync.error.message}</span>
+        ) : (
+          <span className="error">Sync failed: {sync.error.message}</span>
+        ))}
       {refreshItems.isError && <span className="error">Item lookup failed: {refreshItems.error.message}</span>}
       {refreshItems.data && (
         <span className="muted">

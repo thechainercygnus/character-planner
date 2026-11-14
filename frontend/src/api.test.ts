@@ -83,3 +83,45 @@ describe('a remembered character that is gone', () => {
     expect(vi.mocked(fetch)).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('sync', () => {
+  afterEach(() => vi.unstubAllGlobals())
+
+  function serve(...answers: Response[]) {
+    const calls: string[] = []
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        calls.push(`${init?.method ?? 'GET'} ${url}`)
+        return answers.shift() ?? Response.json({})
+      }),
+    )
+    return calls
+  }
+  const noWait = async () => {}
+  const state = (s: string, extra: object = {}) => Response.json({ state: s, result: null, error: null, ...extra })
+
+  it('passes a direct answer through, as without a job queue', async () => {
+    serve(Response.json({ profile: 200 }))
+    expect(await api.sync(noWait)).toEqual({ profile: 200 })
+  })
+
+  it('follows a queued sync until it finishes (#17)', async () => {
+    const calls = serve(
+      Response.json({ state: 'queued', result: null, error: null }, { status: 202 }),
+      state('queued'),
+      state('started'),
+      state('finished', { result: { profile: 200, equipment: 404 } }),
+    )
+    expect(await api.sync(noWait)).toEqual({ profile: 200, equipment: 404 })
+    expect(calls).toEqual(['POST /api/sync', 'GET /api/sync', 'GET /api/sync', 'GET /api/sync'])
+  })
+
+  it('says why a queued sync failed', async () => {
+    serve(
+      Response.json({ state: 'queued', result: null, error: null }, { status: 202 }),
+      state('failed', { error: 'LookupError: No character 1: it was deleted' }),
+    )
+    await expect(api.sync(noWait)).rejects.toThrow('No character 1: it was deleted')
+  })
+})

@@ -58,6 +58,7 @@ def settings(tmp_path: Path, request: pytest.FixtureRequest) -> Settings:
         frontend_dist=tmp_path / "no-frontend-build",
         companion_request_pause=0,
         planner_hosts="testserver",  # the test client's host name
+        sync_cooldown_minutes=0,  # tests sync back to back; test_queue.py tests the cooldown
     )
 
 

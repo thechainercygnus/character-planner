@@ -12,6 +12,7 @@ from .conftest import REPO_ROOT
 PINNED = {
     "deploy/portainer.yaml": REPO_ROOT / "deploy" / "portainer.yaml",
     "compose.postgres.yaml": REPO_ROOT / "compose.postgres.yaml",
+    "compose.redis.yaml": REPO_ROOT / "compose.redis.yaml",
 }
 # The planner's image is a default inside an override variable; the check reads the default.
 OVERRIDABLE = "${PLANNER_IMAGE:-"

@@ -9,7 +9,7 @@ import time
 
 import httpx
 from sqlalchemy.engine import Engine
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
 from character_planner import notify
 from character_planner.blizzard import oauth
@@ -17,6 +17,7 @@ from character_planner.blizzard.client import BlizzardClient
 from character_planner.characters import first_character, refresh_from_profile
 from character_planner.choices import take_target_choices
 from character_planner.classes import character_class_name, current_defaults
+from character_planner.companion import as_utc
 from character_planner.config import Settings
 from character_planner.crafting import crafted_items, refresh_crafting
 from character_planner.curated import GearTargets
@@ -27,6 +28,7 @@ from character_planner.db import (
     Snapshot,
     StoredToken,
     latest_by_kind,
+    utcnow,
 )
 from character_planner.dungeons import stored_dungeons
 from character_planner.enchants import RecipeRefresh, refresh_enchant_data
@@ -50,6 +52,22 @@ from character_planner.tokens import CredentialsError, app_token
 from character_planner.views import character_faction, character_level, parse_equipment
 
 logger = logging.getLogger(__name__)
+
+
+def sync_cooldown_left(session: Session, character_id: int, minutes: float) -> float:
+    """Seconds until the character may be synced by hand again (#17): its last sync,
+    scheduled or not, plus the cooldown. 0 when it may."""
+    if minutes <= 0:
+        return 0
+    last = session.exec(
+        select(Snapshot.captured_at)
+        .where(col(Snapshot.character_id) == character_id, col(Snapshot.source) == "api")
+        .order_by(col(Snapshot.captured_at).desc())
+    ).first()
+    if last is None:
+        return 0
+    elapsed = (utcnow() - as_utc(last)).total_seconds()
+    return max(0.0, minutes * 60 - elapsed)
 
 
 def current_id(session: Session) -> int | None:
