@@ -150,6 +150,7 @@ def delete_user(session: Session, user_id: int) -> dict[str, int]:
     if token is not None:
         session.delete(token)
         removed["usertoken"] = 1
+    session.flush()  # sessions and token first: they point at the user (#44)
     session.delete(user)
     removed["user"] = 1
     session.commit()

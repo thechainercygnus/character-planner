@@ -210,3 +210,10 @@ def test_a_database_from_0_3_keeps_its_data_and_settings(
         (choice,) = session.exec(select(ItemChoice)).all()
         assert (rules.character_id, rules.rules) == (character.id, {"per_slot": 1})
         assert (choice.character_id, choice.item_id) == (character.id, 7)
+
+
+def test_the_migrations_match_the_models_on_the_test_database(engine: Engine) -> None:
+    """The same check on the suite's own database: Postgres when TEST_DATABASE_URL names
+    one (#44), so the migrations are proven there too."""
+    assert version(engine) == head()
+    assert differences(engine) == []

@@ -346,6 +346,12 @@ docker run --rm -v character-planner_planner-data:/data -v "$PWD:/backup" alpine
 Do it while the planner is stopped (`docker compose stop`), or accept that the last few
 seconds of writes may be missing.
 
+On Postgres (below), dump it instead:
+
+```bash
+docker compose -f compose.yaml -f compose.postgres.yaml exec -T postgres   pg_dump -U planner planner > character-planner-$(date +%F).sql
+```
+
 **Upgrade:**
 
 1. Read the release notes first: they list security fixes and anything you need to do.
@@ -364,6 +370,40 @@ seconds of writes may be missing.
 
 To check that an image really comes from this project before running it, see
 [Verifying an image](releasing.md#verifying-an-image).
+
+**Postgres (optional).** SQLite suits one person. For several people using it at once,
+with users on (step 8), run it on Postgres (ADR 0038). Add a password to `.env`:
+
+```
+POSTGRES_PASSWORD=<a long random password>
+```
+
+Then start with the Postgres override, in place of the plain command from step 6:
+
+```bash
+docker compose -f compose.yaml -f compose.postgres.yaml up -d
+```
+
+Use both `-f` files for every `docker compose` command from then on.
+
+**Moving to Postgres.** To keep an existing instance's history:
+1. Back up, then stop the planner: `docker compose stop app worker`.
+2. Start Postgres on its own:
+
+   ```bash
+   docker compose -f compose.yaml -f compose.postgres.yaml up -d postgres
+   ```
+
+3. Copy the SQLite database into it. `copy-to` reads the target from
+   `COPY_TO_DATABASE_URL`, refuses one that already holds data, and brings both up to
+   the newest schema first:
+
+   ```bash
+   docker compose run --rm      -e "COPY_TO_DATABASE_URL=postgresql+psycopg://planner:<password>@postgres:5432/planner"      migrate character-planner-db copy-to
+   ```
+
+4. Start everything with both files, as above. The SQLite file stays on the volume until
+   you delete it.
 
 ## 12. Fair use
 
