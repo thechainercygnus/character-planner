@@ -110,6 +110,11 @@ named, and `tests/test_security.py` holds the ones written for this page.
 - **Logging:** every log line, messages and tracebacks alike, passes through redaction
   before it's written. Known secret values (the client secret) and patterns (bearer
   tokens, OAuth codes, `access_token=`, webhook tokens) become `[redacted]` (ADR 0019).
+- **Static check:** a custom Semgrep taint rule (`.semgrep/rules/no-secrets-in-logs.yaml`,
+  #57) follows the client secret (`get_secret_value()`) and tokens (`access_token`) and
+  fails CI if one reaches a log call, `print` or a raised exception's message without
+  passing through `redact`. Its results go to code scanning, and it has its own test
+  cases.
 - **Tests:** `test_secrets_are_redacted`, `test_known_secret_values_are_redacted_anywhere`,
   `test_formatters_redact_messages_and_tracebacks`,
   `test_no_token_code_or_secret_reaches_the_log_files`,
@@ -146,7 +151,7 @@ named, and `tests/test_security.py` holds the ones written for this page.
 | CWE-20 Improper input validation | Pydantic models on every route |
 | CWE-352 Cross-site request forgery | No CORS; the app's header on every state-changing request; JSON bodies need a JSON content type; OAuth `state` |
 | CWE-346 Origin validation error (DNS rebinding) | `Host` allow-list |
-| CWE-200, CWE-532 Exposure of secrets, in logs | Redaction on every log line; masked webhook URLs; `SecretStr` |
+| CWE-200, CWE-532 Exposure of secrets, in logs | Redaction on every log line; the Semgrep rule in CI; masked webhook URLs; `SecretStr` |
 | CWE-295 Improper certificate validation | `httpx` defaults; never disabled |
 | CWE-306 Missing authentication | The network boundary (localhost, Tailscale, a proxy with a password). Gap: no login in the app itself |
 | CWE-250 Execution with unnecessary privileges | Non-root image user |

@@ -81,6 +81,10 @@ uv run pytest
 cd frontend && npm run lint && npm run typecheck && npm test
 ```
 
+The repository's own [Semgrep](https://semgrep.dev) rules (#57) live in `.semgrep/`, each
+with test cases, and run in CI. To run them locally:
+`uvx --from semgrep semgrep scan --error --config .semgrep/rules src`.
+
 Coverage is measured in CI and shown in each run's summary (#55). To see it locally:
 `uv run pytest --cov` (add `--cov-report=html` for a browsable report in `htmlcov/`), and
 `npm run coverage` in `frontend/` (an HTML report lands in `frontend/coverage/`). Both
