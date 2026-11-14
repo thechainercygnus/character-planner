@@ -239,3 +239,85 @@ def test_rows_without_an_owner_are_adopted_at_start(engine: Engine, settings: Se
     with Session(engine) as session:
         (rules,) = session.exec(select(StoredUsageRules)).all()
         assert rules.character_id == me
+
+
+# --- choosing a character per request (#14 step 3) ----------------------------------------
+
+
+def test_the_header_picks_the_character(engine: Engine, settings: Settings) -> None:
+    with Session(engine) as session:
+        me, other = tracked(session), alt(session)
+        add_profile(session, me, 18)
+        add_profile(session, other, 42)
+    with api_client(create_app(settings, engine)) as client:
+        assert client.get("/api/character").json()["level"] == 18  # no header: the first
+        picked = {"X-Character-Id": str(other)}
+        assert client.get("/api/character", headers=picked).json()["level"] == 42
+        # Settings saved for one character stay with it.
+        rules = client.get("/api/rules", headers=picked).json()["rules"]
+        saved = client.put("/api/rules", json=rules | {"per_slot": 1}, headers=picked)
+        assert saved.status_code == 200
+        assert client.get("/api/rules", headers=picked).json()["customised"] is True
+        assert client.get("/api/rules").json()["customised"] is False
+        assert client.get("/api/character", headers={"X-Character-Id": "999"}).status_code == 404
+        assert client.get("/api/character", headers={"X-Character-Id": "0"}).status_code == 422
+
+
+def test_characters_are_listed_and_added(engine: Engine, settings: Settings) -> None:
+    with Session(engine) as session:
+        add_profile(session, tracked(session), 18)
+    with api_client(create_app(settings, engine)) as client:
+        added = client.post(
+            "/api/characters", json={"name": "thrall", "surname": "GOELSON", "region": "eu"}
+        )
+        assert added.status_code == 201
+        assert (added.json()["slug"], added.json()["name"], added.json()["level"]) == (
+            "thrall-goelson",
+            "Thrall",
+            None,  # nothing synced yet
+        )
+        again = {"name": "Thrall", "surname": "Goelson", "region": "eu"}
+        assert client.post("/api/characters", json=again).status_code == 409
+        for bad in (
+            {"name": "T", "surname": "X", "region": "eu"},
+            {"name": "Thr4ll", "surname": "X", "region": "eu"},
+            {"name": "Thrall", "surname": "X", "region": "cn"},
+        ):
+            assert client.post("/api/characters", json=bad).status_code == 422
+        listed = client.get("/api/characters").json()
+    assert [(c["slug"], c["level"]) for c in listed["characters"]] == [
+        ("brumboldt-doomlet", 18),
+        ("thrall-goelson", None),
+    ]
+    assert listed["default_id"] == listed["characters"][0]["id"]
+
+
+def test_deleting_a_character_leaves_the_others(engine: Engine, settings: Settings) -> None:
+    with Session(engine) as session:
+        me, other = tracked(session), alt(session)
+        add_profile(session, me, 18)
+        add_profile(session, other, 42)
+    with api_client(create_app(settings, engine)) as client:
+        removed = client.delete("/api/character", headers={"X-Character-Id": str(other)}).json()
+        assert removed["removed"] == {"snapshot": 1, "character": 1}
+        assert [c["id"] for c in client.get("/api/characters").json()["characters"]] == [me]
+        assert client.get("/api/character").json()["level"] == 18
+
+
+@respx.mock
+def test_the_worker_syncs_every_character(engine: Engine, settings: Settings) -> None:
+    from character_planner import worker
+
+    mock_character_api()
+    respx.post(oauth.TOKEN_URL).mock(
+        return_value=httpx.Response(200, json={"access_token": "app", "expires_in": 86399})
+    )
+    respx.route().mock(return_value=httpx.Response(404, json={"error": "Not found"}))
+    with Session(engine) as session, httpx.Client() as http:
+        tracked(session)
+        alt(session)
+        outcome = worker.sync_job(session, settings, http)
+        owners = {s.character_id for s in session.exec(select(Snapshot)).all()}
+    assert outcome.startswith("brumboldt-doomlet synced ")
+    assert outcome.endswith("; someone-else not found: check its name and region")
+    assert len(owners) == 2  # each character's responses stored for it, the 404s included

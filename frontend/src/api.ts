@@ -201,6 +201,34 @@ export interface About {
   operator_contact: string
 }
 
+/** A tracked character, for the header's switcher (#14). */
+export interface CharacterSummary {
+  id: number
+  region: string
+  slug: string
+  name: string
+  surname: string
+  character_class: string | null
+  race: string | null
+  faction: string | null
+  /** From its newest profile; null before its first sync. */
+  level: number | null
+}
+
+export interface CharacterList {
+  characters: CharacterSummary[]
+  /** The one requests without a selection get: the first. */
+  default_id: number | null
+}
+
+export type Region = 'us' | 'eu' | 'kr' | 'tw'
+
+export interface NewCharacter {
+  name: string
+  surname: string
+  region: Region
+}
+
 /** What DELETE /api/character removed (#133): rows per table. */
 export interface Erased {
   removed: Record<string, number>
@@ -852,8 +880,41 @@ function json(method: 'PUT' | 'POST', body: unknown): RequestInit {
  */
 export const APP_HEADER = { 'X-Requested-With': 'character-planner' } as const
 
+const CHARACTER_KEY = 'character-planner:character'
+
+function storedCharacter(): number | null {
+  try {
+    const value = Number(window.localStorage.getItem(CHARACTER_KEY))
+    return Number.isInteger(value) && value > 0 ? value : null
+  } catch {
+    return null
+  }
+}
+
+let selected: number | null = storedCharacter()
+
+/** The character every request is about (#14): sent as X-Character-Id; null for the default. */
+export function selectedCharacter(): number | null {
+  return selected
+}
+
+/** Switch characters, remembered per browser. Callers reset the query cache after. */
+export function selectCharacter(id: number | null): void {
+  selected = id
+  try {
+    if (id === null) window.localStorage.removeItem(CHARACTER_KEY)
+    else window.localStorage.setItem(CHARACTER_KEY, String(id))
+  } catch {
+    // private window or blocked storage: the choice lasts for this page only
+  }
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(path, { ...init, headers: { ...APP_HEADER, ...init?.headers } })
+  const character: Record<string, string> = selected === null ? {} : { 'X-Character-Id': String(selected) }
+  const response = await fetch(path, {
+    ...init,
+    headers: { ...APP_HEADER, ...character, ...init?.headers },
+  })
   if (!response.ok) {
     let detail = response.statusText
     try {
@@ -870,6 +931,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   about: () => request<About>('/api/about'),
   eraseCharacter: () => request<Erased>('/api/character', { method: 'DELETE' }),
+  characters: () => request<CharacterList>('/api/characters'),
+  addCharacter: (character: NewCharacter) =>
+    request<CharacterSummary>('/api/characters', json('POST', character)),
   status: () => request<Status>('/api/status'),
   character: () => request<CharacterView>('/api/character'),
   gear: () => request<GearPlan>('/api/gear'),

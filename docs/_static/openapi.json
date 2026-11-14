@@ -125,6 +125,116 @@
         "title": "Candidate",
         "type": "object"
       },
+      "CharacterList": {
+        "properties": {
+          "characters": {
+            "items": {
+              "$ref": "#/components/schemas/CharacterSummary"
+            },
+            "title": "Characters",
+            "type": "array"
+          },
+          "default_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Id"
+          }
+        },
+        "required": [
+          "characters",
+          "default_id"
+        ],
+        "title": "CharacterList",
+        "type": "object"
+      },
+      "CharacterSummary": {
+        "description": "A tracked character, for the header's switcher (#14).",
+        "properties": {
+          "character_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Class"
+          },
+          "faction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Faction"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "race": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Race"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "surname": {
+            "title": "Surname",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "region",
+          "slug",
+          "name",
+          "surname",
+          "character_class",
+          "race",
+          "faction",
+          "level"
+        ],
+        "title": "CharacterSummary",
+        "type": "object"
+      },
       "CharacterView": {
         "properties": {
           "captured_at": {
@@ -2253,6 +2363,40 @@
           "slots"
         ],
         "title": "MissingEffect",
+        "type": "object"
+      },
+      "NewCharacter": {
+        "description": "A character to track, as Forever looks it up: first name, surname, region.",
+        "properties": {
+          "name": {
+            "maxLength": 12,
+            "minLength": 2,
+            "title": "Name",
+            "type": "string"
+          },
+          "region": {
+            "enum": [
+              "us",
+              "eu",
+              "kr",
+              "tw"
+            ],
+            "title": "Region",
+            "type": "string"
+          },
+          "surname": {
+            "maxLength": 24,
+            "minLength": 1,
+            "title": "Surname",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "surname",
+          "region"
+        ],
+        "title": "NewCharacter",
         "type": "object"
       },
       "NewDestination": {
@@ -5082,8 +5226,27 @@
     },
     "/api/character": {
       "delete": {
-        "description": "Delete everything stored for the character (#133): snapshots, history, plans,\nsettings edited in the app, alerts and tokens. Shared game data stays. The next\nsync, by hand or on the worker's schedule, fetches the character again.",
+        "description": "Stop tracking the character and delete everything stored for it (#133, #14):\nsnapshots, history, plans and settings edited in the app. Other characters and\nshared game data stay. With none left, the next start tracks the character .env\nnames again.",
         "operationId": "erase_api_character_delete",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -5094,12 +5257,41 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Erase"
       },
       "get": {
         "operationId": "character_api_character_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -5110,15 +5302,100 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Character"
+      }
+    },
+    "/api/characters": {
+      "get": {
+        "description": "Every tracked character, for the header's switcher (#14). Requests pick one\nwith X-Character-Id; without it they get default_id, the first.",
+        "operationId": "characters_api_characters_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CharacterList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Characters"
+      },
+      "post": {
+        "description": "Track another character. Sync it (with its X-Character-Id) to fetch its data.",
+        "operationId": "post_character_api_characters_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewCharacter"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CharacterSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Character"
       }
     },
     "/api/choices": {
       "get": {
         "description": "Items dismissed in the app, newest first (ADR 0012).",
         "operationId": "get_choices_api_choices_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -5133,6 +5410,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Get Choices"
@@ -5151,6 +5438,23 @@
               "exclusiveMinimum": 0,
               "title": "Item Id",
               "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
             }
           }
         ],
@@ -5194,6 +5498,23 @@
               "exclusiveMinimum": 0,
               "title": "Item Id",
               "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
             }
           }
         ],
@@ -5240,6 +5561,25 @@
       "get": {
         "description": "The synced character's class quests: missed, now, soon, later and done (#8).",
         "operationId": "get_class_quests_api_class_quests_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -5250,6 +5590,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Get Class Quests"
@@ -5268,6 +5618,23 @@
               "pattern": "^[a-z0-9-]{1,100}$",
               "title": "Quest Id",
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
             }
           }
         ],
@@ -5319,6 +5686,23 @@
               "default": false,
               "title": "Include Sod",
               "type": "boolean"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
             }
           }
         ],
@@ -5610,6 +5994,25 @@
       "get": {
         "description": "Best enchants in reach per slot, against the one on now (ADR 0010).",
         "operationId": "enchant_recommendations_api_enchants_recommendations_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -5620,6 +6023,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Enchant Recommendations"
@@ -5669,6 +6082,25 @@
     "/api/gear": {
       "get": {
         "operationId": "gear_api_gear_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -5679,6 +6111,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Gear"
@@ -5821,6 +6263,23 @@
               "title": "Force",
               "type": "boolean"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
           }
         ],
         "responses": {
@@ -5863,6 +6322,23 @@
               "minimum": 1,
               "title": "Levels",
               "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
             }
           }
         ],
@@ -6079,6 +6555,25 @@
       "get": {
         "description": "Dungeon drops and quest rewards for the character's level window.",
         "operationId": "item_pool_api_pool_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6089,6 +6584,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Item Pool"
@@ -6157,6 +6662,25 @@
       "get": {
         "description": "Each synced profession: skill, rank, the next rank and crafted gear (#10).",
         "operationId": "get_professions_api_professions_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6167,6 +6691,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Get Professions"
@@ -6176,6 +6710,25 @@
       "get": {
         "description": "One point per sync, plus gear changes and level-ups (ADR 0008).",
         "operationId": "progress_over_time_api_progress_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6186,6 +6739,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Progress Over Time"
@@ -6195,6 +6758,25 @@
       "get": {
         "description": "Best upgrades in reach for each slot, from the item pool (ADR 0007).",
         "operationId": "recommendations_api_recommendations_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6205,6 +6787,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Recommendations"
@@ -6214,6 +6806,25 @@
       "delete": {
         "description": "Go back to data/curated/recommend.yaml.",
         "operationId": "delete_rules_api_rules_delete",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6224,6 +6835,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Delete Rules"
@@ -6231,6 +6852,25 @@
       "get": {
         "description": "The Upgrades rules, their defaults, and what the editor can offer (ADR 0016).",
         "operationId": "get_rules_view_api_rules_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6241,6 +6881,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Get Rules View"
@@ -6248,6 +6898,25 @@
       "put": {
         "description": "Replace the Upgrades rules.",
         "operationId": "put_rules_api_rules_put",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -6286,6 +6955,25 @@
     "/api/snapshots/latest": {
       "get": {
         "operationId": "latest_api_snapshots_latest_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6298,6 +6986,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Latest"
@@ -6307,6 +7005,25 @@
       "post": {
         "description": "Fallback for data the API doesn't return: store it in the same shape, for the\ncurrent character.",
         "operationId": "add_manual_api_snapshots_manual_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -6356,6 +7073,25 @@
     "/api/status": {
       "get": {
         "operationId": "status_api_status_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6368,6 +7104,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Status"
@@ -6376,6 +7122,25 @@
     "/api/summary.md": {
       "get": {
         "operationId": "summary_api_summary_md_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6386,6 +7151,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Summary"
@@ -6395,6 +7170,25 @@
       "post": {
         "description": "Pull every endpoint and store each response, failures included.\n\nThen look up any target items not in the item catalog yet. That step is\nbest-effort: a catalog failure never fails the sync. On a fresh instance, the item\npool and enchant data then load in the background (#87).",
         "operationId": "sync_api_sync_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6409,6 +7203,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Sync"
@@ -6418,6 +7222,25 @@
       "get": {
         "description": "The talent plan compared with the synced talents (ADR 0009).",
         "operationId": "get_talents_api_talents_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6428,6 +7251,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Get Talents"
@@ -6437,6 +7270,25 @@
       "delete": {
         "description": "Go back to data/curated/talent_plan.yaml.",
         "operationId": "delete_talent_plan_api_talents_plan_delete",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6447,6 +7299,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Delete Talent Plan"
@@ -6454,6 +7316,25 @@
       "put": {
         "description": "Replace the talent plan. With the talent trees loaded, a plan that breaks their\nrules (unknown talents, prerequisites, points per row) is refused (#88).",
         "operationId": "put_talent_plan_api_talents_plan_put",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -6493,6 +7374,25 @@
       "post": {
         "description": "Fetch the synced class's talent trees and icons again.",
         "operationId": "refresh_talents_api_talents_refresh_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6503,6 +7403,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Refresh Talents"
@@ -6512,6 +7422,25 @@
       "get": {
         "description": "The synced class's talent trees (#88). `tree` is null until they're loaded:\nafter the first sync, in the background.",
         "operationId": "get_talent_tree_api_talents_tree_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6522,6 +7451,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Get Talent Tree"
@@ -6531,6 +7470,25 @@
       "delete": {
         "description": "Go back to data/curated/gear_targets.yaml.",
         "operationId": "delete_targets_api_targets_delete",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6541,6 +7499,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Delete Targets"
@@ -6548,6 +7516,25 @@
       "get": {
         "description": "The gear targets in use: edited in the app, or gear_targets.yaml (ADR 0014).",
         "operationId": "targets_api_targets_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6558,6 +7545,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Targets"
@@ -6565,6 +7562,25 @@
       "put": {
         "description": "Replace the gear targets. Priority follows each slot's order.",
         "operationId": "put_targets_api_targets_put",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -6604,6 +7620,25 @@
       "post": {
         "description": "Pin a pool item as a target (\"Make target\").",
         "operationId": "post_pin_api_targets_pins_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -6653,6 +7688,23 @@
               "title": "Item Id",
               "type": "integer"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
           }
         ],
         "responses": {
@@ -6684,6 +7736,25 @@
       "delete": {
         "description": "Reset the active shipped preset to its curated file.",
         "operationId": "delete_weights_api_weights_delete",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6694,6 +7765,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Delete Weights"
@@ -6701,6 +7782,25 @@
       "get": {
         "description": "The active preset's weights, its defaults and every preset (ADR 0013).",
         "operationId": "get_weights_api_weights_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -6711,6 +7811,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Get Weights"
@@ -6718,6 +7828,25 @@
       "put": {
         "description": "Replace the active preset's weights. Stats left out fall back to their default.",
         "operationId": "put_weights_api_weights_put",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -6757,6 +7886,25 @@
       "put": {
         "description": "Switch presets: every score uses the active one.",
         "operationId": "put_active_preset_api_weights_active_put",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -6796,6 +7944,25 @@
       "post": {
         "description": "Save weights as a preset of your own (\"Save as\") and switch to it.",
         "operationId": "post_preset_api_weights_presets_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -6844,6 +8011,23 @@
               "title": "Key",
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
           }
         ],
         "responses": {
@@ -6881,6 +8065,23 @@
             "schema": {
               "title": "Key",
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
             }
           }
         ],

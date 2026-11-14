@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { api, type SyncResult } from '../api'
+import { CharacterSwitcher } from './CharacterSwitcher'
 import { NotificationsDialog } from './NotificationsDialog'
 
 function lastSynced(snapshots: Record<string, string>): string {
@@ -73,6 +74,7 @@ export function StatusBar() {
   // in .env, and a character Battle.net can find.
   return (
     <div className="status-bar">
+      <CharacterSwitcher />
       <span>Last sync: {lastSynced(status.data.latest_snapshots)}</span>
       {status.data.can_sync ? (
         <button type="button" onClick={() => sync.mutate()} disabled={sync.isPending}>
@@ -85,8 +87,8 @@ export function StatusBar() {
       )}
       {status.data.character_found === false && !sync.isPending && (
         <span className="warn" role="alert">
-          Battle.net can't find {status.data.character}: check CHARACTER_NAME, CHARACTER_SURNAME and BNET_REGION in
-          .env.
+          Battle.net can't find {status.data.character}: check its name and region. A mistyped character can be
+          deleted under Privacy and added again.
         </span>
       )}
       <NotificationsDialog />

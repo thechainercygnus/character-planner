@@ -1206,3 +1206,33 @@ ul.upcoming small {
 .erase-data {
   margin-top: 0.5rem;
 }
+
+/* The character switcher (#14). */
+.character-switcher {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.add-character {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.character-switcher select,
+.add-character input,
+.add-character select {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.3rem 0.4rem;
+  font: inherit;
+}
+
+.add-character input {
+  width: 9rem;
+}

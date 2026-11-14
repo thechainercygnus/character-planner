@@ -53,8 +53,10 @@ runs this instance".
 
 ## Deleting the data
 
-**From the app:** open **Privacy** in the footer, then **Delete the character's data**.
-The button asks for a second click to confirm.
+**From the app:** pick the character in the header, open **Privacy** in the footer, then
+**Delete the character's data**. The button asks for a second click to confirm. It
+deletes that character's snapshots, progress history and settings, and stops tracking
+it. Other characters, alert webhooks and shared game data stay.
 
 **From the command line:**
 
@@ -62,9 +64,8 @@ The button asks for a second click to confirm.
 docker compose exec app character-planner-db erase --yes
 ```
 
-From source, run `uv run character-planner-db erase --yes`.
-
-Both delete:
+From source, run `uv run character-planner-db erase --yes`. This one deletes everything
+stored for **every** character:
 - the snapshots and progress history;
 - the settings edited in the app;
 - the alerts and their webhooks;
@@ -73,10 +74,9 @@ Both delete:
 Settings go back to the shipped defaults. The shared game-data caches stay, since nothing
 in them is about the character.
 
-**Deletion isn't a stop.** The next sync, by hand or on the worker's schedule, fetches
-the character again. To stop using a character's data for good, also stop the planner
-(`docker compose down`). Erasing removes the character's record too, so the next start
-tracks whichever character `CHARACTER_NAME` and `CHARACTER_SURNAME` name then.
+**With no characters left,** the next start tracks the one `CHARACTER_NAME` and
+`CHARACTER_SURNAME` name again. To stop using a character's data for good, also stop the
+planner (`docker compose down`) or change those settings first.
 
 **Backups and logs:** they aren't touched. Delete them yourself if they hold the
 character's data.
