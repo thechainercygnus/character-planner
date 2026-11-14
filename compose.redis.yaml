@@ -1,0 +1,39 @@
+# Background jobs (#17, ADR 0039): a Sync is queued and worked by the worker container,
+# so web requests stay short when several people sync at once. Plain compose.yaml runs
+# syncs in the request and needs none of this.
+#
+#   docker compose -f compose.yaml -f compose.redis.yaml up -d --build
+#
+# Combine with compose.postgres.yaml for a shared instance. The queue server is Valkey,
+# the BSD-licensed, Redis-compatible fork; REDIS_URL works with Redis as well.
+
+x-redis-url: &redis-url
+  REDIS_URL: redis://valkey:6379/0
+
+services:
+  valkey:
+    image: valkey/valkey:9.1.3-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b # 9.1.3-alpine
+    # Only queued jobs and their results, kept an hour: nothing worth saving to disk.
+    command: ["valkey-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    # Not published: only the planner's containers reach it.
+
+  app:
+    environment:
+      <<: *redis-url
+    depends_on:
+      valkey:
+        condition: service_healthy
+
+  # With REDIS_URL the worker also works the queue (character-planner-jobs, as a child).
+  worker:
+    environment:
+      <<: *redis-url
+    depends_on:
+      valkey:
+        condition: service_healthy

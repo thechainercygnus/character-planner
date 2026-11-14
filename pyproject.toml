@@ -15,6 +15,8 @@ dependencies = [
     "pyyaml>=6.0",
     "alembic>=1.14",
     "psycopg[binary]>=3.2",
+    "rq>=2.0",
+    "redis>=5.0",
 ]
 
 [project.scripts]
@@ -25,6 +27,7 @@ character-planner-pool = "character_planner.pool_cli:main"
 character-planner-probe-recipes = "character_planner.probe_recipes:main"
 character-planner-worker = "character_planner.worker:main"
 character-planner-db = "character_planner.dbcli:main"
+character-planner-jobs = "character_planner.queue:main"
 character-planner-api-docs = "character_planner.api_reference:main"
 
 [dependency-groups]
@@ -37,6 +40,7 @@ dev = [
     "pre-commit>=4.0",
     "pytest-cov>=7",
     "httpx2>=2.16.0",
+    "fakeredis>=2.26",
 ]
 docs = ["furo>=2025.12.19", "myst-parser>=5.2.0", "sphinx>=9.2.0"]
 

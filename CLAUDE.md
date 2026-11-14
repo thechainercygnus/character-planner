@@ -31,6 +31,7 @@ Changed a route or an API model? Regenerate the docs site's API reference: `uv r
 Custom Semgrep rules (#57) in `.semgrep/`: `uvx --from semgrep semgrep --test --config .semgrep/rules .semgrep/tests` tests them, and `uvx --from semgrep semgrep scan --error --config .semgrep/rules src` runs them, as CI's `semgrep` workflow does.
 Coverage (#55): `uv run pytest --cov`; `npm run coverage` in `frontend/`. CI puts both in the run's summary and fails below the floors (#94): `fail_under` in `pyproject.toml`, `thresholds` in `frontend/vitest.config.ts`. Raise them when coverage grows; never lower them to pass.
 Delete one user and their data (users on, #16): `uv run character-planner-db delete-user ACCOUNT_ID --yes`.
+Background jobs (#17, ADR 0039): with `REDIS_URL` set, Syncs are queued; `uv run character-planner-jobs` works the queue (the worker container runs it as a child). Tests use fakeredis.
 Run the tests on Postgres too (#44): `TEST_DATABASE_URL=postgresql+psycopg://... uv run pytest` (each test gets its own schema), as CI's `postgres` job does. Move a database: `COPY_TO_DATABASE_URL=... uv run character-planner-db copy-to`.
 Run scheduled jobs once: `uv run character-planner-worker --once` (sync, then pool refresh).
 Changed a table in `db.py`? Add a migration in the same PR: `uv run alembic revision --autogenerate -m "..."`, then read and correct it (ADR 0022). `tests/test_migrations.py` fails until it matches. `uv run character-planner-db current` shows the schema version.
@@ -111,6 +112,7 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/rules.py`: the Upgrades rules edited in the app; `data/curated/recommend.yaml` is the default (ADR 0016)
 - `src/character_planner/guest.py`: guest mode, recommendations for a class and level from the shipped defaults; reads no character data, stores nothing (ADR 0017)
 - `src/character_planner/erase.py`: deletes everything stored for the character, from the Privacy page or `character-planner-db erase --yes`; every table but the shared game-data caches in `SHARED` (#133, ADR 0034)
+- `src/character_planner/queue.py`: background jobs on Redis with RQ, optional (`REDIS_URL`); one sync per character, polled with `GET /api/sync`; `character-planner-jobs` (#17, ADR 0039)
 - `src/character_planner/users.py`: users, server-side sessions and per-user tokens when `PLANNER_USERS` is on; the first sign-in is the admin; characters belong to a user and requests resolve them through the signed-in user (#16, ADR 0037)
 - `src/character_planner/account.py`: the signed-in account's characters (`/profile/user/wow`), to pick ones to track; fetched each time, never stored (#15, ADR 0036)
 - `src/character_planner/choices.py`: items dismissed in the app, on top of `exclude_item_ids` (ADR 0012)

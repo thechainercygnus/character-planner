@@ -507,13 +507,23 @@ Summary
 
 ### `POST /api/sync`
 
-Pull every endpoint and store each response, failures included. Then look up any target items not in the item catalog yet. That step is best-effort: a catalog failure never fails the sync. On a fresh instance, the item pool and enchant data then load in the background (#87).
+Pull every endpoint and store each response, failures included. Then look up any target items not in the item catalog yet. That step is best-effort: a catalog failure never fails the sync. On a fresh instance, the item pool and enchant data then load in the background (#87). At most once per SYNC_COOLDOWN_MINUTES per character (429 with Retry-After), to share the Battle.net budget (#17). With REDIS_URL set, the sync is queued (202, a SyncState) and GET /api/sync follows it (ADR 0039).
 
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
-**200:** map of integer
+**200:** map of integer or [SyncState](#schema-syncstate)
+
+### `GET /api/sync`
+
+The character's queued sync (ADR 0039): queued, started, finished with each endpoint's status, or failed. "idle" when there's none, or no queue.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**200:** [SyncState](#schema-syncstate)
 
 ## `talents`
 
@@ -1753,6 +1763,17 @@ A slot whose targets are all above the character's level.
 | `state` | `done` \\| `partial` \\| `pending` | yes |
 | `first_point` | integer | yes |
 | `level` | integer | yes |
+
+(schema-syncstate)=
+### SyncState
+
+A character's queued sync, as the page polls it.
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `state` | `idle` \\| `queued` \\| `started` \\| `finished` \\| `failed` | yes |
+| `result` | map of integer or null | no |
+| `error` | string or null | no |
 
 (schema-talent)=
 ### Talent

@@ -4570,6 +4570,52 @@
         "title": "StepStatus",
         "type": "object"
       },
+      "SyncState": {
+        "description": "A character's queued sync, as the page polls it.",
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "state": {
+            "enum": [
+              "idle",
+              "queued",
+              "started",
+              "finished",
+              "failed"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "title": "SyncState",
+        "type": "object"
+      },
       "Talent": {
         "properties": {
           "description": {
@@ -7371,8 +7417,54 @@
       }
     },
     "/api/sync": {
+      "get": {
+        "description": "The character's queued sync (ADR 0039): queued, started, finished with each\nendpoint's status, or failed. \"idle\" when there's none, or no queue.",
+        "operationId": "sync_progress_api_sync_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sync Progress"
+      },
       "post": {
-        "description": "Pull every endpoint and store each response, failures included.\n\nThen look up any target items not in the item catalog yet. That step is\nbest-effort: a catalog failure never fails the sync. On a fresh instance, the item\npool and enchant data then load in the background (#87).",
+        "description": "Pull every endpoint and store each response, failures included.\n\nThen look up any target items not in the item catalog yet. That step is\nbest-effort: a catalog failure never fails the sync. On a fresh instance, the item\npool and enchant data then load in the background (#87).\n\nAt most once per SYNC_COOLDOWN_MINUTES per character (429 with Retry-After), to\nshare the Battle.net budget (#17). With REDIS_URL set, the sync is queued (202, a\nSyncState) and GET /api/sync follows it (ADR 0039).",
         "operationId": "sync_api_sync_post",
         "parameters": [
           {
@@ -7398,11 +7490,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": {
-                    "type": "integer"
-                  },
-                  "title": "Response Sync Api Sync Post",
-                  "type": "object"
+                  "anyOf": [
+                    {
+                      "additionalProperties": {
+                        "type": "integer"
+                      },
+                      "type": "object"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SyncState"
+                    }
+                  ],
+                  "title": "Response Sync Api Sync Post"
                 }
               }
             },

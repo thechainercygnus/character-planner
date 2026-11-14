@@ -386,6 +386,21 @@ docker compose -f compose.yaml -f compose.postgres.yaml up -d
 
 Use both `-f` files for every `docker compose` command from then on.
 
+**Background jobs (optional).** With several people syncing at once, run Syncs as
+background jobs on a queue (ADR 0039). Then requests stay short, and the page follows
+each Sync until it's done:
+
+```bash
+docker compose -f compose.yaml -f compose.redis.yaml up -d
+```
+
+It adds Valkey, the BSD-licensed, Redis-compatible server, and the worker container
+works the queue. Combine it with `compose.postgres.yaml` for a shared instance.
+
+**How often a character can be synced by hand:** once per 15 minutes, counted from its
+last sync, scheduled ones included. Change it with `SYNC_COOLDOWN_MINUTES` in `.env`; 0
+turns it off.
+
 **Moving to Postgres.** To keep an existing instance's history:
 1. Back up, then stop the planner: `docker compose stop app worker`.
 2. Start Postgres on its own:
