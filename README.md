@@ -79,6 +79,8 @@ OpenAPI docs).
 See [CONTRIBUTING.md](CONTRIBUTING.md): issues first, a branch and pull request per issue,
 tests with every change, and signed-off commits (DCO). What's planned next is on the
 [roadmap (#25)](https://github.com/thechainercygnus/character-planner/issues/25).
+[GOVERNANCE.md](GOVERNANCE.md) covers who decides what, and everyone taking part follows
+the [code of conduct](CODE_OF_CONDUCT.md).
 
 ## Security
 

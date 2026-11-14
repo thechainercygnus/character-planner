@@ -3,6 +3,9 @@
 Thanks for your interest. This is a small hobby project with one maintainer, so reviews are
 best effort. The rules below keep changes easy to review.
 
+Everyone taking part follows the [code of conduct](CODE_OF_CONDUCT.md).
+[GOVERNANCE.md](GOVERNANCE.md) says who decides what and how decisions are recorded.
+
 ## Proposing a change
 
 1. **Open an issue first**, unless the change is a small fix. Say what you want to change
