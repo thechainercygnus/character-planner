@@ -4,9 +4,10 @@ Snapshots keep the API's JSON as-is. Typed models come later, built from real
 samples, so nothing captured now is lost to a guessed schema (ADR 0002).
 """
 
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from sqlalchemy import JSON, Column, UniqueConstraint, event
 from sqlalchemy.engine import Engine
@@ -141,7 +142,11 @@ class CompanionClassQuest(SQLModel, table=True):
 class ClassQuestDone(SQLModel, table=True):
     """A class quest marked done in the app (#8), until an API says which are done."""
 
-    quest_id: str = Field(primary_key=True)
+    __table_args__ = (UniqueConstraint("character_id", "quest_id"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    character_id: int | None = Field(default=None, foreign_key="character.id", index=True)
+    quest_id: str
     done_at: datetime = Field(default_factory=utcnow)
 
 
@@ -181,16 +186,22 @@ class RecipeData(SQLModel, table=True):
 class StoredTalentPlan(SQLModel, table=True):
     """The talent plan as edited in the app; data/curated/talent_plan.yaml is the default."""
 
-    id: int = Field(default=1, primary_key=True)
+    __table_args__ = (UniqueConstraint("character_id"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    character_id: int | None = Field(default=None, foreign_key="character.id", index=True)
     plan: Any = Field(sa_column=Column(JSON, nullable=False))
     updated_at: datetime = Field(default_factory=utcnow)
 
 
 class StoredUsageRules(SQLModel, table=True):
     """The Upgrades rules as edited in the app (ADR 0016); data/curated/recommend.yaml is
-    the default. One row, id 1; none means the YAML."""
+    the default. One row per character; none means the YAML (ADR 0036)."""
 
-    id: int = Field(default=1, primary_key=True)
+    __table_args__ = (UniqueConstraint("character_id"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    character_id: int | None = Field(default=None, foreign_key="character.id", index=True)
     rules: Any = Field(sa_column=Column(JSON, nullable=False))
     updated_at: datetime = Field(default_factory=utcnow)
 
@@ -206,9 +217,12 @@ class StoredEnchantCorrections(SQLModel, table=True):
 
 class StoredGearTargets(SQLModel, table=True):
     """Gear targets edited in the app (ADR 0014); data/curated/gear_targets.yaml is the
-    default. One row, id 1; none means the YAML."""
+    default. One row per character; none means the YAML (ADR 0036)."""
 
-    id: int = Field(default=1, primary_key=True)
+    __table_args__ = (UniqueConstraint("character_id"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    character_id: int | None = Field(default=None, foreign_key="character.id", index=True)
     targets: Any = Field(sa_column=Column(JSON, nullable=False))
     updated_at: datetime = Field(default_factory=utcnow)
 
@@ -229,7 +243,11 @@ class WeightPreset(SQLModel, table=True):
     the row resets it. shipped=False rows are the user's own presets.
     """
 
-    key: str = Field(primary_key=True)
+    __table_args__ = (UniqueConstraint("character_id", "key"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    character_id: int | None = Field(default=None, foreign_key="character.id", index=True)
+    key: str
     name: str
     shipped: bool = False
     weights: Any = Field(sa_column=Column(JSON, nullable=False))
@@ -237,9 +255,12 @@ class WeightPreset(SQLModel, table=True):
 
 
 class ActiveWeightPreset(SQLModel, table=True):
-    """Which preset scores everything. One row, id 1; none means Leveling tank."""
+    """Which preset scores everything, per character; none means the class default."""
 
-    id: int = Field(default=1, primary_key=True)
+    __table_args__ = (UniqueConstraint("character_id"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    character_id: int | None = Field(default=None, foreign_key="character.id", index=True)
     key: str
 
 
@@ -308,9 +329,13 @@ class NotificationOutbox(SQLModel, table=True):
 
 
 class NotificationState(SQLModel, table=True):
-    """What alerts compare against: the character as of the last sync (key "digest")."""
+    """What alerts compare against: the character as of its last sync (key "digest")."""
 
-    key: str = Field(primary_key=True)
+    __table_args__ = (UniqueConstraint("character_id", "key"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    character_id: int | None = Field(default=None, foreign_key="character.id", index=True)
+    key: str
     value: Any = Field(sa_column=Column(JSON, nullable=False))
     updated_at: datetime = Field(default_factory=utcnow)
 
@@ -318,10 +343,15 @@ class NotificationState(SQLModel, table=True):
 class ItemChoice(SQLModel, table=True):
     """An item pinned as a target or dismissed from the Upgrades tab (ADR 0012).
 
-    One row per item. The curated YAML files stay the defaults; these add to them.
+    One row per item per character. The curated YAML files stay the defaults; these add
+    to them.
     """
 
-    item_id: int = Field(primary_key=True)
+    __table_args__ = (UniqueConstraint("character_id", "item_id"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    character_id: int | None = Field(default=None, foreign_key="character.id", index=True)
+    item_id: int
     choice: str  # "target" or "dismissed"
     name: str  # kept so a dismissed item can be listed after it leaves the pool
     created_at: datetime = Field(default_factory=utcnow)
@@ -356,6 +386,53 @@ def make_engine(database_url: str) -> Engine:
         cursor.close()
 
     return engine
+
+
+class NoCharacter(Exception):
+    """A write that needs a character, on an instance that has none yet (ADR 0036)."""
+
+
+def owned[T: SQLModel](
+    session: Session, model: type[T], character_id: int | None, **match: object
+) -> T | None:
+    """The character's row of a settings table, matched on the other key columns."""
+    if character_id is None:
+        return None
+    table = cast(Any, model)
+    statement = select(model).where(col(table.character_id) == character_id)
+    for name, value in match.items():
+        statement = statement.where(col(getattr(table, name)) == value)
+    return session.exec(statement).first()
+
+
+def save_owned[T: SQLModel](
+    session: Session,
+    model: type[T],
+    character_id: int | None,
+    match: Mapping[str, object],
+    values: Mapping[str, object],
+) -> T:
+    """Insert or update the character's row; the caller commits."""
+    if character_id is None:
+        raise NoCharacter("No character yet: CHARACTER_NAME in .env names the first")
+    row = owned(session, model, character_id, **match)
+    if row is None:
+        row = model(character_id=character_id, **match, **values)
+    else:
+        for name, value in values.items():
+            setattr(row, name, value)
+    session.add(row)
+    return row
+
+
+def delete_owned(
+    session: Session, model: type[SQLModel], character_id: int | None, **match: object
+) -> bool:
+    """Delete the character's row if there is one; the caller commits."""
+    row = owned(session, model, character_id, **match)
+    if row is not None:
+        session.delete(row)
+    return row is not None
 
 
 def save_now(session: Session, row: SQLModel) -> None:

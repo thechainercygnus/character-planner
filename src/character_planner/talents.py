@@ -17,7 +17,7 @@ import yaml
 from pydantic import BaseModel, Field, StringConstraints
 from sqlmodel import Session
 
-from character_planner.db import StoredTalentPlan, utcnow
+from character_planner.db import StoredTalentPlan, delete_owned, owned, save_owned, utcnow
 from character_planner.talent_trees import ClassTree, PlanPoint, check_plan
 from character_planner.views import Specialization
 
@@ -92,22 +92,22 @@ def load_default_plan(path: Path) -> TalentPlan:
         return TalentPlan.model_validate(yaml.safe_load(handle))
 
 
-def current_plan(session: Session, default: TalentPlan) -> TalentPlan:
-    stored = session.get(StoredTalentPlan, 1)
+def current_plan(session: Session, default: TalentPlan, character_id: int | None) -> TalentPlan:
+    """The character's edited plan, or its class default (ADR 0009, 0036)."""
+    stored = owned(session, StoredTalentPlan, character_id)
     if stored is None:
         return default
     return TalentPlan.model_validate(stored.plan)
 
 
-def save_plan(session: Session, plan: TalentPlan) -> None:
-    session.merge(StoredTalentPlan(id=1, plan=plan.model_dump(), updated_at=utcnow()))
+def save_plan(session: Session, plan: TalentPlan, character_id: int | None) -> None:
+    values = {"plan": plan.model_dump(), "updated_at": utcnow()}
+    save_owned(session, StoredTalentPlan, character_id, {}, values)
     session.commit()
 
 
-def reset_plan(session: Session) -> None:
-    stored = session.get(StoredTalentPlan, 1)
-    if stored is not None:
-        session.delete(stored)
+def reset_plan(session: Session, character_id: int | None) -> None:
+    if delete_owned(session, StoredTalentPlan, character_id):
         session.commit()
 
 

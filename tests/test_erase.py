@@ -35,8 +35,14 @@ def store_character(engine: Engine) -> None:
             )
         )
         session.add(StoredToken(id=1, access_token="tok", expires_at=0, scope="wow.profile"))
-        session.add(ClassQuestDone(quest_id="warrior-defensive-stance"))
-        session.add(ItemChoice(item_id=1, choice="dismissed", name="Worn Axe"))
+        session.add(
+            ClassQuestDone(character_id=tracked(session), quest_id="warrior-defensive-stance")
+        )
+        session.add(
+            ItemChoice(
+                character_id=tracked(session), item_id=1, choice="dismissed", name="Worn Axe"
+            )
+        )
         session.add(
             NotificationDestination(
                 name="me", url="https://discord.com/api/webhooks/1/x", alerts=[]

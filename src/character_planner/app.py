@@ -27,7 +27,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from character_planner import jobs, leases, notify
 from character_planner.blizzard import oauth
-from character_planner.characters import current_character
+from character_planner.characters import adopt_at_start, current_character
 from character_planner.choices import (
     ChoiceKind,
     ItemChoiceView,
@@ -61,6 +61,7 @@ from character_planner.crafting import (
 from character_planner.curated import GearTargets
 from character_planner.db import (
     Character,
+    NoCharacter,
     NotificationDestination,
     Snapshot,
     StoredToken,
@@ -282,9 +283,11 @@ def get_default_rules(defaults: ClassDefaultsDep) -> UsageRules:
 DefaultRulesDep = Annotated[UsageRules, Depends(get_default_rules)]
 
 
-def get_rules(session: SessionDep, default: DefaultRulesDep) -> UsageRules:
+def get_rules(
+    session: SessionDep, character_id: CharacterIdDep, default: DefaultRulesDep
+) -> UsageRules:
     """The Upgrades rules in use: edited in the app, or recommend.yaml (ADR 0016)."""
-    return current_rules(session, default)
+    return current_rules(session, default, character_id)
 
 
 def get_profession_data(request: Request) -> ProfessionData:
@@ -393,11 +396,11 @@ def create_app(
         )
         init_db(engine)
         with Session(engine) as session:
-            if migrate_stored_weights(session):
-                logger.info("Moved saved stat weights into the Leveling tank preset")
             # Seeds the first character from .env on a database that has none (ADR 0036).
-            character = current_character(session, settings)
+            character = adopt_at_start(session, settings)
             character_id = character.id if character else None
+            if migrate_stored_weights(session, character_id):
+                logger.info("Moved saved stat weights into the Leveling tank preset")
             if moved := jobs.migrate_target_choices(session, settings, character_id):
                 logger.info("Moved %d pinned items into the gear targets", moved)
         yield
@@ -464,6 +467,13 @@ def create_app(
             return response
         finally:
             request_id.reset(token)
+
+    @app.exception_handler(NoCharacter)
+    async def no_character(  # pyright: ignore[reportUnusedFunction]
+        _request: Request, error: NoCharacter
+    ) -> JSONResponse:
+        """A setting saved before any character exists (ADR 0036)."""
+        return JSONResponse({"detail": str(error)}, status_code=409)
 
     @app.get("/api/healthz")
     def healthz() -> dict[str, str]:
@@ -710,7 +720,7 @@ def create_app(
         return advise(
             options,
             equipped,
-            current_weights(session, presets),
+            current_weights(session, presets, character_id),
             rules,
             character_context(session, character_id)[0],
             known_recipe_ids(professions.payload if professions else None),
@@ -738,7 +748,7 @@ def create_app(
         session: SessionDep, character_id: CharacterIdDep, presets: PresetsDep
     ) -> Progress:
         """One point per sync, plus gear changes and level-ups (ADR 0008)."""
-        return progress(session, current_weights(session, presets), character_id)
+        return progress(session, current_weights(session, presets, character_id), character_id)
 
     @app.get("/api/recommendations")
     def recommendations(
@@ -759,33 +769,40 @@ def create_app(
         return recommend(
             pool_view(session, level, faction, crafted_items(session, character_id)),
             equipped,
-            current_weights(session, presets),
+            current_weights(session, presets, character_id),
             rules,
             targets,
-            stored_choices(session),
+            stored_choices(session, character_id),
         )
 
     @app.get("/api/choices")
-    def get_choices(session: SessionDep) -> list[ItemChoiceView]:
+    def get_choices(session: SessionDep, character_id: CharacterIdDep) -> list[ItemChoiceView]:
         """Items dismissed in the app, newest first (ADR 0012)."""
-        return list_choices(session)
+        return list_choices(session, character_id)
 
     @app.put("/api/choices/{item_id}")
     def put_choice(
-        item_id: Annotated[int, FastAPIPath(gt=0)], update: ChoiceUpdate, session: SessionDep
+        item_id: Annotated[int, FastAPIPath(gt=0)],
+        update: ChoiceUpdate,
+        session: SessionDep,
+        character_id: CharacterIdDep,
     ) -> list[ItemChoiceView]:
         """Dismiss an item: never suggest it. Pinning is POST /api/targets/pins."""
-        set_choice(session, item_id, update.name.strip() or str(item_id), update.choice)
-        return list_choices(session)
+        set_choice(
+            session, item_id, update.name.strip() or str(item_id), update.choice, character_id
+        )
+        return list_choices(session, character_id)
 
     @app.delete("/api/choices/{item_id}")
     def delete_choice(
-        item_id: Annotated[int, FastAPIPath(gt=0)], session: SessionDep
+        item_id: Annotated[int, FastAPIPath(gt=0)],
+        session: SessionDep,
+        character_id: CharacterIdDep,
     ) -> list[ItemChoiceView]:
         """Suggest a dismissed item again."""
-        if not clear_choice(session, item_id):
+        if not clear_choice(session, item_id, character_id):
             raise HTTPException(404, f"No choice stored for item {item_id}")
-        return list_choices(session)
+        return list_choices(session, character_id)
 
     @app.post("/api/snapshots/manual", status_code=201)
     def add_manual(
@@ -831,7 +848,7 @@ def create_app(
     ) -> GearTargets:
         """Replace the gear targets. Priority follows each slot's order."""
         try:
-            save_targets(session, edited.to_targets())
+            save_targets(session, edited.to_targets(), character_id)
         except TargetsError as error:
             raise HTTPException(422, str(error)) from error
         return targets_changed(session, character_id)
@@ -839,7 +856,7 @@ def create_app(
     @app.delete("/api/targets")
     def delete_targets(session: SessionDep, character_id: CharacterIdDep) -> GearTargets:
         """Go back to data/curated/gear_targets.yaml."""
-        reset_targets(session)
+        reset_targets(session, character_id)
         return targets_changed(session, character_id)
 
     @app.post("/api/targets/pins")
@@ -861,7 +878,7 @@ def create_app(
         if item is None:
             raise HTTPException(404, f"Item {pin.item_id} isn't in the item pool")
         try:
-            save_targets(session, pin_target(gear, item, pin.slot))
+            save_targets(session, pin_target(gear, item, pin.slot), character_id)
         except TargetsError as error:
             raise HTTPException(422, str(error)) from error
         return targets_changed(session, character_id)
@@ -877,7 +894,7 @@ def create_app(
         unpinned = unpin_target(gear, item_id)
         if unpinned is None:
             raise HTTPException(404, f"Item {item_id} isn't a pinned target")
-        save_targets(session, unpinned)
+        save_targets(session, unpinned, character_id)
         return targets_changed(session, character_id)
 
     @app.get("/api/summary.md", response_class=PlainTextResponse)
@@ -893,7 +910,7 @@ def create_app(
             catalog_by_name(session),
             icons_by_id(session),
             companion_by_id(session),
-            current_weights(session, presets),
+            current_weights(session, presets, character_id),
             jobs.item_levels(session, character_id),
         )
 
@@ -919,7 +936,7 @@ def create_app(
             catalog_by_name(session),
             icons_by_id(session),
             companion_by_id(session),
-            current_weights(session, presets),
+            current_weights(session, presets, character_id),
             jobs.item_levels(session, character_id),
         )
 
@@ -928,7 +945,9 @@ def create_app(
         session: SessionDep, character_id: CharacterIdDep, targets: TargetsDep, presets: PresetsDep
     ) -> GearPlan:
         plan = build_gear_plan(session, character_id, targets, presets)
-        return plan.model_copy(update={"targets_customised": targets_customised(session)})
+        return plan.model_copy(
+            update={"targets_customised": targets_customised(session, character_id)}
+        )
 
     @app.get("/api/look-ahead")
     def get_look_ahead(
@@ -963,58 +982,79 @@ def create_app(
             raise HTTPException(400, str(error)) from error
 
     @app.get("/api/weights")
-    def get_weights(session: SessionDep, presets: PresetsDep) -> WeightsView:
+    def get_weights(
+        session: SessionDep, character_id: CharacterIdDep, presets: PresetsDep
+    ) -> WeightsView:
         """The active preset's weights, its defaults and every preset (ADR 0013)."""
-        return weights_view(session, presets)
+        return weights_view(session, presets, character_id)
 
     @app.put("/api/weights")
-    def put_weights(update: WeightsUpdate, session: SessionDep, presets: PresetsDep) -> WeightsView:
+    def put_weights(
+        update: WeightsUpdate,
+        session: SessionDep,
+        character_id: CharacterIdDep,
+        presets: PresetsDep,
+    ) -> WeightsView:
         """Replace the active preset's weights. Stats left out fall back to their default."""
         weights = clean_weights(update)
-        save_weights(session, presets, weights)
-        return weights_view(session, presets)
+        save_weights(session, presets, weights, character_id)
+        return weights_view(session, presets, character_id)
 
     @app.delete("/api/weights")
-    def delete_weights(session: SessionDep, presets: PresetsDep) -> WeightsView:
+    def delete_weights(
+        session: SessionDep, character_id: CharacterIdDep, presets: PresetsDep
+    ) -> WeightsView:
         """Reset the active shipped preset to its curated file."""
-        preset_errors(lambda: reset_weights(session, presets))
-        return weights_view(session, presets)
+        preset_errors(lambda: reset_weights(session, presets, character_id))
+        return weights_view(session, presets, character_id)
 
     @app.put("/api/weights/active")
     def put_active_preset(
-        choice: PresetChoice, session: SessionDep, presets: PresetsDep
+        choice: PresetChoice, session: SessionDep, character_id: CharacterIdDep, presets: PresetsDep
     ) -> WeightsView:
         """Switch presets: every score uses the active one."""
-        preset_errors(lambda: activate(session, presets, choice.key))
-        return weights_view(session, presets)
+        preset_errors(lambda: activate(session, presets, choice.key, character_id))
+        return weights_view(session, presets, character_id)
 
     @app.post("/api/weights/presets", status_code=201)
-    def post_preset(new: NewPreset, session: SessionDep, presets: PresetsDep) -> WeightsView:
+    def post_preset(
+        new: NewPreset, session: SessionDep, character_id: CharacterIdDep, presets: PresetsDep
+    ) -> WeightsView:
         """Save weights as a preset of your own ("Save as") and switch to it."""
-        weights = clean_weights(new) if new.weights else current_weights(session, presets).weights
-        preset_errors(lambda: create_preset(session, presets, new.name, weights))
-        return weights_view(session, presets)
+        weights = (
+            clean_weights(new)
+            if new.weights
+            else current_weights(session, presets, character_id).weights
+        )
+        preset_errors(lambda: create_preset(session, presets, new.name, weights, character_id))
+        return weights_view(session, presets, character_id)
 
     @app.patch("/api/weights/presets/{key}")
     def patch_preset(
-        key: str, rename: PresetRename, session: SessionDep, presets: PresetsDep
+        key: str,
+        rename: PresetRename,
+        session: SessionDep,
+        character_id: CharacterIdDep,
+        presets: PresetsDep,
     ) -> WeightsView:
         """Rename a preset of your own."""
-        preset_errors(lambda: rename_preset(session, presets, key, rename.name))
-        return weights_view(session, presets)
+        preset_errors(lambda: rename_preset(session, presets, key, rename.name, character_id))
+        return weights_view(session, presets, character_id)
 
     @app.delete("/api/weights/presets/{key}")
-    def delete_weight_preset(key: str, session: SessionDep, presets: PresetsDep) -> WeightsView:
+    def delete_weight_preset(
+        key: str, session: SessionDep, character_id: CharacterIdDep, presets: PresetsDep
+    ) -> WeightsView:
         """Delete a preset of your own; if it was active, Leveling tank takes over."""
-        preset_errors(lambda: delete_preset(session, presets, key))
-        return weights_view(session, presets)
+        preset_errors(lambda: delete_preset(session, presets, key, character_id))
+        return weights_view(session, presets, character_id)
 
     def talents_view(
         session: Session, character_id: int | None, default: TalentPlan
     ) -> TalentPlanView:
         latest = latest_by_kind(session, character_id)
         profile, specs = latest.get("profile"), latest.get("specializations")
-        stored = current_plan(session, default)
+        stored = current_plan(session, default, character_id)
         # Ids filled in from the trees by name, for plans written before #88.
         plan = with_talent_ids(stored, talent_tree(session, character_id))
         return compare(
@@ -1103,24 +1143,33 @@ def create_app(
             return notify.send_test(session, settings, destination, client)
 
     @app.get("/api/rules")
-    def get_rules_view(session: SessionDep, default: DefaultRulesDep) -> RulesView:
+    def get_rules_view(
+        session: SessionDep, character_id: CharacterIdDep, default: DefaultRulesDep
+    ) -> RulesView:
         """The Upgrades rules, their defaults, and what the editor can offer (ADR 0016)."""
-        return rules_view(session, default)
+        return rules_view(session, default, character_id)
 
     @app.put("/api/rules")
-    def put_rules(edited: EditedRules, session: SessionDep, default: DefaultRulesDep) -> RulesView:
+    def put_rules(
+        edited: EditedRules,
+        session: SessionDep,
+        character_id: CharacterIdDep,
+        default: DefaultRulesDep,
+    ) -> RulesView:
         """Replace the Upgrades rules."""
         try:
-            save_rules(session, edited.to_rules())
+            save_rules(session, edited.to_rules(), character_id)
         except RulesError as error:
             raise HTTPException(422, str(error)) from error
-        return rules_view(session, default)
+        return rules_view(session, default, character_id)
 
     @app.delete("/api/rules")
-    def delete_rules(session: SessionDep, default: DefaultRulesDep) -> RulesView:
+    def delete_rules(
+        session: SessionDep, character_id: CharacterIdDep, default: DefaultRulesDep
+    ) -> RulesView:
         """Go back to data/curated/recommend.yaml."""
-        reset_rules(session)
-        return rules_view(session, default)
+        reset_rules(session, character_id)
+        return rules_view(session, default, character_id)
 
     @app.get("/api/class-quests")
     def get_class_quests(session: SessionDep, character_id: CharacterIdDep) -> ClassQuestChecklist:
@@ -1136,7 +1185,7 @@ def create_app(
     ) -> ClassQuestChecklist:
         """Mark a class quest done, or not done."""
         try:
-            set_done(session, quest_id, update.done)
+            set_done(session, quest_id, update.done, character_id)
         except UnknownClassQuest:
             raise HTTPException(404, f"No class quest {quest_id}") from None
         return checklist(session, character_id)
@@ -1158,7 +1207,7 @@ def create_app(
         problems = plan_problems(plan, tree)
         if problems:
             raise HTTPException(422, "; ".join(problems))
-        save_plan(session, with_talent_ids(plan, tree))
+        save_plan(session, with_talent_ids(plan, tree), character_id)
         return talents_view(session, character_id, default)
 
     @app.get("/api/talents/tree")
@@ -1188,7 +1237,7 @@ def create_app(
         session: SessionDep, character_id: CharacterIdDep, default: DefaultPlanDep
     ) -> TalentPlanView:
         """Go back to data/curated/talent_plan.yaml."""
-        reset_plan(session)
+        reset_plan(session, character_id)
         return talents_view(session, character_id, default)
 
     # Serve the built frontend (npm run build) from the same origin, after every API

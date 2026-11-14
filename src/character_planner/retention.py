@@ -186,8 +186,7 @@ def forget_character(session: Session, character: Character) -> int:
             col(Snapshot.character_id) == character.id, col(Snapshot.source) == "api"
         ),
         delete(ProgressHistory).where(col(ProgressHistory.character_id) == character.id),
-        # Alert state is still one set for the instance; per character in #14's next step.
-        delete(NotificationState),
+        delete(NotificationState).where(col(NotificationState.character_id) == character.id),
     ):
         deleted += _delete(session, statement)
     session.commit()

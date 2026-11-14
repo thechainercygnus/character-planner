@@ -14,9 +14,46 @@ from sqlmodel import Session, col, select
 
 from character_planner import fields
 from character_planner.config import Settings
-from character_planner.db import Character, ProgressHistory, Snapshot
+from character_planner.db import (
+    ActiveWeightPreset,
+    Character,
+    ClassQuestDone,
+    ItemChoice,
+    NotificationState,
+    ProgressHistory,
+    Snapshot,
+    StoredGearTargets,
+    StoredTalentPlan,
+    StoredUsageRules,
+    WeightPreset,
+)
+
+# Everything a character owns (ADR 0036): rows from before #14 are adopted by the first.
+OWNED = (
+    Snapshot,
+    ProgressHistory,
+    StoredTalentPlan,
+    StoredUsageRules,
+    StoredGearTargets,
+    WeightPreset,
+    ActiveWeightPreset,
+    ItemChoice,
+    ClassQuestDone,
+    NotificationState,
+)
 
 logger = logging.getLogger(__name__)
+
+
+def adopt_at_start(session: Session, settings: Settings) -> Character | None:
+    """On start: the current character, seeded if needed, given any rows without an
+    owner (a database downgraded past 0010 and upgraded again keeps its characters but
+    copies settings back without one)."""
+    character = current_character(session, settings)
+    if character is not None and adopt_orphans(session, character):
+        session.commit()
+        logger.info("Gave rows without a character to %s", character.slug)
+    return character
 
 
 def first_character(session: Session) -> Character | None:
@@ -56,7 +93,7 @@ def seed_from_settings(session: Session, settings: Settings) -> Character | None
 def adopt_orphans(session: Session, character: Character) -> int:
     """Give rows stored before #14 (no character) to this character."""
     adopted = 0
-    for table in (Snapshot, ProgressHistory):
+    for table in OWNED:
         statement = (
             update(table).where(col(table.character_id).is_(None)).values(character_id=character.id)
         )

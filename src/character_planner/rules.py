@@ -11,7 +11,7 @@ from typing import Annotated
 from pydantic import BaseModel, Field
 from sqlmodel import Session
 
-from character_planner.db import StoredUsageRules, utcnow
+from character_planner.db import StoredUsageRules, delete_owned, owned, save_owned, utcnow
 from character_planner.recommend import UsageRules
 
 # The choices the editor offers. Values as Forever Companion's item details spell them
@@ -86,28 +86,28 @@ class RulesView(BaseModel):
     two_hand_type_options: list[str] = TWO_HAND_TYPES
 
 
-def current_rules(session: Session, default: UsageRules) -> UsageRules:
-    stored = session.get(StoredUsageRules, 1)
+def current_rules(session: Session, default: UsageRules, character_id: int | None) -> UsageRules:
+    """The character's edited rules, or its class default (ADR 0016, 0036)."""
+    stored = owned(session, StoredUsageRules, character_id)
     if stored is None:
         return default
     return UsageRules.model_validate(stored.rules)
 
 
-def rules_view(session: Session, default: UsageRules) -> RulesView:
+def rules_view(session: Session, default: UsageRules, character_id: int | None) -> RulesView:
     return RulesView(
-        rules=current_rules(session, default),
+        rules=current_rules(session, default, character_id),
         defaults=default,
-        customised=session.get(StoredUsageRules, 1) is not None,
+        customised=owned(session, StoredUsageRules, character_id) is not None,
     )
 
 
-def save_rules(session: Session, rules: UsageRules) -> None:
-    session.merge(StoredUsageRules(id=1, rules=rules.model_dump(), updated_at=utcnow()))
+def save_rules(session: Session, rules: UsageRules, character_id: int | None) -> None:
+    values = {"rules": rules.model_dump(), "updated_at": utcnow()}
+    save_owned(session, StoredUsageRules, character_id, {}, values)
     session.commit()
 
 
-def reset_rules(session: Session) -> None:
-    stored = session.get(StoredUsageRules, 1)
-    if stored is not None:
-        session.delete(stored)
+def reset_rules(session: Session, character_id: int | None) -> None:
+    if delete_owned(session, StoredUsageRules, character_id):
         session.commit()

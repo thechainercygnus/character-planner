@@ -34,6 +34,8 @@ from character_planner.db import (
     NotificationDestination,
     NotificationOutbox,
     NotificationState,
+    owned,
+    save_owned,
     utcnow,
 )
 
@@ -259,7 +261,7 @@ def character_digest(
 
     latest = latest_by_kind(session, character_id)
     defaults = current_defaults(session, settings.curated_dir, character_id)
-    weights = current_weights(session, defaults.presets)
+    weights = current_weights(session, defaults.presets, character_id)
     targets = jobs.gear_targets(session, settings, character_id)
     plan = gear_plan(
         latest,
@@ -273,14 +275,14 @@ def character_digest(
     level, faction = jobs.character_context(session, character_id)
     equipment = latest.get("equipment")
     equipped = {i.slot: i for i in parse_equipment(equipment.payload if equipment else None)}
-    rules = current_rules(session, defaults.rules)
+    rules = current_rules(session, defaults.rules, character_id)
     recs = recommend(
         pool_view(session, level, faction, crafted_items(session, character_id)),
         equipped,
         weights,
         rules,
         targets,
-        stored_choices(session),
+        stored_choices(session, character_id),
     )
 
     digest = Digest(
@@ -312,13 +314,14 @@ def character_digest(
     return digest, lines
 
 
-def _load_digest(session: Session) -> Digest | None:
-    row = session.get(NotificationState, "digest")
+def _load_digest(session: Session, character_id: int | None) -> Digest | None:
+    row = owned(session, NotificationState, character_id, key="digest")
     return Digest.model_validate(row.value) if row else None
 
 
-def _save_digest(session: Session, digest: Digest) -> None:
-    session.merge(NotificationState(key="digest", value=digest.model_dump(), updated_at=utcnow()))
+def _save_digest(session: Session, digest: Digest, character_id: int | None) -> None:
+    values = {"value": digest.model_dump(), "updated_at": utcnow()}
+    save_owned(session, NotificationState, character_id, {"key": "digest"}, values)
     session.commit()
 
 
@@ -330,8 +333,8 @@ def after_sync(session: Session, settings: Settings, character: Character) -> in
     if not session.exec(select(NotificationDestination)).first():
         return 0  # nothing to send to: don't even build the digest
     now, upgrade_lines = character_digest(session, settings, character.id)
-    before = _load_digest(session)
-    _save_digest(session, now)
+    before = _load_digest(session, character.id)
+    _save_digest(session, now, character.id)
     if before is None:
         logger.info("Notifications: first sync recorded as the baseline")
         return 0
