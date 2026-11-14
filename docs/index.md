@@ -1,5 +1,7 @@
 # Character Planner
 
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/16645/badge)](https://www.bestpractices.dev/projects/16645)
+
 A planner for a WoW Forever character. It reads your character from Battle.net and works
 out what to do next:
 - what the next few levels bring;
