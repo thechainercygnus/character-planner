@@ -78,6 +78,15 @@ stored for **every** character:
 Settings go back to the shipped defaults. The shared game-data caches stay, since nothing
 in them is about the character.
 
+**With users on,** the Privacy page also has **Delete my account**. It deletes your
+characters with all their data and settings, your sign-in sessions, your Battle.net token
+and your account. The admin can delete theirs only once nobody else uses the instance.
+An operator handling a request can do it for anyone:
+
+```
+docker compose exec app character-planner-db delete-user ACCOUNT_ID --yes
+```
+
 **With no characters left,** the next start tracks the one `CHARACTER_NAME` and
 `CHARACTER_SURNAME` name again. To stop using a character's data for good, also stop the
 planner (`docker compose down`) or change those settings first.

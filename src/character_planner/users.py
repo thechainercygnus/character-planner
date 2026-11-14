@@ -117,3 +117,45 @@ def user_token(session: Session, user_id: int) -> oauth.Token | None:
         return None
     token = oauth.Token(stored.access_token, stored.expires_at, stored.scope)
     return None if token.expired else token
+
+
+class LastAdmin(Exception):
+    """The admin deleting their account while others still use the instance."""
+
+
+def delete_user(session: Session, user_id: int) -> dict[str, int]:
+    """Delete a user and everything stored for them (#16, ADR 0037): their characters with
+    each one's data and settings, their sessions and their Battle.net token. The admin
+    can't go while other users remain, or no one could run the instance."""
+    from character_planner.characters import delete_character
+
+    user = session.get(User, user_id)
+    if user is None:
+        return {}
+    others = session.exec(select(User).where(col(User.id) != user_id)).first()
+    if user.is_admin and others is not None:
+        raise LastAdmin("Hand the instance over first: other users still need an admin")
+    removed: dict[str, int] = {}
+    owned = session.exec(select(Character).where(col(Character.user_id) == user_id)).all()
+    for character in owned:
+        assert character.id is not None
+        for table, count in delete_character(session, character.id).items():
+            removed[table] = removed.get(table, 0) + count
+    sessions = session.exec(select(UserSession).where(col(UserSession.user_id) == user_id)).all()
+    for row in sessions:
+        session.delete(row)
+    if sessions:
+        removed["usersession"] = len(sessions)
+    token = session.get(UserToken, user_id)
+    if token is not None:
+        session.delete(token)
+        removed["usertoken"] = 1
+    session.delete(user)
+    removed["user"] = 1
+    session.commit()
+    logger.info("Deleted a user and %d rows", sum(removed.values()))
+    return removed
+
+
+def user_by_account(session: Session, account_id: int) -> User | None:
+    return session.exec(select(User).where(col(User.account_id) == account_id)).first()

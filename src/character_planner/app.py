@@ -189,7 +189,9 @@ from character_planner.users import (
 )
 from character_planner.users import (
     SESSION_LENGTH,
+    LastAdmin,
     SignupsClosed,
+    delete_user,
     end_session,
     sign_in,
     start_session,
@@ -645,6 +647,21 @@ def create_app(
         """Sign out: the session stops working at once (ADR 0037)."""
         end_session(session, request.cookies.get(SESSION_COOKIE))
         response = Response(status_code=204)
+        response.delete_cookie(SESSION_COOKIE)
+        return response
+
+    @app.delete("/api/account")
+    def delete_account(request: Request, session: SessionDep, user_id: UserIdDep) -> Response:
+        """Delete the signed-in user and everything stored for them (#16, ADR 0037):
+        their characters with all their data and settings, sessions and Battle.net token.
+        Only with users on; the admin can't while others remain (409)."""
+        if not settings.planner_users or user_id is None:
+            raise HTTPException(404, "There are no user accounts on this instance")
+        try:
+            removed = delete_user(session, user_id)
+        except LastAdmin as error:
+            raise HTTPException(409, str(error)) from error
+        response = JSONResponse({"removed": removed})
         response.delete_cookie(SESSION_COOKIE)
         return response
 

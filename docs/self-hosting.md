@@ -285,6 +285,9 @@ Then `docker compose up -d`. Every page now asks for a Battle.net sign-in, so re
 - **Each user sees only their own characters.**
 - **Only the admin** can see and change the alert webhooks, change enchant corrections,
   and start the bulk refreshes in the ⋯ menu.
+- **Leaving:** each user can delete their own account on the Privacy page. To delete one
+  for them, use `character-planner-db delete-user ACCOUNT_ID --yes` (see
+  [Privacy](privacy.md)).
 
 ## 9. Alerts (optional)
 

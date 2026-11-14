@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { Me, Status } from './api'
 import App from './App'
+import { Privacy } from './components/Privacy'
 import { StatusBar } from './components/StatusBar'
 
 const STATUS: Status = {
@@ -33,6 +34,11 @@ function serve(me: Me) {
         })
       }
       if (url === '/api/logout') return new Response(null, { status: 204 })
+      if (url === '/api/account' && init?.method === 'DELETE') {
+        return me.admin
+          ? Response.json({ detail: 'Hand the instance over first: other users still need an admin' }, { status: 409 })
+          : Response.json({ removed: { user: 1 } })
+      }
       if (!me.signed_in && !url.startsWith('/api/about') && !url.startsWith('/api/guest')) {
         return Response.json({ detail: 'Sign in with Battle.net' }, { status: 401 })
       }
@@ -88,6 +94,26 @@ describe('With users on', () => {
     show(<StatusBar />)
     expect(await screen.findByRole('button', { name: 'Refresh item pool' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeTruthy()
+  })
+
+  it('deletes the account from the privacy page, after a second click', async () => {
+    const assign = vi.fn()
+    vi.stubGlobal('location', { ...window.location, assign })
+    const calls = serve(GUILDMATE)
+    show(<Privacy />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete my account' }))
+    expect(calls.some((c) => c.url === '/api/account')).toBe(false)
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my account' }))
+    await waitFor(() => expect(assign).toHaveBeenCalledWith('/'))
+    expect(calls).toContainEqual({ url: '/api/account', method: 'DELETE' })
+  })
+
+  it("says why the admin can't go first", async () => {
+    serve(ADMIN)
+    show(<Privacy />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete my account' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my account' }))
+    expect(await screen.findByText(/Hand the instance over first/)).toBeTruthy()
   })
 
   it('signs out', async () => {

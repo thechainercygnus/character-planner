@@ -956,6 +956,7 @@ export const api = {
   about: () => request<About>('/api/about'),
   eraseCharacter: () => request<Erased>('/api/character', { method: 'DELETE' }),
   me: () => request<Me>('/api/me'),
+  deleteAccount: () => request<Erased>('/api/account', { method: 'DELETE' }),
   logout: () => fetch('/api/logout', { method: 'POST', headers: APP_HEADER }),
   characters: () => request<CharacterList>('/api/characters'),
   accountCharacters: () => request<{ characters: AccountCharacter[] }>('/api/account/characters'),

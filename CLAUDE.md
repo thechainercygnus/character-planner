@@ -30,6 +30,7 @@ Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `n
 Changed a route or an API model? Regenerate the docs site's API reference: `uv run character-planner-api-docs` (writes `docs/api.md` and `docs/_static/openapi.json`); `tests/test_api_reference.py` fails until they match.
 Custom Semgrep rules (#57) in `.semgrep/`: `uvx --from semgrep semgrep --test --config .semgrep/rules .semgrep/tests` tests them, and `uvx --from semgrep semgrep scan --error --config .semgrep/rules src` runs them, as CI's `semgrep` workflow does.
 Coverage (#55): `uv run pytest --cov`; `npm run coverage` in `frontend/`. CI puts both in the run's summary and fails below the floors (#94): `fail_under` in `pyproject.toml`, `thresholds` in `frontend/vitest.config.ts`. Raise them when coverage grows; never lower them to pass.
+Delete one user and their data (users on, #16): `uv run character-planner-db delete-user ACCOUNT_ID --yes`.
 Run scheduled jobs once: `uv run character-planner-worker --once` (sync, then pool refresh).
 Changed a table in `db.py`? Add a migration in the same PR: `uv run alembic revision --autogenerate -m "..."`, then read and correct it (ADR 0022). `tests/test_migrations.py` fails until it matches. `uv run character-planner-db current` shows the schema version.
 Deploy (Docker): `docker compose up -d --build`; over Tailscale add `-f compose.tailscale.yaml`. See `docs/self-hosting.md`.

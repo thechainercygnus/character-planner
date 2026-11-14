@@ -5361,6 +5361,23 @@
         "summary": "About"
       }
     },
+    "/api/account": {
+      "delete": {
+        "description": "Delete the signed-in user and everything stored for them (#16, ADR 0037):\ntheir characters with all their data and settings, sessions and Battle.net token.\nOnly with users on; the admin can't while others remain (409).",
+        "operationId": "delete_account_api_account_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Delete Account"
+      }
+    },
     "/api/account/characters": {
       "get": {
         "description": "The characters on the signed-in Battle.net account (#15), to pick ones to\ntrack. Fetched each time and never stored: the list names every character on the\naccount (ADR 0034). Needs the optional Battle.net sign-in.",
