@@ -114,7 +114,7 @@ describe('App tabs (#41)', () => {
     expect(within(spent).getByText('Improved Heroic Strike').closest('div')?.querySelector('h3')?.textContent).toBe(
       'Arms',
     )
-    expect(screen.getByText(/^As of the last sync/)).toBeTruthy()
+    expect(screen.getByText(/^From Blizzard's Battle.net API, as of the last sync/)).toBeTruthy()
     // Read-only: no plan, no editors.
     expect(screen.queryByRole('button', { name: 'Edit plan' })).toBeNull()
     expect(screen.queryByText(/planned/)).toBeNull()
