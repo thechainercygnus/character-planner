@@ -29,6 +29,7 @@ from character_planner.tokens import (
     cached_app_token,
 )
 
+from .conftest import api_client
 from .test_app import BASE, fixture
 
 SECRET_TOKEN = "app-token-never-logged"
@@ -259,7 +260,7 @@ def test_a_refused_client_fails_the_job_and_alerts(engine: Engine, settings: Set
 
 @pytest.fixture
 def client(settings: Settings, engine: Engine) -> Iterator[TestClient]:
-    with TestClient(create_app(settings, engine)) as test_client:
+    with api_client(create_app(settings, engine)) as test_client:
         yield test_client
 
 
@@ -295,5 +296,5 @@ def test_status_says_when_the_character_was_not_found(client: TestClient) -> Non
 
 def test_status_says_when_there_is_no_client(settings: Settings, engine: Engine) -> None:
     missing = settings.model_copy(update={"bnet_client_id": ""})
-    with TestClient(create_app(missing, engine)) as client:
+    with api_client(create_app(missing, engine)) as client:
         assert client.get("/api/status").json()["can_sync"] is False

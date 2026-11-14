@@ -20,7 +20,7 @@ from character_planner.config import Settings
 from character_planner.db import ActiveWeightPreset, Snapshot
 from character_planner.rules import ARMOR_TYPES, OFF_HAND_TYPES, TWO_HAND_TYPES, WEAPON_TYPES
 
-from .conftest import FIXTURES, REPO_ROOT
+from .conftest import FIXTURES, REPO_ROOT, api_client
 
 CURATED = REPO_ROOT / "data" / "curated"
 
@@ -39,7 +39,7 @@ def profile(session: Session, class_name: str, level: int = 20) -> None:
 
 @pytest.fixture
 def client(settings: Settings, engine: Engine) -> Iterator[TestClient]:
-    with TestClient(create_app(settings, engine)) as test_client:
+    with api_client(create_app(settings, engine)) as test_client:
         yield test_client
 
 

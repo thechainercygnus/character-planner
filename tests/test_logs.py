@@ -29,6 +29,7 @@ from character_planner.logs import (
     safe_database_url,
 )
 
+from .conftest import api_client
 from .test_app import mock_character_api
 from .test_dungeons import mock_companion_dungeons
 from .test_items import mock_battlenet
@@ -180,7 +181,7 @@ def test_upstream_requests_are_logged_only_at_debug(settings: Settings) -> None:
 
 @pytest.fixture
 def client(settings: Settings, engine: Engine) -> Iterator[TestClient]:
-    with TestClient(create_app(settings, engine)) as test_client:
+    with api_client(create_app(settings, engine)) as test_client:
         yield test_client
 
 
@@ -290,7 +291,7 @@ def test_no_token_code_or_secret_reaches_the_log_files(
         }
     )
     configure_logging(settings, "api")
-    with TestClient(create_app(settings, engine)) as client:
+    with api_client(create_app(settings, engine)) as client:
         login = client.get("/auth/login", follow_redirects=False)
         state = parse_qs(urlparse(login.headers["location"]).query)["state"][0]
         respx.post(oauth.TOKEN_URL).mock(
