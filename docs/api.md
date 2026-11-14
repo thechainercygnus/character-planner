@@ -27,19 +27,47 @@ What the page footer shows (#43): the data credits, the source link (AGPL) and t
 
 Character
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [CharacterView](#schema-characterview)
 
 ### `DELETE /api/character`
 
-Delete everything stored for the character (#133): snapshots, history, plans, settings edited in the app, alerts and tokens. Shared game data stays. The next sync, by hand or on the worker's schedule, fetches the character again.
+Stop tracking the character and delete everything stored for it (#133, #14): snapshots, history, plans and settings edited in the app. Other characters and shared game data stay. With none left, the next start tracks the character .env names again.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** [Erased](#schema-erased)
+
+## `characters`
+
+### `GET /api/characters`
+
+Every tracked character, for the header's switcher (#14). Requests pick one with X-Character-Id; without it they get default_id, the first.
+
+**200:** [CharacterList](#schema-characterlist)
+
+### `POST /api/characters`
+
+Track another character. Sync it (with its X-Character-Id) to fetch its data.
+
+**Body:** [NewCharacter](#schema-newcharacter)
+
+**201:** [CharacterSummary](#schema-charactersummary)
 
 ## `choices`
 
 ### `GET /api/choices`
 
 Items dismissed in the app, newest first (ADR 0012).
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** list of [ItemChoiceView](#schema-itemchoiceview)
 
@@ -50,6 +78,7 @@ Dismiss an item: never suggest it. Pinning is POST /api/targets/pins.
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `item_id` | path | integer (exclusiveMinimum 0) | yes |  |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **Body:** [ChoiceUpdate](#schema-choiceupdate)
 
@@ -62,6 +91,7 @@ Suggest a dismissed item again.
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `item_id` | path | integer (exclusiveMinimum 0) | yes |  |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** list of [ItemChoiceView](#schema-itemchoiceview)
 
@@ -70,6 +100,10 @@ Suggest a dismissed item again.
 ### `GET /api/class-quests`
 
 The synced character's class quests: missed, now, soon, later and done (#8).
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** [ClassQuestChecklist](#schema-classquestchecklist)
 
@@ -80,6 +114,7 @@ Mark a class quest done, or not done.
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `quest_id` | path | string (pattern ^[a-z0-9-]{1,100}$) | yes |  |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **Body:** [ClassQuestUpdate](#schema-classquestupdate)
 
@@ -94,6 +129,7 @@ Every enchant recipe that maps to a gear slot, with parsed effects.
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `include_sod` | query | boolean | no | false |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** list of [EnchantOption](#schema-enchantoption)
 
@@ -165,6 +201,10 @@ Go back to the shipped number.
 
 Best enchants in reach per slot, against the one on now (ADR 0010).
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [EnchantAdvice](#schema-enchantadvice)
 
 ### `POST /api/enchants/refresh`
@@ -182,6 +222,10 @@ Enchant recipes from Blizzard's profession data, plus their reagents and crafted
 ### `GET /api/gear`
 
 Gear
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** [GearPlan](#schema-gearplan)
 
@@ -223,6 +267,7 @@ Refresh item data from every source. force=true refetches everything. Source fai
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `force` | query | boolean | no | false |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** [RefreshResult](#schema-refreshresult)
 
@@ -235,6 +280,7 @@ What each of the next `levels` levels brings (#4): dungeons opening, gear target
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `levels` | query | integer (minimum 1, maximum 10) | no | 5 |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** [LookAhead](#schema-lookahead)
 
@@ -292,6 +338,10 @@ Send a test message to the destination now.
 
 Dungeon drops and quest rewards for the character's level window.
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [PoolView](#schema-poolview)
 
 ### `POST /api/pool/refresh`
@@ -311,6 +361,10 @@ Refresh dungeon drop tables and quest rewards, then item details for a level win
 
 Each synced profession: skill, rank, the next rank and crafted gear (#10).
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [ProfessionsView](#schema-professionsview)
 
 ## `progress`
@@ -318,6 +372,10 @@ Each synced profession: skill, rank, the next rank and crafted gear (#10).
 ### `GET /api/progress`
 
 One point per sync, plus gear changes and level-ups (ADR 0008).
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** [Progress](#schema-progress)
 
@@ -327,6 +385,10 @@ One point per sync, plus gear changes and level-ups (ADR 0008).
 
 Best upgrades in reach for each slot, from the item pool (ADR 0007).
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [Recommendations](#schema-recommendations)
 
 ## `rules`
@@ -335,11 +397,19 @@ Best upgrades in reach for each slot, from the item pool (ADR 0007).
 
 The Upgrades rules, their defaults, and what the editor can offer (ADR 0016).
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [RulesView](#schema-rulesview)
 
 ### `PUT /api/rules`
 
 Replace the Upgrades rules.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **Body:** [EditedRules](#schema-editedrules)
 
@@ -349,6 +419,10 @@ Replace the Upgrades rules.
 
 Go back to data/curated/recommend.yaml.
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [RulesView](#schema-rulesview)
 
 ## `snapshots`
@@ -357,11 +431,19 @@ Go back to data/curated/recommend.yaml.
 
 Latest
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** object
 
 ### `POST /api/snapshots/manual`
 
 Fallback for data the API doesn't return: store it in the same shape, for the current character.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **Body:** [ManualSnapshot](#schema-manualsnapshot)
 
@@ -373,6 +455,10 @@ Fallback for data the API doesn't return: store it in the same shape, for the cu
 
 Status
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** object
 
 ## `summary.md`
@@ -380,6 +466,10 @@ Status
 ### `GET /api/summary.md`
 
 Summary
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** no body
 
@@ -389,6 +479,10 @@ Summary
 
 Pull every endpoint and store each response, failures included. Then look up any target items not in the item catalog yet. That step is best-effort: a catalog failure never fails the sync. On a fresh instance, the item pool and enchant data then load in the background (#87).
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** map of integer
 
 ## `talents`
@@ -397,11 +491,19 @@ Pull every endpoint and store each response, failures included. Then look up any
 
 The talent plan compared with the synced talents (ADR 0009).
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [TalentPlanView](#schema-talentplanview)
 
 ### `PUT /api/talents/plan`
 
 Replace the talent plan. With the talent trees loaded, a plan that breaks their rules (unknown talents, prerequisites, points per row) is refused (#88).
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **Body:** [TalentPlan](#schema-talentplan)
 
@@ -411,17 +513,29 @@ Replace the talent plan. With the talent trees loaded, a plan that breaks their 
 
 Go back to data/curated/talent_plan.yaml.
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [TalentPlanView](#schema-talentplanview)
 
 ### `POST /api/talents/refresh`
 
 Fetch the synced class's talent trees and icons again.
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [TalentRefresh](#schema-talentrefresh)
 
 ### `GET /api/talents/tree`
 
 The synced class's talent trees (#88). `tree` is null until they're loaded: after the first sync, in the background.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** [TalentTreeView](#schema-talenttreeview)
 
@@ -431,11 +545,19 @@ The synced class's talent trees (#88). `tree` is null until they're loaded: afte
 
 The gear targets in use: edited in the app, or gear_targets.yaml (ADR 0014).
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [GearTargets](#schema-geartargets)
 
 ### `PUT /api/targets`
 
 Replace the gear targets. Priority follows each slot's order.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **Body:** [EditedTargets](#schema-editedtargets)
 
@@ -445,11 +567,19 @@ Replace the gear targets. Priority follows each slot's order.
 
 Go back to data/curated/gear_targets.yaml.
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [GearTargets](#schema-geartargets)
 
 ### `POST /api/targets/pins`
 
 Pin a pool item as a target ("Make target").
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **Body:** [Pin](#schema-pin)
 
@@ -462,6 +592,7 @@ Take the pin off a target ("Unpin"); it stays a target.
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `item_id` | path | integer (exclusiveMinimum 0) | yes |  |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** [GearTargets](#schema-geartargets)
 
@@ -471,11 +602,19 @@ Take the pin off a target ("Unpin"); it stays a target.
 
 The active preset's weights, its defaults and every preset (ADR 0013).
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [WeightsView](#schema-weightsview)
 
 ### `PUT /api/weights`
 
 Replace the active preset's weights. Stats left out fall back to their default.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **Body:** [WeightsUpdate](#schema-weightsupdate)
 
@@ -485,11 +624,19 @@ Replace the active preset's weights. Stats left out fall back to their default.
 
 Reset the active shipped preset to its curated file.
 
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
 **200:** [WeightsView](#schema-weightsview)
 
 ### `PUT /api/weights/active`
 
 Switch presets: every score uses the active one.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **Body:** [PresetChoice](#schema-presetchoice)
 
@@ -498,6 +645,10 @@ Switch presets: every score uses the active one.
 ### `POST /api/weights/presets`
 
 Save weights as a preset of your own ("Save as") and switch to it.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **Body:** [NewPreset](#schema-newpreset)
 
@@ -510,6 +661,7 @@ Rename a preset of your own.
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `key` | path | string | yes |  |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **Body:** [PresetRename](#schema-presetrename)
 
@@ -522,6 +674,7 @@ Delete a preset of your own; if it was active, Leveling tank takes over.
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
 | `key` | path | string | yes |  |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** [WeightsView](#schema-weightsview)
 
@@ -573,6 +726,31 @@ Login
 | `usable_now` | boolean | yes |
 | `is_target` | boolean | no |
 | `pinned` | boolean | no |
+
+(schema-characterlist)=
+### CharacterList
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `characters` | list of [CharacterSummary](#schema-charactersummary) | yes |
+| `default_id` | integer or null | yes |
+
+(schema-charactersummary)=
+### CharacterSummary
+
+A tracked character, for the header's switcher (#14).
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `id` | integer | yes |
+| `region` | string | yes |
+| `slug` | string | yes |
+| `name` | string | yes |
+| `surname` | string | yes |
+| `character_class` | string or null | yes |
+| `race` | string or null | yes |
+| `faction` | string or null | yes |
+| `level` | integer or null | yes |
 
 (schema-characterview)=
 ### CharacterView
@@ -1073,6 +1251,17 @@ A scope, kit or other crafted enchant in reach whose effect isn't known (#36).
 | `item_id` | integer | yes |
 | `recipe` | string | yes |
 | `slots` | list of string | yes |
+
+(schema-newcharacter)=
+### NewCharacter
+
+A character to track, as Forever looks it up: first name, surname, region.
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `name` | string (minLength 2, maxLength 12) | yes |
+| `surname` | string (minLength 1, maxLength 24) | yes |
+| `region` | `us` \\| `eu` \\| `kr` \\| `tw` | yes |
 
 (schema-newdestination)=
 ### NewDestination

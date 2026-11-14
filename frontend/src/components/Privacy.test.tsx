@@ -62,7 +62,7 @@ describe('Privacy', () => {
     fireEvent.click(screen.getByRole('button', { name: "Delete the character's data" }))
     fireEvent.click(screen.getByRole('button', { name: 'Yes, delete everything' }))
     expect((await screen.findByRole('status')).textContent).toBe(
-      'Deleted 9 stored rows. The next sync fetches the character again.',
+      'Deleted 9 stored rows, and stopped tracking the character.',
     )
     expect(calls).toContainEqual({ url: '/api/character', method: 'DELETE' })
   })

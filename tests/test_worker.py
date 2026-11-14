@@ -110,7 +110,10 @@ def test_scheduled_sync_stores_snapshots_even_with_an_expired_login(
     served = {"profile", "equipment", "statistics", "professions", "specializations"}
     assert served <= kinds
     # Endpoints the mock doesn't serve (404) are stored and named as failed.
-    assert outcome == f"synced {len(kinds)} endpoints, failed: {', '.join(sorted(kinds - served))}"
+    assert outcome == (
+        f"brumboldt-doomlet synced {len(kinds)} endpoints, "
+        f"failed: {', '.join(sorted(kinds - served))}"
+    )
 
 
 @respx.mock  # no routes: any request would fail the test

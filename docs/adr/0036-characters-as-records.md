@@ -35,7 +35,20 @@ character to hang data on.
      in the app (#14's last step, #15).
    - Seeding happens in code, not in the migration: the migration can't read settings, and
      every entry point (API, worker, CLI) goes through the same step.
-4. **Until the app can switch characters,** the "current" character is the first one, by id.
+4. **A request names its character with the `X-Character-Id` header.**
+   - Without the header, a request gets the first character, by id. Plain links, the
+     summary and older clients keep working.
+   - #14 offered `/api/characters/{id}/...` routes or a header. The header keeps one
+     set of routes, so there's no alias to keep and nothing to retire. The web app
+     already sends a header on every request (#124).
+   - An unknown id answers 404.
+   - The header's switcher lists the characters (`GET /api/characters`) and adds one by
+     name, surname and region (`POST /api/characters`).
+5. **Every character is synced.** The worker syncs each tracked character in turn. Shared
+   refreshes (the item pool's level window, talent trees, first data load) follow the
+   first character.
+6. **Deleting is per character.** `DELETE /api/character` stops tracking the selected
+   character and deletes its rows. `character-planner-db erase` still deletes everything.
 
 ## Consequences
 

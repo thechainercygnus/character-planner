@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { api } from '../api'
+import { api, selectCharacter } from '../api'
 
 const EMAIL = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/
 
@@ -26,6 +26,7 @@ function EraseData() {
     mutationFn: api.eraseCharacter,
     onSuccess: () => {
       setConfirming(false)
+      selectCharacter(null) // it's gone: back to the default character
       return queryClient.invalidateQueries()
     },
   })
@@ -33,7 +34,7 @@ function EraseData() {
     const rows = Object.values(erase.data.removed).reduce((sum, n) => sum + n, 0)
     return (
       <p role="status">
-        Deleted {rows} stored {rows === 1 ? 'row' : 'rows'}. The next sync fetches the character again.
+        Deleted {rows} stored {rows === 1 ? 'row' : 'rows'}, and stopped tracking the character.
       </p>
     )
   }
@@ -43,7 +44,8 @@ function EraseData() {
       {confirming ? (
         <>
           <p>
-            This deletes the character's snapshots and history, your plans, settings and alerts. It can't be undone.
+            This stops tracking the character and deletes its snapshots, history, plans and settings. It can't be
+            undone.
           </p>
           <button type="button" onClick={() => erase.mutate()} disabled={erase.isPending}>
             {erase.isPending ? 'Deleting…' : 'Yes, delete everything'}
@@ -121,9 +123,9 @@ export function Privacy() {
 
       <h2>Removing it</h2>
       <p>
-        Delete everything stored for the character here. Shared game data stays. The next sync, by hand or on the
-        worker's schedule, fetches the character again: to stop for good, ask <Contact value={contact} /> to stop the
-        planner.
+        Delete everything stored for the character you're viewing here: it stops being tracked. Other characters and
+        shared game data stay. If it's the only one, the planner tracks the character its settings name again on its
+        next start: to stop for good, ask <Contact value={contact} /> to stop the planner.
       </p>
       <EraseData />
     </article>

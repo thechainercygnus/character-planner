@@ -15,7 +15,7 @@ from typing import Annotated, Any
 from uuid import uuid4
 
 import httpx
-from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Query, Request
+from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi import Path as FastAPIPath
 from fastapi.responses import JSONResponse, PlainTextResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -27,7 +27,17 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from character_planner import jobs, leases, notify
 from character_planner.blizzard import oauth
-from character_planner.characters import adopt_at_start, current_character
+from character_planner.characters import (
+    CharacterList,
+    CharacterSummary,
+    DuplicateCharacter,
+    NewCharacter,
+    add_character,
+    adopt_at_start,
+    character_list,
+    current_character,
+    delete_character,
+)
 from character_planner.choices import (
     ChoiceKind,
     ItemChoiceView,
@@ -98,7 +108,6 @@ from character_planner.enchants import (
     equipped_effects,
     load_enchant_data,
 )
-from character_planner.erase import erase_character
 from character_planner.guest import (
     Faction,
     GuestError,
@@ -242,9 +251,17 @@ def get_session(request: Request) -> Iterator[Session]:
 SessionDep = Annotated[Session, Depends(get_session)]
 
 
-def get_character_id(request: Request, session: SessionDep) -> int | None:
-    """The character this request is about (#14, ADR 0036): the current one until the app
-    can switch. None on a fresh install with no character named."""
+def get_character_id(
+    request: Request,
+    session: SessionDep,
+    selected: Annotated[int | None, Header(alias="X-Character-Id", gt=0)] = None,
+) -> int | None:
+    """The character this request is about (#14, ADR 0036): the one the X-Character-Id
+    header names, else the first. None on a fresh install with no character named."""
+    if selected is not None:
+        if session.get(Character, selected) is None:
+            raise HTTPException(404, f"No character {selected}")
+        return selected
     character = current_character(session, request.app.state.settings)
     return character.id if character else None
 
@@ -919,13 +936,31 @@ def create_app(
         return character_view(latest_by_kind(session, character_id), icons_by_id(session))
 
     @app.delete("/api/character")
-    def erase(session: SessionDep) -> Erased:
-        """Delete everything stored for the character (#133): snapshots, history, plans,
-        settings edited in the app, alerts and tokens. Shared game data stays. The next
-        sync, by hand or on the worker's schedule, fetches the character again."""
-        removed = erase_character(session)
-        logger.info("Erased the character's data: %d rows", sum(removed.values()))
-        return Erased(removed=removed)
+    def erase(session: SessionDep, character_id: CharacterIdDep) -> Erased:
+        """Stop tracking the character and delete everything stored for it (#133, #14):
+        snapshots, history, plans and settings edited in the app. Other characters and
+        shared game data stay. With none left, the next start tracks the character .env
+        names again."""
+        if character_id is None:
+            return Erased(removed={})
+        return Erased(removed=delete_character(session, character_id))
+
+    @app.get("/api/characters")
+    def characters(session: SessionDep) -> CharacterList:
+        """Every tracked character, for the header's switcher (#14). Requests pick one
+        with X-Character-Id; without it they get default_id, the first."""
+        current_character(session, settings)  # seeds the first from .env if there's none
+        return character_list(session)
+
+    @app.post("/api/characters", status_code=201)
+    def post_character(new: NewCharacter, session: SessionDep) -> CharacterSummary:
+        """Track another character. Sync it (with its X-Character-Id) to fetch its data."""
+        try:
+            character = add_character(session, new)
+        except DuplicateCharacter as error:
+            raise HTTPException(409, str(error)) from error
+        listed = character_list(session).characters
+        return next(c for c in listed if c.id == character.id)
 
     def build_gear_plan(
         session: Session, character_id: int | None, targets: GearTargets, presets: ShippedPresets

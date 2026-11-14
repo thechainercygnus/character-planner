@@ -235,7 +235,9 @@ def test_the_worker_syncs_without_a_login(engine: Engine, settings: Settings) ->
     respx.post(oauth.TOKEN_URL).mock(return_value=token_response())
     mock_character()
     with Session(engine) as session:
-        assert worker.sync_job(session, settings, None).startswith("synced 7 endpoints")
+        assert worker.sync_job(session, settings, None).startswith(
+            "brumboldt-doomlet synced 7 endpoints"
+        )
 
 
 @respx.mock
@@ -244,7 +246,7 @@ def test_the_worker_names_a_character_it_cannot_find(engine: Engine, settings: S
     mock_character(profile=404)
     with Session(engine) as session:
         outcome = worker.sync_job(session, settings, None)
-    assert outcome == "character brumboldt-doomlet not found: check its name and region"
+    assert outcome == "brumboldt-doomlet not found: check its name and region"
 
 
 @respx.mock

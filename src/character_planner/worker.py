@@ -23,7 +23,7 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
 from character_planner import jobs, notify, retention
-from character_planner.characters import current_character
+from character_planner.characters import all_characters, current_character
 from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, make_engine, utcnow
 from character_planner.leases import Busy
@@ -43,16 +43,20 @@ def sync_job(session: Session, settings: Settings, http: httpx.Client | None) ->
     # CredentialsError, which fails the job and sends the system alert.
     if not settings.has_credentials:
         return "skipped: no Battle.net client (BNET_CLIENT_ID, BNET_CLIENT_SECRET in .env)"
-    character = current_character(session, settings)
-    if character is None:
+    if current_character(session, settings) is None:  # seeds the first from .env
         return "skipped: no character to sync (CHARACTER_NAME in .env names the first)"
-    statuses = jobs.sync_character(session, settings, character, http=http)
-    if statuses.get("profile") == 404:
-        return f"character {character.slug} not found: check its name and region"
-    failed = sorted(kind for kind, status in statuses.items() if status != 200)
-    return f"synced {len(statuses)} endpoints" + (
-        f", failed: {', '.join(failed)}" if failed else ""
-    )
+    outcomes: list[str] = []
+    for character in all_characters(session):  # every tracked character (#14)
+        statuses = jobs.sync_character(session, settings, character, http=http)
+        if statuses.get("profile") == 404:
+            outcomes.append(f"{character.slug} not found: check its name and region")
+            continue
+        failed = sorted(kind for kind, status in statuses.items() if status != 200)
+        outcomes.append(
+            f"{character.slug} synced {len(statuses)} endpoints"
+            + (f", failed: {', '.join(failed)}" if failed else "")
+        )
+    return "; ".join(outcomes)
 
 
 def pool_job(session: Session, settings: Settings, http: httpx.Client | None) -> str:

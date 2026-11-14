@@ -7,13 +7,14 @@ aren't read again.
 """
 
 import logging
-from typing import Any
+from typing import Any, cast
 
-from sqlalchemy import update
+from pydantic import BaseModel, Field, field_validator
+from sqlalchemy import delete, update
 from sqlmodel import Session, col, select
 
 from character_planner import fields
-from character_planner.config import Settings
+from character_planner.config import Region, Settings
 from character_planner.db import (
     ActiveWeightPreset,
     Character,
@@ -125,3 +126,107 @@ def refresh_from_profile(session: Session, character: Character) -> None:
     faction = fields.get(payload, "faction", "type")
     character.faction = faction if isinstance(faction, str) else character.faction
     session.add(character)
+
+
+class CharacterSummary(BaseModel):
+    """A tracked character, for the header's switcher (#14)."""
+
+    id: int
+    region: str
+    slug: str
+    name: str
+    surname: str
+    character_class: str | None
+    race: str | None
+    faction: str | None
+    level: int | None  # from its newest profile; None before its first sync
+
+
+class CharacterList(BaseModel):
+    characters: list[CharacterSummary]
+    # The one a request without X-Character-Id gets: the first (ADR 0036).
+    default_id: int | None
+
+
+class NewCharacter(BaseModel):
+    """A character to track, as Forever looks it up: first name, surname, region."""
+
+    name: str = Field(min_length=2, max_length=12)
+    surname: str = Field(min_length=1, max_length=24)
+    region: Region
+
+    @field_validator("name", "surname")
+    @classmethod
+    def _letters(cls, value: str) -> str:
+        # Assumed from WoW's naming rules: letters only. Forever's own rules are unknown.
+        value = value.strip()
+        if not value.isalpha():
+            raise ValueError("letters only")
+        return value[0].upper() + value[1:].lower()
+
+
+class DuplicateCharacter(Exception):
+    pass
+
+
+def all_characters(session: Session) -> list[Character]:
+    return list(session.exec(select(Character).order_by(col(Character.id))).all())
+
+
+def character_list(session: Session) -> CharacterList:
+    from character_planner.db import latest_by_kind
+    from character_planner.views import character_level
+
+    rows: list[CharacterSummary] = []
+    for character in all_characters(session):
+        assert character.id is not None
+        profile = latest_by_kind(session, character.id).get("profile")
+        rows.append(
+            CharacterSummary(
+                id=character.id,
+                region=character.region,
+                slug=character.slug,
+                name=character.name,
+                surname=character.surname,
+                character_class=character.character_class,
+                race=character.race,
+                faction=character.faction,
+                level=character_level(profile.payload if profile else None),
+            )
+        )
+    return CharacterList(characters=rows, default_id=rows[0].id if rows else None)
+
+
+def add_character(session: Session, new: NewCharacter) -> Character:
+    """Track another character; its data arrives with its first sync."""
+    slug = f"{new.name}-{new.surname}".lower()
+    taken = session.exec(
+        select(Character).where(col(Character.region) == new.region, col(Character.slug) == slug)
+    ).first()
+    if taken is not None:
+        raise DuplicateCharacter(f"{new.name} {new.surname} ({new.region}) is already tracked")
+    character = Character(region=new.region, slug=slug, name=new.name, surname=new.surname)
+    session.add(character)
+    session.commit()
+    session.refresh(character)
+    logger.info("Tracking %s (%s)", character.slug, character.region)
+    return character
+
+
+def delete_character(session: Session, character_id: int) -> dict[str, int]:
+    """Stop tracking a character and delete everything stored for it (#133): its
+    snapshots, history and settings. Other characters and shared data stay. Returns the
+    rows deleted per table."""
+    removed: dict[str, int] = {}
+    for table in OWNED:
+        statement = delete(table).where(col(table.character_id) == character_id)
+        result: Any = session.exec(statement)  # pyright: ignore[reportCallIssue, reportArgumentType]
+        if count := int(result.rowcount or 0):
+            removed[str(cast(Any, table).__tablename__)] = count
+    character = session.get(Character, character_id)
+    if character is not None:
+        session.delete(character)
+        removed["character"] = 1
+    session.commit()
+    logger.info("Deleted character %s: %d rows", character_id, sum(removed.values()))
+    return removed
