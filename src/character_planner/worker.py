@@ -22,7 +22,7 @@ import httpx
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
-from character_planner import jobs, notify
+from character_planner import jobs, notify, retention
 from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, make_engine, utcnow
 from character_planner.leases import Busy
@@ -94,6 +94,13 @@ def talents_job(session: Session, settings: Settings, http: httpx.Client | None)
     )
 
 
+def retention_job(session: Session, settings: Settings, http: httpx.Client | None) -> str:
+    """Blizzard data older than 30 days goes (#131, ADR 0034), even on an instance that
+    has stopped syncing."""
+    result = retention.prune(session)
+    return f"deleted {result.total} rows older than 30 days, archived {result.archived} points"
+
+
 def notify_upstream(session: Session, settings: Settings, job: str, errors: list[str]) -> None:
     """A system alert for many upstream errors, or for one that stopped the refresh: a
     rate limit, or an upstream list that came back empty (#87)."""
@@ -127,6 +134,8 @@ def default_schedule(settings: Settings) -> Schedule:
             Job("enchants", timedelta(hours=settings.enchants_every_hours), enchants_job),
             # Talent trees are static too: on the enchants' weekly schedule (#88).
             Job("talents", timedelta(hours=settings.enchants_every_hours), talents_job),
+            # Blizzard's terms: nothing from its APIs kept past 30 days (#131).
+            Job("retention", timedelta(hours=24), retention_job),
         ]
     )
 

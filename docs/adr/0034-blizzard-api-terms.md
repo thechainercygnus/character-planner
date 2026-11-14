@@ -53,7 +53,9 @@ hosting for many users. It has a feedback form for questions.
 2. **Derived history is kept small and Blizzard-free where it can be.** The Progress tab
    (ADR 0008) rebuilds history from snapshots. Beyond 30 days it may keep only the
    planner's own numbers: dates, levels, item level, score. It may not keep item names or
-   raw responses. Because Blizzard claims derivatives (§9.1), even that is a judgment
+   raw responses. (#131 keeps date, level and average item level. The score is left out
+   because it's recomputed with the current stat weights, which an archived point can't
+   be.) Because Blizzard claims derivatives (§9.1), even that is a judgment
    call, recorded here, to revisit if Blizzard says otherwise.
 3. **Private display: allowed.** Each user sees their own characters (#13, #14, #15) and,
    with every member's consent, a guild's shared view (#18). That's "end users for their

@@ -36,6 +36,7 @@ AFTER_BASELINE = {
     "craftingrecipe",  # 0007
     "blizzarditem",
     "storedenchantcorrections",  # 0008
+    "progresshistory",  # 0009
 }
 
 

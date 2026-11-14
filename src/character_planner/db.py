@@ -26,6 +26,16 @@ class Snapshot(SQLModel, table=True):
     payload: Any = Field(sa_column=Column(JSON, nullable=True))
 
 
+class ProgressHistory(SQLModel, table=True):
+    """One past sync's own numbers, kept when its snapshots are deleted after 30 days
+    (#131, ADR 0034): the date, level and average item level. No item names, stats or
+    raw responses: those are Blizzard's and kept 30 days at most."""
+
+    captured_at: datetime = Field(primary_key=True)
+    level: int | None = None
+    item_level: float | None = None
+
+
 class StoredToken(SQLModel, table=True):
     """Battle.net tokens. Row 1 is the user's login (authorization code, 24 hours, only
     needed for the account's character list). Row 2 is the app's own Client Credentials

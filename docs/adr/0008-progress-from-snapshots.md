@@ -1,6 +1,8 @@
 # 0008: Rebuild progress over time from the stored snapshots
 
-Status: accepted (2026-11-11)
+Status: accepted (2026-11-11). Amended by ADR 0034 (#131): snapshots are deleted after
+30 days, and older points are kept in `ProgressHistory` with only the date, level and
+average item level. Score, stats and gear changes cover the last 30 days.
 
 ## Context
 

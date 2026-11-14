@@ -24,9 +24,11 @@ from sqlmodel import Session, select
 
 from character_planner import fields
 from character_planner.blizzard.client import BlizzardClient
+from character_planner.companion import as_utc
 from character_planner.config import Settings
 from character_planner.db import SpellIcon, TalentTreeData, save_now, utcnow
 from character_planner.logs import JobLog
+from character_planner.retention import fresh_since
 from character_planner.tokens import CredentialsError, app_token
 
 logger = logging.getLogger(__name__)
@@ -239,8 +241,14 @@ def refresh_talent_trees(
         parsed = stored_tree(session, class_name)
         nodes = parsed.nodes().values() if parsed else ()
         spells = [n.spell_id for _, n in nodes if n.spell_id]
-        # Spells without an icon yet are tried again: a failed lookup may have been a blip.
-        known = {row.spell_id for row in session.exec(select(SpellIcon)).all() if row.url}
+        # Spells without an icon yet are tried again (a failed lookup may have been a
+        # blip), and so are icons past REFRESH_AFTER, before the 30-day prune (#131).
+        fresh = fresh_since()
+        known = {
+            row.spell_id
+            for row in session.exec(select(SpellIcon)).all()
+            if row.url and as_utc(row.fetched_at) >= fresh
+        }
         wanted = [s for s in dict.fromkeys(spells) if s not in known]
         job = JobLog(logger, "Talent icons", len(wanted))
         for number, spell_id in enumerate(wanted, start=1):

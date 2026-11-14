@@ -87,6 +87,7 @@ def test_default_schedule_comes_from_settings(settings: Settings) -> None:
         ("pool", timedelta(hours=12)),
         ("enchants", timedelta(hours=168)),
         ("talents", timedelta(hours=168)),
+        ("retention", timedelta(hours=24)),  # Blizzard data past 30 days (#131)
     ]
 
 
