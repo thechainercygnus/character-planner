@@ -159,6 +159,14 @@ Alternatively add a container for your reverse proxy of choice or add the requir
 | Tailscale (HTTPS on your tailnet) | `https://character-planner.<tailnet>.ts.net` | `TS_AUTHKEY`, optionally `TS_HOSTNAME` |
 | Your own reverse proxy with HTTPS, on the same machine | `https://planner.example.com` | `PLANNER_HOSTS=planner.example.com`; the proxy forwards to `127.0.0.1:8000` |
 
+**Portainer:** `deploy/portainer.yaml` is the Tailscale setup as one self-contained stack:
+- **To use it:** paste it into **Stacks → Add stack → Web editor**, and set its variables
+  under **Environment variables**. The list is at the top of the file.
+- **Self-contained:** it needs no `.env`, no build and no files from the repository.
+- **Releases:** it runs the release pinned in it. Set `PLANNER_IMAGE` to run another.
+- **One name per host:** use a different stack name if a `character-planner` Compose
+  project already runs on the same host.
+
 The planner only answers to the names it's opened at: `localhost`, `127.0.0.1`, your
 tailnet name, and what you list in `PLANNER_HOSTS` (comma separated, for example
 `PLANNER_HOSTS=192.168.1.20,planner.local`). Any other name gets "Invalid host header".
