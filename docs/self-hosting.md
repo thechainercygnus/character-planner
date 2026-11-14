@@ -296,6 +296,16 @@ secret and login codes are always replaced by `[redacted]`.
 
 ## 10. Back up and upgrade
 
+**What's kept, and for how long.** Blizzard's API terms limit everything fetched from
+Battle.net to 30 days (ADR 0034):
+- the planner deletes it after 30 days, every day and after each sync, and fetches what
+  it still needs again before then;
+- the Progress tab keeps older points with only their date, level and average item level;
+- a character Battle.net no longer has is deleted at once.
+
+Your own settings, plans and manual entries stay until you change them. A backup holds
+whatever the database held that day, so treat it like the database.
+
 **Back up** the database, one file on the volume:
 
 ```bash

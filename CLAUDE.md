@@ -98,6 +98,7 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/lookahead.py`: what the next levels bring, built from the gear, talent, class quest, profession and dungeon views (ADR 0032)
 - `src/character_planner/class_quests.py`: the class quest checklist by class, faction, race and level; done marks set in the app (ADR 0030)
 - `src/character_planner/quests.py`: quest chains for quest rewards; steps no dungeon describes fetched by id, zone quests only named (ADR 0028)
+- `src/character_planner/retention.py`: Blizzard data kept at most 30 days: pruning, refresh-before-expiry ages, archived Progress points, forgetting a character Battle.net no longer has (ADR 0034, #131)
 - `src/character_planner/progress.py`: progress over time rebuilt from snapshots: points, gear changes, level-ups (ADR 0008)
 - `src/character_planner/talents.py`: the talent plan compared with synced talents (ADR 0009), matched by talent id; default in `data/curated/talent_plan.yaml`
 - `src/character_planner/talent_trees.py`: Forever's talent trees from Blizzard's game data, and the plan rules (prerequisites, points per row); the frontend's twin is `frontend/src/talentRules.ts` (ADR 0025)
