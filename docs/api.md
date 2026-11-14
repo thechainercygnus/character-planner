@@ -21,6 +21,14 @@ What the page footer shows (#43): the data credits, the source link (AGPL) and t
 
 **200:** [About](#schema-about)
 
+## `account`
+
+### `GET /api/account/characters`
+
+The characters on the signed-in Battle.net account (#15), to pick ones to track. Fetched each time and never stored: the list names every character on the account (ADR 0034). Needs the optional Battle.net sign-in.
+
+**200:** [AccountCharacters](#schema-accountcharacters)
+
 ## `character`
 
 ### `GET /api/character`
@@ -703,6 +711,29 @@ Login
 | `source_url` | string | yes |
 | `data` | [DataCredit](#schema-datacredit) | yes |
 | `operator_contact` | string | no |
+
+(schema-accountcharacter)=
+### AccountCharacter
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `blizzard_id` | integer or null | yes |
+| `name` | string | yes |
+| `surname` | string | yes |
+| `slug` | string | yes |
+| `region` | string | yes |
+| `character_class` | string or null | yes |
+| `race` | string or null | yes |
+| `faction` | string or null | yes |
+| `level` | integer or null | yes |
+| `tracked` | boolean | no |
+
+(schema-accountcharacters)=
+### AccountCharacters
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `characters` | list of [AccountCharacter](#schema-accountcharacter) | yes |
 
 (schema-alertinfo)=
 ### AlertInfo

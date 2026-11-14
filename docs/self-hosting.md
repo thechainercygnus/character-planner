@@ -211,8 +211,10 @@ Besides the client:
 - `CHARACTER_NAME` and `CHARACTER_SURNAME`: your character's first name and surname, as
   shown in game. Forever looks characters up by both. They name the **first** character
   only: on its first start the planner saves that character, with `BNET_REGION`, in its
-  database, and reads these settings no more (ADR 0036). Add more characters in the app:
-  the character menu at the top left, **Add a character…**. The worker syncs them all.
+  database, and reads these settings no more (ADR 0036). Add more characters in the app,
+  from the character menu at the top left: **Add a character…**. After you **Sign in with
+  Battle.net**, the form lists your account's characters to pick from. Without signing in,
+  you type a character's name, surname and region instead. The worker syncs them all.
 - `PLANNER_IMAGE`: the release to run, for example
   `PLANNER_IMAGE=ghcr.io/thechainercygnus/character-planner:0.1`. `0.1` follows the
   latest `0.1.x`; `0.1.0` stays put.

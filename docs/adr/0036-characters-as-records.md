@@ -47,7 +47,13 @@ character to hang data on.
 5. **Every character is synced.** The worker syncs each tracked character in turn. Shared
    refreshes (the item pool's level window, talent trees, first data load) follow the
    first character.
-6. **Deleting is per character.** `DELETE /api/character` stops tracking the selected
+6. **Characters can be picked from the signed-in account (#15).**
+   - `GET /api/account/characters` reads `/profile/user/wow` with the optional
+     Battle.net sign-in.
+   - The list is fetched each time and never stored, since it names every character on
+     the account (ADR 0034). Only the characters picked are tracked.
+   - A character's slug and region come from its `href`, because Forever has no realms.
+7. **Deleting is per character.** `DELETE /api/character` stops tracking the selected
    character and deletes its rows. `character-planner-db erase` still deletes everything.
 
 ## Consequences

@@ -26,7 +26,9 @@ from sqlmodel import Session, col, select
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from character_planner import jobs, leases, notify
+from character_planner.account import AccountCharacter, parse_account
 from character_planner.blizzard import oauth
+from character_planner.blizzard.client import BlizzardClient
 from character_planner.characters import (
     CharacterList,
     CharacterSummary,
@@ -34,6 +36,7 @@ from character_planner.characters import (
     NewCharacter,
     add_character,
     adopt_at_start,
+    all_characters,
     character_list,
     current_character,
     delete_character,
@@ -226,6 +229,10 @@ class About(BaseModel):
     data: DataCredit
     # The privacy notice's contact (#133); empty when the operator set none.
     operator_contact: str = ""
+
+
+class AccountCharacters(BaseModel):
+    characters: list[AccountCharacter]
 
 
 class Erased(BaseModel):
@@ -951,6 +958,27 @@ def create_app(
         with X-Character-Id; without it they get default_id, the first."""
         current_character(session, settings)  # seeds the first from .env if there's none
         return character_list(session)
+
+    @app.get("/api/account/characters")
+    def account_characters(session: SessionDep) -> AccountCharacters:
+        """The characters on the signed-in Battle.net account (#15), to pick ones to
+        track. Fetched each time and never stored: the list names every character on the
+        account (ADR 0034). Needs the optional Battle.net sign-in."""
+        token = current_token(session)
+        if token is None:
+            raise HTTPException(401, "Sign in with Battle.net to list your characters")
+        with BlizzardClient(settings, token, http=http) as client:
+            result = client.account_profile()
+        if result.status == 401:
+            raise HTTPException(401, "The Battle.net sign-in has expired: sign in again")
+        if not result.ok:
+            raise HTTPException(502, f"Battle.net answered {result.status} for the account")
+        tracked = {(c.region, c.slug) for c in all_characters(session)}
+        listed = [
+            c.model_copy(update={"tracked": (c.region, c.slug) in tracked})
+            for c in parse_account(result.body)
+        ]
+        return AccountCharacters(characters=listed)
 
     @app.post("/api/characters", status_code=201)
     def post_character(new: NewCharacter, session: SessionDep) -> CharacterSummary:

@@ -18,7 +18,9 @@ This page repeats what the notice says, and covers what an operator needs to do.
 - what's set in the app: gear targets, talent plan, stat weights, rules, dismissed items
   and class quests marked done;
 - the Discord webhooks added for alerts, and the alerts waiting to be sent;
-- the Battle.net sign-in token, if someone signs in.
+- the Battle.net sign-in token, if someone signs in. With it, the planner can list the
+  account's characters to pick from. That list is fetched when it's shown and never
+  stored: only the characters picked are tracked.
 
 It also caches game data that's the same for every character: items, dungeons, recipes
 and talent trees.

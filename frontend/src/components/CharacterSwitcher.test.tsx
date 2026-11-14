@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { selectCharacter, selectedCharacter, type CharacterList } from '../api'
+import { selectCharacter, selectedCharacter, type AccountCharacter, type CharacterList } from '../api'
 import { CharacterSwitcher } from './CharacterSwitcher'
 
 const LIST: CharacterList = {
@@ -39,7 +39,25 @@ interface Call {
   body: unknown
 }
 
-function serve(list: CharacterList = LIST) {
+const ACCOUNT: { characters: AccountCharacter[] } = {
+  characters: [
+    { ...LIST.characters[0]!, blizzard_id: 14060175, level: 18, tracked: true },
+    {
+      blizzard_id: 90000001,
+      name: 'Testy',
+      surname: 'Mcfixture',
+      slug: 'testy-mcfixture',
+      region: 'eu',
+      character_class: 'Priest',
+      race: 'Dwarf',
+      faction: 'ALLIANCE',
+      level: 6,
+      tracked: false,
+    },
+  ],
+}
+
+function serve(list: CharacterList = LIST, signedIn = true) {
   const calls: Call[] = []
   let listed = list
   vi.stubGlobal(
@@ -58,6 +76,11 @@ function serve(list: CharacterList = LIST) {
         return Response.json(added, { status: 201 })
       }
       if (url === '/api/characters') return Response.json(listed)
+      if (url === '/api/account/characters') {
+        return signedIn
+          ? Response.json(ACCOUNT)
+          : Response.json({ detail: 'Sign in with Battle.net to list your characters' }, { status: 401 })
+      }
       return Response.json({})
     }),
   )
@@ -110,6 +133,28 @@ describe('CharacterSwitcher', () => {
     expect(calls.find((c) => c.url === '/api/sync')?.character).toBe('3') // synced as the new one
     expect(selectedCharacter()).toBe(3)
     await waitFor(() => expect(screen.queryByRole('form', { name: 'Add a character' })).toBeNull())
+  })
+
+  it('lists the account characters not tracked yet and tracks one', async () => {
+    const calls = serve()
+    fireEvent.change(await screen.findByRole('combobox', { name: 'Character' }), { target: { value: 'add' } })
+    const list = await screen.findByRole('list', { name: 'Your Battle.net characters' })
+    expect(list.textContent).toBe('Testy Mcfixture · level 6 Priest Track') // Brumboldt is tracked
+    fireEvent.click(screen.getByRole('button', { name: 'Track' }))
+    await waitFor(() => expect(calls.some((c) => c.url === '/api/sync')).toBe(true))
+    expect(calls.find((c) => c.method === 'POST' && c.url === '/api/characters')?.body).toEqual({
+      name: 'Testy',
+      surname: 'Mcfixture',
+      region: 'eu',
+    })
+  })
+
+  it('offers the Battle.net sign-in when the account cannot be listed', async () => {
+    serve(LIST, false)
+    fireEvent.change(await screen.findByRole('combobox', { name: 'Character' }), { target: { value: 'add' } })
+    const link = await screen.findByRole('link', { name: 'Sign in with Battle.net' })
+    expect(link.getAttribute('href')).toBe('/auth/login')
+    expect(screen.getByRole('textbox', { name: 'First name' })).toBeTruthy() // typing still works
   })
 
   it('goes back to the default when the remembered character is gone', async () => {
