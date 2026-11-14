@@ -50,10 +50,13 @@ To sign off commits you already made on your branch: `git rebase --signoff main`
 
 CI enforces these, and the pre-commit hooks run them locally:
 
-- **Python:** [Ruff](https://docs.astral.sh/ruff/) for lint and format, and
-  [pyright](https://microsoft.github.io/pyright/) for types. Settings are in
-  `pyproject.toml`.
-- **Frontend:** [oxlint](https://oxc.rs/docs/guide/usage/linter) and TypeScript's `tsc`.
+- **Python** follows [PEP 8](https://peps.python.org/pep-0008/), checked by
+  [Ruff](https://docs.astral.sh/ruff/), and is formatted by `ruff format` (Black's style,
+  100-character lines). Types are checked by [pyright](https://microsoft.github.io/pyright/),
+  strictly for `src/`. Settings are in `pyproject.toml`.
+- **TypeScript** is checked by `tsc` in `strict` mode with extra flags
+  (`frontend/tsconfig.app.json`), and by [oxlint](https://oxc.rs/docs/guide/usage/linter)'s
+  correctness, suspicious and perf rules (`frontend/.oxlintrc.json`). Warnings fail too.
 - Never log or print access tokens, the Battle.net client secret or webhook URLs.
 - Never commit `.env`, `samples/` or `data/*.db`: they hold secrets or personal data.
 - GitHub Actions are pinned to a full commit SHA with the version as a comment, and
