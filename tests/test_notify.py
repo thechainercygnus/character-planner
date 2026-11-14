@@ -19,6 +19,7 @@ from character_planner.db import (
     NotificationOutbox,
     NotificationState,
     Snapshot,
+    owned,
     utcnow,
 )
 from character_planner.logs import RedactingFormatter, redact
@@ -261,7 +262,7 @@ def test_changes_since_the_last_sync_become_one_message(
         levels_only = add(session, url=OTHER, alerts=["level_up"])
 
         assert notify.after_sync(session, settings, tracked_character(session)) == 0  # the baseline
-        assert session.get(NotificationState, "digest") is not None
+        assert owned(session, NotificationState, tracked(session), key="digest") is not None
 
         assert notify.after_sync(session, settings, tracked_character(session)) == 2
         everything, level = sorted(outbox(session), key=lambda o: o.destination_id != 1)

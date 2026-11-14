@@ -122,7 +122,9 @@ def test_expired_tokens_old_digests_and_sent_alerts_go(engine: Engine) -> None:
     with Session(engine) as session:
         session.add(StoredToken(id=1, access_token="old", expires_at=NOW.timestamp() - 60))
         session.add(StoredToken(id=2, access_token="fresh", expires_at=NOW.timestamp() + 3600))
-        session.add(NotificationState(key="digest", value={}, updated_at=OLD))
+        session.add(
+            NotificationState(character_id=tracked(session), key="digest", value={}, updated_at=OLD)
+        )
         alert: dict[str, Any] = {"destination_id": 1, "kind": "level_up", "payload": {}}
         session.add(NotificationOutbox(**alert, dedupe_key="sent", created_at=OLD, sent_at=OLD))
         session.add(NotificationOutbox(**alert, dedupe_key="failed", created_at=OLD, failed=True))
@@ -146,7 +148,7 @@ def test_a_character_blizzard_no_longer_has_is_forgotten(engine: Engine) -> None
         sync(session, RECENT - timedelta(hours=1), 18, source="manual")
         me = tracked_character(session)
         session.add(ProgressHistory(character_id=me.id, captured_at=OLD, level=12))
-        session.add(NotificationState(key="digest", value={}))
+        session.add(NotificationState(character_id=me.id, key="digest", value={}))
         session.commit()
         assert stored_slug(session, me.id) == "brumboldt-doomlet"
 

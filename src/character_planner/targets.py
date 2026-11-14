@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 from sqlmodel import Session
 
 from character_planner.curated import GearTarget, GearTargets
-from character_planner.db import StoredGearTargets, utcnow
+from character_planner.db import StoredGearTargets, delete_owned, owned, save_owned, utcnow
 from character_planner.pool import PoolItem, PoolSource
 from character_planner.recommend import EQUIPMENT_SLOTS
 
@@ -51,28 +51,28 @@ class EditedTargets(BaseModel):
         return GearTargets(targets=targets)
 
 
-def current_targets(session: Session, default: GearTargets) -> GearTargets:
-    stored = session.get(StoredGearTargets, 1)
+def current_targets(
+    session: Session, default: GearTargets, character_id: int | None
+) -> GearTargets:
+    """The character's edited targets, or the default (ADR 0014, 0036)."""
+    stored = owned(session, StoredGearTargets, character_id)
     if stored is None:
         return default
     return GearTargets.model_validate(stored.targets)
 
 
-def is_customised(session: Session) -> bool:
-    return session.get(StoredGearTargets, 1) is not None
+def is_customised(session: Session, character_id: int | None) -> bool:
+    return owned(session, StoredGearTargets, character_id) is not None
 
 
-def save_targets(session: Session, targets: GearTargets) -> None:
-    session.merge(
-        StoredGearTargets(id=1, targets=targets.model_dump(exclude_none=True), updated_at=utcnow())
-    )
+def save_targets(session: Session, targets: GearTargets, character_id: int | None) -> None:
+    values = {"targets": targets.model_dump(exclude_none=True), "updated_at": utcnow()}
+    save_owned(session, StoredGearTargets, character_id, {}, values)
     session.commit()
 
 
-def reset_targets(session: Session) -> None:
-    stored = session.get(StoredGearTargets, 1)
-    if stored is not None:
-        session.delete(stored)
+def reset_targets(session: Session, character_id: int | None) -> None:
+    if delete_owned(session, StoredGearTargets, character_id):
         session.commit()
 
 

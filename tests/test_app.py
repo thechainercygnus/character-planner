@@ -503,8 +503,22 @@ def test_items_pinned_before_targets_were_editable_move_into_them(
         # The pin's slot comes from Companion details; borrow the girdle's for the cape.
         details = json.loads((FIXTURES / "companion_item_270230.json").read_text("utf-8"))
         session.merge(CompanionItem(item_id=5193, found=True, payload=details))
-        session.add(ItemChoice(item_id=5193, choice="target", name="Cape of the Brotherhood"))
-        session.add(ItemChoice(item_id=999999, choice="target", name="Not in the pool"))
+        session.add(
+            ItemChoice(
+                character_id=tracked(session),
+                item_id=5193,
+                choice="target",
+                name="Cape of the Brotherhood",
+            )
+        )
+        session.add(
+            ItemChoice(
+                character_id=tracked(session),
+                item_id=999999,
+                choice="target",
+                name="Not in the pool",
+            )
+        )
         session.commit()
         assert jobs.migrate_target_choices(session, settings, tracked(session)) == 1
         assert jobs.migrate_target_choices(session, settings, tracked(session)) == 0
@@ -530,7 +544,9 @@ def test_upgrades_rules_can_be_edited_and_reset(client: TestClient, engine: Engi
     # Recommendations and enchants read the stored rules.
     with Session(engine) as session:
         assert (
-            app_module.get_rules(session, UsageRules.model_validate(default["defaults"])).per_slot
+            app_module.get_rules(
+                session, tracked(session), UsageRules.model_validate(default["defaults"])
+            ).per_slot
             == 1
         )
     assert client.get("/api/recommendations").status_code == 200

@@ -17,7 +17,15 @@ from pydantic import BaseModel
 from sqlmodel import Session, col, select
 
 from character_planner import fields
-from character_planner.db import ActiveWeightPreset, StoredWeights, WeightPreset, utcnow
+from character_planner.db import (
+    ActiveWeightPreset,
+    StoredWeights,
+    WeightPreset,
+    delete_owned,
+    owned,
+    save_owned,
+    utcnow,
+)
 
 ARMOR = "Armor"
 WEAPON_DPS = "Weapon DPS"
@@ -102,21 +110,26 @@ def load_shipped_presets(curated_dir: Path) -> ShippedPresets:
     return ShippedPresets(presets=presets)
 
 
-def _stored(session: Session) -> dict[str, WeightPreset]:
-    rows = session.exec(select(WeightPreset).order_by(col(WeightPreset.name))).all()
+def _stored(session: Session, character_id: int | None) -> dict[str, WeightPreset]:
+    """The character's saved presets: edits to shipped ones and its own (ADR 0036)."""
+    rows = session.exec(
+        select(WeightPreset)
+        .where(col(WeightPreset.character_id) == character_id)
+        .order_by(col(WeightPreset.name))
+    ).all()
     return {row.key: row for row in rows if isinstance(row.weights, dict)}
 
 
-def active_key(session: Session, shipped: ShippedPresets) -> str:
+def active_key(session: Session, shipped: ShippedPresets, character_id: int | None) -> str:
     """The active preset, or the class's first shipped preset when none is set or it
     doesn't exist for this class (Leveling tank for a Warrior, #80)."""
     default = shipped.presets[0].key
-    active = session.get(ActiveWeightPreset, 1)
+    active = owned(session, ActiveWeightPreset, character_id)
     if active is None:
         return default
     if shipped.get(active.key) is not None:
         return active.key
-    stored = session.get(WeightPreset, active.key)
+    stored = owned(session, WeightPreset, character_id, key=active.key)
     return active.key if stored is not None and not stored.shipped else default
 
 
@@ -134,15 +147,18 @@ def _preset_weights(
     return shipped.base.weights | row.weights, None
 
 
-def current_weights(session: Session, shipped: ShippedPresets) -> Weights:
-    """The active preset's weights: what every score uses."""
-    weights, _ = _preset_weights(shipped, _stored(session), active_key(session, shipped))
+def current_weights(session: Session, shipped: ShippedPresets, character_id: int | None) -> Weights:
+    """The character's active preset's weights: what every score uses."""
+    stored = _stored(session, character_id)
+    weights, _ = _preset_weights(shipped, stored, active_key(session, shipped, character_id))
     return Weights(weights=weights)
 
 
-def weights_view(session: Session, shipped: ShippedPresets) -> WeightsView:
-    stored = _stored(session)
-    key = active_key(session, shipped)
+def weights_view(
+    session: Session, shipped: ShippedPresets, character_id: int | None
+) -> WeightsView:
+    stored = _stored(session, character_id)
+    key = active_key(session, shipped, character_id)
     weights, defaults = _preset_weights(shipped, stored, key)
     summaries = [
         PresetSummary(
@@ -166,48 +182,60 @@ def weights_view(session: Session, shipped: ShippedPresets) -> WeightsView:
     )
 
 
-def save_weights(session: Session, shipped: ShippedPresets, weights: dict[str, float]) -> None:
+def save_weights(
+    session: Session,
+    shipped: ShippedPresets,
+    weights: dict[str, float],
+    character_id: int | None,
+) -> None:
     """Replace the active preset's weights."""
-    key = active_key(session, shipped)
+    key = active_key(session, shipped, character_id)
     preset = shipped.get(key)
-    row = session.get(WeightPreset, key)
+    row = owned(session, WeightPreset, character_id, key=key)
     name = preset.name if preset is not None else (row.name if row is not None else key)
-    session.merge(
-        WeightPreset(
-            key=key, name=name, shipped=preset is not None, weights=weights, updated_at=utcnow()
-        )
-    )
+    values = {
+        "name": name,
+        "shipped": preset is not None,
+        "weights": weights,
+        "updated_at": utcnow(),
+    }
+    save_owned(session, WeightPreset, character_id, {"key": key}, values)
     session.commit()
 
 
-def reset_weights(session: Session, shipped: ShippedPresets) -> None:
+def reset_weights(session: Session, shipped: ShippedPresets, character_id: int | None) -> None:
     """Drop edits to the active preset, if it's a shipped one."""
-    key = active_key(session, shipped)
-    row = session.get(WeightPreset, key)
+    key = active_key(session, shipped, character_id)
     if shipped.get(key) is None:
         raise PresetError("Only a shipped preset can be reset; this one is your own")
-    if row is not None:
-        session.delete(row)
+    if delete_owned(session, WeightPreset, character_id, key=key):
         session.commit()
 
 
-def activate(session: Session, shipped: ShippedPresets, key: str) -> None:
-    if shipped.get(key) is None and key not in _custom_keys(session, shipped):
+def activate(session: Session, shipped: ShippedPresets, key: str, character_id: int | None) -> None:
+    if shipped.get(key) is None and key not in _custom_keys(session, shipped, character_id):
         raise UnknownPreset(key)
-    session.merge(ActiveWeightPreset(id=1, key=key))
+    save_owned(session, ActiveWeightPreset, character_id, {}, {"key": key})
     session.commit()
 
 
-def _custom_keys(session: Session, shipped: ShippedPresets) -> set[str]:
-    return {k for k, row in _stored(session).items() if not row.shipped and not shipped.get(k)}
+def _custom_keys(session: Session, shipped: ShippedPresets, character_id: int | None) -> set[str]:
+    stored = _stored(session, character_id)
+    return {k for k, row in stored.items() if not row.shipped and not shipped.get(k)}
 
 
-def _clean_name(session: Session, shipped: ShippedPresets, name: str, own_key: str = "") -> str:
+def _clean_name(
+    session: Session,
+    shipped: ShippedPresets,
+    name: str,
+    character_id: int | None,
+    own_key: str = "",
+) -> str:
     name = " ".join(name.split())
     if not name or len(name) > NAME_MAX:
         raise PresetError(f"Preset names must be 1-{NAME_MAX} characters")
     taken = {p.name.casefold() for p in shipped.presets} | {
-        row.name.casefold() for k, row in _stored(session).items() if k != own_key
+        row.name.casefold() for k, row in _stored(session, character_id).items() if k != own_key
     }
     if name.casefold() in taken:
         raise PresetError(f"There's already a preset called {name}")
@@ -215,55 +243,67 @@ def _clean_name(session: Session, shipped: ShippedPresets, name: str, own_key: s
 
 
 def create_preset(
-    session: Session, shipped: ShippedPresets, name: str, weights: dict[str, float]
+    session: Session,
+    shipped: ShippedPresets,
+    name: str,
+    weights: dict[str, float],
+    character_id: int | None,
 ) -> str:
     """Save weights as a new preset of your own and make it active. Returns its key."""
-    name = _clean_name(session, shipped, name)
+    name = _clean_name(session, shipped, name, character_id)
     base = re.sub(r"[^a-z0-9]+", "-", name.casefold()).strip("-") or "preset"
-    taken = {p.key for p in shipped.presets} | set(_stored(session))
+    taken = {p.key for p in shipped.presets} | set(_stored(session, character_id))
     key, n = base, 2
     while key in taken:
         key, n = f"{base}-{n}", n + 1
-    session.add(WeightPreset(key=key, name=name, shipped=False, weights=weights))
-    session.merge(ActiveWeightPreset(id=1, key=key))
+    values = {"name": name, "shipped": False, "weights": weights}
+    save_owned(session, WeightPreset, character_id, {"key": key}, values)
+    save_owned(session, ActiveWeightPreset, character_id, {}, {"key": key})
     session.commit()
     return key
 
 
-def rename_preset(session: Session, shipped: ShippedPresets, key: str, name: str) -> None:
+def rename_preset(
+    session: Session, shipped: ShippedPresets, key: str, name: str, character_id: int | None
+) -> None:
     if shipped.get(key) is not None:
         raise PresetError("Shipped presets can't be renamed; save a copy with Save as")
-    row = session.get(WeightPreset, key)
+    row = owned(session, WeightPreset, character_id, key=key)
     if row is None or row.shipped:
         raise UnknownPreset(key)
-    row.name = _clean_name(session, shipped, name, own_key=key)
+    row.name = _clean_name(session, shipped, name, character_id, own_key=key)
     row.updated_at = utcnow()
     session.add(row)
     session.commit()
 
 
-def delete_preset(session: Session, shipped: ShippedPresets, key: str) -> None:
-    """Delete a preset of your own; deleting the active one goes back to Leveling tank."""
+def delete_preset(
+    session: Session, shipped: ShippedPresets, key: str, character_id: int | None
+) -> None:
+    """Delete a preset of your own; deleting the active one goes back to the default."""
     if shipped.get(key) is not None:
         raise PresetError("Shipped presets can't be deleted; reset them instead")
-    row = session.get(WeightPreset, key)
+    row = owned(session, WeightPreset, character_id, key=key)
     if row is None or row.shipped:
         raise UnknownPreset(key)
     session.delete(row)
-    active = session.get(ActiveWeightPreset, 1)
+    active = owned(session, ActiveWeightPreset, character_id)
     if active is not None and active.key == key:
         session.delete(active)
     session.commit()
 
 
-def migrate_stored_weights(session: Session) -> bool:
-    """Move weights edited before presets existed into Leveling tank edits, once."""
+def migrate_stored_weights(session: Session, character_id: int | None) -> bool:
+    """Move weights edited before presets existed into the character's Leveling tank
+    edits, once. Waits until there's a character to give them to."""
     old = session.get(StoredWeights, 1)
-    if old is None:
+    if old is None or character_id is None:
         return False
     weights: dict[str, float] = dict(fields.as_mapping(old.weights))
-    if session.get(WeightPreset, LEVELING) is None and isinstance(old.weights, dict):
-        session.add(WeightPreset(key=LEVELING, name="Leveling tank", shipped=True, weights=weights))
+    leveling = owned(session, WeightPreset, character_id, key=LEVELING)
+    if leveling is None and isinstance(old.weights, dict):
+        values = {"name": "Leveling tank", "shipped": True, "weights": weights}
+        save_owned(session, WeightPreset, character_id, {"key": LEVELING}, values)
     session.delete(old)
     session.commit()
     return True

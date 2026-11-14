@@ -155,3 +155,87 @@ def test_forgetting_a_character_leaves_the_others_alone(engine: Engine) -> None:
         assert [s.character_id for s in left] == [other]
         assert [h.character_id for h in session.exec(select(ProgressHistory)).all()] == [other]
         assert first_character(session) is not None  # the record stays; its data went
+
+
+# --- settings belong to a character (#14 step 2) ------------------------------------------
+
+
+def test_each_character_keeps_its_own_settings(engine: Engine, settings: Settings) -> None:
+    from character_planner.choices import set_choice, stored_choices
+    from character_planner.class_quests import done_ids, set_done
+    from character_planner.classes import load_class_defaults
+    from character_planner.db import ClassQuestDone, CompanionClassQuest
+    from character_planner.rules import current_rules, save_rules
+    from character_planner.scoring import activate, active_key, current_weights
+    from character_planner.talents import TalentPlan, current_plan, save_plan
+    from character_planner.targets import current_targets, save_targets
+
+    defaults = load_class_defaults(settings.curated_dir, "warrior")
+    with Session(engine) as session:
+        me, other = tracked(session), alt(session)
+        session.add(CompanionClassQuest(quest_id="warrior-defensive-stance", payload={}))
+        session.commit()
+
+        save_rules(session, defaults.rules.model_copy(update={"per_slot": 1}), me)
+        save_targets(session, defaults.targets.model_copy(update={"targets": []}), me)
+        save_plan(session, TalentPlan(spec="Arms", steps=[]), me)
+        activate(session, defaults.presets, "solo-dps", me)
+        set_choice(session, 7, "Worn Axe", "dismissed", me)
+        set_done(session, "warrior-defensive-stance", True, me)
+
+        assert current_rules(session, defaults.rules, me).per_slot == 1
+        assert current_rules(session, defaults.rules, other) == defaults.rules
+        assert current_targets(session, defaults.targets, other) == defaults.targets
+        assert current_plan(session, defaults.talent_plan, other) == defaults.talent_plan
+        assert active_key(session, defaults.presets, me) == "solo-dps"
+        assert active_key(session, defaults.presets, other) == defaults.presets.presets[0].key
+        assert current_weights(session, defaults.presets, me) != current_weights(
+            session, defaults.presets, other
+        )
+        assert stored_choices(session, me).dismissed == {7}
+        assert stored_choices(session, other).dismissed == set()
+        assert done_ids(session, me) == {"warrior-defensive-stance"}
+        assert done_ids(session, other) == set()
+        # The same quest can be done by both: the key is per character.
+        set_done(session, "warrior-defensive-stance", True, other)
+        assert len(session.exec(select(ClassQuestDone)).all()) == 2
+
+
+def test_settings_from_before_characters_go_to_the_first(
+    engine: Engine, settings: Settings
+) -> None:
+    from character_planner.db import ActiveWeightPreset, ItemChoice, StoredUsageRules
+
+    with Session(engine) as session:
+        session.add(StoredUsageRules(rules={"per_slot": 1}))
+        session.add(ActiveWeightPreset(key="solo-dps"))
+        session.add(ItemChoice(item_id=7, choice="dismissed", name="Worn Axe"))
+        session.commit()
+        character = current_character(session, settings)
+        assert character is not None
+        for model in (StoredUsageRules, ActiveWeightPreset, ItemChoice):
+            assert [row.character_id for row in session.exec(select(model)).all()] == [character.id]
+
+
+def test_settings_need_a_character(engine: Engine, settings: Settings) -> None:
+    unnamed = settings.model_copy(update={"character_name": ""})
+    with api_client(create_app(unnamed, engine)) as client:
+        rules = client.get("/api/rules").json()
+        assert client.put("/api/rules", json=rules["rules"]).status_code == 409
+        assert client.put("/api/weights/active", json={"key": "solo-dps"}).status_code == 409
+
+
+def test_rows_without_an_owner_are_adopted_at_start(engine: Engine, settings: Settings) -> None:
+    """After a downgrade past 0010 and an upgrade, characters exist but settings come
+    back without one: the next start gives them to the first character."""
+    from character_planner.db import StoredUsageRules
+
+    with Session(engine) as session:
+        me = tracked(session)
+        session.add(StoredUsageRules(rules={"per_slot": 1}))
+        session.commit()
+    with api_client(create_app(settings, engine)):
+        pass
+    with Session(engine) as session:
+        (rules,) = session.exec(select(StoredUsageRules)).all()
+        assert rules.character_id == me

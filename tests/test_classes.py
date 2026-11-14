@@ -177,7 +177,7 @@ def test_a_warrior_preset_left_active_falls_back_to_the_class_default(
     client: TestClient, engine: Engine
 ) -> None:
     with Session(engine) as session:
-        session.add(ActiveWeightPreset(id=1, key="dungeon-tank"))
+        session.add(ActiveWeightPreset(character_id=tracked(session), key="dungeon-tank"))
         session.commit()
     assert client.get("/api/weights").json()["preset"] == "dungeon-tank"
     with Session(engine) as session:

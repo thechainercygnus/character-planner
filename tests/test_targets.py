@@ -3,7 +3,7 @@ from sqlmodel import Session
 
 from character_planner.choices import set_choice, take_target_choices
 from character_planner.curated import GearTarget, GearTargets
-from character_planner.db import ItemChoice
+from character_planner.db import ItemChoice, owned
 from character_planner.pool import PoolItem, PoolSource
 from character_planner.targets import (
     EditedTargets,
@@ -16,6 +16,8 @@ from character_planner.targets import (
     source_text,
     unpin_target,
 )
+
+from .conftest import tracked
 
 DEFAULT = GearTargets(
     targets=[
@@ -40,14 +42,14 @@ def pool_item(item_id: int, *sources: PoolSource) -> PoolItem:
 
 def test_stored_targets_win_until_reset(engine: Engine) -> None:
     with Session(engine) as session:
-        assert current_targets(session, DEFAULT) == DEFAULT
-        assert not is_customised(session)
+        assert current_targets(session, DEFAULT, tracked(session)) == DEFAULT
+        assert not is_customised(session, tracked(session))
         edited = GearTargets(targets=DEFAULT.targets[:1])
-        save_targets(session, edited)
-        assert current_targets(session, DEFAULT) == edited
-        assert is_customised(session)
-        reset_targets(session)
-        assert current_targets(session, DEFAULT) == DEFAULT
+        save_targets(session, edited, tracked(session))
+        assert current_targets(session, DEFAULT, tracked(session)) == edited
+        assert is_customised(session, tracked(session))
+        reset_targets(session, tracked(session))
+        assert current_targets(session, DEFAULT, tracked(session)) == DEFAULT
 
 
 def test_source_text_matches_the_yaml_style() -> None:
@@ -135,9 +137,11 @@ def test_edits_are_validated() -> None:
 
 def test_old_target_choices_are_taken_once(engine: Engine) -> None:
     with Session(engine) as session:
-        set_choice(session, 9, "Dismissed", "dismissed")
-        session.add(ItemChoice(item_id=7, choice="target", name="Pinned"))
+        set_choice(session, 9, "Dismissed", "dismissed", tracked(session))
+        session.add(
+            ItemChoice(character_id=tracked(session), item_id=7, choice="target", name="Pinned")
+        )
         session.commit()
-        assert take_target_choices(session) == [7]
-        assert take_target_choices(session) == []
-        assert session.get(ItemChoice, 9) is not None  # dismissals stay
+        assert take_target_choices(session, tracked(session)) == [7]
+        assert take_target_choices(session, tracked(session)) == []
+        assert owned(session, ItemChoice, tracked(session), item_id=9) is not None  # stays

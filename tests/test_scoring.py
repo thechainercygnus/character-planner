@@ -28,6 +28,8 @@ from character_planner.scoring import (
     weights_view,
 )
 
+from .conftest import tracked
+
 WEIGHTS = Weights(
     weights={"Stamina": 1.0, "Armor": 0.1, "Strength": 0.5, "Weapon DPS": 1.5, "Ranged DPS": 0.2}
 )
@@ -73,36 +75,36 @@ def test_shipped_presets_load_with_leveling_tank_first(settings: Settings) -> No
 
 def test_leveling_tank_is_active_by_default_and_edits_win_until_reset(engine: Engine) -> None:
     with Session(engine) as session:
-        assert current_weights(session, SHIPPED) == SHIPPED.base
-        save_weights(session, SHIPPED, {"Stamina": 3.0})
-        merged = current_weights(session, SHIPPED)
+        assert current_weights(session, SHIPPED, tracked(session)) == SHIPPED.base
+        save_weights(session, SHIPPED, {"Stamina": 3.0}, tracked(session))
+        merged = current_weights(session, SHIPPED, tracked(session))
         assert (merged.of("Stamina"), merged.of("Armor")) == (3.0, 0.1)  # Armor: default
-        view = weights_view(session, SHIPPED)
+        view = weights_view(session, SHIPPED, tracked(session))
         assert view.customised and view.defaults == {"Stamina": 1.0, "Armor": 0.1}
         assert [(p.key, p.customised) for p in view.presets] == [
             (LEVELING, True),
             ("solo-dps", False),
         ]
-        reset_weights(session, SHIPPED)
-        assert current_weights(session, SHIPPED) == SHIPPED.base
+        reset_weights(session, SHIPPED, tracked(session))
+        assert current_weights(session, SHIPPED, tracked(session)) == SHIPPED.base
 
 
 def test_switching_presets_keeps_each_ones_edits(engine: Engine) -> None:
     with Session(engine) as session:
-        save_weights(session, SHIPPED, {"Stamina": 3.0})
-        activate(session, SHIPPED, "solo-dps")
-        assert current_weights(session, SHIPPED).of("Stamina") == 0.5
-        activate(session, SHIPPED, LEVELING)
-        assert current_weights(session, SHIPPED).of("Stamina") == 3.0
+        save_weights(session, SHIPPED, {"Stamina": 3.0}, tracked(session))
+        activate(session, SHIPPED, "solo-dps", tracked(session))
+        assert current_weights(session, SHIPPED, tracked(session)).of("Stamina") == 0.5
+        activate(session, SHIPPED, LEVELING, tracked(session))
+        assert current_weights(session, SHIPPED, tracked(session)).of("Stamina") == 3.0
         with pytest.raises(UnknownPreset):
-            activate(session, SHIPPED, "nope")
+            activate(session, SHIPPED, "nope", tracked(session))
 
 
 def test_own_presets_can_be_saved_renamed_and_deleted(engine: Engine) -> None:
     with Session(engine) as session:
-        key = create_preset(session, SHIPPED, "  Raid   tank ", {"Stamina": 2.0})
+        key = create_preset(session, SHIPPED, "  Raid   tank ", {"Stamina": 2.0}, tracked(session))
         assert key == "raid-tank"
-        view = weights_view(session, SHIPPED)
+        view = weights_view(session, SHIPPED, tracked(session))
         assert view.preset == "raid-tank"
         assert view.weights == {"Stamina": 2.0, "Armor": 0.1}  # missing stats: Leveling tank
         assert not view.customised
@@ -113,19 +115,19 @@ def test_own_presets_can_be_saved_renamed_and_deleted(engine: Engine) -> None:
             "customised": False,
         }
         # Edits replace its weights; there's nothing to reset to.
-        save_weights(session, SHIPPED, {"Stamina": 2.5})
-        assert current_weights(session, SHIPPED).of("Stamina") == 2.5
+        save_weights(session, SHIPPED, {"Stamina": 2.5}, tracked(session))
+        assert current_weights(session, SHIPPED, tracked(session)).of("Stamina") == 2.5
         with pytest.raises(PresetError):
-            reset_weights(session, SHIPPED)
+            reset_weights(session, SHIPPED, tracked(session))
 
-        assert create_preset(session, SHIPPED, "Raid tank!", {}) == "raid-tank-2"
-        rename_preset(session, SHIPPED, "raid-tank-2", "Off tank")
-        names = [p.name for p in weights_view(session, SHIPPED).presets]
+        assert create_preset(session, SHIPPED, "Raid tank!", {}, tracked(session)) == "raid-tank-2"
+        rename_preset(session, SHIPPED, "raid-tank-2", "Off tank", tracked(session))
+        names = [p.name for p in weights_view(session, SHIPPED, tracked(session)).presets]
         assert names == ["Leveling tank", "Solo DPS", "Off tank", "Raid tank"]  # yours: by name
 
-        delete_preset(session, SHIPPED, "raid-tank-2")  # the active one
-        assert weights_view(session, SHIPPED).preset == LEVELING
-        assert [p.key for p in weights_view(session, SHIPPED).presets] == [
+        delete_preset(session, SHIPPED, "raid-tank-2", tracked(session))  # the active one
+        assert weights_view(session, SHIPPED, tracked(session)).preset == LEVELING
+        assert [p.key for p in weights_view(session, SHIPPED, tracked(session)).presets] == [
             LEVELING,
             "solo-dps",
             "raid-tank",
@@ -135,13 +137,16 @@ def test_own_presets_can_be_saved_renamed_and_deleted(engine: Engine) -> None:
 @pytest.mark.parametrize(
     ("action", "error"),
     [
-        (lambda s: create_preset(s, SHIPPED, "solo dps", {}), PresetError),  # name taken
-        (lambda s: create_preset(s, SHIPPED, " ", {}), PresetError),
-        (lambda s: create_preset(s, SHIPPED, "x" * 41, {}), PresetError),
-        (lambda s: rename_preset(s, SHIPPED, "solo-dps", "Mine"), PresetError),
-        (lambda s: delete_preset(s, SHIPPED, LEVELING), PresetError),
-        (lambda s: rename_preset(s, SHIPPED, "nope", "Mine"), UnknownPreset),
-        (lambda s: delete_preset(s, SHIPPED, "nope"), UnknownPreset),
+        (
+            lambda s: create_preset(s, SHIPPED, "solo dps", {}, tracked(s)),
+            PresetError,
+        ),  # name taken
+        (lambda s: create_preset(s, SHIPPED, " ", {}, tracked(s)), PresetError),
+        (lambda s: create_preset(s, SHIPPED, "x" * 41, {}, tracked(s)), PresetError),
+        (lambda s: rename_preset(s, SHIPPED, "solo-dps", "Mine", tracked(s)), PresetError),
+        (lambda s: delete_preset(s, SHIPPED, LEVELING, tracked(s)), PresetError),
+        (lambda s: rename_preset(s, SHIPPED, "nope", "Mine", tracked(s)), UnknownPreset),
+        (lambda s: delete_preset(s, SHIPPED, "nope", tracked(s)), UnknownPreset),
     ],
 )
 def test_preset_requests_that_cannot_be_done(
@@ -153,17 +158,17 @@ def test_preset_requests_that_cannot_be_done(
 
 def test_a_deleted_active_preset_falls_back_to_leveling_tank(engine: Engine) -> None:
     with Session(engine) as session:
-        session.add(ActiveWeightPreset(id=1, key="gone"))
+        session.add(ActiveWeightPreset(character_id=tracked(session), key="gone"))
         session.commit()
-        assert active_key(session, SHIPPED) == LEVELING
+        assert active_key(session, SHIPPED, tracked(session)) == LEVELING
 
 
 def test_weights_saved_before_presets_move_into_leveling_tank(engine: Engine) -> None:
     with Session(engine) as session:
-        assert not migrate_stored_weights(session)
+        assert not migrate_stored_weights(session, tracked(session))
         session.add(StoredWeights(id=1, weights={"Stamina": 4.0}))
         session.commit()
-        assert migrate_stored_weights(session)
+        assert migrate_stored_weights(session, tracked(session))
         assert session.get(StoredWeights, 1) is None
-        assert current_weights(session, SHIPPED).of("Stamina") == 4.0
-        assert not migrate_stored_weights(session)  # once
+        assert current_weights(session, SHIPPED, tracked(session)).of("Stamina") == 4.0
+        assert not migrate_stored_weights(session, tracked(session))  # once

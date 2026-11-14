@@ -89,7 +89,9 @@ def default_targets(session: Session, settings: Settings, character_id: int | No
 def gear_targets(session: Session, settings: Settings, character_id: int | None) -> GearTargets:
     """The edited targets, or gear_targets.yaml (ADR 0014), with item ids filled in from
     the item pool where it has them."""
-    targets = current_targets(session, default_targets(session, settings, character_id))
+    targets = current_targets(
+        session, default_targets(session, settings, character_id), character_id
+    )
     pool = build_pool(
         stored_dungeons(session),
         character_context(session, character_id)[1],
@@ -117,7 +119,7 @@ def pool_slot(item: PoolItem) -> str | None:
 
 def migrate_target_choices(session: Session, settings: Settings, character_id: int | None) -> int:
     """Move items pinned before ADR 0014 into the targets."""
-    ids = take_target_choices(session)
+    ids = take_target_choices(session, character_id)
     if not ids:
         return 0
     faction = character_context(session, character_id)[1]
@@ -132,7 +134,7 @@ def migrate_target_choices(session: Session, settings: Settings, character_id: i
             continue
         targets, moved = pin_target(targets, item, slot), moved + 1
     if moved:
-        save_targets(session, targets)
+        save_targets(session, targets, character_id)
     return moved
 
 

@@ -16,9 +16,11 @@ from character_planner.characters import current_character
 from character_planner.config import Settings
 from character_planner.db import (
     MIGRATIONS,
+    ItemChoice,
     ProgressHistory,
     Snapshot,
     StoredGearTargets,
+    StoredUsageRules,
     init_db,
     make_engine,
 )
@@ -156,7 +158,7 @@ def test_a_database_in_a_new_folder_is_created(tmp_path: Path, name: str) -> Non
     assert (tmp_path / name).exists()
 
 
-def test_a_database_from_0_3_keeps_its_snapshots_and_history(
+def test_a_database_from_0_3_keeps_its_data_and_settings(
     tmp_path: Path, settings: Settings
 ) -> None:
     """#14: an instance upgrading from one character to records keeps everything, and the
@@ -181,6 +183,19 @@ def test_a_database_from_0_3_keeps_its_snapshots_and_history(
                 "VALUES ('2026-10-01 00:00:00', 12, 8.0)"
             )
         )
+        # Settings edited in 0.3: one set for the instance.
+        connection.execute(
+            text(
+                "INSERT INTO storedusagerules (id, rules, updated_at) "
+                """VALUES (1, '{"per_slot": 1}', '2026-11-01 00:00:00')"""
+            )
+        )
+        connection.execute(
+            text(
+                "INSERT INTO itemchoice (item_id, choice, name, created_at) "
+                "VALUES (7, 'dismissed', 'Worn Axe', '2026-11-01 00:00:00')"
+            )
+        )
 
     init_db(engine)
     assert differences(engine) == []
@@ -191,3 +206,7 @@ def test_a_database_from_0_3_keeps_its_snapshots_and_history(
         (history,) = session.exec(select(ProgressHistory)).all()
         assert (snapshot.character_id, snapshot.payload) == (character.id, {"level": 19})
         assert (history.character_id, history.level) == (character.id, 12)
+        (rules,) = session.exec(select(StoredUsageRules)).all()
+        (choice,) = session.exec(select(ItemChoice)).all()
+        assert (rules.character_id, rules.rules) == (character.id, {"per_slot": 1})
+        assert (choice.character_id, choice.item_id) == (character.id, 7)

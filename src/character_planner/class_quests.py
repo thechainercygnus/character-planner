@@ -15,11 +15,19 @@ from typing import Any, Literal
 
 import httpx
 from pydantic import BaseModel
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
 from character_planner import fields
 from character_planner.companion import BASE_URL
-from character_planner.db import ClassQuestDone, CompanionClassQuest, latest_by_kind, utcnow
+from character_planner.db import (
+    ClassQuestDone,
+    CompanionClassQuest,
+    delete_owned,
+    latest_by_kind,
+    owned,
+    save_owned,
+    utcnow,
+)
 from character_planner.views import character_faction, character_view
 
 logger = logging.getLogger(__name__)
@@ -161,8 +169,11 @@ def status(quest: ClassQuest, level: int | None, done: bool) -> Status:
     return "missed" if quest.essential else "now"
 
 
-def done_ids(session: Session) -> set[str]:
-    return {row.quest_id for row in session.exec(select(ClassQuestDone)).all()}
+def done_ids(session: Session, character_id: int | None) -> set[str]:
+    rows = session.exec(
+        select(ClassQuestDone).where(col(ClassQuestDone.character_id) == character_id)
+    ).all()
+    return {row.quest_id for row in rows}
 
 
 def checklist(session: Session, character_id: int | None) -> ClassQuestChecklist:
@@ -174,7 +185,7 @@ def checklist(session: Session, character_id: int | None) -> ClassQuestChecklist
     stored = stored_class_quests(session)
     rows: list[ClassQuestRow] = []
     if character.character_class is not None:
-        done = done_ids(session)
+        done = done_ids(session, character_id)
         rows = [
             ClassQuestRow(
                 **quest.model_dump(),
@@ -197,14 +208,14 @@ class UnknownClassQuest(LookupError):
     pass
 
 
-def set_done(session: Session, quest_id: str, done: bool) -> None:
-    """Mark a stored class quest done, or not done. Raises UnknownClassQuest for an id
-    Forever Companion hasn't listed."""
+def set_done(session: Session, quest_id: str, done: bool, character_id: int | None) -> None:
+    """Mark a stored class quest done, or not done, for the character. Raises
+    UnknownClassQuest for an id Forever Companion hasn't listed."""
     if session.get(CompanionClassQuest, quest_id) is None:
         raise UnknownClassQuest(quest_id)
-    existing = session.get(ClassQuestDone, quest_id)
-    if done and existing is None:
-        session.add(ClassQuestDone(quest_id=quest_id))
-    elif not done and existing is not None:
-        session.delete(existing)
+    if done:
+        if owned(session, ClassQuestDone, character_id, quest_id=quest_id) is None:
+            save_owned(session, ClassQuestDone, character_id, {"quest_id": quest_id}, {})
+    else:
+        delete_owned(session, ClassQuestDone, character_id, quest_id=quest_id)
     session.commit()

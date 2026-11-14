@@ -15,7 +15,7 @@ from character_planner.rules import (
     save_rules,
 )
 
-from .conftest import REPO_ROOT
+from .conftest import REPO_ROOT, tracked
 
 DEFAULT = load_rules(REPO_ROOT / "data" / "curated" / "recommend.yaml")
 
@@ -33,15 +33,15 @@ def test_the_shipped_rules_are_all_offered_by_the_editor() -> None:
 
 def test_stored_rules_win_until_reset(engine: Engine) -> None:
     with Session(engine) as session:
-        assert current_rules(session, DEFAULT) == DEFAULT
-        assert rules_view(session, DEFAULT).customised is False
+        assert current_rules(session, DEFAULT, tracked(session)) == DEFAULT
+        assert rules_view(session, DEFAULT, tracked(session)).customised is False
         dagger_only = edited(weapon_types=["Dagger"], per_slot=5).to_rules()
-        save_rules(session, dagger_only)
-        view = rules_view(session, DEFAULT)
+        save_rules(session, dagger_only, tracked(session))
+        view = rules_view(session, DEFAULT, tracked(session))
         assert (view.rules, view.defaults, view.customised) == (dagger_only, DEFAULT, True)
-        reset_rules(session)
-        assert current_rules(session, DEFAULT) == DEFAULT
-        reset_rules(session)  # nothing to reset is fine
+        reset_rules(session, tracked(session))
+        assert current_rules(session, DEFAULT, tracked(session)) == DEFAULT
+        reset_rules(session, tracked(session))  # nothing to reset is fine
 
 
 def test_lists_follow_the_editors_order_without_repeats() -> None:
