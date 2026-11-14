@@ -1,5 +1,6 @@
 # character-planner
 
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/16645/badge)](https://www.bestpractices.dev/projects/16645)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/thechainercygnus/character-planner/badge)](https://scorecard.dev/viewer/?uri=github.com/thechainercygnus/character-planner)
 [![Documentation](https://readthedocs.org/projects/character-planner/badge/?version=latest)](https://character-planner.readthedocs.io/)
 
