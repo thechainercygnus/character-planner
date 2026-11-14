@@ -26,6 +26,7 @@ from sqlmodel import Session, col, select
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from character_planner import fields, jobs, leases, notify
+from character_planner import queue as job_queue
 from character_planner.account import AccountCharacter, parse_account
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
@@ -137,6 +138,7 @@ from character_planner.pool import (
     pool_view,
 )
 from character_planner.progress import Progress, progress
+from character_planner.queue import SyncState, enqueue_sync, sync_state
 from character_planner.recommend import Recommendations, UsageRules, recommend
 from character_planner.rules import (
     EditedRules,
@@ -462,6 +464,8 @@ def create_app(
     owns_engine = engine is None
     engine = engine or make_engine(settings.database_url)
     pending_states: dict[str, float] = {}  # state -> created_at
+    # Background jobs when REDIS_URL is set (#17, ADR 0039); syncs run in the request without.
+    redis = job_queue.connect(settings.redis_url) if settings.redis_url else None
 
     @asynccontextmanager
     async def lifespan(_: FastAPI):
@@ -720,19 +724,35 @@ def create_app(
             "refreshing": leases.running(engine),
         }
 
-    @app.post("/api/sync")
+    @app.post("/api/sync", response_model=dict[str, int] | SyncState)
     def sync(
         session: SessionDep, character_id: CharacterIdDep, background: BackgroundTasks
-    ) -> dict[str, int]:
+    ) -> dict[str, int] | JSONResponse:
         """Pull every endpoint and store each response, failures included.
 
         Then look up any target items not in the item catalog yet. That step is
         best-effort: a catalog failure never fails the sync. On a fresh instance, the item
         pool and enchant data then load in the background (#87).
+
+        At most once per SYNC_COOLDOWN_MINUTES per character (429 with Retry-After), to
+        share the Battle.net budget (#17). With REDIS_URL set, the sync is queued (202, a
+        SyncState) and GET /api/sync follows it (ADR 0039).
         """
         character = session.get(Character, character_id) if character_id is not None else None
-        if character is None:
+        if character is None or character.id is None:
             raise HTTPException(409, "No character to sync: CHARACTER_NAME in .env names the first")
+        wait = jobs.sync_cooldown_left(session, character.id, settings.sync_cooldown_minutes)
+        if wait > 0:
+            minutes = max(1, round(wait / 60))
+            raise HTTPException(
+                429,
+                f"Synced recently: sync again in about {minutes} minute"
+                f"{'' if minutes == 1 else 's'}",
+                headers={"Retry-After": str(int(wait) + 1)},
+            )
+        if redis is not None:
+            queued = enqueue_sync(redis, character.id)
+            return JSONResponse(queued.model_dump(), status_code=202)
         try:
             statuses = sync_character(session, settings, character, http=http)
         except CredentialsError as error:
@@ -741,6 +761,14 @@ def create_app(
         if jobs.missing_data(session, character_id):
             background.add_task(jobs.load_missing_data, engine, settings, http)
         return statuses
+
+    @app.get("/api/sync")
+    def sync_progress(character_id: CharacterIdDep) -> SyncState:
+        """The character's queued sync (ADR 0039): queued, started, finished with each
+        endpoint's status, or failed. "idle" when there's none, or no queue."""
+        if redis is None or character_id is None:
+            return SyncState(state="idle")
+        return sync_state(redis, character_id)
 
     @app.post("/api/items/refresh")
     def refresh_items(

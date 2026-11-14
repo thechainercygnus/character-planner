@@ -11,6 +11,7 @@ with no login.
 import argparse
 import logging
 import signal
+import subprocess
 import sys
 import threading
 from collections.abc import Callable
@@ -228,13 +229,48 @@ def run(engine: Engine, settings: Settings, *, once: bool) -> int:
         settings.pool_every_hours,
         settings.enchants_every_hours,
     )
-    with notify.new_client() as discord:
-        while not stop.is_set():
-            run_due(engine, settings, schedule, utcnow())
-            tick_notifications(engine, settings, discord)
-            stop.wait(settings.worker_poll_seconds)
+    jobs_worker = JobsWorker() if settings.redis_url else None
+    try:
+        with notify.new_client() as discord:
+            while not stop.is_set():
+                if jobs_worker is not None:
+                    jobs_worker.keep_running()
+                run_due(engine, settings, schedule, utcnow())
+                tick_notifications(engine, settings, discord)
+                stop.wait(settings.worker_poll_seconds)
+    finally:
+        if jobs_worker is not None:
+            jobs_worker.stop()
     logger.info("worker stopped")
     return 0
+
+
+class JobsWorker:
+    """With REDIS_URL, the worker container also works the job queue (#17, ADR 0039):
+    `character-planner-jobs` as a child process, so it shares this container's settings,
+    whichever compose overrides are in use. Restarted if it exits; stopped with us."""
+
+    COMMAND = (sys.executable, "-m", "character_planner.queue")
+
+    def __init__(self) -> None:
+        self.process: subprocess.Popen[bytes] | None = None
+
+    def keep_running(self) -> None:
+        if self.process is not None and self.process.poll() is None:
+            return
+        if self.process is not None:
+            logger.warning("Job worker exited (%s): starting it again", self.process.returncode)
+        self.process = subprocess.Popen(self.COMMAND)  # noqa: S603 - our own module
+        logger.info("Job worker started (pid %s)", self.process.pid)
+
+    def stop(self) -> None:
+        if self.process is None or self.process.poll() is not None:
+            return
+        self.process.terminate()  # RQ finishes the job it's on, then exits
+        try:
+            self.process.wait(timeout=60)
+        except subprocess.TimeoutExpired:
+            self.process.kill()
 
 
 if __name__ == "__main__":

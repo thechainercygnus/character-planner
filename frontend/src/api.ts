@@ -306,6 +306,39 @@ export interface Status {
 
 export type SyncResult = Record<string, number>
 
+/** A queued sync, when the API runs syncs as background jobs (#17, ADR 0039). */
+export interface SyncState {
+  state: 'idle' | 'queued' | 'started' | 'finished' | 'failed'
+  /** Each endpoint's HTTP status, once finished. */
+  result: SyncResult | null
+  error: string | null
+}
+
+/** How long to wait between checks on a queued sync. */
+export const SYNC_POLL_MS = 2000
+
+function isSyncState(value: SyncResult | SyncState): value is SyncState {
+  return typeof (value as SyncState).state === 'string'
+}
+
+/**
+ * Sync the selected character. Without a job queue the API answers with the result; with
+ * one (202) the sync is queued, so follow it until it finishes or fails.
+ */
+async function syncAndWait(wait: (ms: number) => Promise<void>): Promise<SyncResult> {
+  return follow(await request<SyncResult | SyncState>('/api/sync', { method: 'POST' }), wait)
+}
+
+async function follow(state: SyncResult | SyncState, wait: (ms: number) => Promise<void>): Promise<SyncResult> {
+  if (!isSyncState(state)) return state
+  if (state.state === 'finished' || state.state === 'idle') return state.result ?? {}
+  if (state.state === 'failed') throw new Error(state.error ?? 'The sync failed')
+  await wait(SYNC_POLL_MS)
+  return follow(await request<SyncState>('/api/sync'), wait)
+}
+
+const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
+
 /** A stat weight preset (scoring.py PresetSummary, ADR 0013). */
 export interface PresetSummary {
   key: string
@@ -971,7 +1004,7 @@ export const api = {
   status: () => request<Status>('/api/status'),
   character: () => request<CharacterView>('/api/character'),
   gear: () => request<GearPlan>('/api/gear'),
-  sync: () => request<SyncResult>('/api/sync', { method: 'POST' }),
+  sync: (wait: (ms: number) => Promise<void> = sleep) => syncAndWait(wait),
   refreshItems: () => request<RefreshResult>('/api/items/refresh?force=true', { method: 'POST' }),
   weights: () => request<WeightsView>('/api/weights'),
   saveWeights: (weights: Record<string, number>) =>
