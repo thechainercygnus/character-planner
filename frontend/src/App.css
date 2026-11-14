@@ -1263,3 +1263,124 @@ ul.upcoming small {
   max-width: 36rem;
   margin: 3rem auto;
 }
+
+/* Phone screens (#153). Desktop is unchanged: everything below is for narrow, short or
+   touch screens only. */
+
+/* A tapped element's tooltip, on touch screens (TouchTips). */
+.touch-tip {
+  position: fixed;
+  z-index: 50;
+  padding: 0.5rem 0.7rem;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 40%);
+}
+
+/* Portrait phones: nothing may be wider than the screen. */
+@media (max-width: 640px) {
+  main {
+    padding: 0.75rem;
+  }
+
+  section {
+    padding: 0.75rem;
+  }
+
+  /* The tab bar scrolls sideways; the active tab scrolls itself into view. */
+  .tabs {
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  button.tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  /* Wide tables scroll inside themselves, with the first column kept in view. */
+  table.gear {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  table.gear th:first-child,
+  table.gear td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--panel);
+  }
+
+  /* The menu opens in the page's flow instead of floating off the edge. */
+  .menu-items {
+    position: static;
+    margin-top: 0.3rem;
+  }
+
+  .character-switcher,
+  .character-switcher select {
+    max-width: 100%;
+  }
+
+  .status-bar {
+    gap: 0.5rem;
+  }
+}
+
+/* Phones held sideways: little height, so the chrome gets out of the way. */
+@media (max-height: 500px) and (orientation: landscape) {
+  main {
+    padding: 0.25rem 1rem;
+  }
+
+  /* One row, scrolling sideways if it must, rather than two. */
+  .status-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none; /* swiped on a touch screen; the bar would cost a row */
+    white-space: nowrap;
+    margin-bottom: 0.15rem;
+    gap: 0.5rem;
+  }
+
+  .status-bar > * {
+    flex: 0 0 auto;
+  }
+
+  /* Just the name: the switcher already shows each character's level and class. */
+  .character-header {
+    margin-bottom: 0;
+  }
+
+  .character-header h1 {
+    font-size: 1.15rem;
+    margin: 0;
+  }
+
+  .character-header p {
+    display: none;
+  }
+
+  .tabs {
+    margin-bottom: 0.4rem;
+  }
+
+  button.tab {
+    padding: 0.2rem 0.7rem;
+  }
+}
+
+/* Touch screens: targets a finger can hit. */
+@media (pointer: coarse) {
+  button,
+  .button,
+  select,
+  details.menu > summary {
+    min-height: 44px;
+  }
+}

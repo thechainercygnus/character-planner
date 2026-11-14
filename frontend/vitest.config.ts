@@ -5,6 +5,8 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
+    // e2e/ is Playwright's (npm run e2e), in a real browser.
+    include: ['src/**/*.test.{ts,tsx}'],
     setupFiles: ['./src/test/setup.ts'],
     // Coverage (#55), with `npm run coverage`. The floors (#94) are the values measured
     // on 2026-11-13, rounded down: a PR that lowers coverage fails. Raise them as it grows.

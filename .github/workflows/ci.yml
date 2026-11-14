@@ -152,6 +152,9 @@ jobs:
           rm -rf dist node_modules/.vite node_modules/.tmp
           npm run build
           (cd dist && find . -type f -exec sha256sum {} + | sort -k2) | diff ../first.sha256 -
+      # Phone screens (#153): the built app in Chromium, the API mocked from fixtures.
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
 
   docker:
     runs-on: ubuntu-latest
