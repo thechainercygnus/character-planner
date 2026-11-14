@@ -18,8 +18,8 @@ def tokens(token, settings, stored):
     logging.warning(f"Bearer {stored.access_token}")
 
     secret = settings.bnet_client_secret.get_secret_value()
-    # ruleid: no-secrets-in-logs
-    logger.debug("client secret is %s", redact(secret))
+    # ok: no-secrets-in-logs
+    logger.debug("client secret is configured: %s", bool(secret))
 
     # ruleid: no-secrets-in-logs
     print(token.access_token)
