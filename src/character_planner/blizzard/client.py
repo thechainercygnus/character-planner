@@ -71,10 +71,12 @@ class BlizzardClient:
         path: str,
         namespace: str | None = None,
         extra: dict[str, str] | None = None,
+        region: str | None = None,
     ) -> ApiResult:
-        url = f"{self._settings.api_base_url}{path}"
+        region = region or self._settings.bnet_region
+        url = f"https://{region}.api.blizzard.com{path}"
         params = {
-            "namespace": namespace or self._settings.profile_namespace,
+            "namespace": namespace or f"profile-forever-{region}",
             "locale": "en_US",
             **(extra or {}),
         }
@@ -91,9 +93,10 @@ class BlizzardClient:
         """Every Forever character on the logged-in account. Needs the user token."""
         return self._get("account", "/profile/user/wow")
 
-    def character(self, kind: str) -> ApiResult:
+    def character(self, kind: str, slug: str, region: str | None = None) -> ApiResult:
+        """One endpoint for a character, by its slug (name-surname) and region."""
         suffix = CHARACTER_ENDPOINTS[kind]
-        return self._get(kind, f"/profile/wow/character/{self._settings.character_slug}{suffix}")
+        return self._get(kind, f"/profile/wow/character/{slug}{suffix}", region=region)
 
-    def all_character_data(self) -> list[ApiResult]:
-        return [self.character(kind) for kind in CHARACTER_ENDPOINTS]
+    def all_character_data(self, slug: str, region: str | None = None) -> list[ApiResult]:
+        return [self.character(kind, slug, region) for kind in CHARACTER_ENDPOINTS]

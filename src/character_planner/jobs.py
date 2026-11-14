@@ -14,12 +14,14 @@ from sqlmodel import Session, select
 from character_planner import notify
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
+from character_planner.characters import first_character, refresh_from_profile
 from character_planner.choices import take_target_choices
 from character_planner.classes import character_class_name, current_defaults
 from character_planner.config import Settings
 from character_planner.crafting import crafted_items, refresh_crafting
 from character_planner.curated import GearTargets
 from character_planner.db import (
+    Character,
     CompanionDungeon,
     RecipeData,
     Snapshot,
@@ -50,6 +52,12 @@ from character_planner.views import character_faction, character_level, parse_eq
 logger = logging.getLogger(__name__)
 
 
+def current_id(session: Session) -> int | None:
+    """The current character's id, for shared refreshes; None before there is one."""
+    character = first_character(session)
+    return character.id if character else None
+
+
 def current_token(session: Session) -> oauth.Token | None:
     """The user's login token while it's valid. Syncs don't need it (#107): only the
     account's character list does."""
@@ -60,41 +68,43 @@ def current_token(session: Session) -> oauth.Token | None:
     return None if token.expired else token
 
 
-def character_context(session: Session) -> tuple[int | None, str | None]:
+def character_context(session: Session, character_id: int | None) -> tuple[int | None, str | None]:
     """Level and faction from the latest profile snapshot."""
-    profile = latest_by_kind(session).get("profile")
+    profile = latest_by_kind(session, character_id).get("profile")
     payload = profile.payload if profile else None
     return character_level(payload), character_faction(payload)
 
 
-def equipped_item_ids(session: Session) -> list[int]:
-    equipment = latest_by_kind(session).get("equipment")
+def equipped_item_ids(session: Session, character_id: int | None) -> list[int]:
+    equipment = latest_by_kind(session, character_id).get("equipment")
     items = parse_equipment(equipment.payload) if equipment else []
     return [item.item_id for item in items if item.item_id is not None]
 
 
-def default_targets(session: Session, settings: Settings) -> GearTargets:
+def default_targets(session: Session, settings: Settings, character_id: int | None) -> GearTargets:
     """The synced class's shipped targets (#80): gear_targets.yaml for a Warrior."""
-    return current_defaults(session, settings.curated_dir).targets
+    return current_defaults(session, settings.curated_dir, character_id).targets
 
 
-def gear_targets(session: Session, settings: Settings) -> GearTargets:
+def gear_targets(session: Session, settings: Settings, character_id: int | None) -> GearTargets:
     """The edited targets, or gear_targets.yaml (ADR 0014), with item ids filled in from
     the item pool where it has them."""
-    targets = current_targets(session, default_targets(session, settings))
+    targets = current_targets(session, default_targets(session, settings, character_id))
     pool = build_pool(
-        stored_dungeons(session), character_context(session)[1], rares=stored_rares(session)
+        stored_dungeons(session),
+        character_context(session, character_id)[1],
+        rares=stored_rares(session),
     )
     return resolve_target_ids(targets, pool)
 
 
-def item_levels(session: Session) -> dict[int, int]:
+def item_levels(session: Session, character_id: int | None) -> dict[int, int]:
     """Each pool item's own level (required level, else its quest or dungeon level), to
     place targets that don't name a level (ADR 0015)."""
-    faction = character_context(session)[1]
+    faction = character_context(session, character_id)[1]
     return {
         item.item_id: item.effective_level
-        for item in pool_view(session, None, faction, crafted_items(session)).items
+        for item in pool_view(session, None, faction, crafted_items(session, character_id)).items
         if item.effective_level is not None
     }
 
@@ -105,15 +115,15 @@ def pool_slot(item: PoolItem) -> str | None:
     return PAIRED[slot][0] if slot in PAIRED else SLOT_FOR.get(slot)
 
 
-def migrate_target_choices(session: Session, settings: Settings) -> int:
+def migrate_target_choices(session: Session, settings: Settings, character_id: int | None) -> int:
     """Move items pinned before ADR 0014 into the targets."""
     ids = take_target_choices(session)
     if not ids:
         return 0
-    faction = character_context(session)[1]
-    view = pool_view(session, None, faction, crafted_items(session))
+    faction = character_context(session, character_id)[1]
+    view = pool_view(session, None, faction, crafted_items(session, character_id))
     pool = {item.item_id: item for item in view.items}
-    targets, moved = gear_targets(session, settings), 0
+    targets, moved = gear_targets(session, settings, character_id), 0
     for item_id in ids:
         item = pool.get(item_id)
         slot = pool_slot(item) if item else None
@@ -127,7 +137,7 @@ def migrate_target_choices(session: Session, settings: Settings) -> int:
 
 
 def sync_character(
-    session: Session, settings: Settings, http: httpx.Client | None = None
+    session: Session, settings: Settings, character: Character, http: httpx.Client | None = None
 ) -> dict[str, int]:
     """Pull every character endpoint and store each response, failures included.
 
@@ -141,15 +151,16 @@ def sync_character(
     a catalog failure never fails the sync.
     """
     started = time.perf_counter()
-    logger.info("Sync %s: started", settings.character_slug)
+    character_id = character.id
+    logger.info("Sync %s: started", character.slug)
     token = app_token(session, settings, http)
     with BlizzardClient(settings, token, http=http) as client:
-        results = client.all_character_data()
+        results = client.all_character_data(character.slug, character.region)
     if any(r.status == 401 for r in results):
         logger.warning("Sync: Battle.net refused the app token (401); trying a new one")
         token = app_token(session, settings, http, renew=True)
         with BlizzardClient(settings, token, http=http) as client:
-            results = client.all_character_data()
+            results = client.all_character_data(character.slug, character.region)
         if any(r.status == 401 for r in results):
             raise CredentialsError(
                 "Battle.net refused a new app token too (HTTP 401): check BNET_CLIENT_ID, "
@@ -158,34 +169,43 @@ def sync_character(
     profile = next((r for r in results if r.kind == "profile"), None)
     if profile is not None and profile.status == 404:
         logger.warning(
-            "Sync: character %s not found in the %s region: check CHARACTER_NAME, "
-            "CHARACTER_SURNAME and BNET_REGION",
-            settings.character_slug,
-            settings.bnet_region,
+            "Sync: character %s not found in the %s region: check its name and region",
+            character.slug,
+            character.region,
         )
         # Blizzard's terms: a character that no longer exists is deleted (#131, ADR 0034).
         # Only when the stored data is about this same character, never on a typo.
-        forget_character(session, settings.character_slug)
+        forget_character(session, character)
     for result in results:
         session.add(
-            Snapshot(source="api", kind=result.kind, status=result.status, payload=result.body)
+            Snapshot(
+                character_id=character_id,
+                source="api",
+                kind=result.kind,
+                status=result.status,
+                payload=result.body,
+            )
         )
+    session.flush()
+    refresh_from_profile(session, character)
     session.commit()
     failed = sorted(f"{r.kind} ({r.status})" for r in results if not 200 <= r.status < 300)
-    level, _ = character_context(session)
+    level, _ = character_context(session, character_id)
     logger.info(
         "Sync %s: %d endpoints stored in %.1fs, level %s%s",
-        settings.character_slug,
+        character.slug,
         len(results),
         time.perf_counter() - started,
         level if level is not None else "unknown",
         f", failed: {', '.join(failed)}" if failed else "",
     )
-    targets = gear_targets(session, settings)
+    targets = gear_targets(session, settings, character_id)
     # Its own progress and errors are logged by the item search and lookups.
-    refresh_item_sources(session, settings, targets, equipped_item_ids(session), http=http)
-    refresh_crafted_gear(session, settings, http)
-    send_sync_alerts(session, settings)
+    refresh_item_sources(
+        session, settings, targets, equipped_item_ids(session, character_id), http=http
+    )
+    refresh_crafted_gear(session, settings, character_id, http)
+    send_sync_alerts(session, settings, character)
     prune_old_data(session)
     return {result.kind: result.status for result in results}
 
@@ -201,12 +221,15 @@ def prune_old_data(session: Session) -> None:
 
 
 def refresh_crafted_gear(
-    session: Session, settings: Settings, http: httpx.Client | None = None
+    session: Session,
+    settings: Settings,
+    character_id: int | None,
+    http: httpx.Client | None = None,
 ) -> None:
     """The recipes the character knows and the items they make (#10). Best effort, as the
     item catalog step: a failure is logged, never fails the sync."""
     try:
-        result = refresh_crafting(session, settings, http=http)
+        result = refresh_crafting(session, settings, character_id, http=http)
     except Exception:
         session.rollback()
         logger.exception("Crafted gear refresh after the sync failed")
@@ -215,11 +238,11 @@ def refresh_crafted_gear(
         logger.warning("Crafted gear: %s", error)
 
 
-def send_sync_alerts(session: Session, settings: Settings) -> None:
+def send_sync_alerts(session: Session, settings: Settings, character: Character) -> None:
     """Queue alerts for what this sync changed and send them now (#12). Best effort: an
     alert problem never fails the sync; the worker retries what's left."""
     try:
-        if notify.after_sync(session, settings):
+        if notify.after_sync(session, settings, character):
             with notify.new_client() as client:
                 notify.deliver_due(session, client)
     except Exception:
@@ -254,7 +277,7 @@ def _engine(session: Session) -> Engine:
     return bind if isinstance(bind, Engine) else bind.engine
 
 
-def missing_data(session: Session) -> list[str]:
+def missing_data(session: Session, character_id: int | None) -> list[str]:
     """Static data a fresh instance hasn't loaded yet: "pool" (no dungeon data),
     "enchants" (no recipes), "talents" (no trees for the synced class, #88)."""
     missing: list[str] = []
@@ -262,18 +285,22 @@ def missing_data(session: Session) -> list[str]:
         missing.append("pool")
     if session.exec(select(RecipeData)).first() is None:
         missing.append("enchants")
-    class_name = character_class_name(session)
+    class_name = character_class_name(session, character_id)
     if class_name and stored_tree(session, class_name) is None:
         missing.append("talents")
     return missing
 
 
 def refresh_talents(
-    session: Session, settings: Settings, *, http: httpx.Client | None = None
+    session: Session,
+    settings: Settings,
+    character_id: int | None,
+    *,
+    http: httpx.Client | None = None,
 ) -> TalentRefresh | None:
     """The synced class's talent trees (#88), one refresh at a time; None before a sync
     (no class to fetch for)."""
-    class_name = character_class_name(session)
+    class_name = character_class_name(session, character_id)
     if class_name is None:
         return None
     with lease(_engine(session), "talents"):
@@ -284,7 +311,9 @@ def load_missing_data(engine: Engine, settings: Settings, http: httpx.Client | N
     """Load what a fresh instance is missing, in the background after the first sync
     (#87). Skips anything already running (the worker may be on it)."""
     with Session(engine) as session:
-        missing = missing_data(session)
+        # Shared data, loaded for the current character's class and level (ADR 0036).
+        character_id = current_id(session)
+        missing = missing_data(session, character_id)
         if not missing:
             return
         logger.info("First data load: %s", ", ".join(missing))
@@ -293,7 +322,7 @@ def load_missing_data(engine: Engine, settings: Settings, http: httpx.Client | N
                 if name == "pool":
                     refresh_item_pool(session, settings, http=http)
                 elif name == "talents":
-                    refresh_talents(session, settings, http=http)
+                    refresh_talents(session, settings, character_id, http=http)
                 else:
                     refresh_enchants(session, settings, http=http)
             except Busy:
@@ -316,7 +345,8 @@ def _refresh_item_pool(
     The window is around `level` when given (guest mode's level, #48), else the
     character's. Without either, every pool item: about 1,700 requests, ~20 minutes.
     """
-    character_level, faction = character_context(session)
+    # The pool is shared; its window follows the current character (ADR 0036).
+    character_level, faction = character_context(session, current_id(session))
     asked = level is not None
     level = level if level is not None else character_level
     started = time.perf_counter()

@@ -12,8 +12,11 @@ from sqlalchemy import inspect, text
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, SQLModel, select
 
+from character_planner.characters import current_character
+from character_planner.config import Settings
 from character_planner.db import (
     MIGRATIONS,
+    ProgressHistory,
     Snapshot,
     StoredGearTargets,
     init_db,
@@ -23,28 +26,18 @@ from character_planner.db import (
 NOTIFICATION_TABLES = {"notificationdestination", "notificationoutbox", "notificationstate"}
 
 
-# Tables added by migrations after the baseline: databases made before #60 never had
-# them. Add each new table here when its migration is added.
-AFTER_BASELINE = {
-    "joblease",  # 0002
-    "talenttreedata",  # 0003
-    "spellicon",
-    "companionquest",  # 0004
-    "companionrare",  # 0005
-    "companionclassquest",  # 0006
-    "classquestdone",
-    "craftingrecipe",  # 0007
-    "blizzarditem",
-    "storedenchantcorrections",  # 0008
-    "progresshistory",  # 0009
-}
-
-
 def create_like_before_migrations(engine: Engine) -> None:
-    """Make a database the way every one was made before #60: create_all, at the
-    baseline's tables."""
-    tables = [t for name, t in SQLModel.metadata.tables.items() if name not in AFTER_BASELINE]
-    SQLModel.metadata.create_all(engine, tables=tables)
+    """Make a database the way every one was made before #60: the baseline's tables as
+    they were then, and no version table. Built from the baseline migration itself, so
+    later column changes to those tables (#14's character_id) don't leak in."""
+    from alembic import command
+
+    config = Config()
+    config.set_main_option("script_location", str(MIGRATIONS))
+    with engine.begin() as connection:
+        config.attributes["connection"] = connection
+        command.upgrade(config, "0001")
+        connection.execute(text("DROP TABLE alembic_version"))
 
 
 ENGINES: list[Engine] = []
@@ -103,10 +96,19 @@ def test_the_migrations_match_the_models(tmp_path: Path) -> None:
 def test_a_database_from_before_migrations_keeps_its_data(tmp_path: Path) -> None:
     engine = engine_at(tmp_path)
     create_like_before_migrations(engine)
-    with Session(engine) as session:
-        session.add(Snapshot(source="api", kind="profile", status=200, payload={"level": 19}))
-        session.add(StoredGearTargets(id=1, targets={"targets": []}))
-        session.commit()
+    with engine.begin() as connection:  # the old columns: no character_id yet
+        connection.execute(
+            text(
+                "INSERT INTO snapshot (source, kind, status, payload, captured_at) "
+                """VALUES ('api', 'profile', 200, '{"level": 19}', '2026-11-01 00:00:00')"""
+            )
+        )
+        connection.execute(
+            text(
+                "INSERT INTO storedgeartargets (id, targets, updated_at) "
+                """VALUES (1, '{"targets": []}', '2026-11-01 00:00:00')"""
+            )
+        )
 
     init_db(engine)
 
@@ -152,3 +154,40 @@ def test_a_database_in_a_new_folder_is_created(tmp_path: Path, name: str) -> Non
     engine = engine_at(tmp_path, name)
     init_db(engine)
     assert (tmp_path / name).exists()
+
+
+def test_a_database_from_0_3_keeps_its_snapshots_and_history(
+    tmp_path: Path, settings: Settings
+) -> None:
+    """#14: an instance upgrading from one character to records keeps everything, and the
+    first start gives it to the character .env names (ADR 0036)."""
+    from alembic import command
+
+    engine = engine_at(tmp_path)
+    config = Config()
+    config.set_main_option("script_location", str(MIGRATIONS))
+    with engine.begin() as connection:
+        config.attributes["connection"] = connection
+        command.upgrade(config, "0009")
+        connection.execute(
+            text(
+                "INSERT INTO snapshot (source, kind, status, payload, captured_at) VALUES "
+                """('api', 'profile', 200, '{"level": 19}', '2026-11-12 00:00:00')"""
+            )
+        )
+        connection.execute(
+            text(
+                "INSERT INTO progresshistory (captured_at, level, item_level) "
+                "VALUES ('2026-10-01 00:00:00', 12, 8.0)"
+            )
+        )
+
+    init_db(engine)
+    assert differences(engine) == []
+    with Session(engine) as session:
+        character = current_character(session, settings)
+        assert character is not None
+        (snapshot,) = session.exec(select(Snapshot)).all()
+        (history,) = session.exec(select(ProgressHistory)).all()
+        assert (snapshot.character_id, snapshot.payload) == (character.id, {"level": 19})
+        assert (history.character_id, history.level) == (character.id, 12)

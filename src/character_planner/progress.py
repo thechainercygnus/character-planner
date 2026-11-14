@@ -179,13 +179,17 @@ def _naive(moment: datetime) -> datetime:
     return moment.replace(tzinfo=None)
 
 
-def progress(session: Session, weights: Weights) -> Progress:
+def progress(session: Session, weights: Weights, character_id: int | None) -> Progress:
+    """The character's progress: its live snapshots plus its archived history."""
     rows = session.exec(
         select(Snapshot).where(
+            col(Snapshot.character_id) == character_id,
             col(Snapshot.kind).in_(TRACKED_KINDS),
             col(Snapshot.status) >= 200,
             col(Snapshot.status) < 300,
         )
     ).all()
-    archived = session.exec(select(ProgressHistory)).all()
+    archived = session.exec(
+        select(ProgressHistory).where(col(ProgressHistory.character_id) == character_id)
+    ).all()
     return with_history(build_progress(rows, weights), archived)

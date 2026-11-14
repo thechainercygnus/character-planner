@@ -30,6 +30,7 @@ from character_planner import fields
 from character_planner.config import Settings
 from character_planner.crafting import crafted_items
 from character_planner.db import (
+    Character,
     NotificationDestination,
     NotificationOutbox,
     NotificationState,
@@ -241,7 +242,9 @@ def _target_key(item_id: int | None, name: str) -> str:
     return str(item_id) if item_id is not None else name.casefold()
 
 
-def character_digest(session: Session, settings: Settings) -> tuple[Digest, list[str]]:
+def character_digest(
+    session: Session, settings: Settings, character_id: int | None
+) -> tuple[Digest, list[str]]:
     """The digest now, and the alert-worthy upgrades as text lines, best first."""
     from character_planner import jobs  # jobs calls after_sync: import here, not on load
     from character_planner.choices import stored_choices
@@ -254,10 +257,10 @@ def character_digest(session: Session, settings: Settings) -> tuple[Digest, list
     from character_planner.scoring import current_weights
     from character_planner.views import character_level, gear_plan, parse_equipment
 
-    latest = latest_by_kind(session)
-    defaults = current_defaults(session, settings.curated_dir)
+    latest = latest_by_kind(session, character_id)
+    defaults = current_defaults(session, settings.curated_dir, character_id)
     weights = current_weights(session, defaults.presets)
-    targets = jobs.gear_targets(session, settings)
+    targets = jobs.gear_targets(session, settings, character_id)
     plan = gear_plan(
         latest,
         targets,
@@ -265,14 +268,14 @@ def character_digest(session: Session, settings: Settings) -> tuple[Digest, list
         icons_by_id(session),
         companion_by_id(session),
         weights,
-        jobs.item_levels(session),
+        jobs.item_levels(session, character_id),
     )
-    level, faction = jobs.character_context(session)
+    level, faction = jobs.character_context(session, character_id)
     equipment = latest.get("equipment")
     equipped = {i.slot: i for i in parse_equipment(equipment.payload if equipment else None)}
     rules = current_rules(session, defaults.rules)
     recs = recommend(
-        pool_view(session, level, faction, crafted_items(session)),
+        pool_view(session, level, faction, crafted_items(session, character_id)),
         equipped,
         weights,
         rules,
@@ -319,14 +322,14 @@ def _save_digest(session: Session, digest: Digest) -> None:
     session.commit()
 
 
-def after_sync(session: Session, settings: Settings) -> int:
+def after_sync(session: Session, settings: Settings, character: Character) -> int:
     """Queue alerts for what changed since the last sync; how many messages were queued.
 
     One message per destination, with a section for each change it subscribes to. The
     first sync only records the baseline."""
     if not session.exec(select(NotificationDestination)).first():
         return 0  # nothing to send to: don't even build the digest
-    now, upgrade_lines = character_digest(session, settings)
+    now, upgrade_lines = character_digest(session, settings, character.id)
     before = _load_digest(session)
     _save_digest(session, now)
     if before is None:
@@ -373,7 +376,7 @@ def after_sync(session: Session, settings: Settings) -> int:
         wanted = [k for k in sections if k in (destination.alerts or [])]
         if not wanted:
             continue
-        name = f"{settings.character_name} {settings.character_surname}"
+        name = f"{character.name} {character.surname}".strip()
         message = _message(f"{name}: what changed", "", COLOR["user"], app_url(settings, "plan"))
         message["embeds"][0]["fields"] = [
             {"name": titles[k], "value": sections[k][:1000], "inline": False} for k in wanted

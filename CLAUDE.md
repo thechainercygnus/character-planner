@@ -85,7 +85,8 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 ## Layout
 
 - `src/character_planner/blizzard/`: OAuth and the API client (raw JSON in, status always reported)
-- `src/character_planner/db.py`: SQLModel tables (`Snapshot`, `StoredToken`); `init_db` runs the migrations in `migrations/` (ADR 0022)
+- `src/character_planner/db.py`: SQLModel tables (`Character`, `Snapshot`, `StoredToken`...); `init_db` runs the migrations in `migrations/` (ADR 0022)
+- `src/character_planner/characters.py`: tracked characters; `.env` seeds the first, which adopts rows from before #14; snapshots and progress history belong to one, and every reader takes a `character_id` (ADR 0036)
 - `src/character_planner/classes.py` + `data/curated/classes/*.yaml`: shipped defaults per class, chosen by the synced class; the Warrior's are the original curated files (ADR 0023)
 - `src/character_planner/curated.py` + `data/curated/*.yaml`: hand-maintained defaults (targets, stat weights, rules); edits made in the app live in the database
 - `src/character_planner/scoring.py`: gear scores from editable stat weights (ADR 0005) in named presets (ADR 0013); shipped presets in `data/curated/stat_weights.yaml` and `weight_presets.yaml`

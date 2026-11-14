@@ -24,7 +24,7 @@ from character_planner.db import (
 from character_planner.logs import RedactingFormatter, redact
 from character_planner.notify import Digest
 
-from .conftest import FIXTURES, api_client
+from .conftest import FIXTURES, api_client, tracked, tracked_character
 
 # A made-up webhook, built at run time so no webhook URL sits in the source.
 HOOK_ID = "123456789012345678"
@@ -237,7 +237,10 @@ def _digests(monkeypatch: pytest.MonkeyPatch, *digests: Digest) -> None:
     monkeypatch.setattr(
         notify,
         "character_digest",
-        lambda _session, _settings: (queue.pop(0), ["**Cape** (Back, The Deadmines): +4.0"]),
+        lambda _session, _settings, _character_id: (
+            queue.pop(0),
+            ["**Cape** (Back, The Deadmines): +4.0"],
+        ),
     )
 
 
@@ -257,10 +260,10 @@ def test_changes_since_the_last_sync_become_one_message(
         add(session)
         levels_only = add(session, url=OTHER, alerts=["level_up"])
 
-        assert notify.after_sync(session, settings) == 0  # the baseline
+        assert notify.after_sync(session, settings, tracked_character(session)) == 0  # the baseline
         assert session.get(NotificationState, "digest") is not None
 
-        assert notify.after_sync(session, settings) == 2
+        assert notify.after_sync(session, settings, tracked_character(session)) == 2
         everything, level = sorted(outbox(session), key=lambda o: o.destination_id != 1)
         fields = {f["name"]: f["value"] for f in everything.payload["embeds"][0]["fields"]}
         assert fields == {
@@ -273,7 +276,9 @@ def test_changes_since_the_last_sync_become_one_message(
         assert level.destination_id == levels_only
         assert [f["name"] for f in level.payload["embeds"][0]["fields"]] == ["Level-up"]
 
-        assert notify.after_sync(session, settings) == 0  # nothing changed
+        assert (
+            notify.after_sync(session, settings, tracked_character(session)) == 0
+        )  # nothing changed
 
 
 def test_no_destinations_means_no_digest_work(
@@ -284,7 +289,7 @@ def test_no_destinations_means_no_digest_work(
 
     monkeypatch.setattr(notify, "character_digest", fail)
     with Session(engine) as session:
-        assert notify.after_sync(session, settings) == 0
+        assert notify.after_sync(session, settings, tracked_character(session)) == 0
 
 
 def test_the_digest_reads_the_real_plan(engine: Engine, settings: Settings) -> None:
@@ -294,9 +299,17 @@ def test_the_digest_reads_the_real_plan(engine: Engine, settings: Settings) -> N
 
     with Session(engine) as session:
         for kind in ("profile", "equipment"):
-            session.add(Snapshot(source="api", kind=kind, status=200, payload=payload(kind)))
+            session.add(
+                Snapshot(
+                    character_id=tracked(session),
+                    source="api",
+                    kind=kind,
+                    status=200,
+                    payload=payload(kind),
+                )
+            )
         session.commit()
-        digest, lines = notify.character_digest(session, settings)
+        digest, lines = notify.character_digest(session, settings, tracked(session))
     assert digest.level == 18
     assert "OFF_HAND" in digest.targets  # the YAML's current shield target
     assert digest.upgrades == [] and lines == []  # no item pool in this test
@@ -433,7 +446,7 @@ def test_jobs_send_sync_alerts_is_best_effort(
 ) -> None:
     monkeypatch.setattr(notify, "after_sync", lambda *_: 1 / 0)
     with Session(engine) as session:
-        jobs.send_sync_alerts(session, settings)  # logs, never raises
+        jobs.send_sync_alerts(session, settings, tracked_character(session))  # logs, never raises
 
 
 def test_no_upgrade_alerts_without_a_level(engine: Engine, settings: Settings) -> None:
@@ -451,11 +464,19 @@ def test_no_upgrade_alerts_without_a_level(engine: Engine, settings: Settings) -
         details = json.loads((FIXTURES / "companion_item_270230.json").read_text("utf-8"))
         session.merge(CompanionItem(item_id=5193, found=True, payload=details))
         session.commit()
-        digest, lines = notify.character_digest(session, settings)
+        digest, lines = notify.character_digest(session, settings, tracked(session))
         assert digest.level is None and digest.upgrades == [] and lines == []
 
         # The same pool with a level does produce it, so the guard is what stopped it.
-        session.add(Snapshot(source="api", kind="profile", status=200, payload={"level": 18}))
+        session.add(
+            Snapshot(
+                character_id=tracked(session),
+                source="api",
+                kind="profile",
+                status=200,
+                payload={"level": 18},
+            )
+        )
         session.commit()
-        with_level, _ = notify.character_digest(session, settings)
+        with_level, _ = notify.character_digest(session, settings, tracked(session))
     assert with_level.level == 18 and with_level.upgrades == [5193]

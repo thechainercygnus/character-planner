@@ -165,9 +165,9 @@ def done_ids(session: Session) -> set[str]:
     return {row.quest_id for row in session.exec(select(ClassQuestDone)).all()}
 
 
-def checklist(session: Session) -> ClassQuestChecklist:
+def checklist(session: Session, character_id: int | None) -> ClassQuestChecklist:
     """The synced character's class quests: missed, now, soon, later or done."""
-    snapshots = latest_by_kind(session)
+    snapshots = latest_by_kind(session, character_id)
     character = character_view(snapshots)
     profile = snapshots.get("profile")
     faction = character_faction(profile.payload if profile else None)

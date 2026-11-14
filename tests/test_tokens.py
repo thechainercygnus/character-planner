@@ -29,7 +29,7 @@ from character_planner.tokens import (
     cached_app_token,
 )
 
-from .conftest import api_client
+from .conftest import api_client, tracked_character
 from .test_app import BASE, fixture
 
 SECRET_TOKEN = "app-token-never-logged"
@@ -165,7 +165,7 @@ def test_tokens_are_never_logged(
     mock_character()
     with caplog.at_level(logging.DEBUG), Session(engine) as session:
         app_token(session, settings, renew=True)
-        jobs.sync_character(session, settings)
+        jobs.sync_character(session, settings, tracked_character(session))
     assert caplog.records  # something was logged
     assert all(SECRET_TOKEN not in record.getMessage() for record in caplog.records)
 
@@ -179,7 +179,7 @@ def test_a_sync_needs_no_login(engine: Engine, settings: Settings) -> None:
     mock_character()
     with Session(engine) as session:
         assert session.get(StoredToken, 1) is None  # never logged in
-        statuses = jobs.sync_character(session, settings)
+        statuses = jobs.sync_character(session, settings, tracked_character(session))
         kinds = {s.kind for s in session.exec(select(Snapshot)).all()}
     assert statuses["profile"] == 200
     assert {"profile", "equipment", "statistics", "professions", "specializations"} <= kinds
@@ -193,7 +193,7 @@ def test_a_401_gets_a_new_token_and_one_retry(engine: Engine, settings: Settings
     token = respx.post(oauth.TOKEN_URL).mock(return_value=token_response("fresh"))
     mock_character(token_status={"revoked": 401})
     with Session(engine) as session:
-        statuses = jobs.sync_character(session, settings)
+        statuses = jobs.sync_character(session, settings, tracked_character(session))
         statuses_stored = {s.status for s in session.exec(select(Snapshot)).all()}
     assert token.call_count == 1
     assert statuses["profile"] == 200
@@ -206,7 +206,7 @@ def test_a_second_401_means_the_client_is_refused(engine: Engine, settings: Sett
     mock_character(token_status={"a": 401, "b": 401})
     with Session(engine) as session:
         with pytest.raises(CredentialsError, match="refused a new app token too"):
-            jobs.sync_character(session, settings)
+            jobs.sync_character(session, settings, tracked_character(session))
         assert session.exec(select(Snapshot)).all() == []
 
 
@@ -215,7 +215,7 @@ def test_other_failures_are_stored_not_retried(engine: Engine, settings: Setting
     token = respx.post(oauth.TOKEN_URL).mock(return_value=token_response())
     mock_character(profile=503)
     with Session(engine) as session:
-        statuses = jobs.sync_character(session, settings)
+        statuses = jobs.sync_character(session, settings, tracked_character(session))
     assert statuses["profile"] == 503
     assert token.call_count == 1  # no renewal for a server error
 

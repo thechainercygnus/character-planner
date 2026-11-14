@@ -19,13 +19,21 @@ from character_planner.db import (
 )
 from character_planner.erase import SHARED, erase_character, erased_tables
 
-from .conftest import api_client
+from .conftest import api_client, tracked
 from .test_cli import cli_settings  # noqa: F401  # pyright: ignore[reportUnusedImport]
 
 
 def store_character(engine: Engine) -> None:
     with Session(engine) as session:
-        session.add(Snapshot(source="api", kind="profile", status=200, payload={"level": 20}))
+        session.add(
+            Snapshot(
+                character_id=tracked(session),
+                source="api",
+                kind="profile",
+                status=200,
+                payload={"level": 20},
+            )
+        )
         session.add(StoredToken(id=1, access_token="tok", expires_at=0, scope="wow.profile"))
         session.add(ClassQuestDone(quest_id="warrior-defensive-stance"))
         session.add(ItemChoice(item_id=1, choice="dismissed", name="Worn Axe"))
@@ -52,6 +60,7 @@ def test_erase_removes_the_character_and_keeps_shared_game_data(engine: Engine) 
     store_character(engine)
     with Session(engine) as session:
         assert erase_character(session) == {
+            "character": 1,  # seeded again from .env on the next start (ADR 0036)
             "classquestdone": 1,
             "itemchoice": 1,
             "notificationdestination": 1,
@@ -97,7 +106,7 @@ def test_db_erase_deletes_the_character(
 ) -> None:
     store_character(engine)
     assert dbcli.main(["erase", "--yes"]) == 0
-    assert capsys.readouterr().out.startswith("Erased 5 rows: ")
+    assert capsys.readouterr().out.startswith("Erased 6 rows: ")
     with Session(engine) as session:
         assert session.exec(select(Snapshot)).all() == []
 

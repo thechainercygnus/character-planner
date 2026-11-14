@@ -23,6 +23,7 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
 from character_planner import jobs, notify, retention
+from character_planner.characters import current_character
 from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, make_engine, utcnow
 from character_planner.leases import Busy
@@ -42,9 +43,12 @@ def sync_job(session: Session, settings: Settings, http: httpx.Client | None) ->
     # CredentialsError, which fails the job and sends the system alert.
     if not settings.has_credentials:
         return "skipped: no Battle.net client (BNET_CLIENT_ID, BNET_CLIENT_SECRET in .env)"
-    statuses = jobs.sync_character(session, settings, http=http)
+    character = current_character(session, settings)
+    if character is None:
+        return "skipped: no character to sync (CHARACTER_NAME in .env names the first)"
+    statuses = jobs.sync_character(session, settings, character, http=http)
     if statuses.get("profile") == 404:
-        return f"character {settings.character_slug} not found: check its name and region"
+        return f"character {character.slug} not found: check its name and region"
     failed = sorted(kind for kind, status in statuses.items() if status != 200)
     return f"synced {len(statuses)} endpoints" + (
         f", failed: {', '.join(failed)}" if failed else ""
@@ -54,7 +58,7 @@ def sync_job(session: Session, settings: Settings, http: httpx.Client | None) ->
 def pool_job(session: Session, settings: Settings, http: httpx.Client | None) -> str:
     # Without a level the refresh would fetch the whole pool: hundreds of requests for
     # items far outside the window. Wait for the first sync instead.
-    if jobs.character_context(session)[0] is None:
+    if jobs.character_context(session, jobs.current_id(session))[0] is None:
         return "skipped: no synced level yet"
     try:
         result = jobs.refresh_item_pool(session, settings, http=http)
@@ -83,7 +87,7 @@ def enchants_job(session: Session, settings: Settings, http: httpx.Client | None
 
 def talents_job(session: Session, settings: Settings, http: httpx.Client | None) -> str:
     try:
-        result = jobs.refresh_talents(session, settings, http=http)
+        result = jobs.refresh_talents(session, settings, jobs.current_id(session), http=http)
     except Busy:
         return "skipped: already running"
     if result is None:

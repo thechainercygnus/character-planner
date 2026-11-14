@@ -361,7 +361,7 @@ Latest
 
 ### `POST /api/snapshots/manual`
 
-Fallback for data the API doesn't return: store it in the same shape.
+Fallback for data the API doesn't return: store it in the same shape, for the current character.
 
 **Body:** [ManualSnapshot](#schema-manualsnapshot)
 

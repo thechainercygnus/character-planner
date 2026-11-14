@@ -29,6 +29,7 @@ from character_planner.progress import progress
 from character_planner.retention import RETAIN, forget_character, prune, stored_slug
 from character_planner.scoring import Weights
 
+from .conftest import tracked, tracked_character
 from .test_app import fixture
 from .test_items import mock_battlenet
 
@@ -49,7 +50,16 @@ def sync(session: Session, at: datetime, level: int, *, source: str = "api") -> 
         ("equipment", fixture("equipment")),
         ("statistics", fixture("statistics")),
     ):
-        session.add(Snapshot(source=source, kind=kind, status=200, payload=payload, captured_at=at))
+        session.add(
+            Snapshot(
+                character_id=tracked(session),
+                source=source,
+                kind=kind,
+                status=200,
+                payload=payload,
+                captured_at=at,
+            )
+        )
     session.commit()
 
 
@@ -68,7 +78,7 @@ def test_old_snapshots_go_and_their_progress_is_archived(engine: Engine) -> None
 
         kept = session.exec(select(Snapshot)).all()
         archived = session.exec(select(ProgressHistory)).all()
-        view = progress(session, Weights(weights={"Stamina": 1.0}))
+        view = progress(session, Weights(weights={"Stamina": 1.0}), tracked(session))
 
     profiles = {(s.source, s.payload["level"]) for s in kept if s.kind == "profile"}
     assert profiles == {("api", 19), ("manual", 15)}
@@ -134,16 +144,18 @@ def test_a_character_blizzard_no_longer_has_is_forgotten(engine: Engine) -> None
     with Session(engine) as session:
         sync(session, RECENT, 19)
         sync(session, RECENT - timedelta(hours=1), 18, source="manual")
-        session.add(ProgressHistory(captured_at=OLD, level=12))
+        me = tracked_character(session)
+        session.add(ProgressHistory(character_id=me.id, captured_at=OLD, level=12))
         session.add(NotificationState(key="digest", value={}))
         session.commit()
-        assert stored_slug(session) == "brumboldt-doomlet"
+        assert stored_slug(session, me.id) == "brumboldt-doomlet"
 
-        # A mistyped name in .env: someone else's 404 never deletes this history.
-        assert forget_character(session, "brumbolt-doomlet") == 0
+        # Renamed or mistyped: a 404 for another name never deletes this history.
+        typo = me.model_copy(update={"slug": "brumbolt-doomlet"})
+        assert forget_character(session, typo) == 0
         assert count(session, ProgressHistory) == 1
 
-        deleted = forget_character(session, "brumboldt-doomlet")
+        deleted = forget_character(session, me)
         sources = {s.source for s in session.exec(select(Snapshot)).all()}
         history, digests = count(session, ProgressHistory), count(session, NotificationState)
 

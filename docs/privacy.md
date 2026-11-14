@@ -75,8 +75,8 @@ in them is about the character.
 
 **Deletion isn't a stop.** The next sync, by hand or on the worker's schedule, fetches
 the character again. To stop using a character's data for good, also stop the planner
-(`docker compose down`), or change `CHARACTER_NAME` and `CHARACTER_SURNAME` to another
-character before the next sync.
+(`docker compose down`). Erasing removes the character's record too, so the next start
+tracks whichever character `CHARACTER_NAME` and `CHARACTER_SURNAME` name then.
 
 **Backups and logs:** they aren't touched. Delete them yourself if they hold the
 character's data.
