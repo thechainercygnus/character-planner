@@ -2161,6 +2161,72 @@
         "title": "GearTargets",
         "type": "object"
       },
+      "GroupDungeon": {
+        "properties": {
+          "dungeon": {
+            "title": "Dungeon",
+            "type": "string"
+          },
+          "dungeon_id": {
+            "title": "Dungeon Id",
+            "type": "string"
+          },
+          "in_range": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "In Range",
+            "type": "array"
+          },
+          "max_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Level"
+          },
+          "min_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Level"
+          },
+          "needs": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/MemberNeed"
+              },
+              "type": "array"
+            },
+            "title": "Needs",
+            "type": "object"
+          },
+          "total_gain": {
+            "title": "Total Gain",
+            "type": "number"
+          }
+        },
+        "required": [
+          "dungeon_id",
+          "dungeon",
+          "min_level",
+          "max_level",
+          "total_gain",
+          "in_range",
+          "needs"
+        ],
+        "title": "GroupDungeon",
+        "type": "object"
+      },
       "GuestClass": {
         "properties": {
           "key": {
@@ -2217,6 +2283,138 @@
           "classes"
         ],
         "title": "GuestOptions",
+        "type": "object"
+      },
+      "GuildInfo": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "GuildInfo",
+        "type": "object"
+      },
+      "GuildMembershipUpdate": {
+        "properties": {
+          "opted_in": {
+            "title": "Opted In",
+            "type": "boolean"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "enum": [
+                  "tank",
+                  "healer",
+                  "dps"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          }
+        },
+        "required": [
+          "opted_in"
+        ],
+        "title": "GuildMembershipUpdate",
+        "type": "object"
+      },
+      "GuildView": {
+        "properties": {
+          "dungeons": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/GroupDungeon"
+            },
+            "title": "Dungeons",
+            "type": "array"
+          },
+          "going": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Going",
+            "type": "array"
+          },
+          "guild": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GuildInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "members": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Member"
+            },
+            "title": "Members",
+            "type": "array"
+          },
+          "missing_roles": {
+            "default": [],
+            "items": {
+              "enum": [
+                "tank",
+                "healer",
+                "dps"
+              ],
+              "type": "string"
+            },
+            "title": "Missing Roles",
+            "type": "array"
+          },
+          "opted_in": {
+            "title": "Opted In",
+            "type": "boolean"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "enum": [
+                  "tank",
+                  "healer",
+                  "dps"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "roles": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Roles",
+            "type": "object"
+          }
+        },
+        "required": [
+          "guild",
+          "opted_in"
+        ],
+        "title": "GuildView",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -2473,6 +2671,110 @@
           "signups_open"
         ],
         "title": "Me",
+        "type": "object"
+      },
+      "Member": {
+        "properties": {
+          "character_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Class"
+          },
+          "character_id": {
+            "title": "Character Id",
+            "type": "integer"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "enum": [
+                  "tank",
+                  "healer",
+                  "dps"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "spec": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spec"
+          },
+          "yours": {
+            "title": "Yours",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "character_id",
+          "name",
+          "character_class",
+          "spec",
+          "role",
+          "level",
+          "yours"
+        ],
+        "title": "Member",
+        "type": "object"
+      },
+      "MemberNeed": {
+        "properties": {
+          "item": {
+            "title": "Item",
+            "type": "string"
+          },
+          "item_id": {
+            "title": "Item Id",
+            "type": "integer"
+          },
+          "score_gain": {
+            "title": "Score Gain",
+            "type": "number"
+          },
+          "slot": {
+            "title": "Slot",
+            "type": "string"
+          }
+        },
+        "required": [
+          "item",
+          "item_id",
+          "slot",
+          "score_gain"
+        ],
+        "title": "MemberNeed",
         "type": "object"
       },
       "MissingEffect": {
@@ -6452,6 +6754,131 @@
           }
         },
         "summary": "Get Guest Recommendations"
+      }
+    },
+    "/api/guild": {
+      "get": {
+        "description": "The character's guild (#18): once it's opted in, every opted-in member, their\nroles and the dungeons best for the members `going` (all by default). Before\nthat, just the guild's name: nothing about anyone in it.",
+        "operationId": "get_guild_api_guild_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "going",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Going"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuildView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Guild"
+      }
+    },
+    "/api/guild/membership": {
+      "put": {
+        "description": "Opt the character into its guild's view, or out, with an optional role.",
+        "operationId": "put_guild_membership_api_guild_membership_put",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuildMembershipUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuildView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Guild Membership"
       }
     },
     "/api/healthz": {

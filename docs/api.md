@@ -264,6 +264,31 @@ Guest mode (ADR 0017): the best items per slot and dungeons for a class and leve
 
 **200:** [Recommendations](#schema-recommendations)
 
+## `guild`
+
+### `GET /api/guild`
+
+The character's guild (#18): once it's opted in, every opted-in member, their roles and the dungeons best for the members `going` (all by default). Before that, just the guild's name: nothing about anyone in it.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `going` | query | list of integer or null | no |  |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**200:** [GuildView](#schema-guildview)
+
+### `PUT /api/guild/membership`
+
+Opt the character into its guild's view, or out, with an optional role.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**Body:** [GuildMembershipUpdate](#schema-guildmembershipupdate)
+
+**200:** [GuildView](#schema-guildview)
+
 ## `healthz`
 
 ### `GET /api/healthz`
@@ -1223,6 +1248,19 @@ One flat list of targets (ADR 0015). Within a slot, list order is priority.
 | --- | --- | --- |
 | `targets` | list of [GearTarget](#schema-geartarget) | yes |
 
+(schema-groupdungeon)=
+### GroupDungeon
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `dungeon_id` | string | yes |
+| `dungeon` | string | yes |
+| `min_level` | integer or null | yes |
+| `max_level` | integer or null | yes |
+| `total_gain` | number | yes |
+| `in_range` | list of integer | yes |
+| `needs` | map of list of [MemberNeed](#schema-memberneed) | yes |
+
 (schema-guestclass)=
 ### GuestClass
 
@@ -1241,6 +1279,36 @@ What a guest can choose from.
 | --- | --- | --- |
 | `classes` | list of [GuestClass](#schema-guestclass) | yes |
 | `factions` | list of `alliance` \\| `horde` | no |
+
+(schema-guildinfo)=
+### GuildInfo
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `id` | integer | yes |
+| `name` | string | yes |
+
+(schema-guildmembershipupdate)=
+### GuildMembershipUpdate
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `opted_in` | boolean | yes |
+| `role` | `tank` \\| `healer` \\| `dps` or null | no |
+
+(schema-guildview)=
+### GuildView
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `guild` | [GuildInfo](#schema-guildinfo) or null | yes |
+| `opted_in` | boolean | yes |
+| `role` | `tank` \\| `healer` \\| `dps` or null | no |
+| `members` | list of [Member](#schema-member) | no |
+| `going` | list of integer | no |
+| `roles` | map of integer | no |
+| `missing_roles` | list of `tank` \\| `healer` \\| `dps` | no |
+| `dungeons` | list of [GroupDungeon](#schema-groupdungeon) | no |
 
 (schema-httpvalidationerror)=
 ### HTTPValidationError
@@ -1329,6 +1397,29 @@ What a guest can choose from.
 | `signed_in` | boolean | yes |
 | `admin` | boolean | yes |
 | `signups_open` | boolean | yes |
+
+(schema-member)=
+### Member
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `character_id` | integer | yes |
+| `name` | string | yes |
+| `character_class` | string or null | yes |
+| `spec` | string or null | yes |
+| `role` | `tank` \\| `healer` \\| `dps` or null | yes |
+| `level` | integer or null | yes |
+| `yours` | boolean | yes |
+
+(schema-memberneed)=
+### MemberNeed
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `item` | string | yes |
+| `item_id` | integer | yes |
+| `slot` | string | yes |
+| `score_gain` | number | yes |
 
 (schema-missingeffect)=
 ### MissingEffect

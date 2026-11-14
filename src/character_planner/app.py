@@ -121,6 +121,7 @@ from character_planner.guest import (
     guest_options,
     guest_recommendations,
 )
+from character_planner.guild import GuildView, NoGuild, Role, guild_view, set_membership
 from character_planner.items import RefreshResult, refresh_item_sources
 from character_planner.jobs import (
     character_context,
@@ -286,6 +287,11 @@ class About(BaseModel):
     data: DataCredit
     # The privacy notice's contact (#133); empty when the operator set none.
     operator_contact: str = ""
+
+
+class GuildMembershipUpdate(BaseModel):
+    opted_in: bool
+    role: Role | None = None  # None: from the synced spec
 
 
 class Me(BaseModel):
@@ -1052,6 +1058,45 @@ def create_app(
             targets,
             stored_choices(session, character_id),
         )
+
+    def guild_character(session: Session, character_id: int | None) -> Character:
+        """The guild view's character: users must be on (ADR 0042), and one chosen."""
+        if not settings.planner_users:
+            raise HTTPException(404, "The guild view needs users on (PLANNER_USERS)")
+        character = session.get(Character, character_id) if character_id is not None else None
+        if character is None or character.id is None:
+            raise HTTPException(409, "No character yet: add one first")
+        return character
+
+    @app.get("/api/guild")
+    def get_guild(
+        session: SessionDep,
+        character_id: CharacterIdDep,
+        user_id: UserIdDep,
+        going: Annotated[list[int] | None, Query()] = None,
+    ) -> GuildView:
+        """The character's guild (#18): once it's opted in, every opted-in member, their
+        roles and the dungeons best for the members `going` (all by default). Before
+        that, just the guild's name: nothing about anyone in it."""
+        character = guild_character(session, character_id)
+        assert character.id is not None
+        return guild_view(session, settings, character.id, user_id, going)
+
+    @app.put("/api/guild/membership")
+    def put_guild_membership(
+        update: GuildMembershipUpdate,
+        session: SessionDep,
+        character_id: CharacterIdDep,
+        user_id: UserIdDep,
+    ) -> GuildView:
+        """Opt the character into its guild's view, or out, with an optional role."""
+        character = guild_character(session, character_id)
+        assert character.id is not None
+        try:
+            set_membership(session, character, update.opted_in, update.role)
+        except NoGuild as error:
+            raise HTTPException(409, str(error)) from error
+        return guild_view(session, settings, character.id, user_id)
 
     @app.get("/api/choices")
     def get_choices(session: SessionDep, character_id: CharacterIdDep) -> list[ItemChoiceView]:

@@ -70,6 +70,20 @@ class Character(SQLModel, table=True):
     created_at: datetime = Field(default_factory=utcnow)
 
 
+class GuildMembership(SQLModel, table=True):
+    """A character opted into its guild's view (#18): only opted-in members see it, and
+    they see each other. The guild is the one its profile named when it opted in; a
+    member who leaves the guild drops out of the view."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    character_id: int = Field(foreign_key="character.id", unique=True, index=True)
+    region: str
+    guild_id: int = Field(index=True)
+    guild_name: str
+    role: str | None = None  # tank, healer or dps, set by the member; None: from the spec
+    joined_at: datetime = Field(default_factory=utcnow)
+
+
 class Snapshot(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     # Whose data this is (ADR 0036). None only for rows from before #14, until the first
