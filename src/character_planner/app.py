@@ -211,6 +211,8 @@ from character_planner.views import (
 )
 
 PENDING_STATE_TTL_SECONDS = 600
+# On the 404 for an X-Character-Id that isn't (or isn't yours): the web app then forgets it.
+UNKNOWN_CHARACTER = "X-Character-Unknown"
 # With users on, what needs no sign-in (ADR 0037): health, the footer, who's signed in and
 # guest mode, which reads no character data (ADR 0017).
 PUBLIC_API = frozenset({"/api/healthz", "/api/about", "/api/me"})
@@ -315,7 +317,11 @@ def get_character_id(
     if selected is not None:
         character = session.get(Character, selected)
         if character is None or (settings.planner_users and character.user_id != user_id):
-            raise HTTPException(404, f"No character {selected}")
+            # Marked, so the web app can drop a remembered choice that's gone (a fresh
+            # database, another user's character) instead of failing every request.
+            raise HTTPException(
+                404, f"No character {selected}", headers={UNKNOWN_CHARACTER: "true"}
+            )
         return selected
     if settings.planner_users:
         first = owned_characters(session, user_id)
