@@ -34,7 +34,7 @@ export function Footer() {
         <a href={source_url} target="_blank" rel="noreferrer">
           Source
         </a>{' '}
-        (AGPL-3.0)
+        (AGPL-3.0) · <a href="#privacy">Privacy</a>
       </p>
     </footer>
   )

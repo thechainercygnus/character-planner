@@ -6,6 +6,11 @@
           "data": {
             "$ref": "#/components/schemas/DataCredit"
           },
+          "operator_contact": {
+            "default": "",
+            "title": "Operator Contact",
+            "type": "string"
+          },
           "source_url": {
             "title": "Source Url",
             "type": "string"
@@ -1527,6 +1532,22 @@
           "name"
         ],
         "title": "EquippedItem",
+        "type": "object"
+      },
+      "Erased": {
+        "properties": {
+          "removed": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Removed",
+            "type": "object"
+          }
+        },
+        "required": [
+          "removed"
+        ],
+        "title": "Erased",
         "type": "object"
       },
       "GearChange": {
@@ -5049,6 +5070,23 @@
       }
     },
     "/api/character": {
+      "delete": {
+        "description": "Delete everything stored for the character (#133): snapshots, history, plans,\nsettings edited in the app, alerts and tokens. Shared game data stays. The next\nsync, by hand or on the worker's schedule, fetches the character again.",
+        "operationId": "erase_api_character_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Erased"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Erase"
+      },
       "get": {
         "operationId": "character_api_character_get",
         "responses": {

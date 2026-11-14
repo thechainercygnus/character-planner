@@ -195,6 +195,13 @@ export interface About {
   version: string
   source_url: string
   data: CreditLink & { sources: CreditLink[] }
+  /** Who runs this instance (OPERATOR_CONTACT), for the privacy notice (#133); may be empty. */
+  operator_contact: string
+}
+
+/** What DELETE /api/character removed (#133): rows per table. */
+export interface Erased {
+  removed: Record<string, number>
 }
 
 export interface GearPlan {
@@ -860,6 +867,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   about: () => request<About>('/api/about'),
+  eraseCharacter: () => request<Erased>('/api/character', { method: 'DELETE' }),
   status: () => request<Status>('/api/status'),
   character: () => request<CharacterView>('/api/character'),
   gear: () => request<GearPlan>('/api/gear'),
