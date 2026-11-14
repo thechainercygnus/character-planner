@@ -6,6 +6,7 @@ import { CharacterSnapshot } from './components/CharacterSnapshot'
 import { Dungeons } from './components/Dungeons'
 import { Enchants } from './components/Enchants'
 import { Footer } from './components/Footer'
+import { Guild } from './components/Guild'
 import { GearTable } from './components/GearTable'
 import { Landing } from './components/Landing'
 import { LookAhead } from './components/LookAhead'
@@ -23,7 +24,7 @@ import { useHashIs, useHashTab, type Tab } from './useHashTab'
 import { WeightsDialog } from './components/WeightsDialog'
 import './App.css'
 
-type TabId = 'upgrades' | 'dungeons' | 'plan' | 'talents' | 'progress' | 'character'
+type TabId = 'upgrades' | 'dungeons' | 'plan' | 'talents' | 'progress' | 'guild' | 'character'
 
 const TABS: readonly Tab<TabId>[] = [
   { id: 'upgrades', label: 'Upgrades' },
@@ -33,12 +34,15 @@ const TABS: readonly Tab<TabId>[] = [
   { id: 'progress', label: 'Progress' },
   { id: 'character', label: 'Character' },
 ]
+/** With users on, the guild view too (#18): it needs other people. */
+const TABS_WITH_GUILD: readonly Tab<TabId>[] = [...TABS.slice(0, 5), { id: 'guild', label: 'Guild' }, TABS[5]!]
 
 export default function App() {
-  const [tab, setTab] = useHashTab(TABS, 'upgrades')
+  const me = useQuery({ queryKey: ['me'], queryFn: api.me, staleTime: Infinity })
+  const tabs = me.data?.users ? TABS_WITH_GUILD : TABS
+  const [tab, setTab] = useHashTab(tabs, 'upgrades')
   const guestView = useHashIs('guest')
   const privacyView = useHashIs('privacy')
-  const me = useQuery({ queryKey: ['me'], queryFn: api.me, staleTime: Infinity })
   const character = useQuery({ queryKey: ['character'], queryFn: api.character })
   const gear = useQuery({ queryKey: ['gear'], queryFn: api.gear })
   const recommendations = useQuery({ queryKey: ['recommendations'], queryFn: api.recommendations })
@@ -93,7 +97,7 @@ export default function App() {
         <>
           <CharacterHeader character={character.data} />
           <TabBar
-            tabs={TABS}
+            tabs={tabs}
             active={tab}
             onSelect={setTab}
             counts={{
@@ -164,6 +168,7 @@ export default function App() {
             </>
           )}
 
+          {tab === 'guild' && <Guild />}
           {tab === 'character' && <CharacterSnapshot character={character.data} />}
         </>
       )}

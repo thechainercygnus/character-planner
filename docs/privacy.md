@@ -35,6 +35,9 @@ them.
 **Who can see it:** anyone who can open the instance's address. The planner has no
 accounts of its own, so it's meant for your own computer or a private network
 ([Self-hosting](self-hosting.md)). Alerts go to the Discord channels chosen for them.
+With users on, a character added to its guild's view (the Guild tab) is shown to the
+other members who joined it: its name, level, spec, role and upgrades. Leaving the view
+stops that.
 
 **Sharing:** nothing is sold, shared or used for advertising. The planner asks Blizzard's
 API for the character by name and realm, and Forever Companion for items and dungeons by

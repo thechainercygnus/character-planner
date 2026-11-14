@@ -1,0 +1,42 @@
+# Each class's specs and the group role they play (#18): tank, healer or dps. A member's
+# role is their synced spec's (the tree with most points); they can override it in the
+# guild view. Spec names are Forever's, as Blizzard's talent-tree index lists them
+# (data/wow/talent-tree/index, captured 2026-11-13): note "Shadow Magic", "Elemental
+# Combat" and "Feral Combat".
+
+Druid:
+  Balance: dps
+  Feral Combat: tank  # bear in dungeons; cat players override to dps
+  Restoration: healer
+Hunter:
+  Beast Mastery: dps
+  Marksmanship: dps
+  Survival: dps
+Mage:
+  Arcane: dps
+  Fire: dps
+  Frost: dps
+Paladin:
+  Holy: healer
+  Protection: tank
+  Retribution: dps
+Priest:
+  Discipline: healer
+  Holy: healer
+  Shadow Magic: dps
+Rogue:
+  Assassination: dps
+  Combat: dps
+  Subtlety: dps
+Shaman:
+  Elemental Combat: dps
+  Enhancement: dps
+  Restoration: healer
+Warlock:
+  Affliction: dps
+  Demonology: dps
+  Destruction: dps
+Warrior:
+  Arms: dps
+  Fury: dps
+  Protection: tank

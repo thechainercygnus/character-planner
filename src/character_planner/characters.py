@@ -19,6 +19,7 @@ from character_planner.db import (
     ActiveWeightPreset,
     Character,
     ClassQuestDone,
+    GuildMembership,
     ItemChoice,
     NotificationState,
     ProgressHistory,
@@ -31,6 +32,7 @@ from character_planner.db import (
 
 # Everything a character owns (ADR 0036): rows from before #14 are adopted by the first.
 OWNED = (
+    GuildMembership,
     Snapshot,
     ProgressHistory,
     StoredTalentPlan,

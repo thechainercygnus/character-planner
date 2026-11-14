@@ -210,6 +210,49 @@ export interface Me {
   signups_open: boolean
 }
 
+/** The guild view (#18, ADR 0042). */
+export type Role = 'tank' | 'healer' | 'dps'
+
+export interface GuildMember {
+  character_id: number
+  name: string
+  character_class: string | null
+  spec: string | null
+  role: Role | null
+  level: number | null
+  yours: boolean
+}
+
+export interface MemberNeed {
+  item: string
+  item_id: number
+  slot: string
+  score_gain: number
+}
+
+export interface GroupDungeon {
+  dungeon_id: string
+  dungeon: string
+  min_level: number | null
+  max_level: number | null
+  total_gain: number
+  /** Members going whose level suits it. */
+  in_range: number[]
+  /** Member -> their upgrades here, biggest first. */
+  needs: Record<string, MemberNeed[]>
+}
+
+export interface GuildView {
+  guild: { id: number; name: string } | null
+  opted_in: boolean
+  role: Role | null
+  members: GuildMember[]
+  going: number[]
+  roles: Record<string, number>
+  missing_roles: Role[]
+  dungeons: GroupDungeon[]
+}
+
 /** A tracked character, for the header's switcher (#14). */
 export interface CharacterSummary {
   id: number
@@ -1001,6 +1044,12 @@ export const api = {
   about: () => request<About>('/api/about'),
   eraseCharacter: () => request<Erased>('/api/character', { method: 'DELETE' }),
   me: () => request<Me>('/api/me'),
+  guild: (going?: number[]) =>
+    request<GuildView>(
+      going && going.length > 0 ? `/api/guild?${going.map((id) => `going=${id}`).join('&')}` : '/api/guild',
+    ),
+  setGuildMembership: (optedIn: boolean, role: Role | null) =>
+    request<GuildView>('/api/guild/membership', json('PUT', { opted_in: optedIn, role })),
   deleteAccount: () => request<Erased>('/api/account', { method: 'DELETE' }),
   logout: () => fetch('/api/logout', { method: 'POST', headers: APP_HEADER }),
   characters: () => request<CharacterList>('/api/characters'),

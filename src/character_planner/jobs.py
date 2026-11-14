@@ -44,7 +44,7 @@ from character_planner.pool import (
     resolve_target_ids,
 )
 from character_planner.rares import stored_rares
-from character_planner.recommend import PAIRED, SLOT_FOR
+from character_planner.recommend import PAIRED, SLOT_FOR, Recommendations
 from character_planner.retention import forget_character, prune
 from character_planner.talent_trees import TalentRefresh, refresh_talent_trees, stored_tree
 from character_planner.targets import current_targets, pin_target, save_targets
@@ -116,6 +116,33 @@ def gear_targets(session: Session, settings: Settings, character_id: int | None)
         rares=stored_rares(session),
     )
     return resolve_target_ids(targets, pool)
+
+
+def recommendations_for(
+    session: Session, settings: Settings, character_id: int | None
+) -> Recommendations:
+    """A character's upgrades and dungeons worth running, by its own class defaults,
+    weights, rules, targets and dismissals: what /api/recommendations shows it, for use
+    outside a request (the guild view, #18)."""
+    from character_planner.choices import stored_choices
+    from character_planner.recommend import recommend
+    from character_planner.rules import current_rules
+    from character_planner.scoring import current_weights
+
+    defaults = current_defaults(session, settings.curated_dir, character_id)
+    level, faction = character_context(session, character_id)
+    equipment = latest_by_kind(session, character_id).get("equipment")
+    equipped = {
+        item.slot: item for item in parse_equipment(equipment.payload if equipment else None)
+    }
+    return recommend(
+        pool_view(session, level, faction, crafted_items(session, character_id)),
+        equipped,
+        current_weights(session, defaults.presets, character_id),
+        current_rules(session, defaults.rules, character_id),
+        gear_targets(session, settings, character_id),
+        stored_choices(session, character_id),
+    )
 
 
 def item_levels(session: Session, character_id: int | None) -> dict[int, int]:

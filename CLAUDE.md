@@ -121,6 +121,7 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/metrics.py`: `/api/readyz` (database at the newest migration, the queue) and Prometheus metrics at `/api/metrics`, off unless `METRICS_TOKEN` is set (#17, ADR 0041)
 - `src/character_planner/upstream.py`: the upstream budget; every Battle.net and Forever Companion client comes from `upstream.client()`, which waits for room (shared through Redis with `REDIS_URL`); tests run with no budget (#17, ADR 0040)
 - `src/character_planner/users.py`: users, server-side sessions and per-user tokens when `PLANNER_USERS` is on; the first sign-in is the admin; characters belong to a user and requests resolve them through the signed-in user (#16, ADR 0037)
+- `src/character_planner/guild.py` + `data/curated/roles.yaml`: the guild view; opted-in members of a guild see each other's needs and a group dungeon ranking, users on only; roles from specs (#18, ADR 0042)
 - `src/character_planner/account.py`: the signed-in account's characters (`/profile/user/wow`), to pick ones to track; fetched each time, never stored (#15, ADR 0036)
 - `src/character_planner/choices.py`: items dismissed in the app, on top of `exclude_item_ids` (ADR 0012)
 - `src/character_planner/targets.py`: gear targets edited in the app and pins from the Upgrades tab; `gear_targets.yaml` is the default (ADR 0014); per-target levels (ADR 0015)
