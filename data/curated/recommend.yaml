@@ -14,12 +14,13 @@ weapon_types: [Axe, Mace, Sword, Dagger, Fist Weapon, Polearm, Staff, Bow, Cross
 armor_types: [cloth, leather, mail]
 plate_from_level: 40
 
-# Tanking with a shield: no two-handers, and only shields in the off hand
-# (not "Held In Off-hand" caster items).
-two_handers: false
-off_hand_types: [Shield]
-# Warriors learn Dual Wield at 20: weapons added to the off hand in Upgrades settings
-# count from then. Protection keeps shields only (#93 covers other Warrior specs).
+# Everything a Warrior can use, for every spec: the stat weights choose (#93). A
+# two-hander is weighed against main hand plus off hand, so a tank's weights keep the
+# shield and Solo DPS can pick a two-hander or a second weapon. No "Held In Off-hand"
+# caster items.
+two_handers: true
+off_hand_types: [Shield, Axe, Mace, Sword, Dagger, Fist Weapon]
+# Warriors learn Dual Wield at 20: off-hand weapons count from then; shields always.
 dual_wield_from_level: 20
 
 # Include items you can't equip yet but will within this many levels.

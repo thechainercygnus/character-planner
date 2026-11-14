@@ -35,7 +35,7 @@ from character_planner.companion import CompanionInfo, as_utc, refresh_companion
 from character_planner.config import Settings
 from character_planner.db import RecipeData, save_now, utcnow
 from character_planner.logs import JobLog
-from character_planner.recommend import EQUIPMENT_SLOTS, UsageRules
+from character_planner.recommend import EQUIPMENT_SLOTS, UsageRules, is_two_hander
 from character_planner.retention import REFRESH_AFTER
 from character_planner.scoring import RANGED_DPS, WEAPON_DPS, Weights
 from character_planner.tokens import CredentialsError, app_token
@@ -564,7 +564,8 @@ def fits(option: EnchantOption, slot: str, worn: EquippedItem, rules: UsageRules
     """Whether this enchant can go on the item worn in this slot."""
     if slot not in option.slots or option.temporary:
         return False
-    if option.two_handed and not rules.two_handers:
+    # Two-handed enchants need a two-hander in hand, whatever the class could wield (#93).
+    if option.two_handed and not (rules.two_handers and is_two_hander(worn)):
         return False
     if slot == "OFF_HAND" and option.shield_only != (worn.armor_type == "Shield"):
         return False

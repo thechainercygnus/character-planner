@@ -879,6 +879,7 @@ An enchant on an equipped item, as the equipment endpoint reports it.
 | `quality_name` | string or null | no |
 | `item_level` | integer or null | no |
 | `armor_type` | string or null | no |
+| `inventory_type` | string or null | no |
 | `armor` | integer or null | no |
 | `stats` | list of [ItemStat](#schema-itemstat) | no |
 | `dps` | number or null | no |

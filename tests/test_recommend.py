@@ -50,7 +50,7 @@ def view(*items: PoolItem, level: int = 18) -> PoolView:
     ("pool_item", "reason"),
     [
         (item(1, "Ranged", weapon_type="Wand"), "can't use Wand"),
-        (item(2, "Two-Hand", weapon_type="Axe"), "two-hander"),
+        (item(2, "Two-Hand", weapon_type="Wand"), "can't use Wand"),
         (item(3, "Held In Off-hand", weapon_type="Miscellaneous"), "off hand type"),
         (item(4, "Chest", armor_type="Plate"), "plate not yet"),
         (item(5, "Waist", armor_type="Mail", required_level=22), "requires level 22"),
@@ -60,6 +60,13 @@ def view(*items: PoolItem, level: int = 18) -> PoolView:
 )
 def test_unusable_items(pool_item: PoolItem, reason: str) -> None:
     assert unusable_reason(pool_item, RULES, 18) == reason
+
+
+def test_rules_without_two_handers_turn_them_away() -> None:
+    no_two_handers = RULES.model_copy(update={"two_handers": False})
+    assert unusable_reason(item(2, "Two-Hand", weapon_type="Axe"), no_two_handers, 18) == (
+        "two-hander"
+    )
 
 
 @pytest.mark.parametrize(
@@ -196,7 +203,10 @@ def test_ranks_dungeons_by_usable_upgrades() -> None:
 def test_rules_file_loads() -> None:
     assert isinstance(RULES, UsageRules)
     assert "Wand" not in RULES.weapon_types
-    assert RULES.two_handers is False
+    # Everything a Warrior can use, whatever the spec; the weights choose (#93).
+    assert RULES.two_handers is True
+    assert RULES.off_hand_types[0] == "Shield" and "Sword" in RULES.off_hand_types
+    assert RULES.dual_wield_from_level == 20
 
 
 def test_dismissed_items_are_never_suggested() -> None:
@@ -376,3 +386,35 @@ def test_off_hand_weapons_wait_for_dual_wield(level: int, offered: bool) -> None
     # A shield in the off hand never needs Dual Wield.
     shield_user = RULES.model_copy(update={"dual_wield_from_level": 20})
     assert unusable_reason(item(3, "Off Hand", weapon_type="Shield"), shield_user, 18) is None
+
+
+def picks(result: Any, slot: str) -> list[tuple[int, float]]:
+    row = next(r for r in result.rows if r.slot == slot)
+    return [(c.item.item_id, c.score_gain) for c in row.candidates]
+
+
+def test_a_two_hander_is_weighed_against_both_hands() -> None:
+    """#93: a two-hander replaces the main hand and the shield, so it must beat both."""
+    equipped = {
+        "MAIN_HAND": worn("MAIN_HAND", dps=10.0, inventory_type="WEAPONMAINHAND"),  # 15
+        "OFF_HAND": worn("OFF_HAND", armor=300, armor_type="Shield", inventory_type="SHIELD"),
+    }  # the shield scores 30: 45 in both hands
+    pool = view(
+        item(1, "Two-Hand", weapon_type="Axe", dps=25.0),  # 37.5: beats the axe, not both
+        item(2, "Two-Hand", weapon_type="Sword", dps=40.0),  # 60: 15 better than both
+    )
+    result = recommend(pool, equipped, WEIGHTS, RULES)
+    assert picks(result, "MAIN_HAND") == [(2, 15.0)]
+
+
+def test_no_off_hand_is_offered_beside_a_two_hander() -> None:
+    """Measured against an empty hand, a shield would look like a huge upgrade; the swap
+    is really a one-hander plus that shield."""
+    equipped = {"MAIN_HAND": worn("MAIN_HAND", dps=30.0, inventory_type="TWOHWEAPON")}  # 45
+    pool = view(
+        item(1, "Off Hand", weapon_type="Shield", armor=300),
+        item(2, "One-Hand", weapon_type="Sword", dps=12.0),  # 18: worse than the two-hander
+    )
+    result = recommend(pool, equipped, WEIGHTS, RULES.model_copy(update={"min_gain": -100}))
+    assert picks(result, "OFF_HAND") == []
+    assert picks(result, "MAIN_HAND") == [(2, -27.0)]

@@ -1466,6 +1466,17 @@
             ],
             "title": "Icon Url"
           },
+          "inventory_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inventory Type"
+          },
           "item_id": {
             "anyOf": [
               {

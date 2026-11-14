@@ -14,7 +14,8 @@ especially for slots left empty (neck, shoulders, a second ring, trinkets).
 - `data/curated/recommend.yaml` says what the character can and wants to wear:
   - usable weapon types (no wands)
   - armor classes (plate from level 40)
-  - no two-handers while tanking, and only shields in the off hand
+  - which two-handers and off-hand items it can use; a two-hander is weighed against both
+    hands (ADR 0035)
   - how many levels ahead to look
   - items to exclude
 - `recommend.py` maps each item's own slot (Forever Companion's `slot`, e.g. "One-Hand")

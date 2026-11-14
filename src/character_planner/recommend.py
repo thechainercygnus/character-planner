@@ -231,15 +231,31 @@ def _worn_score(weights: Weights, slot: str, worn: EquippedItem | None) -> float
     return score(weights, slot=slot, armor=worn.armor, stats=stats, dps=worn.dps)
 
 
+def is_two_hander(worn: EquippedItem | None) -> bool:
+    return worn is not None and worn.inventory_type == "TWOHWEAPON"
+
+
+def _baseline(
+    weights: Weights, slot: str, item: PoolItem, equipped: Mapping[str, EquippedItem]
+) -> float:
+    """What a candidate replaces (#93). A two-hander takes both hands, so it's measured
+    against the main hand plus whatever is in the off hand: a shield or a second weapon."""
+    worn = _worn_score(weights, slot, equipped.get(slot))
+    if slot == "MAIN_HAND" and item.item_slot == "Two-Hand":
+        worn += _worn_score(weights, "OFF_HAND", equipped.get("OFF_HAND"))
+    return worn
+
+
 def _candidate(
     slot: str,
     item: PoolItem,
-    worn: EquippedItem | None,
+    equipped: Mapping[str, EquippedItem],
     weights: Weights,
     level: int | None,
     target_ids: set[int],
     pinned_ids: set[int],
 ) -> Candidate:
+    worn = equipped.get(slot)
     worn_stats = {s.name: s.value for s in worn.stats} if worn else {}
     names = sorted(set(worn_stats) | set(item.stats))
     stat_deltas = {
@@ -251,7 +267,9 @@ def _candidate(
     worn_armor = worn.armor if worn else None
     return Candidate(
         item=item,
-        score_gain=round(_item_score(weights, slot, item) - _worn_score(weights, slot, worn), 2),
+        score_gain=round(
+            _item_score(weights, slot, item) - _baseline(weights, slot, item, equipped), 2
+        ),
         item_level_delta=(
             item.item_level - worn_level
             if item.item_level is not None and worn_level is not None
@@ -297,15 +315,18 @@ def recommend(
     usable = [i for i in pool.items if unusable_reason(i, rules, level, choices.dismissed) is None]
     scored = [i for i in usable if has_stat_data(i)]
 
+    # With a two-hander equipped, an off-hand item alone would be measured against an
+    # empty hand and look far better than it is: the swap is a one-hander plus that item,
+    # which the main hand's list covers (#93).
+    two_handed = is_two_hander(equipped.get("MAIN_HAND"))
     by_slot: dict[str, list[Candidate]] = {slot: [] for slot in EQUIPMENT_SLOTS}
     for item in scored:
         for slot in slots_for(item, rules, level):
-            if slot is not None:
-                by_slot[slot].append(
-                    _candidate(
-                        slot, item, equipped.get(slot), weights, level, target_ids, pinned_ids
-                    )
-                )
+            if slot is None or (slot == "OFF_HAND" and two_handed):
+                continue
+            by_slot[slot].append(
+                _candidate(slot, item, equipped, weights, level, target_ids, pinned_ids)
+            )
 
     picks: dict[str, list[Candidate]] = {}
     for slot in EQUIPMENT_SLOTS:

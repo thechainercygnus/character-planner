@@ -270,8 +270,15 @@ def test_fits_checks_shields_two_handers_and_ranged_types() -> None:
     assert fits(block, "OFF_HAND", gear["OFF_HAND"], RULES)  # Burnished Shield
     orb = gear["OFF_HAND"].model_copy(update={"armor_type": "Miscellaneous"})
     assert not fits(block, "OFF_HAND", orb, RULES)
-    assert not fits(impact, "MAIN_HAND", gear["MAIN_HAND"], RULES)  # tanks don't use 2H
+    # Two-handed enchants need a two-hander in hand (#93): the Thelsamar Axe is one-handed.
+    assert gear["MAIN_HAND"].inventory_type == "WEAPONMAINHAND"
+    assert not fits(impact, "MAIN_HAND", gear["MAIN_HAND"], RULES)
     assert fits(striking, "MAIN_HAND", gear["MAIN_HAND"], RULES)
+    greataxe = gear["MAIN_HAND"].model_copy(update={"inventory_type": "TWOHWEAPON"})
+    assert fits(impact, "MAIN_HAND", greataxe, RULES)
+    assert fits(striking, "MAIN_HAND", greataxe, RULES)  # one-hand weapon enchants fit too
+    no_two_handers = RULES.model_copy(update={"two_handers": False})
+    assert not fits(impact, "MAIN_HAND", greataxe, no_two_handers)
     assert fits(scope_option(), "RANGED", gear["RANGED"], RULES)  # Rough Boomstick, a Gun
     thrown = gear["RANGED"].model_copy(update={"armor_type": "Thrown"})
     assert not fits(scope_option(), "RANGED", thrown, RULES)
