@@ -60,6 +60,11 @@ DCO sign-off). The rules here add what agents need on top.
 
 - One branch per issue, named `feature/<issue>-<slug>` (or `fix/<slug>` for small fixes
   without an issue). Branch from an up-to-date `main`. Never commit or push to `main`.
+- Before opening a pull request, and before pushing more commits to an open one: fetch
+  `main`, merge `origin/main` into the branch, resolve any conflicts, and rerun the full
+  checks on the merged result. This catches conflicts and gaps between PRs (a test from
+  one PR that another's files must pass) before review. If the remote branch has commits
+  you don't (an "Update branch" on GitHub), build on them; never force-push.
 - Open a pull request for every branch. Use `Closes #<issue>` when it completes the issue
   and `Refs #<issue>` when it's part of one.
 - CI must pass before merging: the `check`, `frontend`, `docker`, `postgres` and `secret-scan` jobs. A red
