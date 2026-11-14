@@ -38,14 +38,11 @@ describe('Footer', () => {
 
     const footer = await screen.findByRole('contentinfo')
     expect(footer.textContent).toBe(
-      'Item and dungeon data from Forever Companion, gathered from ForeverChanges, Wowhead and Zockify and ' +
-        'checked in game by players. Fan-made, not affiliated with Blizzard Entertainment.' +
-        'Character Planner 0.1.0 · Source (AGPL-3.0) · Privacy',
       "Character and game data from Blizzard Entertainment's Battle.net API. " +
         'Item and dungeon data from Forever Companion, gathered from ForeverChanges, Wowhead and Zockify and ' +
         'checked in game by players.' +
         'Fan-made, not affiliated with or endorsed by Blizzard Entertainment.' +
-        'Character Planner 0.1.0 · Source (AGPL-3.0)',
+        'Character Planner 0.1.0 · Source (AGPL-3.0) · Privacy',
     )
     const link = (name: string) => screen.getByRole('link', { name }).getAttribute('href')
     // Blizzard's API terms (§2 item 13): Blizzard named as the source, with a link.
