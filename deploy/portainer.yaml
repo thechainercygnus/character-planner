@@ -17,12 +17,12 @@
 #   PLANNER_USERS         on: Battle.net sign-in needed; the first account is the admin
 #   PLANNER_SIGNUPS       on: let more accounts sign up after the first
 #   OPERATOR_CONTACT      shown on the privacy notice
-#   PLANNER_IMAGE         another release (default: 0.5.0-rc.2, pinned)
+#   PLANNER_IMAGE         another release (default: 0.5.0-rc.3, pinned)
 
 name: character-planner
 
 x-planner: &planner
-  image: ${PLANNER_IMAGE:-ghcr.io/thechainercygnus/character-planner:0.5.0-rc.2@sha256:9bdf5c5472eb1354b64ffbb0f451209c82c3e9f649ece84ad00798ee211747d5}
+  image: ${PLANNER_IMAGE:-ghcr.io/thechainercygnus/character-planner:0.5.0-rc.3@sha256:f413228655309ed66298726646a3de3b9f4371535e32285a146dc923e7320afc}
   environment: &planner-env
     DATABASE_URL: sqlite:////data/character-planner.db
     LOG_DIR: /data/logs
