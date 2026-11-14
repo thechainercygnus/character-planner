@@ -259,7 +259,9 @@ def test_the_header_picks_the_character(engine: Engine, settings: Settings) -> N
         assert saved.status_code == 200
         assert client.get("/api/rules", headers=picked).json()["customised"] is True
         assert client.get("/api/rules").json()["customised"] is False
-        assert client.get("/api/character", headers={"X-Character-Id": "999"}).status_code == 404
+        gone = client.get("/api/character", headers={"X-Character-Id": "999"})
+        assert gone.status_code == 404
+        assert gone.headers["X-Character-Unknown"] == "true"  # the web app forgets it
         assert client.get("/api/character", headers={"X-Character-Id": "0"}).status_code == 422
 
 

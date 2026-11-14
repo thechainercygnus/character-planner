@@ -939,6 +939,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     ...init,
     headers: { ...APP_HEADER, ...character, ...init?.headers },
   })
+  // A remembered character that's gone (a fresh database, another user's): forget it and
+  // ask again for the default, rather than failing every request (#14, #16).
+  if (response.status === 404 && selected !== null && response.headers.get('X-Character-Unknown')) {
+    selectCharacter(null)
+    return request<T>(path, init)
+  }
   if (!response.ok) {
     let detail = response.statusText
     try {
