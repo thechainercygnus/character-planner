@@ -215,6 +215,8 @@ Besides the client:
   `PLANNER_IMAGE=ghcr.io/thechainercygnus/character-planner:0.1`. `0.1` follows the
   latest `0.1.x`; `0.1.0` stays put.
 - For Tailscale: `TS_AUTHKEY`, and `TS_HOSTNAME` for a name other than `character-planner`.
+- `OPERATOR_CONTACT`: how to reach you, shown on the privacy notice. See
+  [Privacy](privacy.md), which also covers deleting the character's data.
 
 Leave `BNET_REDIRECT_URI`, `POST_LOGIN_REDIRECT` and `DATABASE_URL` as they are.
 

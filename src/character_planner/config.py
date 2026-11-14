@@ -58,6 +58,11 @@ class Settings(BaseSettings):
     # Tailscale names (compose.tailscale.yaml sets it).
     planner_hosts: str = ""
 
+    # Who runs this instance and how to reach them (#133): shown on the privacy notice,
+    # so people know whom to ask about or to remove their data. An email address, a web
+    # address or a name; empty shows a generic line.
+    operator_contact: str = ""
+
     @property
     def trusted_hosts(self) -> list[str]:
         extra = [host.strip().lower() for host in self.planner_hosts.split(",") if host.strip()]
@@ -69,6 +74,15 @@ class Settings(BaseSettings):
         # Shown as a link: only a web address, never javascript: or the like.
         if not value.startswith(("https://", "http://")) or any(c.isspace() for c in value):
             raise ValueError("SOURCE_URL must be an http(s) address")
+        return value
+
+    @field_validator("operator_contact")
+    @classmethod
+    def _contact_text(cls, value: str) -> str:
+        # One short line. The page links only an http(s) or email address; the rest is text.
+        value = value.strip()
+        if len(value) > 200 or any(not c.isprintable() for c in value):
+            raise ValueError("OPERATOR_CONTACT must be one line of up to 200 characters")
         return value
 
     @property

@@ -9,6 +9,7 @@ import { Footer } from './components/Footer'
 import { GearTable } from './components/GearTable'
 import { Landing } from './components/Landing'
 import { LookAhead } from './components/LookAhead'
+import { Privacy } from './components/Privacy'
 import { ProfessionMilestones } from './components/ProfessionMilestones'
 import { Progress } from './components/Progress'
 import { Recommendations } from './components/Recommendations'
@@ -35,6 +36,7 @@ const TABS: readonly Tab<TabId>[] = [
 export default function App() {
   const [tab, setTab] = useHashTab(TABS, 'upgrades')
   const guestView = useHashIs('guest')
+  const privacyView = useHashIs('privacy')
   const character = useQuery({ queryKey: ['character'], queryFn: api.character })
   const gear = useQuery({ queryKey: ['gear'], queryFn: api.gear })
   const recommendations = useQuery({ queryKey: ['recommendations'], queryFn: api.recommendations })
@@ -54,6 +56,15 @@ export default function App() {
   const recommendationsError = recommendations.isError && (
     <p className="error">Couldn't load recommendations: {recommendations.error.message}</p>
   )
+
+  if (privacyView) {
+    return (
+      <main>
+        <Privacy />
+        <Footer />
+      </main>
+    )
+  }
 
   return (
     <main>

@@ -17,6 +17,8 @@ It's free software (AGPL-3.0-or-later) that you host yourself.
 - **Run your own:** [Self-hosting](self-hosting.md) goes from nothing to a synced character.
 - **Releases:** [Releasing](releasing.md) covers how versions are published, and how to verify
   an image before running it.
+- **Privacy:** [Privacy](privacy.md) says what an instance stores, for how long, and how
+  to delete it.
 - **How it works:** the [architecture](architecture.md) shows the parts and how data flows
   between them; the [assurance case](assurance-case.md) covers its security.
 - **API:** the [API reference](api.md) lists every endpoint and the data it takes and returns.
@@ -30,13 +32,16 @@ Report security problems privately, as
 [SECURITY.md](https://github.com/thechainercygnus/character-planner/blob/main/SECURITY.md)
 explains.
 
-Item and dungeon data come from [Forever Companion](https://forevercompanion.io). Fan-made,
+Character and game data come from Blizzard Entertainment's
+[Battle.net API](https://develop.battle.net/). Item and dungeon data come from
+[Forever Companion](https://forevercompanion.io). Fan-made,
 not affiliated with Blizzard Entertainment.
 
 ```{toctree}
 :hidden:
 
 self-hosting
+privacy
 releasing
 architecture
 assurance-case

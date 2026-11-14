@@ -52,7 +52,9 @@ export function CharacterSnapshot({ character }: { character: CharacterView }) {
         {character.professions.length > 0 && <ProfessionsPanel professions={character.professions} />}
       </div>
       {character.captured_at && (
-        <p className="muted snapshot-time">As of the last sync, {new Date(character.captured_at).toLocaleString()}.</p>
+        <p className="muted snapshot-time">
+          From Blizzard's Battle.net API, as of the last sync, {new Date(character.captured_at).toLocaleString()}.
+        </p>
       )}
     </>
   )

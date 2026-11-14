@@ -84,7 +84,10 @@ hosting for many users. It has a feedback form for questions.
 - The single-character app needs changes now, before more features:
   - deleting Blizzard data after 30 days, and slimming the Progress history (#131);
   - crediting Blizzard in the UI (#132);
-  - a privacy notice and full deletion (#133).
+  - a privacy notice and full deletion (#133). Done: the notice is linked from every
+    page's footer, `OPERATOR_CONTACT` names the operator, and the app or
+    `character-planner-db erase` deletes every table except the shared game-data caches,
+    so a new table is erased unless it's marked shared (docs/privacy.md).
 - Progress charts can't show the full item-by-item history beyond 30 days.
 - #42 is blocked on a written answer from Blizzard. #13, #17 and #18 can go ahead under
   points 1 to 8.
