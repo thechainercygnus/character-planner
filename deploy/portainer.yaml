@@ -1,0 +1,103 @@
+# Character Planner on your tailnet, as one Portainer stack (paste into Stacks > Add stack
+# > Web editor). It's served at https://<TS_HOSTNAME>.<your tailnet>.ts.net over HTTPS,
+# with nothing published on the host's ports. Self-contained: no build, no .env and no
+# files from the repository. The release it runs is pinned by digest and updated after
+# each release (docs/releasing.md). docs/self-hosting.md, step 3, has the details.
+#
+# Set these under "Environment variables" in Portainer (required ones are marked *):
+#   TS_AUTHKEY *          Tailscale auth key (admin console > Settings > Keys), for the first start
+#   TS_HOSTNAME           machine name on the tailnet (default: character-planner)
+#   BNET_CLIENT_ID *      Battle.net client (develop.battle.net)
+#   BNET_CLIENT_SECRET *
+#   BNET_REGION           us, eu, kr or tw (default: us)
+#   BNET_REDIRECT_URI *   https://<TS_HOSTNAME>.<your tailnet>.ts.net/auth/callback,
+#                         registered on the Battle.net client exactly
+#   CHARACTER_NAME *      the first character to track (only read on the first start)
+#   CHARACTER_SURNAME *
+#   PLANNER_USERS         on: Battle.net sign-in needed; the first account is the admin
+#   PLANNER_SIGNUPS       on: let more accounts sign up after the first
+#   OPERATOR_CONTACT      shown on the privacy notice
+#   PLANNER_IMAGE         another release (default: 0.5.0-rc.2, pinned)
+
+name: character-planner
+
+x-planner: &planner
+  image: ${PLANNER_IMAGE:-ghcr.io/thechainercygnus/character-planner:0.5.0-rc.2@sha256:9bdf5c5472eb1354b64ffbb0f451209c82c3e9f649ece84ad00798ee211747d5}
+  environment: &planner-env
+    DATABASE_URL: sqlite:////data/character-planner.db
+    LOG_DIR: /data/logs
+    POST_LOGIN_REDIRECT: /
+    PLANNER_HOSTS: "*.ts.net"
+    BNET_CLIENT_ID: ${BNET_CLIENT_ID:?set BNET_CLIENT_ID}
+    BNET_CLIENT_SECRET: ${BNET_CLIENT_SECRET:?set BNET_CLIENT_SECRET}
+    BNET_REGION: ${BNET_REGION:-us}
+    BNET_REDIRECT_URI: ${BNET_REDIRECT_URI:?set BNET_REDIRECT_URI to https://<host>.<tailnet>.ts.net/auth/callback}
+    CHARACTER_NAME: ${CHARACTER_NAME:?set CHARACTER_NAME}
+    CHARACTER_SURNAME: ${CHARACTER_SURNAME:?set CHARACTER_SURNAME}
+    PLANNER_USERS: ${PLANNER_USERS:-off}
+    PLANNER_SIGNUPS: ${PLANNER_SIGNUPS:-off}
+    OPERATOR_CONTACT: ${OPERATOR_CONTACT:-}
+  volumes:
+    - planner-data:/data
+  restart: unless-stopped
+
+services:
+  # Tailscale gives the app its HTTPS name on your tailnet. The serve config is written at
+  # start (no files to mount); Tailscale fills in ${TS_CERT_DOMAIN} itself.
+  tailscale:
+    image: tailscale/tailscale:v1.104.7@sha256:72c1e19e0aedca96b8533bbb0b4368564410ff20b17e53b804eb6c1f04a31be4
+    hostname: ${TS_HOSTNAME:-character-planner}
+    environment:
+      TS_AUTHKEY: ${TS_AUTHKEY:?set TS_AUTHKEY}
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_SERVE_CONFIG: /config/serve.json
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        mkdir -p /config
+        cat > /config/serve.json <<'JSON'
+        {
+          "TCP": { "443": { "HTTPS": true } },
+          "Web": {
+            "$${TS_CERT_DOMAIN}:443": {
+              "Handlers": { "/": { "Proxy": "http://127.0.0.1:8000" } }
+            }
+          },
+          "AllowFunnel": { "$${TS_CERT_DOMAIN}:443": false }
+        }
+        JSON
+        exec /usr/local/bin/containerboot
+    volumes:
+      - tailscale-state:/var/lib/tailscale
+    restart: unless-stopped
+
+  # Schema migrations, once, before the app and the worker start (ADR 0022).
+  migrate:
+    <<: *planner
+    command: ["character-planner-db", "upgrade"]
+    restart: "no"
+    healthcheck:
+      disable: true
+
+  app:
+    <<: *planner
+    # Shares the Tailscale container's network: Tailscale proxies to 127.0.0.1:8000.
+    network_mode: service:tailscale
+    depends_on:
+      tailscale:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+
+  worker:
+    <<: *planner
+    command: ["character-planner-worker"]
+    healthcheck:
+      disable: true
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  planner-data:
+  tailscale-state:
