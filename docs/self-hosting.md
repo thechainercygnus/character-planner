@@ -332,6 +332,36 @@ Each file rotates at 5 MB and keeps 5 old copies. `LOG_LEVEL=DEBUG` adds every u
 request, and `LOG_FORMAT=json` writes JSON lines for a log collector. Tokens, the client
 secret and login codes are always replaced by `[redacted]`.
 
+**Is it ready?** `GET /api/readyz` answers 200 when the database is at the newest
+migration and the job queue (if any) answers, and 503 naming what isn't (ADR 0041).
+`/api/healthz` is the simpler "is it up" check that the container uses.
+
+**Metrics (optional).** For Prometheus, set a token in `.env`:
+
+```
+METRICS_TOKEN=<a long random string>
+```
+
+Then scrape `/api/metrics` with it. Without a token the endpoint is off (404).
+
+```yaml
+scrape_configs:
+  - job_name: character-planner
+    metrics_path: /api/metrics
+    scheme: https
+    authorization:
+      credentials: <the METRICS_TOKEN>
+    static_configs:
+      - targets: ["character-planner.<tailnet>.ts.net"]
+```
+
+What's measured:
+- **Requests:** by route and status, and how long they took.
+- **Characters and users.**
+- **`planner_oldest_sync_age_seconds`:** alert on it if syncs stop.
+- **Queued jobs.**
+- **Upstream budget waits.**
+
 ## 11. Back up and upgrade
 
 **What's kept, and for how long.** Blizzard's API terms limit everything fetched from

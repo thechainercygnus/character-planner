@@ -49,6 +49,10 @@ def budget_name(host: str) -> str | None:
     return None
 
 
+# How often requests waited for room, per upstream, in this process (for metrics).
+WAITS: dict[str, int] = {}
+
+
 class Store(Protocol):
     def add(self, key: str, ttl: int) -> int:
         """Count one more request under key, and return the count so far."""
@@ -116,6 +120,7 @@ class Budget:
                     waits.append((slot + 1) * window.seconds - now)
             if not waits:
                 return
+            WAITS[name] = WAITS.get(name, 0) + 1
             logger.debug("Upstream budget: %s is full for %.1fs", name, max(waits))
             self._sleep(max(max(waits), 0.01))
 

@@ -314,6 +314,14 @@ Whether users are on, and who's signed in (ADR 0037). Public, so the page knows 
 
 **200:** [Me](#schema-me)
 
+## `metrics`
+
+### `GET /api/metrics`
+
+Prometheus metrics (ADR 0041). Off (404) unless METRICS_TOKEN is set; then it needs "Authorization: Bearer <METRICS_TOKEN>".
+
+**200:** no body
+
 ## `notifications`
 
 ### `GET /api/notifications`
@@ -408,6 +416,14 @@ One point per sync, plus gear changes and level-ups (ADR 0008).
 | `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** [Progress](#schema-progress)
+
+## `readyz`
+
+### `GET /api/readyz`
+
+Whether this instance can serve (ADR 0041): the database answers at the newest migration, and the job queue answers when there is one. 503 names what failed.
+
+**200:** no body
 
 ## `recommendations`
 

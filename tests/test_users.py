@@ -224,6 +224,8 @@ UNSCOPED = {
     # Public with users on: no character data (guest mode reads none, ADR 0017).
     "public": {
         "GET /api/healthz",
+        "GET /api/readyz",
+        "GET /api/metrics",  # its own token (ADR 0041), off without one
         "GET /api/about",
         "GET /api/me",
         "GET /api/guest",

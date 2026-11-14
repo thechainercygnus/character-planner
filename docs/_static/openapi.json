@@ -6633,6 +6633,18 @@
         "summary": "Me"
       }
     },
+    "/api/metrics": {
+      "get": {
+        "description": "Prometheus metrics (ADR 0041). Off (404) unless METRICS_TOKEN is set; then it\nneeds \"Authorization: Bearer <METRICS_TOKEN>\".",
+        "operationId": "prometheus_api_metrics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Prometheus"
+      }
+    },
     "/api/notifications": {
       "get": {
         "description": "Alert destinations (webhook URLs masked), the alerts on offer, recent sends.",
@@ -7026,6 +7038,23 @@
           }
         },
         "summary": "Progress Over Time"
+      }
+    },
+    "/api/readyz": {
+      "get": {
+        "description": "Whether this instance can serve (ADR 0041): the database answers at the newest\nmigration, and the job queue answers when there is one. 503 names what failed.",
+        "operationId": "readyz_api_readyz_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Readyz"
       }
     },
     "/api/recommendations": {

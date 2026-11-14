@@ -79,6 +79,10 @@ class Settings(BaseSettings):
     # talents), operator or not (#17). The worker's schedule isn't limited. 0 turns it off.
     refresh_cooldown_minutes: float = 10
 
+    # Prometheus metrics at /api/metrics (#17, ADR 0041): off while empty. Set, a scrape
+    # must send "Authorization: Bearer <token>". Never logged.
+    metrics_token: SecretStr = SecretStr("")
+
     @property
     def trusted_hosts(self) -> list[str]:
         extra = [host.strip().lower() for host in self.planner_hosts.split(",") if host.strip()]
