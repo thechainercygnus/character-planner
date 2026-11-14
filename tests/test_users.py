@@ -238,6 +238,11 @@ UNSCOPED = {
         "GET /api/characters",
         "POST /api/characters",
         "GET /api/account/characters",
+        # A linked Discord account is the user's (#58): tested in test_discord.py.
+        "GET /api/discord",
+        "PATCH /api/discord",
+        "DELETE /api/discord",
+        "POST /api/discord/test",
     },
     # Instance-wide and the admin's: 403 for everyone else (ADR 0037).
     "admin": {

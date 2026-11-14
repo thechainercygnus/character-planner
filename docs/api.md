@@ -134,6 +134,34 @@ Mark a class quest done, or not done.
 
 **200:** [ClassQuestChecklist](#schema-classquestchecklist)
 
+## `discord`
+
+### `GET /api/discord`
+
+Whether this instance offers Discord DMs, and the user's link if any.
+
+**200:** [DiscordView](#schema-discordview)
+
+### `DELETE /api/discord`
+
+Unlink: the Discord account's id and name are deleted, and unsent DMs with them.
+
+**200:** [DiscordView](#schema-discordview)
+
+### `PATCH /api/discord`
+
+Choose which alerts arrive as DMs, or pause them all.
+
+**Body:** [LinkUpdate](#schema-linkupdate)
+
+**200:** [DiscordView](#schema-discordview)
+
+### `POST /api/discord/test`
+
+Send a test DM now. Getting through resumes DMs a refusal paused.
+
+**200:** [DiscordView](#schema-discordview)
+
 ## `enchants`
 
 ### `GET /api/enchants`
@@ -767,6 +795,18 @@ Callback
 
 **200:** no body
 
+### `GET /auth/discord/callback`
+
+Discord's answer: link the account and go back to the app. Declining links nothing.
+
+**200:** no body
+
+### `GET /auth/discord/login`
+
+Start linking a Discord account: off to Discord to approve `identify`.
+
+**200:** no body
+
 ### `GET /auth/login`
 
 Login
@@ -991,6 +1031,17 @@ A destination as the app shows it: the URL masked.
 | `enabled` | boolean | yes |
 | `last_sent_at` | string or null | yes |
 | `last_error` | string or null | yes |
+
+(schema-discordview)=
+### DiscordView
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `available` | boolean | yes |
+| `invite_url` | string or null | yes |
+| `linked` | [LinkView](#schema-linkview) or null | yes |
+| `alerts` | list of [AlertInfo](#schema-alertinfo) | yes |
+| `in_server` | boolean or null | no |
 
 (schema-dungeonupgrade)=
 ### DungeonUpgrade
@@ -1357,6 +1408,25 @@ What a guest can choose from.
 | Field | Type | Required |
 | --- | --- | --- |
 | `level` | integer (minimum 1.0, maximum 60.0) | yes |
+
+(schema-linkupdate)=
+### LinkUpdate
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `alerts` | list of string or null | no |
+| `enabled` | boolean or null | no |
+
+(schema-linkview)=
+### LinkView
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `name` | string | yes |
+| `alerts` | list of string | yes |
+| `enabled` | boolean | yes |
+| `last_error` | string or null | yes |
+| `last_sent_at` | string or null | yes |
 
 (schema-lookahead)=
 ### LookAhead
@@ -1787,6 +1857,7 @@ One quest in a chain. Only quest_id and name are always known.
 | `error` | string or null | no |
 | `retry_after` | number or null | no |
 | `gone` | boolean | no |
+| `bot` | boolean | no |
 
 (schema-slotenchants)=
 ### SlotEnchants

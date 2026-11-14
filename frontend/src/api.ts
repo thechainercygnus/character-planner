@@ -485,6 +485,28 @@ export interface SendResult {
   gone: boolean
 }
 
+/** Discord DMs (#58, ADR 0044): the user's own linked account. */
+export interface DiscordLink {
+  /** The Discord account's name. */
+  name: string
+  alerts: AlertKind[]
+  enabled: boolean
+  /** Set when Discord refused a DM: paused until a test gets through. */
+  last_error: string | null
+  last_sent_at: string | null
+}
+
+export interface DiscordView {
+  /** The instance has a bot (DISCORD_* set). */
+  available: boolean
+  /** An invite to the bot's server, for users not in it. */
+  invite_url: string | null
+  linked: DiscordLink | null
+  alerts: AlertInfo[]
+  /** After a test: whether the user shares the bot's server (null: unknown). */
+  in_server: boolean | null
+}
+
 export interface WeightsView {
   weights: Record<string, number>
   /** What Reset restores; equal to weights for a preset of your own. */
@@ -1103,6 +1125,15 @@ export const api = {
     request<NotificationsView>(`/api/notifications/destinations/${id}`, { method: 'DELETE' }),
   testDestination: (id: number) =>
     request<SendResult>(`/api/notifications/destinations/${id}/test`, { method: 'POST' }),
+  discord: () => request<DiscordView>('/api/discord'),
+  updateDiscord: (change: { alerts?: AlertKind[]; enabled?: boolean }) =>
+    request<DiscordView>('/api/discord', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(change),
+    }),
+  unlinkDiscord: () => request<DiscordView>('/api/discord', { method: 'DELETE' }),
+  testDiscord: () => request<DiscordView>('/api/discord/test', { method: 'POST' }),
   activatePreset: (key: string) =>
     request<WeightsView>('/api/weights/active', {
       method: 'PUT',

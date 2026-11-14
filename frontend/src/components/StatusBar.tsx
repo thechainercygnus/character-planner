@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { api, ApiError, isQueued, selectCharacter, type SyncResult } from '../api'
 import { CharacterSwitcher } from './CharacterSwitcher'
+import { DiscordDialog } from './DiscordDialog'
 import { NotificationsDialog } from './NotificationsDialog'
 
 function lastSynced(snapshots: Record<string, string>): string {
@@ -117,6 +118,7 @@ export function StatusBar() {
         </span>
       )}
       {canAdminister && <NotificationsDialog />}
+      <DiscordDialog />
       <details className="menu">
         <summary aria-label="More actions" title="More actions">
           ⋯

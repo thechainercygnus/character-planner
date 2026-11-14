@@ -125,7 +125,8 @@ class LastAdmin(Exception):
 
 def delete_user(session: Session, user_id: int) -> dict[str, int]:
     """Delete a user and everything stored for them (#16, ADR 0037): their characters with
-    each one's data and settings, their sessions and their Battle.net token. The admin
+    each one's data and settings, their sessions, their Battle.net token and a linked
+    Discord account. The admin
     can't go while other users remain, or no one could run the instance."""
     from character_planner.characters import delete_character
 
@@ -150,6 +151,11 @@ def delete_user(session: Session, user_id: int) -> dict[str, int]:
     if token is not None:
         session.delete(token)
         removed["usertoken"] = 1
+    # A linked Discord account (#58), with its unsent DMs.
+    from character_planner.discord import unlink
+
+    if unlink(session, user_id, commit=False):
+        removed["notificationdestination"] = 1
     session.flush()  # sessions and token first: they point at the user (#44)
     session.delete(user)
     removed["user"] = 1

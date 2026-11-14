@@ -83,6 +83,20 @@ class Settings(BaseSettings):
     # must send "Authorization: Bearer <token>". Never logged.
     metrics_token: SecretStr = SecretStr("")
 
+    # Discord DMs (#58, ADR 0044): alerts sent privately by the instance's own bot. All
+    # three set turns it on; without them the option isn't offered. Never logged.
+    discord_bot_token: SecretStr = SecretStr("")
+    discord_client_id: str = ""
+    discord_client_secret: SecretStr = SecretStr("")
+    # The server the bot is in and users share with it: a bot can only DM someone it
+    # shares a server with (ADR 0043). Set, linking checks the user is in it.
+    discord_guild_id: str = ""
+    # An invite to that server, shown to users who aren't in it yet.
+    discord_invite_url: str = ""
+    # Where Discord sends the browser back after linking. Empty: this app's
+    # /auth/discord/callback, on BNET_REDIRECT_URI's host.
+    discord_redirect_uri: str = ""
+
     @property
     def trusted_hosts(self) -> list[str]:
         extra = [host.strip().lower() for host in self.planner_hosts.split(",") if host.strip()]
@@ -94,6 +108,24 @@ class Settings(BaseSettings):
         # Shown as a link: only a web address, never javascript: or the like.
         if not value.startswith(("https://", "http://")) or any(c.isspace() for c in value):
             raise ValueError("SOURCE_URL must be an http(s) address")
+        return value
+
+    @field_validator("discord_invite_url")
+    @classmethod
+    def _invite_address(cls, value: str) -> str:
+        # Shown as a link: only an https address.
+        value = value.strip()
+        if value and (not value.startswith("https://") or any(c.isspace() for c in value)):
+            raise ValueError("DISCORD_INVITE_URL must be an https address")
+        return value
+
+    @field_validator("discord_guild_id")
+    @classmethod
+    def _snowflake(cls, value: str) -> str:
+        # Goes into a Discord API path: digits only.
+        value = value.strip()
+        if value and not (value.isdigit() and len(value) <= 25):
+            raise ValueError("DISCORD_GUILD_ID must be a Discord server id (digits)")
         return value
 
     @field_validator("operator_contact")
@@ -123,6 +155,15 @@ class Settings(BaseSettings):
     def character_slug(self) -> str:
         # Forever character routes use {name}-{surname}, lowercase.
         return f"{self.character_name}-{self.character_surname}".lower()
+
+    @property
+    def discord_dms(self) -> bool:
+        """Whether Discord DMs are offered (#58): the bot and its OAuth client are set."""
+        return bool(
+            self.discord_bot_token.get_secret_value()
+            and self.discord_client_id
+            and self.discord_client_secret.get_secret_value()
+        )
 
     @property
     def has_credentials(self) -> bool:

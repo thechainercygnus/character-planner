@@ -26,7 +26,7 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session, col, select
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from character_planner import fields, jobs, leases, notify, upstream
+from character_planner import discord, fields, jobs, leases, notify, upstream
 from character_planner import queue as job_queue
 from character_planner.account import AccountCharacter, parse_account
 from character_planner.blizzard import oauth
@@ -496,6 +496,8 @@ def create_app(
     owns_engine = engine is None
     engine = engine or make_engine(settings.database_url)
     pending_states: dict[str, float] = {}  # state -> created_at
+    # Discord links in progress (#58): state -> (created_at, the user linking)
+    discord_states: dict[str, tuple[float, int | None]] = {}
     # Background jobs when REDIS_URL is set (#17, ADR 0039); syncs run in the request without.
     redis = job_queue.connect(settings.redis_url) if settings.redis_url else None
     metrics = Metrics(app_version())
@@ -1468,7 +1470,8 @@ def create_app(
 
     def destination_or_404(session: Session, destination_id: int) -> NotificationDestination:
         destination = session.get(NotificationDestination, destination_id)
-        if destination is None:
+        # Users' DMs are theirs, not the admin's to change (#58).
+        if destination is None or destination.kind == notify.DM:
             raise HTTPException(404, f"No notification destination {destination_id}")
         return destination
 
@@ -1512,6 +1515,103 @@ def create_app(
             return notify.send_test(session, settings, destination, http)
         with notify.new_client() as client:
             return notify.send_test(session, settings, destination, client)
+
+    # --- Discord DMs (#58, ADR 0044) -------------------------------------------------------
+
+    def discord_user(request: Request) -> int | None:
+        """Who is linking: the signed-in user, or None with users off. /auth isn't behind
+        the sign-in middleware, so it's checked here."""
+        if not settings.discord_dms:
+            raise HTTPException(404, "Discord DMs aren't set up on this instance")
+        if not settings.planner_users:
+            return None
+        with Session(engine) as db:
+            user = user_for(db, request.cookies.get(SESSION_COOKIE))
+        if user is None:
+            raise HTTPException(401, "Sign in with Battle.net first")
+        return user.id
+
+    def discord_http() -> httpx.Client:
+        return http if http is not None else notify.new_client()
+
+    @app.get("/auth/discord/login")
+    def discord_login(request: Request) -> RedirectResponse:
+        """Start linking a Discord account: off to Discord to approve `identify`."""
+        user_id = discord_user(request)
+        now = time.time()
+        for stale in [
+            s for s, v in discord_states.items() if now - v[0] > PENDING_STATE_TTL_SECONDS
+        ]:
+            del discord_states[stale]
+        state = oauth.new_state()
+        discord_states[state] = (now, user_id)
+        return RedirectResponse(discord.authorize_url(settings, state))
+
+    @app.get("/auth/discord/callback")
+    def discord_callback(request: Request, session: SessionDep) -> RedirectResponse:
+        """Discord's answer: link the account and go back to the app. Declining links
+        nothing."""
+        user_id = discord_user(request)
+        params = request.query_params
+        pending = discord_states.pop(params.get("state", ""), None)
+        if pending is None or pending[1] != user_id:
+            raise HTTPException(400, "Unknown or expired Discord link")
+        back = RedirectResponse(settings.post_login_redirect, status_code=303)
+        code = params.get("code")
+        if not code:
+            return back  # declined on Discord's page
+        client = discord_http()
+        try:
+            account = discord.identify(settings, code, client)
+        except discord.DiscordError as error:
+            raise HTTPException(502, str(error)) from error
+        finally:
+            if client is not http:
+                client.close()
+        discord.link(session, user_id, account)
+        return back
+
+    @app.get("/api/discord")
+    def get_discord(session: SessionDep, user_id: UserIdDep) -> discord.DiscordView:
+        """Whether this instance offers Discord DMs, and the user's link if any."""
+        return discord.view(session, settings, user_id)
+
+    def linked_or_404(session: Session, user_id: int | None) -> NotificationDestination:
+        destination = discord.linked(session, user_id) if settings.discord_dms else None
+        if destination is None:
+            raise HTTPException(404, "No Discord account is linked")
+        return destination
+
+    @app.patch("/api/discord")
+    def patch_discord(
+        change: discord.LinkUpdate, session: SessionDep, user_id: UserIdDep
+    ) -> discord.DiscordView:
+        """Choose which alerts arrive as DMs, or pause them all."""
+        try:
+            discord.update(session, linked_or_404(session, user_id), change)
+        except notify.NotifyError as error:
+            raise HTTPException(422, str(error)) from error
+        return discord.view(session, settings, user_id)
+
+    @app.delete("/api/discord")
+    def delete_discord(session: SessionDep, user_id: UserIdDep) -> discord.DiscordView:
+        """Unlink: the Discord account's id and name are deleted, and unsent DMs with them."""
+        discord.unlink(session, user_id)
+        return discord.view(session, settings, user_id)
+
+    @app.post("/api/discord/test")
+    def test_discord(session: SessionDep, user_id: UserIdDep) -> discord.DiscordView:
+        """Send a test DM now. Getting through resumes DMs a refusal paused."""
+        destination = linked_or_404(session, user_id)
+        assert destination.discord_user_id is not None
+        client = discord_http()
+        try:
+            member = discord.in_server(settings, client, destination.discord_user_id)
+            discord.send_test(session, settings, destination, client)
+        finally:
+            if client is not http:
+                client.close()
+        return discord.view(session, settings, user_id, in_server=member)
 
     @app.get("/api/rules")
     def get_rules_view(

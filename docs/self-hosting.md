@@ -318,6 +318,29 @@ You choose which alerts each channel gets.
 
 The worker sends queued alerts every minute, so keep it running (ADR 0021).
 
+### Discord DMs (optional)
+
+Each user can also get their own characters' alerts as private messages from your bot
+(#58, ADR 0044). Discord only lets a bot message people it shares a server with, so the
+bot lives in a server your users join: yours, or your guild's (ADR 0043).
+
+1. In the [Discord Developer Portal](https://discord.com/developers/applications), create
+   an application. Under **Bot**, reset and copy the token. Under **OAuth2**, copy the
+   client id and secret, and add the redirect
+   `https://<your address>/auth/discord/callback`. It's this app's address, as in
+   `BNET_REDIRECT_URI`; set `DISCORD_REDIRECT_URI` if it differs.
+2. Add the bot to your server: under **OAuth2**, **URL Generator**, tick `bot` (no
+   permissions are needed) and open the URL.
+3. In Discord, with Developer Mode on (**Settings**, **Advanced**), right-click the
+   server and copy its id. Create an invite that doesn't expire.
+4. In `.env`, set `DISCORD_BOT_TOKEN`, `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`,
+   `DISCORD_GUILD_ID` and `DISCORD_INVITE_URL`, then restart.
+
+A **Discord** button appears in the status bar. Users link their account there (the
+planner learns only its id and name), choose their alerts and send a test. If Discord
+refuses a DM, because the user left the server or closed their DMs, their DMs pause with
+the reason until a test gets through. A refused bot token sends you a system alert.
+
 ## 10. Logs
 
 Both containers log to the console and to rotating files on the data volume (ADR 0019):

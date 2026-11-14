@@ -134,6 +134,7 @@ export function Privacy() {
           marked done.
         </li>
         <li>The Discord webhooks you add for alerts, and the alerts waiting to be sent.</li>
+        <li>A Discord account you link for DMs: its id and name only, until you unlink it.</li>
         <li>
           If you sign in with Battle.net, the sign-in token. With it, the planner can list your account's characters to
           pick from; that list isn't stored, only the characters you pick are tracked.
@@ -151,9 +152,9 @@ export function Privacy() {
       <h2>Who can see it</h2>
       <p>
         Anyone who can open this instance's address. The planner has no accounts of its own, so it's meant for your own
-        computer or a private network. Alerts go to the Discord channels you choose. With users on, a character you add
-        to its guild's view is shown to the other members who joined it: its name, level, spec, role and upgrades. Leave
-        the view to stop that.
+        computer or a private network. Alerts go to the Discord channels you choose, and DMs to the Discord account you
+        link. With users on, a character you add to its guild's view is shown to the other members who joined it: its
+        name, level, spec, role and upgrades. Leave the view to stop that.
       </p>
 
       <h2>Sharing</h2>

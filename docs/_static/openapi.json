@@ -916,6 +916,61 @@
         "title": "DestinationView",
         "type": "object"
       },
+      "DiscordView": {
+        "properties": {
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/AlertInfo"
+            },
+            "title": "Alerts",
+            "type": "array"
+          },
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "in_server": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "In Server"
+          },
+          "invite_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invite Url"
+          },
+          "linked": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LinkView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "available",
+          "invite_url",
+          "linked",
+          "alerts"
+        ],
+        "title": "DiscordView",
+        "type": "object"
+      },
       "DungeonUpgrade": {
         "properties": {
           "item": {
@@ -2531,6 +2586,88 @@
           "level"
         ],
         "title": "LevelUpdate",
+        "type": "object"
+      },
+      "LinkUpdate": {
+        "properties": {
+          "alerts": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alerts"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          }
+        },
+        "title": "LinkUpdate",
+        "type": "object"
+      },
+      "LinkView": {
+        "properties": {
+          "alerts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Alerts",
+            "type": "array"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "last_sent_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sent At"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "alerts",
+          "enabled",
+          "last_error",
+          "last_sent_at"
+        ],
+        "title": "LinkView",
         "type": "object"
       },
       "LookAhead": {
@@ -4435,6 +4572,11 @@
       },
       "SendResult": {
         "properties": {
+          "bot": {
+            "default": false,
+            "title": "Bot",
+            "type": "boolean"
+          },
           "error": {
             "anyOf": [
               {
@@ -6192,6 +6334,98 @@
           }
         },
         "summary": "Put Class Quest"
+      }
+    },
+    "/api/discord": {
+      "delete": {
+        "description": "Unlink: the Discord account's id and name are deleted, and unsent DMs with them.",
+        "operationId": "delete_discord_api_discord_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscordView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Delete Discord"
+      },
+      "get": {
+        "description": "Whether this instance offers Discord DMs, and the user's link if any.",
+        "operationId": "get_discord_api_discord_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscordView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Discord"
+      },
+      "patch": {
+        "description": "Choose which alerts arrive as DMs, or pause them all.",
+        "operationId": "patch_discord_api_discord_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscordView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Patch Discord"
+      }
+    },
+    "/api/discord/test": {
+      "post": {
+        "description": "Send a test DM now. Getting through resumes DMs a refusal paused.",
+        "operationId": "test_discord_api_discord_test_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiscordView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Test Discord"
       }
     },
     "/api/enchants": {
@@ -8925,6 +9159,40 @@
           }
         },
         "summary": "Callback"
+      }
+    },
+    "/auth/discord/callback": {
+      "get": {
+        "description": "Discord's answer: link the account and go back to the app. Declining links\nnothing.",
+        "operationId": "discord_callback_auth_discord_callback_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Discord Callback"
+      }
+    },
+    "/auth/discord/login": {
+      "get": {
+        "description": "Start linking a Discord account: off to Discord to approve `identify`.",
+        "operationId": "discord_login_auth_discord_login_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Discord Login"
       }
     },
     "/auth/login": {

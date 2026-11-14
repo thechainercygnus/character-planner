@@ -50,6 +50,15 @@ def facts_about_tokens(token, settings, stored):
     # ok: no-secrets-in-logs
     send(auth=(settings.bnet_client_id, secret))
 
+    answer = send(auth=token.access_token)
+    # The status of a request that sent a token is a number, not the token.
+    # ok: no-secrets-in-logs
+    logger.warning("token endpoint answered %s", answer.status_code)
+
+    # The answer itself can still echo what was sent.
+    # ruleid: no-secrets-in-logs
+    logger.warning("token endpoint answered %s", answer)
+
     # ok: no-secrets-in-logs
     raise ValueError("Battle.net refused the client ID and secret: check BNET_CLIENT_SECRET")
 

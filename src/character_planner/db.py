@@ -340,17 +340,22 @@ class JobLease(SQLModel, table=True):
 
 
 class NotificationDestination(SQLModel, table=True):
-    """Where alerts go (ADR 0021): a Discord webhook for now. The URL is a credential
-    (anyone holding it can post to the channel): never logged, never returned in full."""
+    """Where alerts go (ADR 0021): a Discord webhook, or a user's Discord DMs (#58, ADR
+    0044). A webhook URL is a credential (anyone holding it can post to the channel): never
+    logged, never returned in full. A DM destination has no URL: it belongs to one user
+    (user_id) and names their Discord account."""
 
     id: int | None = Field(default=None, primary_key=True)
-    name: str
-    kind: str = "discord_webhook"
+    name: str  # a DM destination's: the Discord account's name
+    kind: str = "discord_webhook"  # or "discord_dm"
     audience: str = "user"  # "user" or "system" (ADR 0020)
-    url: str
+    url: str  # empty for a DM destination
+    discord_user_id: str | None = None  # a DM destination's Discord account id
     alerts: Any = Field(sa_column=Column(JSON, nullable=False))  # list of alert kinds
     enabled: bool = True
-    user_id: int | None = None  # set by #16; None while the app has one user
+    # A DM destination's owner (#58); None while the app has one user. Webhooks are the
+    # admin's and leave it empty.
+    user_id: int | None = None
     created_at: datetime = Field(default_factory=utcnow)
     last_sent_at: datetime | None = None
     last_error: str | None = None  # set when a send fails for good, cleared on success
