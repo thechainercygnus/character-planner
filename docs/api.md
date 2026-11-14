@@ -23,6 +23,12 @@ What the page footer shows (#43): the data credits, the source link (AGPL) and t
 
 ## `account`
 
+### `DELETE /api/account`
+
+Delete the signed-in user and everything stored for them (#16, ADR 0037): their characters with all their data and settings, sessions and Battle.net token. Only with users on; the admin can't while others remain (409).
+
+**200:** no body
+
 ### `GET /api/account/characters`
 
 The characters on the signed-in Battle.net account (#15), to pick ones to track. Fetched each time and never stored: the list names every character on the account (ADR 0034). Needs the optional Battle.net sign-in.

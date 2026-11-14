@@ -63,6 +63,41 @@ function EraseData() {
   )
 }
 
+/** With users on (#16): delete the account and everything in it, after a second click. */
+function DeleteAccount() {
+  const [confirming, setConfirming] = useState(false)
+  const remove = useMutation({
+    mutationFn: api.deleteAccount,
+    onSuccess: () => {
+      selectCharacter(null)
+      window.location.assign('/')
+    },
+  })
+  return (
+    <div className="erase-data">
+      {remove.isError && <p className="error">{remove.error.message}</p>}
+      {confirming ? (
+        <>
+          <p>
+            This deletes your account: every character you track, with all its data and settings, your sign-in and your
+            Battle.net token. It can't be undone.
+          </p>
+          <button type="button" onClick={() => remove.mutate()} disabled={remove.isPending}>
+            {remove.isPending ? 'Deleting…' : 'Yes, delete my account'}
+          </button>{' '}
+          <button type="button" className="secondary" onClick={() => setConfirming(false)}>
+            Cancel
+          </button>
+        </>
+      ) : (
+        <button type="button" onClick={() => setConfirming(true)}>
+          Delete my account
+        </button>
+      )}
+    </div>
+  )
+}
+
 /**
  * The privacy notice (#133): Blizzard's terms ask for one (§2 item 15) and for deletion on
  * request (§11.3, ADR 0034). Every instance is its own licensee, so the contact is the
@@ -74,6 +109,7 @@ export function Privacy() {
     queryFn: api.about,
     staleTime: Infinity,
   })
+  const me = useQuery({ queryKey: ['me'], queryFn: api.me, staleTime: Infinity })
   const contact = about.data?.operator_contact ?? ''
   return (
     <article className="privacy">
@@ -131,6 +167,16 @@ export function Privacy() {
         next start: to stop for good, ask <Contact value={contact} /> to stop the planner.
       </p>
       <EraseData />
+      {me.data?.users && me.data.signed_in && (
+        <>
+          <h2>Your account</h2>
+          <p>
+            Delete your account and everything stored for you. The admin can only delete theirs once nobody else uses
+            this instance.
+          </p>
+          <DeleteAccount />
+        </>
+      )}
     </article>
   )
 }

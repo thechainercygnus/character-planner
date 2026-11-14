@@ -52,4 +52,11 @@ no sign-in at all (ADR 0027).
   existing characters to whoever signs in first, so the operator should sign in first.
 - Multi-user mode needs `BNET_REDIRECT_URI` registered on the client, as the optional
   sign-in already did.
-- Account deletion, and a two-user sweep of every route, follow in #16's next step.
+- **Account deletion.** A user can delete their account (`DELETE /api/account`, on the
+  Privacy page). That removes their characters with all their data and settings, their
+  sessions, their Battle.net token and the user. The operator can do the same with
+  `character-planner-db delete-user ACCOUNT_ID --yes`. The admin goes last: while others
+  remain, deleting the admin answers 409, because the instance needs someone to run it.
+- **Route sweep.** `tests/test_users.py` walks every `/api` route. Each one that resolves a
+  character must answer 404 to another user. Every other route must be listed with a
+  reason (public, own, admin or shared), so a new route can't skip the check.
