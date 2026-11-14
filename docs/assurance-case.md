@@ -10,7 +10,8 @@ named, and `tests/test_security.py` holds the ones written for this page.
 | Asset | Where it lives | Why it matters |
 | --- | --- | --- |
 | Battle.net client secret | `.env`, read into a `SecretStr` | Anyone holding it can call Blizzard as this app |
-| Battle.net tokens (app token; optional login token) | The database (`StoredToken`) | API access as the app, or as the player |
+| Battle.net tokens (app token; optional login token; each user's with users on) | The database (`StoredToken`, `UserToken`) | API access as the app, or as the player |
+| Sessions, with users on | A cookie; the database keeps only its SHA-256 (`UserSession`) | Acting as that user until it expires or they sign out |
 | Discord webhook URLs | The database (`NotificationDestination`) | Anyone holding one can post to the channel |
 | The character's data and the player's plans | The database | Personal data; edits the player made |
 | The released image | GHCR | What self-hosters run |
@@ -35,14 +36,23 @@ named, and `tests/test_security.py` holds the ones written for this page.
 
 ### 1. Browser ↔ API
 
-- **Threat: someone else reaches the API.** The API has **no login of its own**: anyone
-  who reaches it can read and edit everything (requirement 2). Access control is the
-  network in front of it (boundary 2), and the defaults are built around that:
+- **Threat: someone else reaches the API.** By default the API has **no login of its
+  own**: anyone who reaches it can read and edit everything (requirement 2). Access
+  control is the network in front of it (boundary 2), and the defaults are built around
+  that:
   - Compose binds to `127.0.0.1` unless `PLANNER_BIND` says otherwise
     (`compose.yaml`).
   - The Tailscale option serves it only on the owner's tailnet, over HTTPS.
   - The [self-hosting guide](self-hosting.md) says a reverse proxy must ask for a
     password, with an example.
+- **With `PLANNER_USERS=on` (#16, ADR 0037),** the API needs a Battle.net sign-in:
+  - Every `/api` request needs one, except health, about, who's signed in and guest
+    mode.
+  - Sessions are random tokens in an `HttpOnly`, `SameSite=Lax` cookie (`Secure` over
+    HTTPS), stored only as SHA-256 and revoked at logout.
+  - Each request resolves its character through the signed-in user, so another user's
+    character answers 404 (`tests/test_users.py`).
+  - Instance-wide settings are the admin's.
 - **Threat: cross-site request forgery (CWE-352).**
   - The API sends no CORS headers, so other sites' scripts can't read responses or make
     preflighted requests: anything with a JSON body, `PUT` or `DELETE`
@@ -153,7 +163,7 @@ named, and `tests/test_security.py` holds the ones written for this page.
 | CWE-346 Origin validation error (DNS rebinding) | `Host` allow-list |
 | CWE-200, CWE-532 Exposure of secrets, in logs | Redaction on every log line; the Semgrep rule in CI; masked webhook URLs; `SecretStr` |
 | CWE-295 Improper certificate validation | `httpx` defaults; never disabled |
-| CWE-306 Missing authentication | The network boundary (localhost, Tailscale, a proxy with a password). Gap: no login in the app itself |
+| CWE-306 Missing authentication | The network boundary (localhost, Tailscale, a proxy with a password); with `PLANNER_USERS=on`, a Battle.net sign-in on every `/api` request (ADR 0037) |
 | CWE-250 Execution with unnecessary privileges | Non-root image user |
 | CWE-1104 Unmaintained third-party components | Dependabot, Dependency Review, Trivy |
 | CWE-1022 Untrusted link targets | `rel="noreferrer"` on new-tab links |

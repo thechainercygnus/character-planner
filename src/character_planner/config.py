@@ -63,6 +63,12 @@ class Settings(BaseSettings):
     # address or a name; empty shows a generic line.
     operator_contact: str = ""
 
+    # Users (#16, ADR 0037). Off: no sign-in, as a single-person instance needs. On: every
+    # /api request needs a Battle.net sign-in; the first one becomes the admin.
+    planner_users: bool = False
+    # With users on, whether new Battle.net accounts may sign up after the first.
+    planner_signups: bool = False
+
     @property
     def trusted_hosts(self) -> list[str]:
         extra = [host.strip().lower() for host in self.planner_hosts.split(",") if host.strip()]

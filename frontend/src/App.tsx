@@ -10,6 +10,7 @@ import { GearTable } from './components/GearTable'
 import { Landing } from './components/Landing'
 import { LookAhead } from './components/LookAhead'
 import { Privacy } from './components/Privacy'
+import { SignIn } from './components/SignIn'
 import { ProfessionMilestones } from './components/ProfessionMilestones'
 import { Progress } from './components/Progress'
 import { Recommendations } from './components/Recommendations'
@@ -37,6 +38,7 @@ export default function App() {
   const [tab, setTab] = useHashTab(TABS, 'upgrades')
   const guestView = useHashIs('guest')
   const privacyView = useHashIs('privacy')
+  const me = useQuery({ queryKey: ['me'], queryFn: api.me, staleTime: Infinity })
   const character = useQuery({ queryKey: ['character'], queryFn: api.character })
   const gear = useQuery({ queryKey: ['gear'], queryFn: api.gear })
   const recommendations = useQuery({ queryKey: ['recommendations'], queryFn: api.recommendations })
@@ -56,6 +58,16 @@ export default function App() {
   const recommendationsError = recommendations.isError && (
     <p className="error">Couldn't load recommendations: {recommendations.error.message}</p>
   )
+
+  // With users on and nobody signed in (#16): the sign-in, or guest mode, which needs none.
+  if (me.data?.users && !me.data.signed_in) {
+    return (
+      <main>
+        {guestView ? <Landing hasCharacter={false} /> : <SignIn signupsOpen={me.data.signups_open} />}
+        <Footer />
+      </main>
+    )
+  }
 
   if (privacyView) {
     return (
@@ -131,9 +143,7 @@ export default function App() {
                   }
                 />
               )}
-              {classQuests.isError && (
-                <p className="error">Couldn't load class quests: {classQuests.error.message}</p>
-              )}
+              {classQuests.isError && <p className="error">Couldn't load class quests: {classQuests.error.message}</p>}
               {classQuests.data && <ClassQuests data={classQuests.data} />}
             </>
           )}
@@ -142,9 +152,7 @@ export default function App() {
             <>
               {progress.isError && <p className="error">Couldn't load progress: {progress.error.message}</p>}
               {progress.data && <Progress data={progress.data} />}
-              {professions.isError && (
-                <p className="error">Couldn't load professions: {professions.error.message}</p>
-              )}
+              {professions.isError && <p className="error">Couldn't load professions: {professions.error.message}</p>}
               {professions.data && <ProfessionMilestones data={professions.data} />}
             </>
           )}

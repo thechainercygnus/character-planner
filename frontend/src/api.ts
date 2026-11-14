@@ -201,6 +201,15 @@ export interface About {
   operator_contact: string
 }
 
+/** Who's signed in, when users are on (#16, ADR 0037). */
+export interface Me {
+  /** PLANNER_USERS: everything needs a Battle.net sign-in. */
+  users: boolean
+  signed_in: boolean
+  admin: boolean
+  signups_open: boolean
+}
+
 /** A tracked character, for the header's switcher (#14). */
 export interface CharacterSummary {
   id: number
@@ -946,6 +955,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   about: () => request<About>('/api/about'),
   eraseCharacter: () => request<Erased>('/api/character', { method: 'DELETE' }),
+  me: () => request<Me>('/api/me'),
+  logout: () => fetch('/api/logout', { method: 'POST', headers: APP_HEADER }),
   characters: () => request<CharacterList>('/api/characters'),
   accountCharacters: () => request<{ characters: AccountCharacter[] }>('/api/account/characters'),
   addCharacter: (character: NewCharacter) =>

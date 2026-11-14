@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
-import { api, type SyncResult } from '../api'
+import { api, selectCharacter, type SyncResult } from '../api'
 import { CharacterSwitcher } from './CharacterSwitcher'
 import { NotificationsDialog } from './NotificationsDialog'
 
@@ -23,6 +23,16 @@ const REFRESH_LABEL: Record<string, string> = { pool: 'the item pool', enchants:
 
 export function StatusBar() {
   const queryClient = useQueryClient()
+  const me = useQuery({ queryKey: ['me'], queryFn: api.me, staleTime: Infinity })
+  // With users on, instance-wide actions are the admin's (ADR 0037); without users, everyone's.
+  const canAdminister = !me.data?.users || me.data.admin
+  const signOut = useMutation({
+    mutationFn: api.logout,
+    onSuccess: () => {
+      selectCharacter(null)
+      window.location.reload()
+    },
+  })
   // While a refresh runs (the first data load after a sync, the worker, or a button), check
   // every few seconds, and reload everything once it has finished (#87).
   // After a sync, watch for a minute: a first sync starts loading data in the background.
@@ -87,46 +97,59 @@ export function StatusBar() {
       )}
       {status.data.character_found === false && !sync.isPending && (
         <span className="warn" role="alert">
-          Battle.net can't find {status.data.character}: check its name and region. A mistyped character can be
-          deleted under Privacy and added again.
+          Battle.net can't find {status.data.character}: check its name and region. A mistyped character can be deleted
+          under Privacy and added again.
         </span>
       )}
-      <NotificationsDialog />
+      {canAdminister && <NotificationsDialog />}
       <details className="menu">
         <summary aria-label="More actions" title="More actions">
           ⋯
         </summary>
         <div className="menu-items">
-          <a className="button secondary" href="#guest" title="Recommendations for any class and level, without your character">
+          <a
+            className="button secondary"
+            href="#guest"
+            title="Recommendations for any class and level, without your character"
+          >
             Guest mode
           </a>
-          <button
-            type="button"
-            className="secondary"
-            onClick={() => refreshItems.mutate()}
-            disabled={refreshItems.isPending}
-            title="Look up every gear target in Battle.net item data again"
-          >
-            Refresh item data
-          </button>
-          <button
-            type="button"
-            className="secondary"
-            onClick={() => refreshPool.mutate()}
-            disabled={refreshPool.isPending}
-            title="Fetch dungeon drops and quest rewards from Forever Companion (first run takes a few minutes)"
-          >
-            Refresh item pool
-          </button>
-          <button
-            type="button"
-            className="secondary"
-            onClick={() => refreshEnchants.mutate()}
-            disabled={refreshEnchants.isPending}
-            title="Fetch enchant recipes from Battle.net and their reagents from Forever Companion"
-          >
-            Refresh enchant data
-          </button>
+          {me.data?.users && me.data.signed_in && (
+            <button type="button" className="secondary" onClick={() => signOut.mutate()} disabled={signOut.isPending}>
+              Sign out
+            </button>
+          )}
+          {canAdminister && (
+            <>
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => refreshItems.mutate()}
+                disabled={refreshItems.isPending}
+                title="Look up every gear target in Battle.net item data again"
+              >
+                Refresh item data
+              </button>
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => refreshPool.mutate()}
+                disabled={refreshPool.isPending}
+                title="Fetch dungeon drops and quest rewards from Forever Companion (first run takes a few minutes)"
+              >
+                Refresh item pool
+              </button>
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => refreshEnchants.mutate()}
+                disabled={refreshEnchants.isPending}
+                title="Fetch enchant recipes from Battle.net and their reagents from Forever Companion"
+              >
+                Refresh enchant data
+              </button>
+            </>
+          )}
         </div>
       </details>
       {refreshing.length > 0 && (
@@ -136,7 +159,9 @@ export function StatusBar() {
       )}
       {refreshItems.isPending && <span className="muted">Looking up items…</span>}
       {refreshPool.isPending && <span className="muted">Refreshing item pool… (can take a few minutes)</span>}
-      {refreshEnchants.isPending && <span className="muted">Fetching enchant data… (first run takes a few minutes)</span>}
+      {refreshEnchants.isPending && (
+        <span className="muted">Fetching enchant data… (first run takes a few minutes)</span>
+      )}
       {refreshEnchants.isError && (
         <span className="error">Enchant refresh failed: {refreshEnchants.error.message}</span>
       )}
@@ -147,9 +172,7 @@ export function StatusBar() {
         </span>
       )}
       {sync.isError && <span className="error">Sync failed: {sync.error.message}</span>}
-      {refreshItems.isError && (
-        <span className="error">Item lookup failed: {refreshItems.error.message}</span>
-      )}
+      {refreshItems.isError && <span className="error">Item lookup failed: {refreshItems.error.message}</span>}
       {refreshItems.data && (
         <span className="muted">
           Blizzard found {refreshItems.data.found.length}, Forever Companion fetched{' '}

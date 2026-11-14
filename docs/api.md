@@ -55,7 +55,7 @@ Stop tracking the character and delete everything stored for it (#133, #14): sna
 
 ### `GET /api/characters`
 
-Every tracked character, for the header's switcher (#14). Requests pick one with X-Character-Id; without it they get default_id, the first.
+The tracked characters, for the header's switcher (#14): the signed-in user's when users are on. Requests pick one with X-Character-Id; without it they get default_id, the first.
 
 **200:** [CharacterList](#schema-characterlist)
 
@@ -279,6 +279,14 @@ Refresh item data from every source. force=true refetches everything. Source fai
 
 **200:** [RefreshResult](#schema-refreshresult)
 
+## `logout`
+
+### `POST /api/logout`
+
+Sign out: the session stops working at once (ADR 0037).
+
+**204:** no body
+
 ## `look-ahead`
 
 ### `GET /api/look-ahead`
@@ -291,6 +299,14 @@ What each of the next `levels` levels brings (#4): dungeons opening, gear target
 | `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** [LookAhead](#schema-lookahead)
+
+## `me`
+
+### `GET /api/me`
+
+Whether users are on, and who's signed in (ADR 0037). Public, so the page knows to offer the sign-in.
+
+**200:** [Me](#schema-me)
 
 ## `notifications`
 
@@ -1271,6 +1287,16 @@ What a guest can choose from.
 | --- | --- | --- |
 | `kind` | string | yes |
 | `payload` | any | yes |
+
+(schema-me)=
+### Me
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `users` | boolean | yes |
+| `signed_in` | boolean | yes |
+| `admin` | boolean | yes |
+| `signups_open` | boolean | yes |
 
 (schema-missingeffect)=
 ### MissingEffect
