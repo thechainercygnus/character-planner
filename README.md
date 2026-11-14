@@ -4,7 +4,8 @@
 [![Documentation](https://readthedocs.org/projects/character-planner/badge/?version=latest)](https://character-planner.readthedocs.io/)
 
 **Documentation:** [character-planner.readthedocs.io](https://character-planner.readthedocs.io/):
-self-hosting, releases, and the decision records.
+self-hosting, releases, the [architecture](docs/architecture.md), the
+[assurance case](docs/assurance-case.md) and the decision records.
 
 Planner for a WoW Forever character: pulls data from the Battle.net Profile API, keeps a
 history of snapshots, and compares gear against curated targets: per slot, the one to go for
@@ -81,7 +82,9 @@ tests with every change, and signed-off commits (DCO). What's planned next is on
 
 ## Security
 
-Please report vulnerabilities privately. See [SECURITY.md](SECURITY.md).
+Please report vulnerabilities privately. See [SECURITY.md](SECURITY.md), which also covers
+how reports are handled and credited. The [assurance case](docs/assurance-case.md) describes
+the threats and how the design counters them.
 
 ## License
 
