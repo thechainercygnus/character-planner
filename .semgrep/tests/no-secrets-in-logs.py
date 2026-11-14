@@ -50,8 +50,8 @@ def facts_about_tokens(token, settings, stored):
     # ok: no-secrets-in-logs
     send(auth=(settings.bnet_client_id, secret))
 
-    answer = send(auth=(settings.bnet_client_id, secret))
-    # The status of a request that sent the secret is a number, not the secret.
+    answer = send(auth=token.access_token)
+    # The status of a request that sent a token is a number, not the token.
     # ok: no-secrets-in-logs
     logger.warning("token endpoint answered %s", answer.status_code)
 
