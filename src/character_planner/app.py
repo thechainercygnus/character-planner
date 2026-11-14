@@ -25,7 +25,7 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session, col, select
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from character_planner import jobs, leases, notify
+from character_planner import fields, jobs, leases, notify
 from character_planner.account import AccountCharacter, parse_account
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
@@ -40,6 +40,7 @@ from character_planner.characters import (
     character_list,
     current_character,
     delete_character,
+    owned_characters,
 )
 from character_planner.choices import (
     ChoiceKind,
@@ -183,6 +184,18 @@ from character_planner.targets import (
 )
 from character_planner.targets import is_customised as targets_customised
 from character_planner.tokens import CredentialsError
+from character_planner.users import (
+    COOKIE as SESSION_COOKIE,
+)
+from character_planner.users import (
+    SESSION_LENGTH,
+    SignupsClosed,
+    end_session,
+    sign_in,
+    start_session,
+    user_for,
+    user_token,
+)
 from character_planner.views import (
     CharacterView,
     EquippedItem,
@@ -196,6 +209,19 @@ from character_planner.views import (
 )
 
 PENDING_STATE_TTL_SECONDS = 600
+# With users on, what needs no sign-in (ADR 0037): health, the footer, who's signed in and
+# guest mode, which reads no character data (ADR 0017).
+PUBLIC_API = frozenset({"/api/healthz", "/api/about", "/api/me"})
+PUBLIC_PREFIXES = ("/api/guest",)
+# Instance-wide: the admin's alone. Alert webhooks are secret-like, so even reading them.
+ADMIN_ALWAYS = ("/api/notifications",)
+ADMIN_WRITES = (
+    "/api/enchants/corrections",
+    "/api/items/refresh",
+    "/api/pool/refresh",
+    "/api/enchants/refresh",
+    "/api/talents/refresh",
+)
 # The header the web app sends with every request; state-changing ones need it (#124).
 APP_HEADER = "X-Requested-With"
 APP_HEADER_VALUE = "character-planner"
@@ -231,6 +257,13 @@ class About(BaseModel):
     operator_contact: str = ""
 
 
+class Me(BaseModel):
+    users: bool  # PLANNER_USERS: sign-in needed (ADR 0037)
+    signed_in: bool
+    admin: bool
+    signups_open: bool
+
+
 class AccountCharacters(BaseModel):
     characters: list[AccountCharacter]
 
@@ -258,18 +291,34 @@ def get_session(request: Request) -> Iterator[Session]:
 SessionDep = Annotated[Session, Depends(get_session)]
 
 
+def get_user_id(request: Request) -> int | None:
+    """The signed-in user, set by the users middleware; None when users are off."""
+    return getattr(request.state, "user_id", None)
+
+
+UserIdDep = Annotated[int | None, Depends(get_user_id)]
+
+
 def get_character_id(
     request: Request,
     session: SessionDep,
+    user_id: UserIdDep,
     selected: Annotated[int | None, Header(alias="X-Character-Id", gt=0)] = None,
 ) -> int | None:
     """The character this request is about (#14, ADR 0036): the one the X-Character-Id
-    header names, else the first. None on a fresh install with no character named."""
+    header names, else the first. With users on, only the signed-in user's characters
+    count: another user's answers 404, like an unknown one (ADR 0037). None when there's
+    no character yet."""
+    settings: Settings = request.app.state.settings
     if selected is not None:
-        if session.get(Character, selected) is None:
+        character = session.get(Character, selected)
+        if character is None or (settings.planner_users and character.user_id != user_id):
             raise HTTPException(404, f"No character {selected}")
         return selected
-    character = current_character(session, request.app.state.settings)
+    if settings.planner_users:
+        first = owned_characters(session, user_id)
+        return first[0].id if first else None
+    character = current_character(session, settings)
     return character.id if character else None
 
 
@@ -451,6 +500,31 @@ def create_app(
             )
         return await call_next(request)
 
+    @app.middleware("http")
+    async def require_user(  # pyright: ignore[reportUnusedFunction]
+        request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
+        """With users on (ADR 0037): every /api request but the public ones needs a
+        signed-in user, and the instance-wide ones need the admin."""
+        path = request.url.path
+        if not settings.planner_users or not path.startswith("/api/"):
+            return await call_next(request)
+        with Session(engine) as db:
+            user = user_for(db, request.cookies.get(SESSION_COOKIE))
+        if user is not None:
+            request.state.user_id = user.id
+            request.state.is_admin = user.is_admin
+        if path in PUBLIC_API or path.startswith(PUBLIC_PREFIXES):
+            return await call_next(request)
+        if user is None:
+            return JSONResponse({"detail": "Sign in with Battle.net"}, status_code=401)
+        admin_only = path.startswith(ADMIN_ALWAYS) or (
+            request.method in STATE_CHANGING and path.startswith(ADMIN_WRITES)
+        )
+        if admin_only and not user.is_admin:
+            return JSONResponse({"detail": "Only the admin can do that"}, status_code=403)
+        return await call_next(request)
+
     # Added last, so it runs first: an unknown Host never reaches the app (#124).
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.trusted_hosts)
     app.state.settings = settings
@@ -539,12 +613,57 @@ def create_app(
         if not code:
             raise HTTPException(400, params.get("error_description") or "No code on callback")
         token = oauth.exchange_code(settings, code, client=http)
-        session.merge(StoredToken(id=1, **asdict(token)))
-        session.commit()
-        return RedirectResponse(settings.post_login_redirect, status_code=303)
+        if not settings.planner_users:
+            session.merge(StoredToken(id=1, **asdict(token)))
+            session.commit()
+            return RedirectResponse(settings.post_login_redirect, status_code=303)
+        # Users on (ADR 0037): the account id from /profile/user/wow is who this is.
+        with BlizzardClient(settings, token, http=http) as client:
+            account = client.account_profile()
+        account_id = fields.as_int(fields.get(account.body, "id")) if account.ok else None
+        if account_id is None:
+            raise HTTPException(
+                502, f"Battle.net didn't say whose account this is ({account.status})"
+            )
+        try:
+            user = sign_in(session, account_id, token, signups_open=settings.planner_signups)
+        except SignupsClosed as error:
+            raise HTTPException(403, str(error)) from error
+        redirect = RedirectResponse(settings.post_login_redirect, status_code=303)
+        redirect.set_cookie(
+            SESSION_COOKIE,
+            start_session(session, user),
+            max_age=int(SESSION_LENGTH.total_seconds()),
+            httponly=True,
+            samesite="lax",
+            secure=request.url.scheme == "https",
+        )
+        return redirect
+
+    @app.post("/api/logout", status_code=204)
+    def logout(request: Request, session: SessionDep) -> Response:
+        """Sign out: the session stops working at once (ADR 0037)."""
+        end_session(session, request.cookies.get(SESSION_COOKIE))
+        response = Response(status_code=204)
+        response.delete_cookie(SESSION_COOKIE)
+        return response
+
+    @app.get("/api/me")
+    def me(request: Request) -> Me:
+        """Whether users are on, and who's signed in (ADR 0037). Public, so the page
+        knows to offer the sign-in."""
+        user_id = getattr(request.state, "user_id", None)
+        return Me(
+            users=settings.planner_users,
+            signed_in=user_id is not None,
+            admin=bool(getattr(request.state, "is_admin", False)),
+            signups_open=settings.planner_signups,
+        )
 
     @app.get("/api/status")
-    def status(session: SessionDep, character_id: CharacterIdDep) -> dict[str, Any]:
+    def status(
+        session: SessionDep, character_id: CharacterIdDep, user_id: UserIdDep
+    ) -> dict[str, Any]:
         stored = session.get(StoredToken, 1)
         latest = latest_by_kind(session, character_id)
         character = session.get(Character, character_id) if character_id is not None else None
@@ -568,7 +687,10 @@ def create_app(
                 else None
             ),
             # The optional Battle.net login: only the account's character list needs it.
-            "logged_in": current_token(session) is not None,
+            "logged_in": (
+                user_token(session, user_id) if user_id is not None else current_token(session)
+            )
+            is not None,
             "token_expires_at": stored.expires_at if stored else None,
             "latest_snapshots": {k: s.captured_at.isoformat() for k, s in latest.items()},
             # Refreshes running now, from any process: "pool", "enchants" (#87).
@@ -953,18 +1075,20 @@ def create_app(
         return Erased(removed=delete_character(session, character_id))
 
     @app.get("/api/characters")
-    def characters(session: SessionDep) -> CharacterList:
-        """Every tracked character, for the header's switcher (#14). Requests pick one
-        with X-Character-Id; without it they get default_id, the first."""
-        current_character(session, settings)  # seeds the first from .env if there's none
-        return character_list(session)
+    def characters(session: SessionDep, user_id: UserIdDep) -> CharacterList:
+        """The tracked characters, for the header's switcher (#14): the signed-in user's
+        when users are on. Requests pick one with X-Character-Id; without it they get
+        default_id, the first."""
+        if not settings.planner_users:
+            current_character(session, settings)  # seeds the first from .env if there's none
+        return character_list(session, user_id if settings.planner_users else None)
 
     @app.get("/api/account/characters")
-    def account_characters(session: SessionDep) -> AccountCharacters:
+    def account_characters(session: SessionDep, user_id: UserIdDep) -> AccountCharacters:
         """The characters on the signed-in Battle.net account (#15), to pick ones to
         track. Fetched each time and never stored: the list names every character on the
         account (ADR 0034). Needs the optional Battle.net sign-in."""
-        token = current_token(session)
+        token = user_token(session, user_id) if user_id is not None else current_token(session)
         if token is None:
             raise HTTPException(401, "Sign in with Battle.net to list your characters")
         with BlizzardClient(settings, token, http=http) as client:
@@ -973,7 +1097,12 @@ def create_app(
             raise HTTPException(401, "The Battle.net sign-in has expired: sign in again")
         if not result.ok:
             raise HTTPException(502, f"Battle.net answered {result.status} for the account")
-        tracked = {(c.region, c.slug) for c in all_characters(session)}
+        mine = (
+            owned_characters(session, user_id)
+            if settings.planner_users
+            else all_characters(session)
+        )
+        tracked = {(c.region, c.slug) for c in mine}
         listed = [
             c.model_copy(update={"tracked": (c.region, c.slug) in tracked})
             for c in parse_account(result.body)
@@ -981,13 +1110,15 @@ def create_app(
         return AccountCharacters(characters=listed)
 
     @app.post("/api/characters", status_code=201)
-    def post_character(new: NewCharacter, session: SessionDep) -> CharacterSummary:
+    def post_character(
+        new: NewCharacter, session: SessionDep, user_id: UserIdDep
+    ) -> CharacterSummary:
         """Track another character. Sync it (with its X-Character-Id) to fetch its data."""
         try:
-            character = add_character(session, new)
+            character = add_character(session, new, user_id)
         except DuplicateCharacter as error:
             raise HTTPException(409, str(error)) from error
-        listed = character_list(session).characters
+        listed = character_list(session, user_id if settings.planner_users else None).characters
         return next(c for c in listed if c.id == character.id)
 
     def build_gear_plan(

@@ -89,7 +89,11 @@ def main() -> int:
     print(f"Token scope: {token.scope or '(none reported)'}")
 
     with BlizzardClient(settings, token) as client:
-        results = [client.account_profile(), *client.all_character_data(settings.character_slug)]
+        results = [
+            client.account_profile(),
+            client.userinfo(),  # #16: compare its id with the account profile's
+            *client.all_character_data(settings.character_slug),
+        ]
 
     out_dir = SAMPLES_DIR / datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     save(results, out_dir)

@@ -18,6 +18,38 @@ def utcnow() -> datetime:
     return datetime.now(UTC)
 
 
+class User(SQLModel, table=True):
+    """A person signed in with Battle.net, when users are on (#16, ADR 0037). The key
+    is the account id from /profile/user/wow."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    account_id: int = Field(unique=True, index=True)
+    is_admin: bool = False
+    created_at: datetime = Field(default_factory=utcnow)
+    last_sign_in_at: datetime = Field(default_factory=utcnow)
+
+
+class UserSession(SQLModel, table=True):
+    """A signed-in browser (ADR 0037). Only the token's SHA-256 is stored; the cookie
+    holds the token itself."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    token_hash: str = Field(unique=True, index=True)
+    user_id: int = Field(foreign_key="user.id", index=True)
+    created_at: datetime = Field(default_factory=utcnow)
+    expires_at: datetime
+
+
+class UserToken(SQLModel, table=True):
+    """A user's own Battle.net sign-in token, to list their account's characters (#15).
+    Never logged (ADR 0037)."""
+
+    user_id: int = Field(foreign_key="user.id", primary_key=True)
+    access_token: str
+    expires_at: float
+    scope: str
+
+
 class Character(SQLModel, table=True):
     """A tracked character (#14, ADR 0036). Region and slug find it on Battle.net; the
     rest is copied from its newest profile at each sync, for lists and class defaults."""
@@ -25,6 +57,8 @@ class Character(SQLModel, table=True):
     __table_args__ = (UniqueConstraint("region", "slug"),)
 
     id: int | None = Field(default=None, primary_key=True)
+    # Who it belongs to when users are on (ADR 0037); None on an instance without users.
+    user_id: int | None = Field(default=None, foreign_key="user.id", index=True)
     region: str  # us, eu, kr, tw
     slug: str  # Forever's route key: name-surname, lowercase
     name: str

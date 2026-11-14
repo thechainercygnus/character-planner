@@ -173,12 +173,22 @@ def all_characters(session: Session) -> list[Character]:
     return list(session.exec(select(Character).order_by(col(Character.id))).all())
 
 
-def character_list(session: Session) -> CharacterList:
+def owned_characters(session: Session, user_id: int | None) -> list[Character]:
+    """A user's characters, oldest first (ADR 0037); none without a user."""
+    if user_id is None:
+        return []
+    statement = select(Character).where(col(Character.user_id) == user_id)
+    return list(session.exec(statement.order_by(col(Character.id))).all())
+
+
+def character_list(session: Session, user_id: int | None = None) -> CharacterList:
+    """Every character, or a user's own when given one (users on, ADR 0037)."""
     from character_planner.db import latest_by_kind
     from character_planner.views import character_level
 
     rows: list[CharacterSummary] = []
-    for character in all_characters(session):
+    listed = owned_characters(session, user_id) if user_id is not None else all_characters(session)
+    for character in listed:
         assert character.id is not None
         profile = latest_by_kind(session, character.id).get("profile")
         rows.append(
@@ -197,15 +207,19 @@ def character_list(session: Session) -> CharacterList:
     return CharacterList(characters=rows, default_id=rows[0].id if rows else None)
 
 
-def add_character(session: Session, new: NewCharacter) -> Character:
+def add_character(session: Session, new: NewCharacter, user_id: int | None = None) -> Character:
     """Track another character; its data arrives with its first sync."""
     slug = f"{new.name}-{new.surname}".lower()
     taken = session.exec(
         select(Character).where(col(Character.region) == new.region, col(Character.slug) == slug)
     ).first()
     if taken is not None:
-        raise DuplicateCharacter(f"{new.name} {new.surname} ({new.region}) is already tracked")
-    character = Character(region=new.region, slug=slug, name=new.name, surname=new.surname)
+        raise DuplicateCharacter(
+            f"{new.name} {new.surname} ({new.region}) is already tracked on this instance"
+        )
+    character = Character(
+        user_id=user_id, region=new.region, slug=slug, name=new.name, surname=new.surname
+    )
     session.add(character)
     session.commit()
     session.refresh(character)

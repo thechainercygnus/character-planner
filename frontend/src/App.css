@@ -1257,3 +1257,9 @@ ul.upcoming small {
   flex-direction: column;
   gap: 0.3rem;
 }
+
+/* The sign-in page, with users on (#16). */
+.sign-in {
+  max-width: 36rem;
+  margin: 3rem auto;
+}

@@ -61,3 +61,15 @@ def test_a_character_is_fetched_in_its_own_region(settings: Settings) -> None:
     with BlizzardClient(settings, token()) as client:
         client.character("profile", "someone-else", region="eu")
     assert route.calls.last.request.url.params["namespace"] == "profile-forever-eu"
+
+
+@respx.mock
+def test_userinfo_is_captured_as_returned(settings: Settings) -> None:
+    """The spike saves OAuth's userinfo beside the account profile (#16, ADR 0037)."""
+    route = respx.get("https://oauth.battle.net/userinfo").mock(
+        return_value=httpx.Response(403, text="Forbidden")
+    )
+    with BlizzardClient(settings, token()) as client:
+        result = client.userinfo()
+    assert (result.kind, result.status, result.body) == ("userinfo", 403, "Forbidden")
+    assert route.calls.last.request.headers["Authorization"] == "Bearer tok"

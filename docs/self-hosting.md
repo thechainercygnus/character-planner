@@ -265,7 +265,28 @@ From then on, the worker syncs every 6 hours (`SYNC_EVERY_HOURS`) on its own, fo
 as it runs. The planner gets a new Battle.net token by itself when the old one runs out
 (ADR 0027).
 
-## 8. Alerts (optional)
+## 8. Other people (optional)
+
+By default the planner has no sign-in: it's yours alone, kept private by the network
+(see "Before you start"). To let guildmates use it, each seeing only their own
+characters, turn users on (ADR 0037):
+
+```
+PLANNER_USERS=on
+```
+
+Then `docker compose up -d`. Every page now asks for a Battle.net sign-in, so register
+`BNET_REDIRECT_URI` on your Battle.net client (step 4).
+
+- **Sign in first.** The first account to sign in becomes the admin and takes over every
+  character already tracked.
+- **Sign-ups are closed after that.** To let others in, set `PLANNER_SIGNUPS=on`, then
+  turn it off again once they've signed in.
+- **Each user sees only their own characters.**
+- **Only the admin** can see and change the alert webhooks, change enchant corrections,
+  and start the bulk refreshes in the ⋯ menu.
+
+## 9. Alerts (optional)
 
 The planner can post to a Discord channel:
 
@@ -283,7 +304,7 @@ You choose which alerts each channel gets.
 
 The worker sends queued alerts every minute, so keep it running (ADR 0021).
 
-## 9. Logs
+## 10. Logs
 
 Both containers log to the console and to rotating files on the data volume (ADR 0019):
 
@@ -300,7 +321,7 @@ Each file rotates at 5 MB and keeps 5 old copies. `LOG_LEVEL=DEBUG` adds every u
 request, and `LOG_FORMAT=json` writes JSON lines for a log collector. Tokens, the client
 secret and login codes are always replaced by `[redacted]`.
 
-## 10. Back up and upgrade
+## 11. Back up and upgrade
 
 **What's kept, and for how long.** Blizzard's API terms limit everything fetched from
 Battle.net to 30 days (ADR 0034):
@@ -341,7 +362,7 @@ seconds of writes may be missing.
 To check that an image really comes from this project before running it, see
 [Verifying an image](releasing.md#verifying-an-image).
 
-## 11. Fair use
+## 12. Fair use
 
 - **Battle.net:** the planner uses your own client, within Blizzard's limits for it.
 - **Forever Companion:** item and dungeon data comes from
@@ -351,7 +372,7 @@ To check that an image really comes from this project before running it, see
 - **Refreshes:** the worker refreshes data on a schedule. The manual refreshes in the ⋯
   menu are for when something looks out of date, not for running in a loop.
 
-## 12. Troubleshooting
+## 13. Troubleshooting
 
 | What you see | Why | What to do |
 | --- | --- | --- |

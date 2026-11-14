@@ -14,6 +14,8 @@ import httpx
 from character_planner.blizzard.oauth import Token
 from character_planner.config import Settings
 
+USERINFO_URL = "https://oauth.battle.net/userinfo"
+
 # Character sub-resources worth probing. Keys become snapshot kinds and sample file names.
 CHARACTER_ENDPOINTS: dict[str, str] = {
     "profile": "",
@@ -92,6 +94,16 @@ class BlizzardClient:
     def account_profile(self) -> ApiResult:
         """Every Forever character on the logged-in account. Needs the user token."""
         return self._get("account", "/profile/user/wow")
+
+    def userinfo(self) -> ApiResult:
+        """OAuth's own view of the signed-in account (ADR 0037), captured by the spike
+        to compare its id with /profile/user/wow's before relying on either alone."""
+        response = self._http.get(USERINFO_URL, headers=self._headers)
+        try:
+            body: Any = response.json()
+        except ValueError:
+            body = response.text
+        return ApiResult(kind="userinfo", url=USERINFO_URL, status=response.status_code, body=body)
 
     def character(self, kind: str, slug: str, region: str | None = None) -> ApiResult:
         """One endpoint for a character, by its slug (name-surname) and region."""
