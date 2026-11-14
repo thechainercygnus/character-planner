@@ -11,6 +11,8 @@ export interface ItemStat {
 export interface EquippedItem {
   slot: string
   name: string
+  /** Equip slot type from Blizzard: WEAPONMAINHAND, SHIELD, TWOHWEAPON… (#93). */
+  inventory_type?: string | null
   item_id: number | null
   quality: Quality | null
   quality_name: string | null

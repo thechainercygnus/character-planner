@@ -52,6 +52,9 @@ class EquippedItem(BaseModel):
     quality_name: str | None = None
     item_level: int | None = None
     armor_type: str | None = None  # item subclass: Cloth, Leather, Mail, Shield, Axe...
+    # Equip slot: WEAPONMAINHAND, SHIELD... (forever_equipment.json). TWOHWEAPON for a
+    # two-hander is Blizzard's usual value, not yet seen in a Forever sample (#93).
+    inventory_type: str | None = None
     armor: int | None = None
     stats: list[ItemStat] = []
     dps: float | None = None
@@ -262,6 +265,7 @@ def parse_equipment(equipment: Any) -> list[EquippedItem]:
                 quality_name=_name(_get(item, "quality", "name")),
                 item_level=_int(_get(item, "level", "value")),
                 armor_type=_name(_get(item, "item_subclass", "name")),
+                inventory_type=_name(_get(item, "inventory_type", "type")),
                 armor=_int(_get(item, "armor", "value")),
                 stats=stats,
                 dps=_float(_get(item, "weapon", "dps", "value")),
