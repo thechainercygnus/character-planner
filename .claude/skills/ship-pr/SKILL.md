@@ -24,7 +24,7 @@ Check what changed with `git diff --name-only origin/main...` plus the uncommitt
 | Changed | Run |
 |---|---|
 | `src/`, `tests/`, `pyproject.toml`, `.claude/skills/**/*.py` | `uv run ruff check --fix && uv run ruff format`, `uv run pyright`, `uv run pytest -q --cov` (the floor is in `pyproject.toml`) |
-| `src/` | `uvx --from semgrep semgrep scan --error --config .semgrep/rules src` |
+| `src/` | `uvx --from semgrep semgrep scan --error --config .semgrep/rules src`. The pre-push hook runs it too, at CI's pinned version. |
 | `.semgrep/` | `uvx --from semgrep semgrep --test --config .semgrep/rules .semgrep/tests`, plus the scan |
 | A route or an API model | `uv run character-planner-api-docs`, and commit `docs/api.md` and `docs/_static/openapi.json` |
 | A table in `db.py` | A migration in the same PR. Write it by hand, like `migrations/versions/*` (`batch_alter_table` for SQLite). `tests/test_migrations.py` must pass. Test any data step. |

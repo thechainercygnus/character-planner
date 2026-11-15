@@ -72,7 +72,9 @@ cd frontend && npm ci && cd ..
 uv run pre-commit install
 ```
 
-The hooks then run on every commit. To run the full check by hand:
+The hooks then run on every commit, and the custom Semgrep rules run before every push
+(they need uv's `uvx`). A clone set up before the push hook existed gets it by running
+`uv run pre-commit install` again. To run the full check by hand:
 
 ```
 uv run ruff check --fix && uv run ruff format
