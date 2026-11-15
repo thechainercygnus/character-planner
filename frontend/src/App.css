@@ -296,6 +296,9 @@ button.secondary {
 .weights-dialog {
   width: min(760px, calc(100vw - 2rem));
   max-height: calc(100vh - 4rem);
+  /* The height actually visible: on a phone, 100vh also counts the browser's toolbar, so a
+     tall dialog centred in it opened with its top above the screen. */
+  max-height: calc(100dvh - 2rem);
   overflow: auto;
   background: var(--panel);
   color: var(--text);
@@ -308,11 +311,18 @@ button.secondary {
   background: rgb(0 0 0 / 60%);
 }
 
+/* Stays at the top while the dialog scrolls, so Close is always in reach. */
 .weights-dialog-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  position: sticky;
+  top: -1.25rem;
+  z-index: 2;
+  margin: -1.25rem -1.5rem 0;
+  padding: 1.25rem 1.5rem 0.5rem;
+  background: var(--panel);
 }
 
 .weights-dialog-header h2 {
@@ -1301,7 +1311,26 @@ ul.upcoming small {
     white-space: nowrap;
   }
 
-  /* Wide tables scroll inside themselves, with the first column kept in view. */
+  /* The menu opens in the page's flow instead of floating off the edge. */
+  .menu-items {
+    position: static;
+    margin-top: 0.3rem;
+  }
+
+  .character-switcher,
+  .character-switcher select {
+    max-width: 100%;
+  }
+
+  .status-bar {
+    gap: 0.5rem;
+  }
+}
+
+/* Phones either way up: wide tables scroll inside themselves, with the first column kept in
+   view, and dialogs use nearly all of the screen. A sideways phone is wider than 640px, and
+   a table wider than it zoomed the whole page out. */
+@media (max-width: 640px), (max-height: 500px) and (orientation: landscape) {
   table.gear {
     display: block;
     overflow-x: auto;
@@ -1316,19 +1345,17 @@ ul.upcoming small {
     background: var(--panel);
   }
 
-  /* The menu opens in the page's flow instead of floating off the edge. */
-  .menu-items {
-    position: static;
-    margin-top: 0.3rem;
+  .weights-dialog {
+    width: calc(100vw - 1rem);
+    max-height: calc(100vh - 1rem);
+    max-height: calc(100dvh - 1rem);
+    padding: 0.75rem 1rem;
   }
 
-  .character-switcher,
-  .character-switcher select {
-    max-width: 100%;
-  }
-
-  .status-bar {
-    gap: 0.5rem;
+  .weights-dialog-header {
+    top: -0.75rem;
+    margin: -0.75rem -1rem 0;
+    padding: 0.75rem 1rem 0.5rem;
   }
 }
 

@@ -28,8 +28,15 @@ async function open(page: Page, hash: string) {
   await page.evaluate(() => document.fonts.ready)
 }
 
-/** How far the page reaches past the screen's right edge, in pixels. */
-const overflow = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+/**
+ * How far the page reaches past the screen's right edge, in pixels. Measured against the
+ * visual viewport: when content is too wide a phone zooms the page out, and innerWidth grows
+ * with it, hiding the overflow.
+ */
+const overflow = (page: Page) =>
+  page.evaluate(
+    () => document.documentElement.scrollWidth - Math.round(window.visualViewport?.width ?? window.innerWidth),
+  )
 
 for (const [width, height] of [
   [375, 812],
@@ -65,11 +72,22 @@ for (const [width, height] of [
 }
 
 for (const [width, height] of [
+  [667, 375],
   [812, 375],
   [915, 412],
 ]) {
   test.describe(`landscape ${width}x${height}`, () => {
     test.use({ viewport: { width, height }, hasTouch: true, isMobile: true })
+
+    // A sideways phone is wider than the portrait rules' 640px: on rc.4 the Plan tab's gear
+    // table overflowed it and zoomed the whole page out.
+    for (const tab of TABS) {
+      test(`${tab}: nothing wider than the screen`, async ({ page }) => {
+        await serveApi(page)
+        await open(page, tab)
+        expect(await overflow(page)).toBeLessThanOrEqual(0)
+      })
+    }
 
     test('content starts within the top third', async ({ page }) => {
       await serveApi(page)
