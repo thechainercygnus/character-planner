@@ -1,32 +1,11 @@
 import { expect, test, type Page } from '@playwright/test'
-import fixtures from './api-fixtures.json' with { type: 'json' }
+import { TABS, openTab as open, serveApi } from './support.ts'
 
 /**
  * Phone screens (#153): no sideways scroll in portrait on any tab, and in landscape the
  * chrome leaves the content in view. The API answers from real responses recorded on a
  * copy of the database (e2e/api-fixtures.json).
  */
-
-const answers = fixtures as Record<string, { status: number; body: unknown }>
-const TABS = ['upgrades', 'dungeons', 'plan', 'talents', 'progress', 'character', 'privacy', 'guest']
-
-async function serveApi(page: Page) {
-  await page.route('**/api/**', (route) => {
-    const path = new URL(route.request().url()).pathname
-    // Guest mode's recommendations have the same shape as the character's.
-    const known = path === '/api/guest/recommendations' ? '/api/recommendations' : path
-    const answer = answers[known] ?? { status: 200, body: [] }
-    return route.fulfill({ status: answer.status, json: answer.body })
-  })
-}
-
-/** Open a tab and wait until the layout has settled: data in, fonts loaded. */
-async function open(page: Page, hash: string) {
-  await page.goto(`/#${hash}`)
-  await page.waitForLoadState('networkidle')
-  await expect(page.locator('main :is(h1, h2, section):visible').first()).toBeVisible()
-  await page.evaluate(() => document.fonts.ready)
-}
 
 /**
  * How far the page reaches past the screen's right edge, in pixels. Measured against the

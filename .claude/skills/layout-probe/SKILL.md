@@ -25,9 +25,10 @@ cd frontend && npx playwright test e2e/probe.spec.ts --reporter=line 2>&1 | grep
   - `inner`: the layout viewport;
   - `visual`: what's actually visible;
   - `overflow`: the page's width past the screen;
-  - `wide`: the first unclipped elements past the right edge, with their right edges;
+  - `wide`: the first unclipped elements past the right edge, with their right edges. Only worth reading when `overflow` is above 0: absolutely positioned boxes, like the ⋯ menu, can sit past the edge without widening the page;
   - `dialog`: an open dialog's top and bottom.
 - **Delete the probe after:** `rm frontend/e2e/probe.spec.ts`. It's never committed.
+- **Shared helpers:** the probe uses `e2e/support.ts` (`serveApi`, `openTab`, `openDialog`, `TABS`, `DIALOGS`), as the lasting checks do.
 - **Missing fixture:** a route without an entry in `api-fixtures.json` answers `[]`, and
   some components break on that. Add an entry, keeping the file's one-space indent, so
   the diff stays small.
@@ -49,7 +50,7 @@ cd frontend && npx playwright test e2e/probe.spec.ts --reporter=line 2>&1 | grep
 
 ## 3. Fix, and prove the check catches it
 1. Fix the CSS, or the component.
-2. Turn the finding into a check in `phone.spec.ts` or `dialogs.spec.ts`. Measure
+2. Turn the finding into a check in `phone.spec.ts`, `dialogs.spec.ts`, `flows.spec.ts` or `a11y.spec.ts`. Measure
    overflow against `visualViewport.width`, never `innerWidth`: a zoomed-out page grows
    `innerWidth` and hides the overflow. Add the size that showed it, if it's new.
 3. Prove the check would have caught it:

@@ -88,13 +88,16 @@ function UpgradeRow({ row, best, guest }: { row: SlotRecommendation; best: Candi
             type="button"
             className="expand"
             aria-expanded={open}
-            aria-label={`${open ? 'Hide' : 'Show'} details for ${slotLabel(row.slot)}`}
             onClick={(event) => {
               event.stopPropagation()
               toggle()
             }}
           >
-            {open ? '▾' : '▸'}
+            {/* The name is the hidden text, so it includes what's visible (WCAG 2.5.3). */}
+            <span aria-hidden="true">{open ? '▾' : '▸'}</span>
+            <span className="visually-hidden">
+              {open ? 'Hide' : 'Show'} details for {slotLabel(row.slot)}
+            </span>
             {more > 0 && <span className="muted"> +{more}</span>}
           </button>
         </td>
@@ -171,7 +174,9 @@ export function Recommendations({
                 {!guest && <th>Equipped</th>}
                 <th>{guest ? 'Best item' : 'Best upgrade'}</th>
                 <th>Score</th>
-                <th />
+                <th>
+                  <span className="visually-hidden">Details</span>
+                </th>
               </tr>
             </thead>
             <tbody>

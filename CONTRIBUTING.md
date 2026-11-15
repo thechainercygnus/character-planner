@@ -83,8 +83,14 @@ uv run pytest
 cd frontend && npm run lint && npm run typecheck && npm test
 ```
 
-For layout changes, also run `npm run e2e` in `frontend/`. It checks the built app at
-phone sizes in Chromium (the first time, run `npx playwright install chromium`).
+For changes to what users see, also run `npm run e2e` in `frontend/` (the first time,
+run `npx playwright install chromium`). It drives the built app in Chromium, with the API
+mocked from `e2e/api-fixtures.json`:
+- **Layout:** nothing wider than a phone's screen, and every dialog fits.
+- **Main flows:** tabs, upgrade details, pinning and dismissing, guest mode, and closing
+  dialogs from the keyboard.
+- **Accessibility:** [axe](https://github.com/dequelabs/axe-core) on every tab and dialog,
+  failing on any finding.
 
 If you change a route or an API model, regenerate the [API reference](docs/api.md) with
 `uv run character-planner-api-docs`; a test fails until it matches the code.

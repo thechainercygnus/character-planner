@@ -60,7 +60,7 @@ describe('Recommendations', () => {
     stubFetch()
     renderRecommendations()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Show details for Waist' }))
+    fireEvent.click(screen.getByRole('button', { name: /^Show details for Waist/ }))
 
     expect(screen.getByText('Hall of Thanes – Plunder')).toBeTruthy()
     expect(screen.getByText('+4 item level · +27 armor · +7 Stamina')).toBeTruthy()
@@ -68,7 +68,7 @@ describe('Recommendations', () => {
     expect(screen.getByText('Quest: The Defias Brotherhood (The Deadmines), choice')).toBeTruthy()
     expect(screen.getByText('level 20')).toBeTruthy()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Hide details for Waist' }))
+    fireEvent.click(screen.getByRole('button', { name: /^Hide details for Waist/ }))
     expect(screen.queryByText('Later Belt')).toBeNull()
   })
 
@@ -128,7 +128,7 @@ describe('Recommendations', () => {
     })
     // Only in the opened row.
     expect(screen.queryByRole('list', { name: 'Quest chain for Old Ironforge Incursion' })).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Show details for Ranged' }))
+    fireEvent.click(screen.getByRole('button', { name: /^Show details for Ranged/ }))
 
     const chain = screen.getByRole('list', { name: 'Quest chain for Old Ironforge Incursion' })
     const steps = within(chain).getAllByRole('listitem').map((li) => li.textContent)
@@ -146,14 +146,14 @@ describe('Recommendations', () => {
   it('shows no chain for a quest without one', () => {
     stubFetch()
     renderRecommendations()
-    fireEvent.click(screen.getByRole('button', { name: 'Show details for Waist' }))
+    fireEvent.click(screen.getByRole('button', { name: /^Show details for Waist/ }))
     expect(screen.queryByRole('list', { name: /Quest chain/ })).toBeNull()
   })
 
   it('pins an item as a target and dismisses another', async () => {
     const fetchMock = stubFetch()
     renderRecommendations()
-    fireEvent.click(screen.getByRole('button', { name: 'Show details for Waist' }))
+    fireEvent.click(screen.getByRole('button', { name: /^Show details for Waist/ }))
 
     // The girdle is already a target from gear_targets.yaml: it offers Pin, not Make target.
     const [laterBeltTarget, ...others] = screen.getAllByRole('button', { name: 'Make target' })
@@ -187,7 +187,7 @@ describe('Recommendations', () => {
       ],
     }
     renderRecommendations(pinned)
-    fireEvent.click(screen.getByRole('button', { name: 'Show details for Waist' }))
+    fireEvent.click(screen.getByRole('button', { name: /^Show details for Waist/ }))
 
     expect(screen.getByText('-1.5').className).toContain('verdict-sidegrade')
     fireEvent.click(screen.getByRole('button', { name: 'Unpin' }))
