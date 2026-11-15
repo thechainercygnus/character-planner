@@ -39,6 +39,8 @@ Deploy (Docker): `docker compose up -d --build`; over Tailscale add `-f compose.
 Docs site (Read the Docs, `.readthedocs.yaml`): `uv run --group docs sphinx-build -W -b html docs docs/_build/html`. Warnings fail the build, as in CI.
 Release: bump `pyproject.toml`'s version in a PR, then the user tags `vX.Y.Z` on `main`; `release.yml` publishes to GHCR (ADR 0026, `docs/releasing.md`). Tagging is the user's call, like merging.
 
+Project skills in `.claude/skills/` (Claude Code loads them): `ship-pr` takes finished work to a ready PR and watches its CI, `roadmap` edits #25 through `roadmap.py` (a diff first, `--save` to write), and `cut-rc` tags a test release when Bryce asks.
+
 ## Rules
 
 `CONTRIBUTING.md` holds the shared rules for everyone (workflow, tests, coding standards,
@@ -78,7 +80,7 @@ DCO sign-off). The rules here add what agents need on top.
 ## Roadmap
 
 Issue #25 (label `roadmap`) is the work order. Read it before choosing what to do next,
-and keep it true as you go: edit its body with `gh issue edit 25 --body-file <file>`.
+and keep it true as you go: edit its body with the `roadmap` skill's script, or `gh issue edit 25 --body-file <file>`.
 
 - Pick the first unchecked item under "Now" or "Next" that isn't parked or marked as the
   user's own task.
