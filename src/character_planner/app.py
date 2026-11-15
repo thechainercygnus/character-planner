@@ -27,6 +27,7 @@ from sqlmodel import Session, col, select
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from character_planner import discord, fields, jobs, leases, notify, upstream
+from character_planner import guild as guild_alerts
 from character_planner import queue as job_queue
 from character_planner.account import AccountCharacter, parse_account
 from character_planner.blizzard import oauth
@@ -293,6 +294,14 @@ class About(BaseModel):
 class GuildMembershipUpdate(BaseModel):
     opted_in: bool
     role: Role | None = None  # None: from the synced spec
+
+
+class GuildChannelUpdate(BaseModel):
+    url: str  # a Discord webhook for the guild's channel (#163)
+
+
+class SharedAlertsUpdate(BaseModel):
+    alerts: list[str]  # the character's alerts that post to the guild's channel
 
 
 class Me(BaseModel):
@@ -1099,6 +1108,73 @@ def create_app(
             set_membership(session, character, update.opted_in, update.role)
         except NoGuild as error:
             raise HTTPException(409, str(error)) from error
+        return guild_view(session, settings, character.id, user_id)
+
+    @app.put("/api/guild/channel")
+    def put_guild_channel(
+        update: GuildChannelUpdate,
+        session: SessionDep,
+        character_id: CharacterIdDep,
+        user_id: UserIdDep,
+    ) -> GuildView:
+        """Set or replace the guild's alert channel, a Discord webhook (#163). Any member in
+        the view may; every member sees who set it."""
+        character = guild_character(session, character_id)
+        assert character.id is not None
+        try:
+            guild_alerts.set_channel(session, character.id, update.url)
+        except guild_alerts.NotAMember as error:
+            raise HTTPException(403, str(error)) from error
+        except notify.NotifyError as error:
+            raise HTTPException(422, str(error)) from error
+        return guild_view(session, settings, character.id, user_id)
+
+    @app.delete("/api/guild/channel")
+    def delete_guild_channel(
+        session: SessionDep, character_id: CharacterIdDep, user_id: UserIdDep
+    ) -> GuildView:
+        """Remove the guild's alert channel, with its unsent alerts."""
+        character = guild_character(session, character_id)
+        assert character.id is not None
+        try:
+            guild_alerts.remove_channel(session, character.id)
+        except guild_alerts.NotAMember as error:
+            raise HTTPException(403, str(error)) from error
+        return guild_view(session, settings, character.id, user_id)
+
+    @app.post("/api/guild/channel/test")
+    def test_guild_channel(session: SessionDep, character_id: CharacterIdDep) -> notify.SendResult:
+        """Send a test message to the guild's channel now."""
+        character = guild_character(session, character_id)
+        assert character.id is not None
+        row = guild_alerts.current_member(session, character.id)
+        if row is None:
+            raise HTTPException(403, "Join the guild view first")
+        channel = guild_alerts.channel_of(session, row.region, row.guild_id)
+        if channel is None:
+            raise HTTPException(404, "The guild has no alert channel")
+        if http is not None:
+            return notify.send_test(session, settings, channel, http)
+        with notify.new_client() as client:
+            return notify.send_test(session, settings, channel, client)
+
+    @app.put("/api/guild/shared-alerts")
+    def put_shared_alerts(
+        update: SharedAlertsUpdate,
+        session: SessionDep,
+        character_id: CharacterIdDep,
+        user_id: UserIdDep,
+    ) -> GuildView:
+        """Choose which of the character's alerts post to the guild's channel (#163).
+        Nothing posts until some are ticked."""
+        character = guild_character(session, character_id)
+        assert character.id is not None
+        try:
+            guild_alerts.set_shared_alerts(session, character.id, update.alerts)
+        except guild_alerts.NotAMember as error:
+            raise HTTPException(403, str(error)) from error
+        except notify.NotifyError as error:
+            raise HTTPException(422, str(error)) from error
         return guild_view(session, settings, character.id, user_id)
 
     @app.get("/api/choices")

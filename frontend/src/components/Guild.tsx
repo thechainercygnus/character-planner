@@ -1,6 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { api, type GroupDungeon, type GuildMember, type Role } from '../api'
+import {
+  api,
+  type AlertKind,
+  type GroupDungeon,
+  type GuildMember,
+  type GuildView,
+  type Role,
+  type SendResult,
+} from '../api'
 
 const ROLE_LABEL: Record<Role, string> = { tank: 'Tank', healer: 'Healer', dps: 'DPS' }
 
@@ -31,6 +39,114 @@ function Needs({ dungeon, members }: { dungeon: GroupDungeon; members: GuildMemb
         </li>
       ))}
     </ul>
+  )
+}
+
+function when(timestamp: string): string {
+  // Backend timestamps are UTC without an offset.
+  return new Date(timestamp.endsWith('Z') || timestamp.includes('+') ? timestamp : `${timestamp}Z`).toLocaleString()
+}
+
+/**
+ * The guild's alert channel (#163, ADR 0046): any member sets its Discord webhook, and
+ * each member ticks which of their own alerts post there. Nothing posts until they do.
+ */
+function GuildChannelSection({ view, onSaved }: { view: GuildView; onSaved: (view: GuildView) => void }) {
+  const [url, setUrl] = useState('')
+  const [tested, setTested] = useState<SendResult | null>(null)
+  const setChannel = useMutation({
+    mutationFn: api.setGuildChannel,
+    onSuccess: (saved) => {
+      onSaved(saved)
+      setUrl('')
+      setTested(null)
+    },
+  })
+  const remove = useMutation({ mutationFn: api.removeGuildChannel, onSuccess: onSaved })
+  const test = useMutation({ mutationFn: api.testGuildChannel, onSuccess: setTested })
+  const share = useMutation({ mutationFn: api.setSharedAlerts, onSuccess: onSaved })
+  const channel = view.channel
+  const shared = view.shared_alerts ?? []
+  const busy = setChannel.isPending || remove.isPending || test.isPending || share.isPending
+  const error = setChannel.error ?? remove.error ?? test.error ?? share.error
+
+  return (
+    <section className="guild-channel">
+      <h2>Guild alert channel</h2>
+      <p className="muted">
+        A Discord channel for the guild: members choose which of their own alerts post there. Everyone who can read that
+        channel sees them, so share only what you're happy to.
+      </p>
+      {channel ? (
+        <p>
+          Posting to <span className="muted">{channel.url}</span>, set by {channel.set_by ?? 'a former member'} on{' '}
+          {when(channel.set_at)}.{' '}
+          <button type="button" className="secondary" disabled={busy} onClick={() => test.mutate()}>
+            {test.isPending ? 'Sending…' : 'Send a test'}
+          </button>{' '}
+          <button
+            type="button"
+            className="secondary"
+            disabled={busy}
+            onClick={() => {
+              if (
+                window.confirm(
+                  'Remove the guild channel? Nobody in the guild gets alerts there until one is set again.',
+                )
+              )
+                remove.mutate()
+            }}
+          >
+            Remove
+          </button>
+          {tested?.ok && <span className="muted"> Test sent.</span>}
+          {tested && !tested.ok && <span className="error"> Test failed: {tested.error}</span>}
+          {!tested && channel.last_error && <span className="error"> Last error: {channel.last_error}</span>}
+        </p>
+      ) : (
+        <p className="muted">No channel yet.</p>
+      )}
+      <form
+        className="add-destination"
+        onSubmit={(event) => {
+          event.preventDefault()
+          setChannel.mutate(url)
+        }}
+      >
+        <label>
+          {channel ? 'Replace with a webhook' : 'Channel webhook URL'}{' '}
+          <input
+            value={url}
+            autoComplete="off"
+            spellCheck={false}
+            placeholder="https://discord.com/api/webhooks/…"
+            onChange={(e) => setUrl(e.target.value)}
+          />
+        </label>
+        <button type="submit" disabled={busy || !url.trim()}>
+          {channel ? 'Replace' : 'Set'}
+        </button>
+      </form>
+      <fieldset className="rule-types">
+        <legend>Share my alerts there</legend>
+        {(view.alerts ?? []).map((alert) => (
+          <label key={alert.kind}>
+            <input
+              type="checkbox"
+              checked={shared.includes(alert.kind)}
+              disabled={busy}
+              onChange={(event) =>
+                share.mutate(
+                  event.target.checked ? [...shared, alert.kind] : shared.filter((k: AlertKind) => k !== alert.kind),
+                )
+              }
+            />{' '}
+            {alert.label}
+          </label>
+        ))}
+      </fieldset>
+      {error && <p className="error">{error.message}</p>}
+    </section>
   )
 }
 
@@ -140,6 +256,7 @@ export function Guild() {
           </p>
         )}
       </section>
+      <GuildChannelSection view={data} onSaved={(saved) => queryClient.setQueryData(['guild', going], saved)} />
       <section>
         <h2>Best runs for the group</h2>
         {data.dungeons.length === 0 ? (

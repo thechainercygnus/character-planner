@@ -6,6 +6,8 @@ needs come from their own recommendations (their weights, rules and dismissals),
 group ranking adds up what each would actually take from a dungeon.
 """
 
+import logging
+from datetime import datetime
 from pathlib import Path
 from typing import Literal
 
@@ -13,14 +15,22 @@ import yaml
 from pydantic import BaseModel
 from sqlmodel import Session, col, select
 
-from character_planner import fields
+from character_planner import fields, notify
 from character_planner.config import Settings
-from character_planner.db import Character, GuildMembership, latest_by_kind
+from character_planner.db import (
+    Character,
+    GuildMembership,
+    NotificationDestination,
+    NotificationOutbox,
+    latest_by_kind,
+)
 from character_planner.recommend import DungeonValue
 from character_planner.views import character_level, parse_specialization
 
 Role = Literal["tank", "healer", "dps"]
 ROLES: tuple[Role, ...] = ("tank", "healer", "dps")
+
+logger = logging.getLogger(__name__)
 
 
 class GuildInfo(BaseModel):
@@ -55,6 +65,16 @@ class GroupDungeon(BaseModel):
     needs: dict[int, list[MemberNeed]]  # member -> their upgrades here, biggest first
 
 
+class GuildChannel(BaseModel):
+    """The guild's alert channel (#163), as members see it: the webhook masked."""
+
+    url: str
+    set_by: str | None  # the member who set it; None once they've left the view
+    set_at: datetime
+    last_sent_at: datetime | None
+    last_error: str | None
+
+
 class GuildView(BaseModel):
     guild: GuildInfo | None  # from the character's newest profile; None if guildless
     opted_in: bool
@@ -64,6 +84,10 @@ class GuildView(BaseModel):
     roles: dict[str, int] = {}  # among the members going
     missing_roles: list[Role] = []
     dungeons: list[GroupDungeon] = []  # best for the group first
+    # The guild's alert channel (#163), and which of this character's alerts post there.
+    channel: GuildChannel | None = None
+    shared_alerts: list[str] = []
+    alerts: list[notify.AlertInfo] = []  # the alerts a member can share: character ones
 
 
 def load_roles(path: Path) -> dict[str, dict[str, Role]]:
@@ -96,6 +120,125 @@ class NoGuild(Exception):
     """Opting in a character whose profile names no guild."""
 
 
+class NotAMember(Exception):
+    """Changing the guild's channel from a character that isn't in its view (403)."""
+
+
+# --- the guild's alert channel (#163, ADR 0046) ---------------------------------------------
+
+GUILD = notify.GUILD
+
+
+def guild_key(region: str, guild_id: int) -> str:
+    return f"{region}:{guild_id}"
+
+
+def channel_of(session: Session, region: str, guild_id: int) -> NotificationDestination | None:
+    return session.exec(
+        select(NotificationDestination).where(
+            NotificationDestination.kind == GUILD,
+            NotificationDestination.guild_key == guild_key(region, guild_id),
+        )
+    ).first()
+
+
+def _drop_channel(session: Session, channel: NotificationDestination) -> None:
+    for item in session.exec(
+        select(NotificationOutbox).where(NotificationOutbox.destination_id == channel.id)
+    ).all():
+        session.delete(item)
+    session.flush()
+    session.delete(channel)
+
+
+def current_member(session: Session, character_id: int) -> GuildMembership | None:
+    """The character's membership, if it's still in that guild by its newest profile."""
+    row = membership(session, character_id)
+    guild = profile_guild(session, character_id)
+    return row if row is not None and guild is not None and guild.id == row.guild_id else None
+
+
+def set_channel(session: Session, character_id: int, url: str) -> None:
+    """Set or replace the guild's channel: any member in the view may (Bryce, ADR 0046)."""
+    row = current_member(session, character_id)
+    if row is None:
+        raise NotAMember("Join the guild view first")
+    url = notify.valid_webhook(url)
+    existing = channel_of(session, row.region, row.guild_id)
+    if existing is not None:
+        _drop_channel(session, existing)
+    session.add(
+        NotificationDestination(
+            name=row.guild_name[:60] or "Guild",
+            kind=GUILD,
+            audience="user",
+            url=url,
+            alerts=list(notify.USER_ALERTS),
+            guild_key=guild_key(row.region, row.guild_id),
+            set_by_character_id=character_id,
+        )
+    )
+    session.commit()
+    logger.info("Guild channel set for guild %s", row.guild_id)
+
+
+def remove_channel(session: Session, character_id: int) -> None:
+    row = current_member(session, character_id)
+    if row is None:
+        raise NotAMember("Join the guild view first")
+    existing = channel_of(session, row.region, row.guild_id)
+    if existing is not None:
+        _drop_channel(session, existing)
+        session.commit()
+        logger.info("Guild channel removed for guild %s", row.guild_id)
+
+
+def set_shared_alerts(session: Session, character_id: int, alerts: list[str]) -> None:
+    """Which of the character's alerts post to the guild's channel."""
+    row = current_member(session, character_id)
+    if row is None:
+        raise NotAMember("Join the guild view first")
+    wanted = notify.clean_alerts(alerts, "user", admin=False)
+    row.shared_alerts = wanted
+    session.add(row)
+    session.commit()
+
+
+def drop_empty_channels(session: Session) -> int:
+    """Remove channels whose guild has no member left in the view: nobody can see or
+    change them any more. Doesn't commit."""
+    keys = {
+        guild_key(row.region, row.guild_id) for row in session.exec(select(GuildMembership)).all()
+    }
+    dropped = 0
+    for channel in session.exec(
+        select(NotificationDestination).where(NotificationDestination.kind == GUILD)
+    ).all():
+        if channel.guild_key not in keys:
+            _drop_channel(session, channel)
+            dropped += 1
+    return dropped
+
+
+def channel_view(session: Session, row: GuildMembership) -> GuildChannel | None:
+    channel = channel_of(session, row.region, row.guild_id)
+    if channel is None:
+        return None
+    setter = (
+        session.get(Character, channel.set_by_character_id)
+        if channel.set_by_character_id is not None
+        else None
+    )
+    still_member = setter is not None and setter.id is not None and membership(session, setter.id)
+    return GuildChannel(
+        url=notify.masked(channel.url),
+        set_by=f"{setter.name} {setter.surname}".strip() if setter and still_member else None,
+        set_at=channel.created_at,
+        last_sent_at=channel.last_sent_at,
+        last_error=channel.last_error,
+    )
+
+
 def set_membership(
     session: Session, character: Character, opted_in: bool, role: Role | None
 ) -> None:
@@ -105,6 +248,8 @@ def set_membership(
     if not opted_in:
         if current is not None:
             session.delete(current)
+            session.flush()
+            drop_empty_channels(session)  # the last member out takes the channel (#163)
             session.commit()
         return
     guild = profile_guild(session, character.id)
@@ -232,4 +377,7 @@ def guild_view(
         roles=dict(counts),
         missing_roles=missing,
         dungeons=ranked,
+        channel=channel_view(session, mine),
+        shared_alerts=list(mine.shared_alerts or []),
+        alerts=[a for a in notify.ALERTS if a.audience == "user"],
     )

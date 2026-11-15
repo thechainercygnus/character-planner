@@ -16,7 +16,7 @@ so a sync where nothing changed sends nothing, and the first sync only sets the 
 
 import logging
 import re
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from typing import Any, Literal
 from urllib.parse import urlsplit
@@ -91,7 +91,9 @@ UPSTREAM_ERROR_THRESHOLD = 10  # errors in one refresh before it's worth an aler
 MAX_ATTEMPTS = 5
 BACKOFF = [timedelta(minutes=m) for m in (1, 5, 15, 60)]
 COLOR = {"user": 0x3BA55C, "system": 0xED4245}
-DM = "discord_dm"  # a user's Discord DMs (#58, ADR 0044); the rest are webhooks
+WEBHOOK = "discord_webhook"  # a user's or the admin's webhook (#12, #164)
+DM = "discord_dm"  # a user's Discord DMs (#58, ADR 0044)
+GUILD = "guild_webhook"  # a guild's channel, for what members share (#163, ADR 0046)
 DM_DAILY_CAP = 12  # DMs a day to one user: a sync's digest each, never a broadcast
 DM_REFUSED = (
     "Discord refused the DM: the bot can only message you if you share its server and "
@@ -146,7 +148,7 @@ def _recipients(session: Session, kind: str) -> list[NotificationDestination]:
     # A user's DMs only get their own characters' alerts, from after_sync (#58).
     enabled = session.exec(
         select(NotificationDestination).where(
-            col(NotificationDestination.enabled), NotificationDestination.kind != DM
+            col(NotificationDestination.enabled), NotificationDestination.kind == WEBHOOK
         )
     ).all()
     subscribed = [d for d in enabled if kind in (d.alerts or [])]
@@ -390,11 +392,26 @@ def after_sync(session: Session, settings: Settings, character: Character) -> in
         "target_in_reach": "Targets now in reach",
         "new_upgrade": "Upgrades worth having",
     }
-    key = f"sync:{utcnow().strftime('%Y-%m-%dT%H:%M')}:" + ",".join(sorted(sections))
+    # Per character too: two characters syncing in the same minute both get theirs.
+    key = f"sync:{utcnow().strftime('%Y-%m-%dT%H:%M')}:{character.id}:" + ",".join(sorted(sections))
+    name = f"{character.name} {character.surname}".strip()
+
+    def message_for(wanted: list[str]) -> Message:
+        message = build_message(
+            f"{name}: what changed", "", COLOR["user"], app_url(settings, "plan")
+        )
+        message["embeds"][0]["fields"] = [
+            {"name": titles[k], "value": sections[k][:1000], "inline": False} for k in wanted
+        ]
+        del message["embeds"][0]["description"]
+        return message
+
     queued = 0
     for destination in session.exec(
         select(NotificationDestination).where(
-            col(NotificationDestination.enabled), NotificationDestination.audience == "user"
+            col(NotificationDestination.enabled),
+            NotificationDestination.audience == "user",
+            NotificationDestination.kind != GUILD,
         )
     ).all():
         wanted = [k for k in sections if k in (destination.alerts or [])]
@@ -407,17 +424,32 @@ def after_sync(session: Session, settings: Settings, character: Character) -> in
         if destination.kind == DM and sent_today(session, destination) >= DM_DAILY_CAP:
             logger.info("Notifications: a user's daily DM cap is reached; skipped")
             continue
-        name = f"{character.name} {character.surname}".strip()
-        message = build_message(
-            f"{name}: what changed", "", COLOR["user"], app_url(settings, "plan")
-        )
-        message["embeds"][0]["fields"] = [
-            {"name": titles[k], "value": sections[k][:1000], "inline": False} for k in wanted
-        ]
-        del message["embeds"][0]["description"]
-        queued += _queue(session, destination, wanted[0], key, message)
+        queued += _queue(session, destination, wanted[0], key, message_for(wanted))
+    queued += _to_guild_channel(session, character, sections, key, message_for)
     logger.info("Notifications: %s changed, %d messages queued", ", ".join(sections), queued)
     return queued
+
+
+def _to_guild_channel(
+    session: Session,
+    character: Character,
+    sections: dict[str, str],
+    key: str,
+    message_for: Callable[[list[str]], Message],
+) -> int:
+    """Queue what the member shares with their guild's channel, if it has one (#163): only
+    the alerts they ticked, and only while they're in the guild's view."""
+    from character_planner.guild import channel_of, current_member
+
+    assert character.id is not None
+    row = current_member(session, character.id)
+    if row is None:
+        return 0
+    wanted = [k for k in sections if k in (row.shared_alerts or [])]
+    channel = channel_of(session, row.region, row.guild_id) if wanted else None
+    if channel is None or not channel.enabled:
+        return 0
+    return int(_queue(session, channel, wanted[0], key, message_for(wanted)))
 
 
 # --- delivery ----------------------------------------------------------------------------
@@ -645,7 +677,7 @@ def owned_webhooks(
     any from before users had owners. DMs have their own settings (#58)."""
     rows = session.exec(
         select(NotificationDestination)
-        .where(NotificationDestination.kind != DM)
+        .where(NotificationDestination.kind == WEBHOOK)
         .order_by(col(NotificationDestination.id))
     ).all()
     return [

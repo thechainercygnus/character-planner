@@ -243,6 +243,12 @@ def delete_character(session: Session, character_id: int) -> dict[str, int]:
     if character is not None:
         session.delete(character)
         removed["character"] = 1
+    # A guild channel nobody is left to see or change goes too (#163).
+    from character_planner.guild import drop_empty_channels
+
+    session.flush()
+    if dropped := drop_empty_channels(session):
+        removed["notificationdestination"] = dropped
     session.commit()
     logger.info("Deleted character %s: %d rows", character_id, sum(removed.values()))
     return removed

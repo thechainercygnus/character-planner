@@ -40,7 +40,9 @@ and DMs to the Discord account linked for them. With users on, each user's webho
 DMs get alerts about their own characters only.
 With users on, a character added to its guild's view (the Guild tab) is shown to the
 other members who joined it: its name, level, spec, role and upgrades. Leaving the view
-stops that.
+stops that. If the guild sets an alert channel, the alerts a member chooses to share post
+to that Discord channel, where anyone who can read it sees them. Nothing is shared until
+the member ticks it.
 
 **Sharing:** nothing is sold, shared or used for advertising. The planner asks Blizzard's
 API for the character by name and realm, and Forever Companion for items and dungeons by

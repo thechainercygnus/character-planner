@@ -305,6 +305,38 @@ The character's guild (#18): once it's opted in, every opted-in member, their ro
 
 **200:** [GuildView](#schema-guildview)
 
+### `PUT /api/guild/channel`
+
+Set or replace the guild's alert channel, a Discord webhook (#163). Any member in the view may; every member sees who set it.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**Body:** [GuildChannelUpdate](#schema-guildchannelupdate)
+
+**200:** [GuildView](#schema-guildview)
+
+### `DELETE /api/guild/channel`
+
+Remove the guild's alert channel, with its unsent alerts.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**200:** [GuildView](#schema-guildview)
+
+### `POST /api/guild/channel/test`
+
+Send a test message to the guild's channel now.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**200:** [SendResult](#schema-sendresult)
+
 ### `PUT /api/guild/membership`
 
 Opt the character into its guild's view, or out, with an optional role.
@@ -314,6 +346,18 @@ Opt the character into its guild's view, or out, with an optional role.
 | `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **Body:** [GuildMembershipUpdate](#schema-guildmembershipupdate)
+
+**200:** [GuildView](#schema-guildview)
+
+### `PUT /api/guild/shared-alerts`
+
+Choose which of the character's alerts post to the guild's channel (#163). Nothing posts until some are ticked.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**Body:** [SharedAlertsUpdate](#schema-sharedalertsupdate)
 
 **200:** [GuildView](#schema-guildview)
 
@@ -1331,6 +1375,26 @@ What a guest can choose from.
 | `classes` | list of [GuestClass](#schema-guestclass) | yes |
 | `factions` | list of `alliance` \\| `horde` | no |
 
+(schema-guildchannel)=
+### GuildChannel
+
+The guild's alert channel (#163), as members see it: the webhook masked.
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `url` | string | yes |
+| `set_by` | string or null | yes |
+| `set_at` | string | yes |
+| `last_sent_at` | string or null | yes |
+| `last_error` | string or null | yes |
+
+(schema-guildchannelupdate)=
+### GuildChannelUpdate
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `url` | string | yes |
+
 (schema-guildinfo)=
 ### GuildInfo
 
@@ -1360,6 +1424,9 @@ What a guest can choose from.
 | `roles` | map of integer | no |
 | `missing_roles` | list of `tank` \\| `healer` \\| `dps` | no |
 | `dungeons` | list of [GroupDungeon](#schema-groupdungeon) | no |
+| `channel` | [GuildChannel](#schema-guildchannel) or null | no |
+| `shared_alerts` | list of string | no |
+| `alerts` | list of [AlertInfo](#schema-alertinfo) | no |
 
 (schema-httpvalidationerror)=
 ### HTTPValidationError
@@ -1858,6 +1925,13 @@ One quest in a chain. Only quest_id and name are always known.
 | `retry_after` | number or null | no |
 | `gone` | boolean | no |
 | `bot` | boolean | no |
+
+(schema-sharedalertsupdate)=
+### SharedAlertsUpdate
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `alerts` | list of string | yes |
 
 (schema-slotenchants)=
 ### SlotEnchants

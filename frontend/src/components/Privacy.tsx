@@ -155,6 +155,8 @@ export function Privacy() {
         computer or a private network. Alerts go to the Discord channels you choose, and DMs to the Discord account you
         link: with users on, only about your own characters. With users on, a character you add to its guild's view is
         shown to the other members who joined it: its name, level, spec, role and upgrades. Leave the view to stop that.
+        If the guild sets an alert channel, the alerts you choose to share post to that Discord channel, for anyone who
+        can read it.
       </p>
 
       <h2>Sharing</h2>

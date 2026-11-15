@@ -291,11 +291,13 @@ Then `docker compose up -d`. Every page now asks for a Battle.net sign-in, so re
 - **Sign-ups are closed after that.** To let others in, set `PLANNER_SIGNUPS=on`, then
   turn it off again once they've signed in.
 - **Each user sees only their own characters.**
-- **Only the admin** can see and change the alert webhooks, change enchant corrections,
-  and start the bulk refreshes in the ⋯ menu.
+- **Only the admin** can change enchant corrections, start the bulk refreshes in the ⋯
+  menu, and add system alert destinations. Each user adds their own alert webhooks, for
+  their own characters (ADR 0045).
 - **The Guild tab:** members of the same guild can each add their character to it, then
   see each other's needs and which dungeon is worth most to the group (ADR 0042). Only
-  those who join see it.
+  those who join see it. Any of them can set a Discord webhook as the guild's alert
+  channel, and each picks which of their own alerts post there (ADR 0046).
 - **Leaving:** each user can delete their own account on the Privacy page. To delete one
   for them, use `character-planner-db delete-user ACCOUNT_ID --yes` (see
   [Privacy](privacy.md)).
