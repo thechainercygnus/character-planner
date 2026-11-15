@@ -9158,5 +9158,102 @@
   "body": {
    "detail": "Sign in with Battle.net to list your characters"
   }
+ },
+ "/api/discord": {
+  "status": 200,
+  "body": {
+   "available": true,
+   "invite_url": "https://discord.gg/example",
+   "linked": {
+    "name": "Brum",
+    "alerts": [
+     "level_up",
+     "target_reached",
+     "target_in_reach",
+     "new_upgrade"
+    ],
+    "enabled": true,
+    "last_error": null,
+    "last_sent_at": null
+   },
+   "alerts": [
+    {
+     "kind": "level_up",
+     "audience": "user",
+     "label": "Level-ups"
+    },
+    {
+     "kind": "target_reached",
+     "audience": "user",
+     "label": "Gear target reached"
+    },
+    {
+     "kind": "target_in_reach",
+     "audience": "user",
+     "label": "Coming-up target now in reach"
+    },
+    {
+     "kind": "new_upgrade",
+     "audience": "user",
+     "label": "New upgrades worth having"
+    }
+   ],
+   "in_server": null
+  }
+ },
+ "/api/notifications": {
+  "status": 200,
+  "body": {
+   "destinations": [
+    {
+     "id": 1,
+     "name": "Phone",
+     "kind": "discord_webhook",
+     "audience": "user",
+     "url": "…/webhooks/123/••••",
+     "alerts": [
+      "level_up",
+      "job_failed"
+     ],
+     "enabled": true,
+     "last_sent_at": null,
+     "last_error": null
+    }
+   ],
+   "alerts": [
+    {
+     "kind": "level_up",
+     "audience": "user",
+     "label": "Level-ups"
+    },
+    {
+     "kind": "target_reached",
+     "audience": "user",
+     "label": "Gear target reached"
+    },
+    {
+     "kind": "target_in_reach",
+     "audience": "user",
+     "label": "Coming-up target now in reach"
+    },
+    {
+     "kind": "new_upgrade",
+     "audience": "user",
+     "label": "New upgrades worth having"
+    },
+    {
+     "kind": "job_failed",
+     "audience": "system",
+     "label": "A scheduled job failed"
+    },
+    {
+     "kind": "upstream_errors",
+     "audience": "system",
+     "label": "Upstream errors"
+    }
+   ],
+   "recent": [],
+   "system_alerts_to_user": true
+  }
  }
 }
