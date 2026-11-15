@@ -1300,17 +1300,6 @@ ul.upcoming small {
     padding: 0.75rem;
   }
 
-  /* The tab bar scrolls sideways; the active tab scrolls itself into view. */
-  .tabs {
-    overflow-x: auto;
-    scrollbar-width: thin;
-  }
-
-  button.tab {
-    flex: 0 0 auto;
-    white-space: nowrap;
-  }
-
   /* The menu opens in the page's flow instead of floating off the edge. */
   .menu-items {
     position: static;
@@ -1327,10 +1316,21 @@ ul.upcoming small {
   }
 }
 
-/* Phones either way up: wide tables scroll inside themselves, with the first column kept in
-   view, and dialogs use nearly all of the screen. A sideways phone is wider than 640px, and
+/* Phones either way up: the tab bar and wide tables scroll inside themselves (a table's first
+   column kept in view), and dialogs use nearly all of the screen. A sideways phone is wider than 640px, and
    a table wider than it zoomed the whole page out. */
 @media (max-width: 640px), (max-height: 500px) and (orientation: landscape) {
+  /* The tab bar scrolls sideways; the active tab scrolls itself into view. */
+  .tabs {
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  button.tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
   table.gear {
     display: block;
     overflow-x: auto;
