@@ -85,8 +85,9 @@ describe('With users on', () => {
     serve(GUILDMATE)
     show(<StatusBar />)
     expect(await screen.findByRole('button', { name: 'Sign out' })).toBeTruthy()
-    expect(screen.queryByRole('button', { name: 'Alerts' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Refresh item pool' })).toBeNull()
+    // Alerts are everyone's own now (#164): the button is there, without system options.
+    expect(screen.getByRole('button', { name: 'Alerts' })).toBeTruthy()
   })
 
   it('shows them to the admin', async () => {

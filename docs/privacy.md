@@ -36,7 +36,8 @@ them.
 **Who can see it:** anyone who can open the instance's address. The planner has no
 accounts of its own, so it's meant for your own computer or a private network
 ([Self-hosting](self-hosting.md)). Alerts go to the Discord channels chosen for them,
-and DMs to the Discord account linked for them.
+and DMs to the Discord account linked for them. With users on, each user's webhooks and
+DMs get alerts about their own characters only.
 With users on, a character added to its guild's view (the Guild tab) is shown to the
 other members who joined it: its name, level, spec, role and upgrades. Leaving the view
 stops that.
@@ -85,7 +86,7 @@ in them is about the character.
 
 **With users on,** the Privacy page also has **Delete my account**. It deletes your
 characters with all their data and settings, your sign-in sessions, your Battle.net token,
-a linked Discord account and your account. The admin can delete theirs only once nobody else uses the instance.
+your alert webhooks, a linked Discord account and your account. The admin can delete theirs only once nobody else uses the instance.
 An operator handling a request can do it for anyone:
 
 ```

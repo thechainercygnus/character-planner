@@ -128,7 +128,7 @@ and keep it true as you go: edit its body with `gh issue edit 25 --body-file <fi
 - `src/character_planner/fields.py`: defensive JSON readers used by all parsers
 - `src/character_planner/views.py`: the only code that reads API response shapes; typed views for the frontend
 - `src/character_planner/summary.py`: Markdown rendering of those views, for pasting into a chat
-- `src/character_planner/notify.py`: alerts to Discord webhooks: destinations, change detection after a sync, an outbox the worker sends (ADR 0021)
+- `src/character_planner/notify.py`: alerts to Discord webhooks: destinations, change detection after a sync, an outbox the worker sends (ADR 0021); each user's webhooks are their own and get only their characters' alerts, system alerts the admin's (#164, ADR 0045)
 - `src/character_planner/discord.py`: Discord DMs from the instance's bot: account linking (`identify`), the `discord_dm` destination, refusals pause it; on with the `DISCORD_*` settings (#58, ADR 0043, ADR 0044)
 - `src/character_planner/logs.py`: logging for the API and the worker: console, rotating files with `LOG_DIR`, request ids, redaction of secrets in every line (ADR 0019)
 - `src/character_planner/tokens.py`: the app's own Battle.net token (Client Credentials), cached and renewed; syncs and every refresh use it, so no login is needed (ADR 0027)

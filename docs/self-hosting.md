@@ -309,7 +309,9 @@ The planner can post to a Discord channel:
 - about the planner itself: a scheduled job that failed (a refused Battle.net client
   among them), or many errors from Battle.net or Forever Companion.
 
-You choose which alerts each channel gets.
+You choose which alerts each channel gets. With users on, each user adds their own
+webhooks, and they get alerts about their own characters only. System alerts, and system
+destinations, are the admin's (#164, ADR 0045).
 
 1. In Discord, open the channel's settings, then **Integrations**, **Webhooks**, and
    **New Webhook**. Copy its URL.

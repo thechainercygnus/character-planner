@@ -17,7 +17,14 @@ from sqlmodel import Session, col, select
 
 from character_planner.blizzard import oauth
 from character_planner.companion import as_utc
-from character_planner.db import Character, User, UserSession, UserToken, utcnow
+from character_planner.db import (
+    Character,
+    NotificationDestination,
+    User,
+    UserSession,
+    UserToken,
+    utcnow,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -92,6 +99,13 @@ def sign_in(session: Session, account_id: int, token: oauth.Token, *, signups_op
             )
             result: Any = session.exec(statement)  # pyright: ignore[reportCallIssue, reportArgumentType]
             logger.info("First sign-in: admin created, %d characters adopted", result.rowcount or 0)
+            # And the alert webhooks: the admin's now, as their characters are (#164).
+            hooks = (
+                update(NotificationDestination)
+                .where(col(NotificationDestination.user_id).is_(None))
+                .values(user_id=user.id)
+            )
+            session.exec(hooks)  # pyright: ignore[reportCallIssue, reportArgumentType]
         else:
             logger.info("New user signed up")
     user.last_sign_in_at = utcnow()
@@ -125,8 +139,8 @@ class LastAdmin(Exception):
 
 def delete_user(session: Session, user_id: int) -> dict[str, int]:
     """Delete a user and everything stored for them (#16, ADR 0037): their characters with
-    each one's data and settings, their sessions, their Battle.net token and a linked
-    Discord account. The admin
+    each one's data and settings, their sessions, their Battle.net token, their alert
+    webhooks and a linked Discord account. The admin
     can't go while other users remain, or no one could run the instance."""
     from character_planner.characters import delete_character
 
@@ -151,11 +165,11 @@ def delete_user(session: Session, user_id: int) -> dict[str, int]:
     if token is not None:
         session.delete(token)
         removed["usertoken"] = 1
-    # A linked Discord account (#58), with its unsent DMs.
-    from character_planner.discord import unlink
+    # Their alert webhooks and a linked Discord account (#58, #164), with unsent alerts.
+    from character_planner.notify import delete_owned
 
-    if unlink(session, user_id, commit=False):
-        removed["notificationdestination"] = 1
+    if destinations := delete_owned(session, user_id):
+        removed["notificationdestination"] = destinations
     session.flush()  # sessions and token first: they point at the user (#44)
     session.delete(user)
     removed["user"] = 1

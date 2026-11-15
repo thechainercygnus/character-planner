@@ -379,13 +379,13 @@ Prometheus metrics (ADR 0041). Off (404) unless METRICS_TOKEN is set; then it ne
 
 ### `GET /api/notifications`
 
-Alert destinations (webhook URLs masked), the alerts on offer, recent sends.
+The user's alert webhooks (URLs masked), the alerts on offer, recent sends. Each user has their own (#164); system destinations and alerts are the admin's.
 
 **200:** [NotificationsView](#schema-notificationsview)
 
 ### `POST /api/notifications/destinations`
 
-Add a Discord webhook destination (#12).
+Add a Discord webhook destination of the user's own (#12, #164).
 
 **Body:** [NewDestination](#schema-newdestination)
 

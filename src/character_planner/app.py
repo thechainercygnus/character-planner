@@ -245,8 +245,9 @@ PUBLIC_API = frozenset(
     {"/api/healthz", "/api/readyz", "/api/metrics", "/api/about", "/api/me"}
 )
 PUBLIC_PREFIXES = ("/api/guest",)
-# Instance-wide: the admin's alone. Alert webhooks are secret-like, so even reading them.
-ADMIN_ALWAYS = ("/api/notifications",)
+# Instance-wide: the admin's alone, even to read. None now: alert webhooks became each
+# user's own (#164), filtered in their routes.
+ADMIN_ALWAYS: tuple[str, ...] = ()
 ADMIN_WRITES = (
     "/api/enchants/corrections",
     "/api/items/refresh",
@@ -1468,49 +1469,70 @@ def create_app(
         except GuestError as error:
             raise HTTPException(422, str(error)) from error
 
-    def destination_or_404(session: Session, destination_id: int) -> NotificationDestination:
+    def admin_of(request: Request) -> bool:
+        """Whether the request is the admin's: always, with users off (ADR 0037)."""
+        return not settings.planner_users or bool(getattr(request.state, "is_admin", False))
+
+    def destination_or_404(
+        request: Request, session: Session, destination_id: int, user_id: int | None
+    ) -> NotificationDestination:
+        """One of the user's own webhooks (#164); anyone else's answers 404, like a DM (#58)."""
         destination = session.get(NotificationDestination, destination_id)
-        # Users' DMs are theirs, not the admin's to change (#58).
-        if destination is None or destination.kind == notify.DM:
+        mine = notify.owned_webhooks(session, user_id, admin_of(request))
+        if destination is None or destination not in mine:
             raise HTTPException(404, f"No notification destination {destination_id}")
         return destination
 
     @app.get("/api/notifications")
-    def get_notifications(session: SessionDep) -> notify.NotificationsView:
-        """Alert destinations (webhook URLs masked), the alerts on offer, recent sends."""
-        return notify.notifications_view(session)
+    def get_notifications(
+        request: Request, session: SessionDep, user_id: UserIdDep
+    ) -> notify.NotificationsView:
+        """The user's alert webhooks (URLs masked), the alerts on offer, recent sends. Each
+        user has their own (#164); system destinations and alerts are the admin's."""
+        return notify.notifications_view(session, user_id, admin_of(request))
 
     @app.post("/api/notifications/destinations", status_code=201)
     def post_destination(
-        new: notify.NewDestination, session: SessionDep
+        request: Request, new: notify.NewDestination, session: SessionDep, user_id: UserIdDep
     ) -> notify.NotificationsView:
-        """Add a Discord webhook destination (#12)."""
+        """Add a Discord webhook destination of the user's own (#12, #164)."""
+        admin = admin_of(request)
         try:
-            notify.add_destination(session, new)
+            notify.add_destination(session, new, user_id, admin)
         except notify.NotifyError as error:
             raise HTTPException(422, str(error)) from error
-        return notify.notifications_view(session)
+        return notify.notifications_view(session, user_id, admin)
 
     @app.patch("/api/notifications/destinations/{destination_id}")
     def patch_destination(
-        destination_id: int, update: notify.DestinationUpdate, session: SessionDep
+        request: Request,
+        destination_id: int,
+        update: notify.DestinationUpdate,
+        session: SessionDep,
+        user_id: UserIdDep,
     ) -> notify.NotificationsView:
-        destination = destination_or_404(session, destination_id)
+        admin = admin_of(request)
+        destination = destination_or_404(request, session, destination_id, user_id)
         try:
-            notify.update_destination(session, destination, update)
+            notify.update_destination(session, destination, update, admin)
         except notify.NotifyError as error:
             raise HTTPException(422, str(error)) from error
-        return notify.notifications_view(session)
+        return notify.notifications_view(session, user_id, admin)
 
     @app.delete("/api/notifications/destinations/{destination_id}")
-    def delete_destination(destination_id: int, session: SessionDep) -> notify.NotificationsView:
-        notify.remove_destination(session, destination_or_404(session, destination_id))
-        return notify.notifications_view(session)
+    def delete_destination(
+        request: Request, destination_id: int, session: SessionDep, user_id: UserIdDep
+    ) -> notify.NotificationsView:
+        destination = destination_or_404(request, session, destination_id, user_id)
+        notify.remove_destination(session, destination)
+        return notify.notifications_view(session, user_id, admin_of(request))
 
     @app.post("/api/notifications/destinations/{destination_id}/test")
-    def test_destination(destination_id: int, session: SessionDep) -> notify.SendResult:
+    def test_destination(
+        request: Request, destination_id: int, session: SessionDep, user_id: UserIdDep
+    ) -> notify.SendResult:
         """Send a test message to the destination now."""
-        destination = destination_or_404(session, destination_id)
+        destination = destination_or_404(request, session, destination_id, user_id)
         if http is not None:
             return notify.send_test(session, settings, destination, http)
         with notify.new_client() as client:

@@ -7308,7 +7308,7 @@
     },
     "/api/notifications": {
       "get": {
-        "description": "Alert destinations (webhook URLs masked), the alerts on offer, recent sends.",
+        "description": "The user's alert webhooks (URLs masked), the alerts on offer, recent sends. Each\nuser has their own (#164); system destinations and alerts are the admin's.",
         "operationId": "get_notifications_api_notifications_get",
         "responses": {
           "200": {
@@ -7327,7 +7327,7 @@
     },
     "/api/notifications/destinations": {
       "post": {
-        "description": "Add a Discord webhook destination (#12).",
+        "description": "Add a Discord webhook destination of the user's own (#12, #164).",
         "operationId": "post_destination_api_notifications_destinations_post",
         "requestBody": {
           "content": {
