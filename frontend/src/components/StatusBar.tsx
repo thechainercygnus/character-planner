@@ -118,7 +118,8 @@ export function StatusBar() {
           added again.
         </span>
       )}
-      {canAdminister && <NotificationsDialog />}
+      {/* Everyone's own webhooks (#164); the system ones are the admin's. */}
+      <NotificationsDialog admin={canAdminister} />
       <DiscordDialog />
       <details className="menu">
         <summary aria-label="More actions" title="More actions">

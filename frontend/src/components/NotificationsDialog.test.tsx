@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { AlertInfo, Destination, NotificationsView, SendResult } from '../api'
 import { NotificationsDialog } from './NotificationsDialog'
@@ -54,11 +54,11 @@ function stubFetch(view: NotificationsView, test: SendResult = sent) {
   return fetchMock
 }
 
-async function openDialog() {
+async function openDialog(admin = true) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   render(
     <QueryClientProvider client={client}>
-      <NotificationsDialog />
+      <NotificationsDialog admin={admin} />
     </QueryClientProvider>,
   )
   fireEvent.click(screen.getByRole('button', { name: 'Alerts' }))
@@ -92,6 +92,17 @@ describe('NotificationsDialog', () => {
     }))
     expect(await screen.findByText('…/webhooks/123/••••')).toBeTruthy()
     expect((screen.getByLabelText('Webhook URL') as HTMLInputElement).value).toBe('')
+  })
+
+  it('offers system destinations to the admin only (#164)', async () => {
+    stubFetch(empty)
+    await openDialog()
+    expect(await screen.findByRole('combobox', { name: 'For' })).toBeTruthy()
+    cleanup()
+    stubFetch(empty)
+    await openDialog(false)
+    expect(await screen.findByText('No destinations yet.')).toBeTruthy()
+    expect(screen.queryByRole('combobox', { name: 'For' })).toBeNull()
   })
 
   it('turns alerts and destinations off and on', async () => {

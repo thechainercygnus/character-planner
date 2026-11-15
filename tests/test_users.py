@@ -165,8 +165,7 @@ def test_instance_wide_settings_are_the_admins(users_on: Settings, engine: Engin
     with browser(app) as admin, browser(app) as guildmate:
         sign_in(admin, ADMIN)
         sign_in(guildmate, GUILDMATE)
-        assert admin.get("/api/notifications").status_code == 200
-        assert guildmate.get("/api/notifications").status_code == 403  # webhooks are secret-like
+        # Alert webhooks are each user's own (#164): test_notify.py covers them.
         for path in ("/api/pool/refresh", "/api/items/refresh", "/api/enchants/refresh"):
             assert guildmate.post(path).status_code == 403, path
         assert guildmate.get("/api/enchants/corrections").status_code == 200  # reading is fine
@@ -243,6 +242,12 @@ UNSCOPED = {
         "PATCH /api/discord",
         "DELETE /api/discord",
         "POST /api/discord/test",
+        # Alert webhooks are each user's own (#164): tested in test_notify.py.
+        "GET /api/notifications",
+        "POST /api/notifications/destinations",
+        "PATCH /api/notifications/destinations/{destination_id}",
+        "DELETE /api/notifications/destinations/{destination_id}",
+        "POST /api/notifications/destinations/{destination_id}/test",
     },
     # Instance-wide and the admin's: 403 for everyone else (ADR 0037).
     "admin": {
@@ -254,11 +259,6 @@ UNSCOPED = {
         "DELETE /api/enchants/corrections/crafted/{item_id}",
         "PUT /api/enchants/corrections/per-slot",
         "DELETE /api/enchants/corrections/per-slot",
-        "GET /api/notifications",
-        "POST /api/notifications/destinations",
-        "PATCH /api/notifications/destinations/{destination_id}",
-        "DELETE /api/notifications/destinations/{destination_id}",
-        "POST /api/notifications/destinations/{destination_id}/test",
     },
     # Shared reference data, the same for everyone: readable by any signed-in user.
     "shared": {"GET /api/enchants/corrections"},

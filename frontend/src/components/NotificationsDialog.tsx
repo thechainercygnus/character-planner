@@ -100,9 +100,10 @@ function DestinationRow({
 
 /**
  * Status bar: "Alerts" opens the notification settings (#12, ADR 0021): Discord webhook
- * destinations, which alerts each one gets, test sends and what was sent recently.
+ * destinations, which alerts each one gets, test sends and what was sent recently. Each
+ * user has their own (#164); only the admin adds system destinations.
  */
-export function NotificationsDialog() {
+export function NotificationsDialog({ admin = true }: { admin?: boolean }) {
   const queryClient = useQueryClient()
   const dialogRef = useRef<HTMLDialogElement>(null)
   const [open, setOpen] = useState(false)
@@ -191,13 +192,15 @@ export function NotificationsDialog() {
                   onChange={(e) => setUrl(e.target.value)}
                 />
               </label>
-              <label>
-                For{' '}
-                <select value={audience} onChange={(e) => setAudience(e.target.value as Audience)}>
-                  <option value="user">My character's alerts</option>
-                  <option value="system">System alerts only (whoever runs this instance)</option>
-                </select>
-              </label>
+              {admin && (
+                <label>
+                  For{' '}
+                  <select value={audience} onChange={(e) => setAudience(e.target.value as Audience)}>
+                    <option value="user">My character's alerts</option>
+                    <option value="system">System alerts only (whoever runs this instance)</option>
+                  </select>
+                </label>
+              )}
               <button type="submit" disabled={add.isPending || !name.trim() || !url.trim()}>
                 {add.isPending ? 'Adding…' : 'Add'}
               </button>

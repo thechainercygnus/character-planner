@@ -153,8 +153,8 @@ export function Privacy() {
       <p>
         Anyone who can open this instance's address. The planner has no accounts of its own, so it's meant for your own
         computer or a private network. Alerts go to the Discord channels you choose, and DMs to the Discord account you
-        link. With users on, a character you add to its guild's view is shown to the other members who joined it: its
-        name, level, spec, role and upgrades. Leave the view to stop that.
+        link: with users on, only about your own characters. With users on, a character you add to its guild's view is
+        shown to the other members who joined it: its name, level, spec, role and upgrades. Leave the view to stop that.
       </p>
 
       <h2>Sharing</h2>

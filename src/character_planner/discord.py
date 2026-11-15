@@ -247,15 +247,13 @@ def link(session: Session, user_id: int | None, account: Account) -> Notificatio
     return destination
 
 
-def unlink(session: Session, user_id: int | None, *, commit: bool = True) -> bool:
-    """Forget the linked account: its id and name, and the DMs not yet sent. Deleting a
-    user passes commit=False, to delete everything of theirs in one transaction."""
+def unlink(session: Session, user_id: int | None) -> bool:
+    """Forget the linked account: its id and name, and the DMs not yet sent."""
     existing = linked(session, user_id)
     if existing is None:
         return False
     _drop(session, existing)
-    if commit:
-        session.commit()
+    session.commit()
     logger.info("Discord: a user unlinked their account")
     return True
 

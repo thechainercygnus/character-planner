@@ -34,6 +34,7 @@ from character_planner.db import (
     NotificationDestination,
     NotificationOutbox,
     NotificationState,
+    User,
     owned,
     save_owned,
     utcnow,
@@ -115,21 +116,27 @@ def masked(url: str) -> str:
     return f"…/webhooks/{match['id']}/••••" if match else "••••"
 
 
-def clean_alerts(alerts: Iterable[str], audience: Audience) -> list[str]:
-    """Known alerts, in the standard order. System destinations take system alerts only."""
+def clean_alerts(alerts: Iterable[str], audience: Audience, admin: bool = True) -> list[str]:
+    """Known alerts, in the standard order. System destinations take system alerts only,
+    and only the admin's destinations take system alerts at all (#164)."""
     wanted = set(alerts) - RETIRED_ALERTS
     unknown = wanted - set(AUDIENCE)
     if unknown:
         raise NotifyError(f"Unknown alerts: {', '.join(sorted(unknown))}")
     if audience == "system" and wanted - set(SYSTEM_ALERTS):
         raise NotifyError("A system destination only takes system alerts")
+    if not admin and wanted & set(SYSTEM_ALERTS):
+        raise NotifyError("System alerts go to the admin")
     return [a.kind for a in ALERTS if a.kind in wanted]
 
 
-def default_alerts(audience: Audience) -> list[str]:
-    # A user destination gets the system alerts too: on a self-hosted copy the user is the
-    # operator (ADR 0020). They only arrive there while no system destination exists.
-    return USER_ALERTS + SYSTEM_ALERTS if audience == "user" else list(SYSTEM_ALERTS)
+def default_alerts(audience: Audience, admin: bool = True) -> list[str]:
+    # The admin's user destination gets the system alerts too: on a self-hosted copy the
+    # user is the operator (ADR 0020). They only arrive there while no system destination
+    # exists. Other users' destinations get their own characters' alerts only (#164).
+    if audience == "system":
+        return list(SYSTEM_ALERTS)
+    return USER_ALERTS + SYSTEM_ALERTS if admin else list(USER_ALERTS)
 
 
 # --- queueing ------------------------------------------------------------------------------
@@ -148,7 +155,12 @@ def _recipients(session: Session, kind: str) -> list[NotificationDestination]:
     system = [d for d in subscribed if d.audience == "system"]
     if any(d.audience == "system" for d in enabled):
         return system
-    return [d for d in subscribed if d.audience == "user"]
+    # No system destination: the admin's own destinations, never another user's (#164).
+    # Without users, every destination is the one person's (owner None).
+    admins = set(session.exec(select(User.id).where(col(User.is_admin))).all())
+    return [
+        d for d in subscribed if d.audience == "user" and (d.user_id is None or d.user_id in admins)
+    ]
 
 
 def _queue(
@@ -388,13 +400,13 @@ def after_sync(session: Session, settings: Settings, character: Character) -> in
         wanted = [k for k in sections if k in (destination.alerts or [])]
         if not wanted:
             continue
-        if destination.kind == DM:
-            # Only the owner's own characters, and few a day (ADR 0043).
-            if destination.user_id != character.user_id:
-                continue
-            if sent_today(session, destination) >= DM_DAILY_CAP:
-                logger.info("Notifications: a user's daily DM cap is reached; skipped")
-                continue
+        # Only the owner's own characters (#58, #164).
+        if destination.user_id != character.user_id:
+            continue
+        # And few DMs a day (ADR 0043).
+        if destination.kind == DM and sent_today(session, destination) >= DM_DAILY_CAP:
+            logger.info("Notifications: a user's daily DM cap is reached; skipped")
+            continue
         name = f"{character.name} {character.surname}".strip()
         message = build_message(
             f"{name}: what changed", "", COLOR["user"], app_url(settings, "plan")
@@ -626,13 +638,27 @@ def _view(d: NotificationDestination) -> DestinationView:
     )
 
 
-def notifications_view(session: Session) -> NotificationsView:
-    # The admin's webhooks. Users' DMs are their own (#58): not listed here.
-    destinations = session.exec(
+def owned_webhooks(
+    session: Session, user_id: int | None, admin: bool
+) -> list[NotificationDestination]:
+    """The webhooks a user manages (#164): their own, and for the admin the system ones and
+    any from before users had owners. DMs have their own settings (#58)."""
+    rows = session.exec(
         select(NotificationDestination)
         .where(NotificationDestination.kind != DM)
         .order_by(col(NotificationDestination.id))
     ).all()
+    return [
+        d
+        for d in rows
+        if d.user_id == user_id or (admin and (d.audience == "system" or d.user_id is None))
+    ]
+
+
+def notifications_view(
+    session: Session, user_id: int | None = None, admin: bool = True
+) -> NotificationsView:
+    destinations = owned_webhooks(session, user_id, admin)
     names = {d.id: d.name for d in destinations}
     recent = session.exec(
         select(NotificationOutbox)
@@ -654,17 +680,25 @@ def notifications_view(session: Session) -> NotificationsView:
             )
             for r in recent
         ],
-        system_alerts_to_user=not any(d.audience == "system" and d.enabled for d in destinations),
+        alerts=ALERTS if admin else [a for a in ALERTS if a.audience == "user"],
+        system_alerts_to_user=admin
+        and not any(d.audience == "system" and d.enabled for d in destinations),
     )
 
 
-def add_destination(session: Session, new: NewDestination) -> NotificationDestination:
-    alerts = default_alerts(new.audience) if new.alerts is None else new.alerts
+def add_destination(
+    session: Session, new: NewDestination, user_id: int | None = None, admin: bool = True
+) -> NotificationDestination:
+    """A webhook of the user's own (#164). System destinations are the admin's."""
+    if new.audience == "system" and not admin:
+        raise NotifyError("Only the admin adds system destinations")
+    alerts = default_alerts(new.audience, admin) if new.alerts is None else new.alerts
     destination = NotificationDestination(
         name=_clean_name(new.name),
         audience=new.audience,
         url=valid_webhook(new.url),
-        alerts=clean_alerts(alerts, new.audience),
+        alerts=clean_alerts(alerts, new.audience, admin),
+        user_id=user_id,
     )
     session.add(destination)
     session.commit()
@@ -674,7 +708,10 @@ def add_destination(session: Session, new: NewDestination) -> NotificationDestin
 
 
 def update_destination(
-    session: Session, destination: NotificationDestination, update: DestinationUpdate
+    session: Session,
+    destination: NotificationDestination,
+    update: DestinationUpdate,
+    admin: bool = True,
 ) -> None:
     if update.name is not None:
         destination.name = _clean_name(update.name)
@@ -682,7 +719,7 @@ def update_destination(
         destination.url = valid_webhook(update.url)
         destination.last_error = None
     if update.alerts is not None:
-        destination.alerts = clean_alerts(update.alerts, _audience(destination))
+        destination.alerts = clean_alerts(update.alerts, _audience(destination), admin)
     if update.enabled is not None:
         destination.enabled = update.enabled
     session.add(destination)
@@ -697,6 +734,23 @@ def remove_destination(session: Session, destination: NotificationDestination) -
     session.delete(destination)
     session.commit()
     logger.info("Notifications: removed destination %r", destination.name)
+
+
+def delete_owned(session: Session, user_id: int) -> int:
+    """Delete a user's destinations, webhooks and DMs, with their unsent alerts; how many.
+    Doesn't commit: deleting a user does it all in one transaction (#164)."""
+    destinations = session.exec(
+        select(NotificationDestination).where(col(NotificationDestination.user_id) == user_id)
+    ).all()
+    for destination in destinations:
+        for item in session.exec(
+            select(NotificationOutbox).where(NotificationOutbox.destination_id == destination.id)
+        ).all():
+            session.delete(item)
+    session.flush()
+    for destination in destinations:
+        session.delete(destination)
+    return len(destinations)
 
 
 def send_test(
