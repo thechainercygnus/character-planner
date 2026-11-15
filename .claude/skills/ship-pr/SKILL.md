@@ -12,6 +12,11 @@ CLAUDE.md's **Workflow** applies throughout:
   the task counts. Stop at a ready PR: Bryce merges.
 
 ## 1. Merge main first
+Adding commits to an open PR? Check it's still open first:
+`gh pr view <n> --json state --jq .state`. Bryce may have merged it already: #173 was
+merged at its first commit, and a fix pushed after that never reached `main`. If it's
+merged, branch from `main` and open a new PR.
+
 ```bash
 git fetch origin main && git merge origin/main
 ```

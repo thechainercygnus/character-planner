@@ -109,24 +109,37 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    parser.add_argument("--save", action="store_true", help="write the change to the issue")
-    parser.add_argument("--body-file", help="read the body from a file instead of GitHub (testing)")
+    # --save and --body-file work before or after the command. SUPPRESS keeps a command's
+    # parser from resetting a value given before it.
+    common = argparse.ArgumentParser(add_help=False)
+    for target, default in ((parser, False), (common, argparse.SUPPRESS)):
+        target.add_argument(
+            "--save", action="store_true", default=default, help="write the change to the issue"
+        )
+    for target, default in ((parser, None), (common, argparse.SUPPRESS)):
+        target.add_argument(
+            "--body-file", default=default, help="read the body from a file (testing)"
+        )
     commands = parser.add_subparsers(dest="command", required=True)
-    show = commands.add_parser("show")
+    show = commands.add_parser("show", parents=[common])
     show.add_argument("--section")
-    n = commands.add_parser("note", help="append text to an item: a PR number, a status")
+    n = commands.add_parser(
+        "note", parents=[common], help="append text to an item: a PR number, a status"
+    )
     n.add_argument("item")
     n.add_argument("text")
-    d = commands.add_parser("done", help="move an item to Done with a one-line summary")
+    d = commands.add_parser(
+        "done", parents=[common], help="move an item to Done with a one-line summary"
+    )
     d.add_argument("item")
     d.add_argument("summary")
-    a = commands.add_parser("add", help="add a new issue's line")
+    a = commands.add_parser("add", parents=[common], help="add a new issue's line")
     a.add_argument("number")
     a.add_argument("title")
     a.add_argument("why", nargs="?", default="")
     a.add_argument("--after", help="the item it follows")
     a.add_argument("--section", default="Later", help="else the end of this section's list")
-    r = commands.add_parser("replace", help="replace an item's whole line")
+    r = commands.add_parser("replace", parents=[common], help="replace an item's whole line")
     r.add_argument("item")
     r.add_argument("line")
     args = parser.parse_args()
