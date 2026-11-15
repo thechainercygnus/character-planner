@@ -251,6 +251,22 @@ export interface GuildView {
   roles: Record<string, number>
   missing_roles: Role[]
   dungeons: GroupDungeon[]
+  /** The guild's alert channel (#163), once opted in. */
+  channel?: GuildChannel | null
+  /** This character's alerts that post to the channel. */
+  shared_alerts?: AlertKind[]
+  /** The alerts a member can share: character ones. */
+  alerts?: AlertInfo[]
+}
+
+/** A guild's alert channel (#163, ADR 0046): a Discord webhook, masked. */
+export interface GuildChannel {
+  url: string
+  /** The member who set it; null once they've left the view. */
+  set_by: string | null
+  set_at: string
+  last_sent_at: string | null
+  last_error: string | null
 }
 
 /** A tracked character, for the header's switcher (#14). */
@@ -1072,6 +1088,11 @@ export const api = {
     ),
   setGuildMembership: (optedIn: boolean, role: Role | null) =>
     request<GuildView>('/api/guild/membership', json('PUT', { opted_in: optedIn, role })),
+  setGuildChannel: (url: string) => request<GuildView>('/api/guild/channel', json('PUT', { url })),
+  removeGuildChannel: () => request<GuildView>('/api/guild/channel', { method: 'DELETE' }),
+  testGuildChannel: () => request<SendResult>('/api/guild/channel/test', { method: 'POST' }),
+  setSharedAlerts: (alerts: AlertKind[]) =>
+    request<GuildView>('/api/guild/shared-alerts', json('PUT', { alerts })),
   deleteAccount: () => request<Erased>('/api/account', { method: 'DELETE' }),
   logout: () => fetch('/api/logout', { method: 'POST', headers: APP_HEADER }),
   characters: () => request<CharacterList>('/api/characters'),

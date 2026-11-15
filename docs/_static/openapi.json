@@ -2340,6 +2340,76 @@
         "title": "GuestOptions",
         "type": "object"
       },
+      "GuildChannel": {
+        "description": "The guild's alert channel (#163), as members see it: the webhook masked.",
+        "properties": {
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "last_sent_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sent At"
+          },
+          "set_at": {
+            "format": "date-time",
+            "title": "Set At",
+            "type": "string"
+          },
+          "set_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Set By"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "set_by",
+          "set_at",
+          "last_sent_at",
+          "last_error"
+        ],
+        "title": "GuildChannel",
+        "type": "object"
+      },
+      "GuildChannelUpdate": {
+        "properties": {
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "GuildChannelUpdate",
+        "type": "object"
+      },
       "GuildInfo": {
         "properties": {
           "id": {
@@ -2389,6 +2459,24 @@
       },
       "GuildView": {
         "properties": {
+          "alerts": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/AlertInfo"
+            },
+            "title": "Alerts",
+            "type": "array"
+          },
+          "channel": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GuildChannel"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "dungeons": {
             "default": [],
             "items": {
@@ -2463,6 +2551,14 @@
             "default": {},
             "title": "Roles",
             "type": "object"
+          },
+          "shared_alerts": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Shared Alerts",
+            "type": "array"
           }
         },
         "required": [
@@ -4624,6 +4720,22 @@
           "ok"
         ],
         "title": "SendResult",
+        "type": "object"
+      },
+      "SharedAlertsUpdate": {
+        "properties": {
+          "alerts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Alerts",
+            "type": "array"
+          }
+        },
+        "required": [
+          "alerts"
+        ],
+        "title": "SharedAlertsUpdate",
         "type": "object"
       },
       "SlotEnchants": {
@@ -7057,6 +7169,158 @@
         "summary": "Get Guild"
       }
     },
+    "/api/guild/channel": {
+      "delete": {
+        "description": "Remove the guild's alert channel, with its unsent alerts.",
+        "operationId": "delete_guild_channel_api_guild_channel_delete",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuildView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Guild Channel"
+      },
+      "put": {
+        "description": "Set or replace the guild's alert channel, a Discord webhook (#163). Any member in\nthe view may; every member sees who set it.",
+        "operationId": "put_guild_channel_api_guild_channel_put",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuildChannelUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuildView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Guild Channel"
+      }
+    },
+    "/api/guild/channel/test": {
+      "post": {
+        "description": "Send a test message to the guild's channel now.",
+        "operationId": "test_guild_channel_api_guild_channel_test_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SendResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Test Guild Channel"
+      }
+    },
     "/api/guild/membership": {
       "put": {
         "description": "Opt the character into its guild's view, or out, with an optional role.",
@@ -7113,6 +7377,64 @@
           }
         },
         "summary": "Put Guild Membership"
+      }
+    },
+    "/api/guild/shared-alerts": {
+      "put": {
+        "description": "Choose which of the character's alerts post to the guild's channel (#163).\nNothing posts until some are ticked.",
+        "operationId": "put_shared_alerts_api_guild_shared_alerts_put",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SharedAlertsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuildView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Shared Alerts"
       }
     },
     "/api/healthz": {

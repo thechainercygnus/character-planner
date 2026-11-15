@@ -94,6 +94,54 @@ describe('Guild', () => {
     await waitFor(() => expect(calls.at(-1)?.url).toBe('/api/guild?going=1'))
   })
 
+  it('sets the guild channel and shares chosen alerts (#163)', async () => {
+    const withAlerts: GuildView = {
+      ...joined,
+      shared_alerts: [],
+      channel: null,
+      alerts: [
+        { kind: 'level_up', audience: 'user', label: 'Level-ups' },
+        { kind: 'new_upgrade', audience: 'user', label: 'New upgrades worth having' },
+      ],
+    }
+    const calls = serve(withAlerts)
+    expect(await screen.findByText('No channel yet.')).toBeTruthy()
+    fireEvent.change(screen.getByLabelText('Channel webhook URL'), {
+      target: { value: 'https://discord.com/api/webhooks/1/abc' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Set' }))
+    await waitFor(() =>
+      expect(calls.find((c) => c.url === '/api/guild/channel')).toEqual({
+        url: '/api/guild/channel',
+        method: 'PUT',
+        body: { url: 'https://discord.com/api/webhooks/1/abc' },
+      }),
+    )
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Level-ups' }))
+    await waitFor(() =>
+      expect(calls.find((c) => c.url === '/api/guild/shared-alerts')?.body).toEqual({ alerts: ['level_up'] }),
+    )
+  })
+
+  it('shows who set the channel, and its last error', async () => {
+    serve({
+      ...joined,
+      shared_alerts: ['level_up'],
+      alerts: [{ kind: 'level_up', audience: 'user', label: 'Level-ups' }],
+      channel: {
+        url: '…/webhooks/1/••••',
+        set_by: 'Fizz Bang',
+        set_at: '2026-11-15T10:00:00',
+        last_sent_at: null,
+        last_error: 'HTTP 404: the webhook may have been deleted',
+      },
+    })
+    expect(await screen.findByText(/set by Fizz Bang/)).toBeTruthy()
+    expect(screen.getByText(/Last error: HTTP 404/)).toBeTruthy()
+    expect((screen.getByRole('checkbox', { name: 'Level-ups' }) as HTMLInputElement).checked).toBe(true)
+    expect(screen.getByRole('button', { name: 'Replace' })).toBeTruthy()
+  })
+
   it('leaves the guild view', async () => {
     const calls = serve(joined)
     fireEvent.click(await screen.findByRole('button', { name: 'Leave the guild view' }))

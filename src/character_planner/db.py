@@ -81,6 +81,9 @@ class GuildMembership(SQLModel, table=True):
     guild_id: int = Field(index=True)
     guild_name: str
     role: str | None = None  # tank, healer or dps, set by the member; None: from the spec
+    # The member's alerts that post to the guild's channel (#163), when it has one. None or
+    # empty: nothing, until the member ticks some.
+    shared_alerts: Any = Field(default=None, sa_column=Column(JSON, nullable=True))
     joined_at: datetime = Field(default_factory=utcnow)
 
 
@@ -347,10 +350,13 @@ class NotificationDestination(SQLModel, table=True):
 
     id: int | None = Field(default=None, primary_key=True)
     name: str  # a DM destination's: the Discord account's name
-    kind: str = "discord_webhook"  # or "discord_dm"
+    kind: str = "discord_webhook"  # or "discord_dm", or "guild_webhook" (#163)
     audience: str = "user"  # "user" or "system" (ADR 0020)
     url: str  # empty for a DM destination
     discord_user_id: str | None = None  # a DM destination's Discord account id
+    # A guild channel's guild ("<region>:<guild id>", #163), and the member who set it.
+    guild_key: str | None = Field(default=None, index=True)
+    set_by_character_id: int | None = None
     alerts: Any = Field(sa_column=Column(JSON, nullable=False))  # list of alert kinds
     enabled: bool = True
     # A DM destination's owner (#58); None while the app has one user. Webhooks are the
