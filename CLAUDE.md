@@ -39,7 +39,7 @@ Deploy (Docker): `docker compose up -d --build`; over Tailscale add `-f compose.
 Docs site (Read the Docs, `.readthedocs.yaml`): `uv run --group docs sphinx-build -W -b html docs docs/_build/html`. Warnings fail the build, as in CI.
 Release: bump `pyproject.toml`'s version in a PR, then the user tags `vX.Y.Z` on `main`; `release.yml` publishes to GHCR (ADR 0026, `docs/releasing.md`). Tagging is the user's call, like merging.
 
-Project skills in `.claude/skills/` (Claude Code loads them): `ship-pr` takes finished work to a ready PR and watches its CI, `roadmap` edits #25 through `roadmap.py` (a diff first, `--save` to write), and `cut-rc` tags a test release when Bryce asks.
+Project skills in `.claude/skills/` (Claude Code loads them): `ship-pr` takes finished work to a ready PR and watches its CI, `roadmap` edits #25 through `roadmap.py` (a diff first, `--save` to write), `cut-rc` tags a test release when Bryce asks, `stack-debug` looks into a running stack read-only, `layout-probe` measures and fixes layout bugs with Playwright, and `change-checklist` lists what each kind of change must also touch.
 
 ## Rules
 
