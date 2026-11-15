@@ -154,7 +154,7 @@ describe('CharacterSwitcher', () => {
     // Brumboldt is tracked; Battle.net doesn't share a level 6 character, so it can't be.
     expect([...list.querySelectorAll('li')].map((li) => li.textContent)).toEqual([
       'Testy Mcfixture · level 12 Priest Track',
-      'Lowly Alt · level 6 Mage Battle.net shares characters from level 10',
+      'Lowly Alt · level 6 Mage Battle.net shares characters at level 10',
     ])
     expect(screen.getAllByRole('button', { name: 'Track' })).toHaveLength(1)
     fireEvent.click(screen.getByRole('button', { name: 'Track' }))
