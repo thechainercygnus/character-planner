@@ -64,7 +64,7 @@ describe('StatusBar', () => {
   it('says when the last sync could not find the character', async () => {
     renderBar([], { character_found: false })
     expect((await screen.findByRole('alert')).textContent).toMatch(
-      /^Battle.net can't find nico-likeman\. It only shares characters from level 10.*check its name and region/,
+      /^Battle.net can't find nico-likeman\. It only shares characters at level 10.*check its name and region/,
     )
   })
 

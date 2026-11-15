@@ -57,7 +57,7 @@ function FromAccount({ onPick, busy }: { onPick: (character: NewCharacter) => vo
         <li key={`${c.region}:${c.slug}`}>
           {[c.name, c.surname].join(' ')} · level {c.level ?? '?'} {c.character_class ?? ''}{' '}
           {c.level !== null && c.level < MIN_PROFILE_LEVEL ? (
-            <span className="muted">Battle.net shares characters from level {MIN_PROFILE_LEVEL}</span>
+            <span className="muted">Battle.net shares characters at level {MIN_PROFILE_LEVEL}</span>
           ) : (
             <button
               type="button"
