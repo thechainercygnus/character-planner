@@ -1,5 +1,9 @@
-# Install once with: uv run pre-commit install
-# Hooks run the project's own pinned tools through uv, so versions live in uv.lock only.
+# Install once with: uv run pre-commit install (installs the commit and push hooks)
+# Hooks run the project's own pinned tools through uv, so versions live in uv.lock only,
+# except Semgrep's, which matches CI's.
+default_install_hook_types: [pre-commit, pre-push]
+# Hooks run at commit unless they say otherwise: the push hooks below opt in.
+default_stages: [pre-commit]
 repos:
   - repo: local
     hooks:
@@ -45,3 +49,20 @@ repos:
         language: system
         files: ^frontend/
         pass_filenames: false
+      # Before a push (#57): the custom Semgrep rules, as CI's semgrep job runs them, so a
+      # finding shows up before CI. The version must match SEMGREP in
+      # .github/workflows/semgrep.yml (tests/test_hooks.py checks it).
+      - id: semgrep-rules
+        name: semgrep (custom rules)
+        entry: uvx --from semgrep==1.185.0 semgrep scan --metrics=off --error --quiet --config .semgrep/rules src
+        language: system
+        files: ^(src/|\.semgrep/)
+        pass_filenames: false
+        stages: [pre-push]
+      - id: semgrep-rule-tests
+        name: semgrep (the rules' own tests)
+        entry: uvx --from semgrep==1.185.0 semgrep --test --metrics=off --config .semgrep/rules .semgrep/tests
+        language: system
+        files: ^\.semgrep/
+        pass_filenames: false
+        stages: [pre-push]
