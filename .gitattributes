@@ -2,3 +2,5 @@
 * text=auto eol=lf
 *.bat text eol=crlf
 *.ps1 text eol=crlf
+# Kept byte for byte: the reader must handle a Windows-written SavedVariables file (#183).
+tests/fixtures/savedvariables/*crlf* -text
