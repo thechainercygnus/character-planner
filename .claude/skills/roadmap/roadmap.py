@@ -134,11 +134,12 @@ def main() -> None:
     before = fetch(args.body_file)
     lines = before.split("\n")
     if args.command == "show":
+        shown = before
         if args.section:
             start, end = section_bounds(lines, args.section)
-            print("\n".join(lines[start - 1 : end]))
-        else:
-            print(before)
+            shown = "\n".join(lines[start - 1 : end])
+        # As bytes: a Windows console's cp1252 can't print the body's arrows and dashes.
+        sys.stdout.buffer.write((shown + "\n").encode("utf-8"))
         return
     if args.command == "note":
         note(lines, args.item, args.text)
