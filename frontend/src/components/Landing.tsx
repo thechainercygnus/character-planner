@@ -148,9 +148,12 @@ export function Landing({ hasCharacter = false }: { hasCharacter?: boolean }) {
   return (
     <div className="landing">
       {hasCharacter ? (
-        <p>
-          <a href="#upgrades">← Back to your character</a>
-        </p>
+        <>
+          <h1 className="visually-hidden">Guest mode</h1>
+          <p>
+            <a href="#upgrades">← Back to your character</a>
+          </p>
+        </>
       ) : (
         <section className="landing-intro">
           <h1>Plan your WoW Forever character</h1>
