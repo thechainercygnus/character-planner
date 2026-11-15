@@ -103,4 +103,4 @@ branch = true
 [tool.coverage.report]
 skip_empty = true
 precision = 1
-fail_under = 91   # statements and branches together; 91.4% on 2026-11-13
+fail_under = 91.5   # statements and branches together; 91.9% on 2026-11-15
