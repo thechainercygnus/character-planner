@@ -51,6 +51,18 @@ const ACCOUNT: { characters: AccountCharacter[] } = {
       character_class: 'Priest',
       race: 'Dwarf',
       faction: 'ALLIANCE',
+      level: 12,
+      tracked: false,
+    },
+    {
+      blizzard_id: 90000002,
+      name: 'Lowly',
+      surname: 'Alt',
+      slug: 'lowly-alt',
+      region: 'us',
+      character_class: 'Mage',
+      race: 'Gnome',
+      faction: 'ALLIANCE',
       level: 6,
       tracked: false,
     },
@@ -139,7 +151,12 @@ describe('CharacterSwitcher', () => {
     const calls = serve()
     fireEvent.change(await screen.findByRole('combobox', { name: 'Character' }), { target: { value: 'add' } })
     const list = await screen.findByRole('list', { name: 'Your Battle.net characters' })
-    expect(list.textContent).toBe('Testy Mcfixture · level 6 Priest Track') // Brumboldt is tracked
+    // Brumboldt is tracked; Battle.net doesn't share a level 6 character, so it can't be.
+    expect([...list.querySelectorAll('li')].map((li) => li.textContent)).toEqual([
+      'Testy Mcfixture · level 12 Priest Track',
+      'Lowly Alt · level 6 Mage Battle.net shares characters from level 10',
+    ])
+    expect(screen.getAllByRole('button', { name: 'Track' })).toHaveLength(1)
     fireEvent.click(screen.getByRole('button', { name: 'Track' }))
     await waitFor(() => expect(calls.some((c) => c.url === '/api/sync')).toBe(true))
     expect(calls.find((c) => c.method === 'POST' && c.url === '/api/characters')?.body).toEqual({
