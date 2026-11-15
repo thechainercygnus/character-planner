@@ -25,6 +25,14 @@ function isRegion(value: string): value is Region {
 }
 
 /**
+ * Battle.net's profile API answers 404 for characters below this level: a level 6 alt
+ * did on 2026-11-14 while level 18 worked. 10 is the cut-off players report for retail's
+ * profile API, assumed to hold for Forever too: unconfirmed. Below it there's nothing to
+ * sync yet.
+ */
+const MIN_PROFILE_LEVEL = 10
+
+/**
  * The signed-in account's characters not tracked yet, to pick from (#15). Without a
  * Battle.net sign-in, a link to sign in instead.
  */
@@ -48,14 +56,18 @@ function FromAccount({ onPick, busy }: { onPick: (character: NewCharacter) => vo
       {open.map((c) => (
         <li key={`${c.region}:${c.slug}`}>
           {[c.name, c.surname].join(' ')} · level {c.level ?? '?'} {c.character_class ?? ''}{' '}
-          <button
-            type="button"
-            className="secondary"
-            disabled={busy}
-            onClick={() => onPick({ name: c.name, surname: c.surname, region: c.region as Region })}
-          >
-            Track
-          </button>
+          {c.level !== null && c.level < MIN_PROFILE_LEVEL ? (
+            <span className="muted">Battle.net shares characters from level {MIN_PROFILE_LEVEL}</span>
+          ) : (
+            <button
+              type="button"
+              className="secondary"
+              disabled={busy}
+              onClick={() => onPick({ name: c.name, surname: c.surname, region: c.region as Region })}
+            >
+              Track
+            </button>
+          )}
         </li>
       ))}
     </ul>
