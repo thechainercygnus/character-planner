@@ -259,6 +259,38 @@ Enchant recipes from Blizzard's profession data, plus their reagents and crafted
 
 **200:** [RecipeRefresh](#schema-reciperefresh) or [SyncState](#schema-syncstate)
 
+## `game-data`
+
+### `GET /api/game-data`
+
+The character's newest import of the addon's data: bags, bank and quest log, with when each was captured in the game.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**200:** [GameDataView](#schema-gamedataview)
+
+### `POST /api/game-data`
+
+Import CharacterPlannerExport.lua, sent as the request body (application/octet-stream), for the selected character. The file must be that character's; it replaces their previous import. Read in chunks and refused past the size limit, so a huge upload never fills memory.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**200:** [GameDataView](#schema-gamedataview)
+
+### `DELETE /api/game-data`
+
+Delete the character's imported game data.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**200:** [GameDataView](#schema-gamedataview)
+
 ## `gear`
 
 ### `GET /api/gear`
@@ -915,6 +947,17 @@ Login
 | `is_target` | boolean | no |
 | `pinned` | boolean | no |
 
+(schema-characterinfo)=
+### CharacterInfo
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `name` | string (minLength 1) | yes |
+| `surname` | string or null | no |
+| `level` | integer (minimum 1.0) | yes |
+| `region` | string or null | no |
+| `realm` | string or null | no |
+
 (schema-characterlist)=
 ### CharacterList
 
@@ -1271,6 +1314,35 @@ An enchant on an equipped item, as the equipment endpoint reports it.
 | --- | --- | --- |
 | `removed` | map of integer | yes |
 
+(schema-gamedata)=
+### GameData
+
+Schema version 1 (`addon/SCHEMA.md`).
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `schemaVersion` | integer | yes |
+| `addonVersion` | string | yes |
+| `capturedAt` | integer (minimum 0.0) | yes |
+| `character` | [CharacterInfo](#schema-characterinfo) | yes |
+| `bags` | [Items](#schema-items) or null | no |
+| `bank` | [Items](#schema-items) or null | no |
+| `quests` | [Quests](#schema-quests) or null | no |
+
+(schema-gamedataview)=
+### GameDataView
+
+A character's imported game data, as the app shows it.
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `imported` | boolean | yes |
+| `uploaded_at` | string or null | no |
+| `captured_at` | string or null | no |
+| `addon_version` | string or null | no |
+| `captured` | [SectionAge](#schema-sectionage) or null | no |
+| `data` | [GameData](#schema-gamedata) or null | no |
+
 (schema-gearchange)=
 ### GearChange
 
@@ -1435,6 +1507,17 @@ The guild's alert channel (#163), as members see it: the webhook masked.
 | --- | --- | --- |
 | `detail` | list of [ValidationError](#schema-validationerror) | no |
 
+(schema-item)=
+### Item
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `container` | integer | yes |
+| `slot` | integer (minimum 1.0) | yes |
+| `itemId` | integer (minimum 1.0) | yes |
+| `count` | integer (minimum 1.0) | yes |
+| `quality` | integer (minimum 0.0, maximum 8.0) | yes |
+
 (schema-itemchoiceview)=
 ### ItemChoiceView
 
@@ -1452,6 +1535,14 @@ The guild's alert channel (#163), as members see it: the webhook masked.
 | --- | --- | --- |
 | `name` | string | yes |
 | `value` | integer | yes |
+
+(schema-items)=
+### Items
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `capturedAt` | integer (minimum 0.0) | yes |
+| `items` | [LuaList_Item_](#schema-lualist_item_) | yes |
 
 (schema-levelgroup)=
 ### LevelGroup
@@ -1516,6 +1607,26 @@ The guild's alert channel (#163), as members see it: the webhook masked.
 | `pinned` | boolean | no |
 | `locked` | boolean | no |
 | `link` | string or null | no |
+
+(schema-lualist_annotated_int__fieldinfo_annotation_nonetype__required_true__metadata__ge_ge_1_____)=
+### LuaList_Annotated_int__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_1_____
+
+Type: list of integer (minimum 1.0)
+
+(schema-lualist_item_)=
+### LuaList_Item_
+
+Type: list of [Item](#schema-item)
+
+(schema-lualist_objective_)=
+### LuaList_Objective_
+
+Type: list of [Objective](#schema-objective)
+
+(schema-lualist_quest_)=
+### LuaList_Quest_
+
+Type: list of [Quest](#schema-quest)
 
 (schema-manualsnapshot)=
 ### ManualSnapshot
@@ -1629,6 +1740,17 @@ A character to track, as Forever looks it up: first name, surname, region.
 | `alerts` | list of [AlertInfo](#schema-alertinfo) | no |
 | `recent` | list of [RecentView](#schema-recentview) | yes |
 | `system_alerts_to_user` | boolean | yes |
+
+(schema-objective)=
+### Objective
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `text` | string | yes |
+| `type` | string | yes |
+| `done` | integer (minimum 0.0) | yes |
+| `needed` | integer (minimum 0.0) | yes |
+| `finished` | boolean | yes |
 
 (schema-offplan)=
 ### OffPlan
@@ -1822,6 +1944,16 @@ A character to track, as Forever looks it up: first name, surname, region.
 | `armor` | integer or null | no |
 | `stamina` | integer or null | no |
 
+(schema-quest)=
+### Quest
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `questId` | integer (minimum 1.0) | yes |
+| `title` | string | yes |
+| `complete` | boolean | yes |
+| `objectives` | [LuaList_Objective_](#schema-lualist_objective_) | yes |
+
 (schema-queststep)=
 ### QuestStep
 
@@ -1839,6 +1971,15 @@ One quest in a chain. Only quest_id and name are always known.
 | `dungeon` | string or null | no |
 | `wowhead` | string or null | no |
 | `known` | boolean | no |
+
+(schema-quests)=
+### Quests
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `capturedAt` | integer (minimum 0.0) | yes |
+| `log` | [LuaList_Quest_](#schema-lualist_quest_) | yes |
+| `completed` | [LuaList_Annotated_int__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_1_____](#schema-lualist_annotated_int__fieldinfo_annotation_nonetype__required_true__metadata__ge_ge_1_____) | no |
 
 (schema-reagent)=
 ### Reagent
@@ -1913,6 +2054,17 @@ One quest in a chain. Only quest_id and name are always known.
 | `armor_type_options` | list of string | no |
 | `off_hand_type_options` | list of string | no |
 | `two_hand_type_options` | list of string | no |
+
+(schema-sectionage)=
+### SectionAge
+
+When each part was captured in the game: they can differ by days (the bank).
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `bags` | string or null | yes |
+| `bank` | string or null | yes |
+| `quests` | string or null | yes |
 
 (schema-sendresult)=
 ### SendResult

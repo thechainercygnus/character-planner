@@ -24,9 +24,10 @@ from pydantic import BaseModel, Field
 from sqlalchemy import desc
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, col, select
+from starlette.concurrency import run_in_threadpool
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from character_planner import discord, fields, jobs, leases, notify, upstream
+from character_planner import discord, fields, gamedata, jobs, leases, notify, upstream
 from character_planner import guild as guild_alerts
 from character_planner import queue as job_queue
 from character_planner.account import AccountCharacter, parse_account
@@ -1176,6 +1177,61 @@ def create_app(
         except notify.NotifyError as error:
             raise HTTPException(422, str(error)) from error
         return guild_view(session, settings, character.id, user_id)
+
+    # --- game data from the addon (#184, ADR 0047) -----------------------------------------
+
+    def game_data_character(session: Session, character_id: int | None) -> Character:
+        character = session.get(Character, character_id) if character_id is not None else None
+        if character is None or character.id is None:
+            raise HTTPException(409, "No character yet: add one first")
+        return character
+
+    # By field name (item_id, captured_at), as the rest of the API: not the file's camelCase.
+    @app.get("/api/game-data", response_model_by_alias=False)
+    def get_game_data(session: SessionDep, character_id: CharacterIdDep) -> gamedata.GameDataView:
+        """The character's newest import of the addon's data: bags, bank and quest log,
+        with when each was captured in the game."""
+        character = game_data_character(session, character_id)
+        assert character.id is not None
+        return gamedata.view(session, character.id)
+
+    @app.post("/api/game-data", response_model_by_alias=False)
+    async def post_game_data(
+        request: Request, session: SessionDep, character_id: CharacterIdDep
+    ) -> gamedata.GameDataView:
+        """Import CharacterPlannerExport.lua, sent as the request body
+        (application/octet-stream), for the selected character. The file must be that
+        character's; it replaces their previous import. Read in chunks and refused past
+        the size limit, so a huge upload never fills memory."""
+        character = game_data_character(session, character_id)
+        assert character.id is not None
+        limit = gamedata.LIMITS.max_bytes
+        too_big = HTTPException(413, f"The file is larger than {limit // 1024} KiB")
+        declared = request.headers.get("content-length", "")
+        if declared.isdigit() and int(declared) > limit:
+            raise too_big
+        body = bytearray()
+        async for chunk in request.stream():
+            body += chunk
+            if len(body) > limit:
+                raise too_big
+        if not body:
+            raise HTTPException(422, "No file: send CharacterPlannerExport.lua as the body")
+        try:
+            await run_in_threadpool(gamedata.import_for, session, character, bytes(body))
+        except gamedata.GameDataError as error:
+            raise HTTPException(422, str(error)) from error
+        return await run_in_threadpool(gamedata.view, session, character.id)
+
+    @app.delete("/api/game-data", response_model_by_alias=False)
+    def delete_game_data(
+        session: SessionDep, character_id: CharacterIdDep
+    ) -> gamedata.GameDataView:
+        """Delete the character's imported game data."""
+        character = game_data_character(session, character_id)
+        assert character.id is not None
+        gamedata.remove(session, character.id)
+        return gamedata.view(session, character.id)
 
     @app.get("/api/choices")
     def get_choices(session: SessionDep, character_id: CharacterIdDep) -> list[ItemChoiceView]:

@@ -19,6 +19,9 @@ This page repeats what the notice says, and covers what an operator needs to do.
   and class quests marked done;
 - the Discord webhooks added for alerts, and the alerts waiting to be sent;
 - a Discord account linked for DMs: its id and name only, until it's unlinked;
+- game data imported from the CharacterPlannerExport addon: the character's bags, bank
+  and quest log, as of when the game saved them. Only the newest import is kept; it's
+  deleted with the character, or from the app;
 - with users on (`PLANNER_USERS`): each user's Battle.net account id, when they signed
   in, their sign-in sessions (only a hash of each), and which characters are theirs;
 - the Battle.net sign-in token, if someone signs in. With it, the planner can list the

@@ -136,6 +136,10 @@ export function Privacy() {
         <li>The Discord webhooks you add for alerts, and the alerts waiting to be sent.</li>
         <li>A Discord account you link for DMs: its id and name only, until you unlink it.</li>
         <li>
+          Game data you import from the CharacterPlannerExport addon: a character's bags, bank and quest log, as of when
+          the game saved them. Only the newest import is kept.
+        </li>
+        <li>
           If you sign in with Battle.net, the sign-in token. With it, the planner can list your account's characters to
           pick from; that list isn't stored, only the characters you pick are tracked.
         </li>

@@ -234,6 +234,59 @@
         "title": "Candidate",
         "type": "object"
       },
+      "CharacterInfo": {
+        "properties": {
+          "level": {
+            "minimum": 1.0,
+            "title": "Level",
+            "type": "integer"
+          },
+          "name": {
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "realm": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Realm"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region"
+          },
+          "surname": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Surname"
+          }
+        },
+        "required": [
+          "name",
+          "level"
+        ],
+        "title": "CharacterInfo",
+        "type": "object"
+      },
       "CharacterList": {
         "properties": {
           "characters": {
@@ -1835,6 +1888,134 @@
         "title": "Erased",
         "type": "object"
       },
+      "GameData": {
+        "description": "Schema version 1 (`addon/SCHEMA.md`).",
+        "properties": {
+          "addonVersion": {
+            "title": "Addonversion",
+            "type": "string"
+          },
+          "bags": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Items"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bank": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Items"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "capturedAt": {
+            "minimum": 0.0,
+            "title": "Capturedat",
+            "type": "integer"
+          },
+          "character": {
+            "$ref": "#/components/schemas/CharacterInfo"
+          },
+          "quests": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Quests"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "schemaVersion": {
+            "title": "Schemaversion",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "addonVersion",
+          "capturedAt",
+          "character"
+        ],
+        "title": "GameData",
+        "type": "object"
+      },
+      "GameDataView": {
+        "description": "A character's imported game data, as the app shows it.",
+        "properties": {
+          "addon_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Addon Version"
+          },
+          "captured": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SectionAge"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "captured_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captured At"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GameData"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "imported": {
+            "title": "Imported",
+            "type": "boolean"
+          },
+          "uploaded_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uploaded At"
+          }
+        },
+        "required": [
+          "imported"
+        ],
+        "title": "GameDataView",
+        "type": "object"
+      },
       "GearChange": {
         "properties": {
           "after": {
@@ -2581,6 +2762,44 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "Item": {
+        "properties": {
+          "container": {
+            "title": "Container",
+            "type": "integer"
+          },
+          "count": {
+            "minimum": 1.0,
+            "title": "Count",
+            "type": "integer"
+          },
+          "itemId": {
+            "minimum": 1.0,
+            "title": "Itemid",
+            "type": "integer"
+          },
+          "quality": {
+            "maximum": 8.0,
+            "minimum": 0.0,
+            "title": "Quality",
+            "type": "integer"
+          },
+          "slot": {
+            "minimum": 1.0,
+            "title": "Slot",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "container",
+          "slot",
+          "itemId",
+          "count",
+          "quality"
+        ],
+        "title": "Item",
+        "type": "object"
+      },
       "ItemChoiceView": {
         "properties": {
           "choice": {
@@ -2627,6 +2846,24 @@
           "value"
         ],
         "title": "ItemStat",
+        "type": "object"
+      },
+      "Items": {
+        "properties": {
+          "capturedAt": {
+            "minimum": 0.0,
+            "title": "Capturedat",
+            "type": "integer"
+          },
+          "items": {
+            "$ref": "#/components/schemas/LuaList_Item_"
+          }
+        },
+        "required": [
+          "capturedAt",
+          "items"
+        ],
+        "title": "Items",
         "type": "object"
       },
       "LevelGroup": {
@@ -2860,6 +3097,31 @@
         ],
         "title": "LookAheadEvent",
         "type": "object"
+      },
+      "LuaList_Annotated_int__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_1_____": {
+        "items": {
+          "minimum": 1.0,
+          "type": "integer"
+        },
+        "type": "array"
+      },
+      "LuaList_Item_": {
+        "items": {
+          "$ref": "#/components/schemas/Item"
+        },
+        "type": "array"
+      },
+      "LuaList_Objective_": {
+        "items": {
+          "$ref": "#/components/schemas/Objective"
+        },
+        "type": "array"
+      },
+      "LuaList_Quest_": {
+        "items": {
+          "$ref": "#/components/schemas/Quest"
+        },
+        "type": "array"
       },
       "ManualSnapshot": {
         "properties": {
@@ -3273,6 +3535,41 @@
           "system_alerts_to_user"
         ],
         "title": "NotificationsView",
+        "type": "object"
+      },
+      "Objective": {
+        "properties": {
+          "done": {
+            "minimum": 0.0,
+            "title": "Done",
+            "type": "integer"
+          },
+          "finished": {
+            "title": "Finished",
+            "type": "boolean"
+          },
+          "needed": {
+            "minimum": 0.0,
+            "title": "Needed",
+            "type": "integer"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "type",
+          "done",
+          "needed",
+          "finished"
+        ],
+        "title": "Objective",
         "type": "object"
       },
       "OffPlan": {
@@ -4193,6 +4490,34 @@
         "title": "ProgressPoint",
         "type": "object"
       },
+      "Quest": {
+        "properties": {
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "objectives": {
+            "$ref": "#/components/schemas/LuaList_Objective_"
+          },
+          "questId": {
+            "minimum": 1.0,
+            "title": "Questid",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "questId",
+          "title",
+          "complete",
+          "objectives"
+        ],
+        "title": "Quest",
+        "type": "object"
+      },
       "QuestStep": {
         "description": "One quest in a chain. Only quest_id and name are always known.",
         "properties": {
@@ -4298,6 +4623,28 @@
           "name"
         ],
         "title": "QuestStep",
+        "type": "object"
+      },
+      "Quests": {
+        "properties": {
+          "capturedAt": {
+            "minimum": 0.0,
+            "title": "Capturedat",
+            "type": "integer"
+          },
+          "completed": {
+            "$ref": "#/components/schemas/LuaList_Annotated_int__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_1_____",
+            "default": []
+          },
+          "log": {
+            "$ref": "#/components/schemas/LuaList_Quest_"
+          }
+        },
+        "required": [
+          "capturedAt",
+          "log"
+        ],
+        "title": "Quests",
         "type": "object"
       },
       "Reagent": {
@@ -4664,6 +5011,54 @@
           "customised"
         ],
         "title": "RulesView",
+        "type": "object"
+      },
+      "SectionAge": {
+        "description": "When each part was captured in the game: they can differ by days (the bank).",
+        "properties": {
+          "bags": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bags"
+          },
+          "bank": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank"
+          },
+          "quests": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quests"
+          }
+        },
+        "required": [
+          "bags",
+          "bank",
+          "quests"
+        ],
+        "title": "SectionAge",
         "type": "object"
       },
       "SendResult": {
@@ -6952,6 +7347,146 @@
           }
         },
         "summary": "Refresh Enchants"
+      }
+    },
+    "/api/game-data": {
+      "delete": {
+        "description": "Delete the character's imported game data.",
+        "operationId": "delete_game_data_api_game_data_delete",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameDataView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Game Data"
+      },
+      "get": {
+        "description": "The character's newest import of the addon's data: bags, bank and quest log,\nwith when each was captured in the game.",
+        "operationId": "get_game_data_api_game_data_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameDataView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Game Data"
+      },
+      "post": {
+        "description": "Import CharacterPlannerExport.lua, sent as the request body\n(application/octet-stream), for the selected character. The file must be that\ncharacter's; it replaces their previous import. Read in chunks and refused past\nthe size limit, so a huge upload never fills memory.",
+        "operationId": "post_game_data_api_game_data_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameDataView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Game Data"
       }
     },
     "/api/gear": {
