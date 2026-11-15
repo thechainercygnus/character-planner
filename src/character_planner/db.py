@@ -87,6 +87,20 @@ class GuildMembership(SQLModel, table=True):
     joined_at: datetime = Field(default_factory=utcnow)
 
 
+class GameDataImport(SQLModel, table=True):
+    """A character's newest import of the CharacterPlannerExport addon's data (#184, ADR
+    0047): bags, bank and quest log, as parsed and checked by `gamedata.read_export`. Not
+    Battle.net data, so it's outside the 30-day pruning; a new import replaces it."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    character_id: int = Field(foreign_key="character.id", unique=True, index=True)
+    schema_version: int
+    addon_version: str
+    captured_at: datetime  # when the game wrote it (the file's capturedAt)
+    uploaded_at: datetime = Field(default_factory=utcnow)
+    data: Any = Field(sa_column=Column(JSON, nullable=False))  # GameData, by field name
+
+
 class Snapshot(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     # Whose data this is (ADR 0036). None only for rows from before #14, until the first

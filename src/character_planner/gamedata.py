@@ -5,13 +5,24 @@
 checked strictly against the schema version it declares: a missing field, a wrong type
 or an unknown version rejects the whole file. Unknown keys are ignored, so the addon can
 keep fields of its own.
+
+`import_for` stores it for the character the upload names, once the file agrees with
+that character (#184): only the newest import is kept, beside the Battle.net data and
+never over it.
 """
 
+import logging
+from datetime import UTC, datetime
 from typing import Annotated, Any, Final
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ValidationError
+from sqlmodel import Session, col, select
 
+from character_planner.companion import as_utc
+from character_planner.db import Character, GameDataImport, utcnow
 from character_planner.savedvariables import LIMITS, LuaValue, SavedVariablesError, parse
+
+logger = logging.getLogger(__name__)
 
 TABLE: Final = "CharacterPlannerExportDB"  # the addon's per-character saved variable
 SCHEMA_VERSIONS: Final = (1,)
@@ -126,3 +137,112 @@ def read_export(data: bytes) -> GameData:
     except ValidationError as error:
         message = f"The file doesn't match schema version {version}: {_where(error)}"
         raise GameDataError(message) from None
+
+
+# --- storing an import (#184) ---------------------------------------------------------------
+
+
+class WrongCharacter(GameDataError):
+    """The file is another character's: nothing is stored."""
+
+
+def _same(a: str, b: str) -> bool:
+    return a.strip().casefold() == b.strip().casefold()
+
+
+def check_character(character: Character, data: GameData) -> None:
+    """The file must agree with the character it's uploaded for (ADR 0047): the name, and
+    the surname and region where the file has them."""
+    file = data.character
+    wanted = f"{character.name} {character.surname}".strip()
+    if not _same(file.name, character.name):
+        raise WrongCharacter(f"This file is {file.name}'s, not {wanted}'s: pick {file.name}")
+    if file.surname and character.surname and not _same(file.surname, character.surname):
+        raise WrongCharacter(f"This file is {file.name} {file.surname}'s, not {wanted}'s")
+    if file.region and not _same(file.region, character.region):
+        raise WrongCharacter(
+            f"This file is from the {file.region.upper()} region; "
+            f"{wanted} is {character.region.upper()}"
+        )
+
+
+def _moment(seconds: int) -> datetime:
+    return datetime.fromtimestamp(seconds, UTC)
+
+
+def import_for(session: Session, character: Character, upload: bytes) -> GameDataImport:
+    """Read the upload, check it's this character's, and keep it as their newest import.
+    Raises GameDataError (WrongCharacter among them) and stores nothing then."""
+    assert character.id is not None
+    data = read_export(upload)
+    check_character(character, data)
+    row = stored(session, character.id) or GameDataImport(
+        character_id=character.id,
+        schema_version=data.schema_version,
+        addon_version=data.addon_version,
+        captured_at=_moment(data.captured_at),
+        data={},
+    )
+    row.schema_version = data.schema_version
+    row.addon_version = data.addon_version
+    row.captured_at = _moment(data.captured_at)
+    row.uploaded_at = utcnow()
+    row.data = data.model_dump(mode="json")
+    session.add(row)
+    session.commit()
+    session.refresh(row)
+    logger.info("Game data imported for character %s", character.id)
+    return row
+
+
+def stored(session: Session, character_id: int) -> GameDataImport | None:
+    return session.exec(
+        select(GameDataImport).where(col(GameDataImport.character_id) == character_id)
+    ).first()
+
+
+def remove(session: Session, character_id: int) -> bool:
+    row = stored(session, character_id)
+    if row is None:
+        return False
+    session.delete(row)
+    session.commit()
+    return True
+
+
+class SectionAge(BaseModel):
+    """When each part was captured in the game: they can differ by days (the bank)."""
+
+    bags: datetime | None
+    bank: datetime | None  # None: the bank hasn't been opened since the addon was added
+    quests: datetime | None
+
+
+class GameDataView(BaseModel):
+    """A character's imported game data, as the app shows it."""
+
+    imported: bool
+    uploaded_at: datetime | None = None
+    captured_at: datetime | None = None
+    addon_version: str | None = None
+    captured: SectionAge | None = None
+    data: GameData | None = None  # by field name: bags.items[].item_id, ...
+
+
+def view(session: Session, character_id: int) -> GameDataView:
+    row = stored(session, character_id)
+    if row is None:
+        return GameDataView(imported=False)
+    data = GameData.model_validate(row.data)
+    return GameDataView(
+        imported=True,
+        uploaded_at=as_utc(row.uploaded_at),
+        captured_at=as_utc(row.captured_at),
+        addon_version=row.addon_version,
+        captured=SectionAge(
+            bags=_moment(data.bags.captured_at) if data.bags else None,
+            bank=_moment(data.bank.captured_at) if data.bank else None,
+            quests=_moment(data.quests.captured_at) if data.quests else None,
+        ),
+        data=data,
+    )
