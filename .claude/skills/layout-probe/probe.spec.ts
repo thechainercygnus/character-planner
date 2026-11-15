@@ -4,24 +4,14 @@
 // and delete it afterwards. Never commit it: findings become checks in phone.spec.ts or
 // dialogs.spec.ts.
 import { test, type Page } from '@playwright/test'
-import fixtures from './api-fixtures.json' with { type: 'json' }
+import { openTab, serveApi } from './support.ts'
 
-const answers = fixtures as Record<string, { status: number; body: unknown }>
 const SIZES: [number, number][] = [
   [375, 667],
   [667, 375],
 ]
 const TAB = 'plan'
 const SHOTS = '' // a folder (the scratchpad) to save screenshots in; empty for none
-
-async function serveApi(page: Page) {
-  await page.route('**/api/**', (route) => {
-    const path = new URL(route.request().url()).pathname
-    const known = path === '/api/guest/recommendations' ? '/api/recommendations' : path
-    const answer = answers[known] ?? { status: 200, body: [] }
-    return route.fulfill({ status: answer.status, json: answer.body })
-  })
-}
 
 /** What to look at; prints one "P ..." line. */
 async function inspect(page: Page, label: string) {
@@ -34,7 +24,10 @@ async function inspect(page: Page, label: string) {
   const report = await page.evaluate(() => {
     const screen = Math.round(window.visualViewport?.width ?? window.innerWidth)
     // Inside a scrolling or clipping box, being wide is fine: only unclipped boxes widen the page.
+    // An absolutely positioned box escapes a clipping parent that isn't its containing block
+    // (#165: visually hidden text in a sideways-scrolling table), so those always count.
     const clipped = (element: Element) => {
+      if (getComputedStyle(element).position === 'absolute') return false
       for (let parent = element.parentElement; parent; parent = parent.parentElement) {
         if (getComputedStyle(parent).overflowX !== 'visible') return true
       }
@@ -63,9 +56,7 @@ for (const [width, height] of SIZES) {
     const context = await browser.newContext({ viewport: { width, height }, hasTouch: true, isMobile: true })
     const page = await context.newPage()
     await serveApi(page)
-    await page.goto(`/#${TAB}`)
-    await page.waitForLoadState('networkidle')
-    await page.evaluate(() => document.fonts.ready)
+    await openTab(page, TAB)
     await inspect(page, `${TAB}-${width}x${height}`)
   })
 }
