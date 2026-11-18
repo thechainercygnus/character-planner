@@ -279,7 +279,7 @@ The character's newest import of the addon's data: bags, bank and quest log, wit
 
 ### `POST /api/game-data`
 
-Import CharacterPlannerExport.lua, sent as the request body (application/octet-stream), for the selected character. The file must be that character's; it replaces their previous import. Read in chunks and refused past the size limit, so a huge upload never fills memory. Items no catalog names yet are then looked up in Blizzard's item data in the background; the status's `refreshing` shows "game-items" meanwhile (#185).
+Import CharacterPlannerExport.lua, sent as the request body (application/octet-stream), for the selected character. The file must be that character's; it replaces their previous import. Read in chunks and refused past the size limit, so a huge upload never fills memory. Items no catalog names, or has an icon for, are then looked up in Blizzard's item data and media in the background, and cached; the status's `refreshing` shows "game-items" meanwhile (#185).
 
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |

@@ -41,7 +41,7 @@ All traffic is outbound, over HTTPS with certificate verification on, through `h
 
 | Service | Used for | Credentials | Decisions |
 | --- | --- | --- | --- |
-| Battle.net API | The character (profile, equipment, stats, professions, talents) and static game data (items, recipes, talent trees; the names of items in an imported addon file) | The app's own Client Credentials token, cached in the database; the user login is optional and unused by syncs | [0027](adr/0027-syncs-with-the-app-token.md), [0003](adr/0003-item-data-from-search-and-manual-entry.md), [0010](adr/0010-enchants-from-recipe-data.md), [0025](adr/0025-talent-trees.md), [0031](adr/0031-professions-and-crafted-gear.md) |
+| Battle.net API | The character (profile, equipment, stats, professions, talents) and static game data (items, recipes, talent trees; the names and icons of items in an imported addon file) | The app's own Client Credentials token, cached in the database; the user login is optional and unused by syncs | [0027](adr/0027-syncs-with-the-app-token.md), [0003](adr/0003-item-data-from-search-and-manual-entry.md), [0010](adr/0010-enchants-from-recipe-data.md), [0025](adr/0025-talent-trees.md), [0031](adr/0031-professions-and-crafted-gear.md) |
 | Forever Companion | Dungeons, drops, quests, rares, class quests and item details | None (a keyless public API) | [0004](adr/0004-forever-companion-by-item-id.md), [0006](adr/0006-item-pool-from-dungeon-data.md), [0028](adr/0028-quest-chains.md), [0029](adr/0029-rares.md), [0030](adr/0030-class-quests.md) |
 | Discord | Alerts posted to webhooks the user adds | The webhook URL, stored in the database | [0021](adr/0021-notifications.md) |
 

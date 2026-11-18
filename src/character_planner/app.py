@@ -1208,8 +1208,9 @@ def create_app(
         character's; it replaces their previous import. Read in chunks and refused past
         the size limit, so a huge upload never fills memory.
 
-        Items no catalog names yet are then looked up in Blizzard's item data in the
-        background; the status's `refreshing` shows "game-items" meanwhile (#185)."""
+        Items no catalog names, or has an icon for, are then looked up in Blizzard's item
+        data and media in the background, and cached; the status's `refreshing` shows
+        "game-items" meanwhile (#185)."""
         character = game_data_character(session, character_id)
         assert character.id is not None
         limit = gamedata.LIMITS.max_bytes
@@ -1229,7 +1230,7 @@ def create_app(
         except gamedata.GameDataError as error:
             raise HTTPException(422, str(error)) from error
         if settings.has_credentials:
-            background.add_task(jobs.load_game_item_names, engine, settings, character.id, http)
+            background.add_task(jobs.load_game_item_details, engine, settings, character.id, http)
         return await run_in_threadpool(gamedata.view, session, character.id)
 
     @app.delete("/api/game-data", response_model_by_alias=False)
