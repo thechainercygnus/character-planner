@@ -14,8 +14,8 @@ Everything is kept in one SQLite database on a Docker volume.
 
 ## Before you start: keep it private
 
-The planner is built for one person and **has no sign-in of its own**. Anyone who can open
-the page can:
+Out of the box, the planner is built for one person and **has no sign-in of its own**.
+Anyone who can open the page can:
 
 - edit your plans;
 - set where alerts go;
@@ -28,7 +28,8 @@ So reach it only from places you trust:
 - a private network such as Tailscale;
 - behind a reverse proxy that asks for a password.
 
-Don't publish it on the open internet as it is.
+Don't publish it on the open internet as it is. To run it in public, turn users on first:
+see "In public" under step 8.
 
 ## 1. What you need
 
@@ -181,8 +182,8 @@ planner, so the address doesn't go into your Battle.net client.
 console, DNS), and an auth key (admin console, Settings, Keys). Your tailnet's name is
 under DNS.
 
-**A reverse proxy** must ask for a password, because the planner doesn't. With Caddy, for
-example (make the hash with `caddy hash-password`):
+**A reverse proxy**, with users off, must ask for a password, because the planner doesn't.
+With Caddy, for example (make the hash with `caddy hash-password`):
 
 ```
 planner.example.com {
@@ -305,6 +306,61 @@ Then `docker compose up -d`. Every page now asks for a Battle.net sign-in, so re
 - **Leaving:** each user can delete their own account on the Privacy page. To delete one
   for them, use `character-planner-db delete-user ACCOUNT_ID --yes` (see
   [Privacy](privacy.md)).
+
+### In public
+
+With users on, the planner can face the open internet: everyone signs in with Battle.net
+and sees only their own characters. Put it behind a reverse proxy with HTTPS, on the same
+machine. With [Caddy](https://caddyserver.com), which gets the certificate itself:
+
+```
+planner.example.com {
+	encode zstd gzip
+
+	# Metrics are for your scraper, not the internet (they also need METRICS_TOKEN).
+	respond /api/metrics 404
+
+	reverse_proxy 127.0.0.1:8000
+}
+```
+
+Point the domain's DNS at that machine, with ports 80 and 443 open. If Caddy runs as a
+container in the same Compose project, use `reverse_proxy app:8000`.
+
+In `.env`:
+
+```
+PLANNER_USERS=on
+PLANNER_SIGNUPS=on                 # or off, and let people in by turning it on briefly
+PLANNER_HOSTS=planner.example.com
+BNET_REDIRECT_URI=https://planner.example.com/auth/callback
+OPERATOR_CONTACT=<how people reach you>
+FORWARDED_ALLOW_IPS=*
+```
+
+- **`PLANNER_USERS=on` is what makes it safe to publish.** Without it there's no sign-in,
+  and anyone can see and change everything.
+- **`PLANNER_HOSTS`:** without your domain on it, requests get "Invalid host header" (#124).
+- **`BNET_REDIRECT_URI`:** register the same address on your Battle.net client (step 4).
+  With Discord DMs, also register `https://planner.example.com/auth/discord/callback` with
+  your Discord application.
+- **`OPERATOR_CONTACT`:** the privacy notice shows it, so people know whom to ask about
+  their data.
+- **`FORWARDED_ALLOW_IPS=*`:** the app trusts the proxy's `X-Forwarded-Proto` header only
+  from the addresses listed here (uvicorn's default is `127.0.0.1,::1`). Through Docker's
+  port mapping, Caddy's requests arrive from Docker's network instead. So without this
+  setting, the app thinks it's served over plain HTTP, and the sign-in cookie isn't
+  marked secure.
+  - `*` is safe only while the app's port is bound to `127.0.0.1` (the default), so only
+    the proxy can reach it.
+  - Don't combine it with `PLANNER_BIND=0.0.0.0`.
+- **Not with the Tailscale overlay:** `compose.tailscale.yaml` publishes no ports, so
+  `127.0.0.1:8000` doesn't reach the app. Run the public stack without it.
+
+Restart with `docker compose up -d`, then check:
+1. `https://planner.example.com/api/healthz` answers.
+2. Signing in with Battle.net brings you back to the app, signed in.
+3. Your browser's developer tools show the `planner_session` cookie marked **Secure**.
 
 ## 9. Alerts (optional)
 
