@@ -11,8 +11,9 @@ that character (#184): only the newest import is kept, beside the Battle.net dat
 never over it.
 
 The file carries item ids only (ADR 0047). `view` names them from the shared catalogs:
-Forever Companion's items, then Blizzard's (#185). `fetch_item_names` looks up the ids
-neither has, in Blizzard's item data, after an import.
+Forever Companion's items, then Blizzard's (#185). After an import, `fetch_item_details`
+looks up the names and icons neither has in Blizzard's item data and media, and caches
+them with the rest of the shared game data, so each is asked for once.
 """
 
 import logging
@@ -32,9 +33,11 @@ from character_planner.db import (
     Character,
     CompanionItem,
     GameDataImport,
+    ItemIcon,
     save_now,
     utcnow,
 )
+from character_planner.items import icon_url
 from character_planner.retention import REFRESH_AFTER
 from character_planner.savedvariables import LIMITS, LuaValue, SavedVariablesError, parse
 from character_planner.tokens import CredentialsError, app_token
@@ -240,7 +243,7 @@ class ItemInfo(BaseModel):
 
     name: str | None  # None until a catalog knows it: the app shows "Item <id>"
     quality: str | None  # POOR ... LEGENDARY, as Blizzard names them
-    icon_url: str | None  # Forever Companion's items only
+    icon_url: str | None  # Forever Companion's, else Blizzard's item media (cached)
     wowhead: str
 
 
@@ -307,6 +310,11 @@ def item_details(session: Session, data: GameData) -> dict[int, ItemInfo]:
         for row in session.exec(select(BlizzardItem).where(col(BlizzardItem.item_id).in_(ids)))
         if row.found
     }
+    icons = {
+        row.item_id: row.url
+        for row in session.exec(select(ItemIcon).where(col(ItemIcon.item_id).in_(ids)))
+        if row.url
+    }
     details: dict[int, ItemInfo] = {}
     for item_id, quality in qualities.items():
         info = companion.get(item_id)
@@ -315,48 +323,62 @@ def item_details(session: Session, data: GameData) -> dict[int, ItemInfo]:
         details[item_id] = ItemInfo(
             name=name,
             quality=QUALITY[quality] if quality < len(QUALITY) else None,
-            icon_url=info.icon_url if info else None,
+            icon_url=(info.icon_url if info else None) or icons.get(item_id),
             wowhead=(info.wowhead if info else None) or WOWHEAD_ITEM.format(item_id=item_id),
         )
     return details
 
 
-def unnamed_item_ids(session: Session, character_id: int) -> list[int]:
-    """The import's items no catalog names, and Blizzard hasn't been asked about in the
-    last REFRESH_AFTER (a 404 counts as asked)."""
-    view_ = view(session, character_id)
+class Wanted(BaseModel):
+    """What to ask Blizzard about an import's items: names, and icons."""
+
+    names: list[int] = []
+    icons: list[int] = []
+
+
+def wanted_lookups(session: Session, character_id: int) -> Wanted:
+    """The import's items no catalog names, or has no icon for, that Blizzard hasn't been
+    asked about in the last REFRESH_AFTER. A 404, or media without an icon, counts as
+    asked: both are cached, so neither is asked again until it would expire (ADR 0034)."""
     cutoff = utcnow() - REFRESH_AFTER
-    unnamed: list[int] = []
-    for item_id, info in view_.items.items():
-        if info.name is not None:
-            continue
-        asked = session.get(BlizzardItem, item_id)
-        if asked is None or as_utc(asked.fetched_at) < cutoff:
-            unnamed.append(item_id)
-    return sorted(unnamed)
+
+    def asked(row: BlizzardItem | ItemIcon | None) -> bool:
+        return row is not None and as_utc(row.fetched_at) >= cutoff
+
+    wanted = Wanted()
+    for item_id, info in sorted(view(session, character_id).items.items()):
+        if info.name is None and not asked(session.get(BlizzardItem, item_id)):
+            wanted.names.append(item_id)
+        if info.icon_url is None and not asked(session.get(ItemIcon, item_id)):
+            wanted.icons.append(item_id)
+    return wanted
 
 
-class NameLookup(BaseModel):
-    fetched: int = 0
+class Lookup(BaseModel):
+    names: int = 0  # items fetched, found or not
+    icons: int = 0  # icons found
     errors: list[str] = []
 
 
-def fetch_item_names(
-    session: Session, settings: Settings, item_ids: list[int], http: httpx.Client | None = None
-) -> NameLookup:
-    """Blizzard's GET /data/wow/item/{id} for each id, into the shared BlizzardItem cache
-    (crafted gear's, ADR 0031). Best effort: errors are returned, never raised."""
-    outcome = NameLookup()
-    if not item_ids:
+def fetch_item_details(
+    session: Session, settings: Settings, wanted: Wanted, http: httpx.Client | None = None
+) -> Lookup:
+    """Blizzard's GET /data/wow/item/{id} for each name, into the shared BlizzardItem cache
+    (crafted gear's, ADR 0031), and GET /data/wow/media/item/{id} for each icon, into the
+    shared ItemIcon cache (gear targets' and equipped items'). Best effort: errors are
+    returned, never raised."""
+    outcome = Lookup()
+    if not wanted.names and not wanted.icons:
         return outcome
     try:
         token = app_token(session, settings, http)
     except (httpx.HTTPError, CredentialsError) as error:
         outcome.errors.append(f"Blizzard token: {error}")
         return outcome
+    namespace = settings.static_namespace
     with BlizzardClient(settings, token, http=http) as client:
-        for item_id in item_ids:
-            result = client.get("item", f"/data/wow/item/{item_id}", settings.static_namespace)
+        for item_id in wanted.names:
+            result = client.get("item", f"/data/wow/item/{item_id}", namespace)
             if result.status not in (200, 404):
                 outcome.errors.append(f"item {item_id}: HTTP {result.status}")
                 continue
@@ -370,6 +392,16 @@ def fetch_item_names(
                     fetched_at=utcnow(),
                 ),
             )
-            outcome.fetched += 1
-    logger.info("Game data: looked up %d item names", outcome.fetched)
+            outcome.names += 1
+        for item_id in wanted.icons:
+            result = client.get("item-media", f"/data/wow/media/item/{item_id}", namespace)
+            if result.status not in (200, 404):
+                outcome.errors.append(f"item media {item_id}: HTTP {result.status}")
+                continue
+            url = icon_url(result.body) if result.ok else None
+            save_now(session, ItemIcon(item_id=item_id, url=url, fetched_at=utcnow()))
+            outcome.icons += url is not None
+    logger.info(
+        "Game data: looked up %d item names and found %d icons", outcome.names, outcome.icons
+    )
     return outcome

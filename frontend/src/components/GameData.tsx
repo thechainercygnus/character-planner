@@ -30,7 +30,7 @@ export function ImportGameDataDialog({ label = 'Import game data' }: { label?: s
   const view = useQuery({ queryKey: ['game-data'], queryFn: api.gameData })
   const onSaved = (saved: GameDataView) => {
     queryClient.setQueryData(['game-data'], saved)
-    // The item names are looked up in the background: watch the status for it.
+    // Item names and icons are looked up in the background: watch the status for it.
     void queryClient.invalidateQueries({ queryKey: ['status'] })
   }
   const upload = useMutation({ mutationFn: api.importGameData, onSuccess: onSaved })
