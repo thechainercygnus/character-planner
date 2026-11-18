@@ -1,8 +1,10 @@
 # CharacterPlannerExport: data schema, version 1
 
-The addon in `addon/CharacterPlannerExport/` (#179) writes one table per character. The
-planner's parser (#183) reads it. ADR 0047 explains the choices; this file is the
-contract between them. Change it only by adding a version (see "Versions").
+The addon, in its own repository
+([character-planner-export](https://github.com/thechainercygnus/character-planner-export),
+ADR 0051), writes one table per character. The planner's parser (#183) reads it. ADR 0047
+explains the choices; this file is the contract between them, and it stays in the planner.
+Change it only by adding a version (see "Versions").
 
 ## Where it is
 
