@@ -4,7 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import SecretStr, field_validator
+from pydantic import SecretStr, ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Region = Literal["us", "eu", "kr", "tw"]
@@ -96,6 +96,9 @@ class Settings(BaseSettings):
     # Where Discord sends the browser back after linking. Empty: this app's
     # /auth/discord/callback, on BNET_REDIRECT_URI's host.
     discord_redirect_uri: str = ""
+    # A channel where the bot keeps a pinned message about signing up (#192, ADR 0048).
+    # Empty: no message. Needs DISCORD_BOT_TOKEN, and the bot in that channel's server.
+    discord_signup_channel_id: str = ""
 
     @property
     def trusted_hosts(self) -> list[str]:
@@ -119,13 +122,14 @@ class Settings(BaseSettings):
             raise ValueError("DISCORD_INVITE_URL must be an https address")
         return value
 
-    @field_validator("discord_guild_id")
+    @field_validator("discord_guild_id", "discord_signup_channel_id")
     @classmethod
-    def _snowflake(cls, value: str) -> str:
+    def _snowflake(cls, value: str, info: ValidationInfo) -> str:
         # Goes into a Discord API path: digits only.
         value = value.strip()
         if value and not (value.isdigit() and len(value) <= 25):
-            raise ValueError("DISCORD_GUILD_ID must be a Discord server id (digits)")
+            name = (info.field_name or "").upper()
+            raise ValueError(f"{name} must be a Discord id (digits)")
         return value
 
     @field_validator("operator_contact")
@@ -155,6 +159,11 @@ class Settings(BaseSettings):
     def character_slug(self) -> str:
         # Forever character routes use {name}-{surname}, lowercase.
         return f"{self.character_name}-{self.character_surname}".lower()
+
+    @property
+    def discord_signup_message(self) -> bool:
+        """Whether the bot keeps a pinned sign-up message (#192): its token and a channel."""
+        return bool(self.discord_bot_token.get_secret_value() and self.discord_signup_channel_id)
 
     @property
     def discord_dms(self) -> bool:
