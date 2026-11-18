@@ -20,8 +20,11 @@ class Settings(BaseSettings):
     bnet_region: Region = "us"
     bnet_redirect_uri: str = "http://localhost:8000/auth/callback"
 
-    character_name: str = "Brumboldt"
-    character_surname: str = "Doomlet"
+    # Optional (#206, ADR 0049): set, they track a first character on an empty database
+    # (ADR 0036). Left empty, the planner starts blank and the first character is added
+    # in the app.
+    character_name: str = ""
+    character_surname: str = ""
 
     database_url: str = "sqlite:///data/character-planner.db"
     curated_dir: Path = Path("data/curated")
@@ -157,7 +160,9 @@ class Settings(BaseSettings):
 
     @property
     def character_slug(self) -> str:
-        # Forever character routes use {name}-{surname}, lowercase.
+        # Forever character routes use {name}-{surname}, lowercase. Empty without a name.
+        if not self.character_name:
+            return ""
         return f"{self.character_name}-{self.character_surname}".lower()
 
     @property

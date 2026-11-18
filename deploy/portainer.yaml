@@ -12,12 +12,12 @@
 #   BNET_REGION           us, eu, kr or tw (default: us)
 #   BNET_REDIRECT_URI *   https://<TS_HOSTNAME>.<your tailnet>.ts.net/auth/callback,
 #                         registered on the Battle.net client exactly
-#   CHARACTER_NAME *      the first character to track (only read on the first start)
-#   CHARACTER_SURNAME *
+#   CHARACTER_NAME        optional: a first character to track (read on the first start
+#   CHARACTER_SURNAME     only); left out, you add characters in the app (#206)
 #   PLANNER_USERS         on: Battle.net sign-in needed; the first account is the admin
 #   PLANNER_SIGNUPS       on: let more accounts sign up after the first
 #   OPERATOR_CONTACT      shown on the privacy notice
-#   PLANNER_IMAGE         another release (default: 0.5.0-rc.3, pinned)
+#   PLANNER_IMAGE         another release (default: the pinned one below)
 
 name: character-planner
 
@@ -32,8 +32,8 @@ x-planner: &planner
     BNET_CLIENT_SECRET: ${BNET_CLIENT_SECRET:?set BNET_CLIENT_SECRET}
     BNET_REGION: ${BNET_REGION:-us}
     BNET_REDIRECT_URI: ${BNET_REDIRECT_URI:?set BNET_REDIRECT_URI to https://<host>.<tailnet>.ts.net/auth/callback}
-    CHARACTER_NAME: ${CHARACTER_NAME:?set CHARACTER_NAME}
-    CHARACTER_SURNAME: ${CHARACTER_SURNAME:?set CHARACTER_SURNAME}
+    CHARACTER_NAME: ${CHARACTER_NAME:-}
+    CHARACTER_SURNAME: ${CHARACTER_SURNAME:-}
     PLANNER_USERS: ${PLANNER_USERS:-off}
     PLANNER_SIGNUPS: ${PLANNER_SIGNUPS:-off}
     OPERATOR_CONTACT: ${OPERATOR_CONTACT:-}

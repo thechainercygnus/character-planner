@@ -155,3 +155,11 @@ def test_once_runs_every_job_and_exits(settings: Settings, monkeypatch: pytest.M
     monkeypatch.setattr(worker, "pool_job", counting("pool", calls))
     assert worker.main(["--once"]) == 0
     assert calls == ["sync", "pool"]
+
+
+def test_the_scheduled_sync_waits_for_a_first_character(engine: Engine, settings: Settings) -> None:
+    """#206: a blank instance has nothing to sync until someone adds a character."""
+    blank = settings.model_copy(update={"character_name": "", "character_surname": ""})
+    with Session(engine) as session:
+        outcome = worker.sync_job(session, blank, None)
+    assert outcome == "skipped: no character to sync yet (add one in the app)"
