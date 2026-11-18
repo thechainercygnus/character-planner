@@ -501,6 +501,15 @@ export interface SendResult {
   gone: boolean
 }
 
+/** The bot's pinned sign-up message (#192): what an update did. */
+export interface SignupOutcome {
+  ok: boolean
+  action: 'posted' | 'updated' | 'none'
+  message_id: string | null
+  /** Discord's refusal, for the admin: what to grant or check. */
+  error: string | null
+}
+
 /** Discord DMs (#58, ADR 0044): the user's own linked account. */
 export interface DiscordLink {
   /** The Discord account's name. */
@@ -521,6 +530,8 @@ export interface DiscordView {
   alerts: AlertInfo[]
   /** After a test: whether the user shares the bot's server (null: unknown). */
   in_server: boolean | null
+  /** The bot keeps a pinned sign-up message (#192): DISCORD_SIGNUP_CHANNEL_ID is set. */
+  signup_message?: boolean
 }
 
 export interface WeightsView {
@@ -1155,6 +1166,7 @@ export const api = {
     }),
   unlinkDiscord: () => request<DiscordView>('/api/discord', { method: 'DELETE' }),
   testDiscord: () => request<DiscordView>('/api/discord/test', { method: 'POST' }),
+  updateSignupMessage: () => request<SignupOutcome>('/api/discord/signup-message', { method: 'POST' }),
   activatePreset: (key: string) =>
     request<WeightsView>('/api/weights/active', {
       method: 'PUT',

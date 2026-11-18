@@ -26,7 +26,7 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session, col, select
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from character_planner import discord, fields, jobs, leases, notify, upstream
+from character_planner import discord, fields, jobs, leases, notify, signup, upstream
 from character_planner import guild as guild_alerts
 from character_planner import queue as job_queue
 from character_planner.account import AccountCharacter, parse_account
@@ -255,6 +255,7 @@ ADMIN_WRITES = (
     "/api/pool/refresh",
     "/api/enchants/refresh",
     "/api/talents/refresh",
+    "/api/discord/signup-message",
 )
 # The header the web app sends with every request; state-changing ones need it (#124).
 APP_HEADER = "X-Requested-With"
@@ -1696,6 +1697,17 @@ def create_app(
         """Unlink: the Discord account's id and name are deleted, and unsent DMs with them."""
         discord.unlink(session, user_id)
         return discord.view(session, settings, user_id)
+
+    @app.post("/api/discord/signup-message")
+    def post_signup_message() -> signup.Outcome:
+        """Make the pinned sign-up message current (#192): the admin's (ADMIN_WRITES). One
+        attempt; Discord's refusal comes back to read, never retried."""
+        if not settings.discord_signup_message:
+            raise HTTPException(404, "DISCORD_SIGNUP_CHANNEL_ID and DISCORD_BOT_TOKEN aren't set")
+        if http is not None:
+            return signup.ensure(settings, http)
+        with notify.new_client() as client:
+            return signup.ensure(settings, client)
 
     @app.post("/api/discord/test")
     def test_discord(session: SessionDep, user_id: UserIdDep) -> discord.DiscordView:

@@ -88,6 +88,9 @@ export function StatusBar() {
     mutationFn: () => api.refreshPool(),
     onSuccess: () => queryClient.invalidateQueries(),
   })
+  // The bot's pinned sign-up message (#192): the admin's, when the instance has one set up.
+  const discord = useQuery({ queryKey: ['discord'], queryFn: api.discord, enabled: canAdminister })
+  const signupMessage = useMutation({ mutationFn: api.updateSignupMessage })
 
   if (status.isPending) return <div className="status-bar">Checking status…</div>
   if (status.isError) {
@@ -167,6 +170,17 @@ export function StatusBar() {
               >
                 Refresh enchant data
               </button>
+              {discord.data?.signup_message && (
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => signupMessage.mutate()}
+                  disabled={signupMessage.isPending}
+                  title="Post, or bring up to date, the bot's pinned sign-up message in DISCORD_SIGNUP_CHANNEL_ID"
+                >
+                  Update the Discord sign-up message
+                </button>
+              )}
             </>
           )}
         </div>
@@ -205,6 +219,14 @@ export function StatusBar() {
         </span>
       )}
       {refreshPool.isError && <Failure what="Pool refresh" error={refreshPool.error} />}
+      {signupMessage.isError && <Failure what="The sign-up message" error={signupMessage.error} />}
+      {signupMessage.data && (
+        <span className={signupMessage.data.ok ? 'muted' : 'error'} role="status">
+          {signupMessage.data.ok
+            ? `Sign-up message ${signupMessage.data.action} in Discord.`
+            : `The sign-up message wasn't updated: ${signupMessage.data.error}`}
+        </span>
+      )}
       {isQueued(refreshPool.data) && <Queued />}
       {refreshPool.data && !isQueued(refreshPool.data) && (
         <span className="muted">

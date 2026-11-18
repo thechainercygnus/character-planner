@@ -156,6 +156,12 @@ Choose which alerts arrive as DMs, or pause them all.
 
 **200:** [DiscordView](#schema-discordview)
 
+### `POST /api/discord/signup-message`
+
+Make the pinned sign-up message current (#192): the admin's (ADMIN_WRITES). One attempt; Discord's refusal comes back to read, never retried.
+
+**200:** [Outcome](#schema-outcome)
+
 ### `POST /api/discord/test`
 
 Send a test DM now. Getting through resumes DMs a refusal paused.
@@ -1086,6 +1092,7 @@ A destination as the app shows it: the URL masked.
 | `linked` | [LinkView](#schema-linkview) or null | yes |
 | `alerts` | list of [AlertInfo](#schema-alertinfo) | yes |
 | `in_server` | boolean or null | no |
+| `signup_message` | boolean | no |
 
 (schema-dungeonupgrade)=
 ### DungeonUpgrade
@@ -1639,6 +1646,18 @@ A character to track, as Forever looks it up: first name, surname, region.
 | `talent_id` | integer or null | no |
 | `current` | integer | yes |
 | `planned` | integer | yes |
+
+(schema-outcome)=
+### Outcome
+
+What happened, for the admin.
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `ok` | boolean | yes |
+| `action` | `posted` \\| `updated` \\| `none` | yes |
+| `message_id` | string or null | no |
+| `error` | string or null | no |
 
 (schema-perslotupdate)=
 ### PerSlotUpdate

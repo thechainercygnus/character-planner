@@ -23,7 +23,7 @@ import httpx
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
-from character_planner import jobs, notify, retention, upstream
+from character_planner import jobs, notify, retention, signup, upstream
 from character_planner.characters import all_characters, current_character
 from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, make_engine, utcnow
@@ -193,6 +193,18 @@ def tick_notifications(engine: Engine, settings: Settings, http: httpx.Client) -
         logger.exception("Notifications failed")
 
 
+def refresh_signup_message(settings: Settings) -> None:
+    """At start, make the pinned sign-up message match the settings (#192): its text comes
+    from settings, which only change with a restart. Never fails the worker."""
+    if not settings.discord_signup_message:
+        return
+    try:
+        with notify.new_client() as http:
+            signup.ensure(settings, http)  # logs what happened
+    except Exception:
+        logger.exception("The Discord sign-up message failed")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run scheduled syncs and pool refreshes.")
     parser.add_argument("--once", action="store_true", help="run every job now, then exit")
@@ -211,6 +223,7 @@ def run(engine: Engine, settings: Settings, *, once: bool) -> int:
     """The worker loop, or one pass of it with once=True."""
     init_db(engine)
     schedule = default_schedule(settings)
+    refresh_signup_message(settings)
     if once:
         outcomes = run_due(engine, settings, schedule, utcnow())
         with notify.new_client() as discord:

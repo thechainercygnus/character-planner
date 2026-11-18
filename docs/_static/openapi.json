@@ -960,6 +960,11 @@
                 "type": "null"
               }
             ]
+          },
+          "signup_message": {
+            "default": false,
+            "title": "Signup Message",
+            "type": "boolean"
           }
         },
         "required": [
@@ -3307,6 +3312,52 @@
           "planned"
         ],
         "title": "OffPlan",
+        "type": "object"
+      },
+      "Outcome": {
+        "description": "What happened, for the admin.",
+        "properties": {
+          "action": {
+            "enum": [
+              "posted",
+              "updated",
+              "none"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "message_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message Id"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "action"
+        ],
+        "title": "Outcome",
         "type": "object"
       },
       "PerSlotUpdate": {
@@ -6519,6 +6570,25 @@
           }
         },
         "summary": "Patch Discord"
+      }
+    },
+    "/api/discord/signup-message": {
+      "post": {
+        "description": "Make the pinned sign-up message current (#192): the admin's (ADMIN_WRITES). One\nattempt; Discord's refusal comes back to read, never retried.",
+        "operationId": "post_signup_message_api_discord_signup_message_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Outcome"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Post Signup Message"
       }
     },
     "/api/discord/test": {

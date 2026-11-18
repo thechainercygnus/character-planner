@@ -345,6 +345,25 @@ planner learns only its id and name), choose their alerts and send a test. If Di
 refuses a DM, because the user left the server or closed their DMs, their DMs pause with
 the reason until a test gets through. A refused bot token sends you a system alert.
 
+### A pinned sign-up message (optional)
+
+The bot can keep one pinned message in a channel of your server, saying what the planner
+is, where it is, and whether sign-ups are open (#192, ADR 0048). It needs only the bot's
+token, not the OAuth client.
+
+1. In the channel's settings, under **Permissions**, allow the bot **View Channel**,
+   **Send Messages**, **Read Message History** and **Pin Messages**. Or invite the bot
+   with those permissions: in the URL Generator, tick `bot` and those four, or use
+   permission integer `2251799813753856`.
+2. Copy the channel's id (Developer Mode, right-click the channel), and set
+   `DISCORD_SIGNUP_CHANNEL_ID` in `.env`. Restart.
+
+The worker posts and pins the message when it starts, and brings it up to date at every
+start after that, since its text comes from your settings (`PLANNER_SIGNUPS`,
+`OPERATOR_CONTACT`, the address). As admin, **Update the Discord sign-up message** in the
+⋯ menu does the same at once, and says what Discord answered. If Discord refuses, because
+of a missing permission or a wrong channel id, it says what to fix and doesn't retry.
+
 ## 10. Logs
 
 Both containers log to the console and to rotating files on the data volume (ADR 0019):
