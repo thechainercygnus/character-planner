@@ -415,6 +415,11 @@ token, not the OAuth client.
    **Send Messages**, **Read Message History** and **Pin Messages**. Or invite the bot
    with those permissions: in the URL Generator, tick `bot` and those four, or use
    permission integer `2251799813753856`.
+
+   **Pin Messages** is the one most often missing. It's newer than Manage Messages, which
+   used to cover pinning, so roles made before it usually lack it. Grant it on the
+   channel or on the bot's role, and check that no channel override (for the role or
+   `@everyone`) denies it.
 2. Copy the channel's id (Developer Mode, right-click the channel), and set
    `DISCORD_SIGNUP_CHANNEL_ID` in `.env`. Restart.
 
@@ -423,6 +428,10 @@ start after that, since its text comes from your settings (`PLANNER_SIGNUPS`,
 `OPERATOR_CONTACT`, the address). As admin, **Update the Discord sign-up message** in the
 ⋯ menu does the same at once, and says what Discord answered. If Discord refuses, because
 of a missing permission or a wrong channel id, it says what to fix and doesn't retry.
+
+If the bot can post but not pin, it removes its post again, so the next attempt doesn't
+leave a second one behind. You may see the message arrive and vanish; the answer names
+the missing permission (#212).
 
 ## 10. Logs
 

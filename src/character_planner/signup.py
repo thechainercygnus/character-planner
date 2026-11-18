@@ -30,7 +30,12 @@ from character_planner.notify import app_url
 logger = logging.getLogger(__name__)
 
 MARKER = "Character Planner · sign-up"  # the footer that marks the bot's own message
+# Everything the bot needs in the channel (ADR 0048), for the guide and for the admin.
 PERMISSIONS = "View Channel, Send Messages, Read Message History and Pin Messages"
+# What each step needs on its own (#212): a refused step names only its own.
+READ_PINS = "View Channel and Read Message History"
+POST = "Send Messages"
+PIN = "Pin Messages"
 
 
 class Outcome(BaseModel):
@@ -85,13 +90,21 @@ class _Refused(Exception):
     """Discord said no: the message is the admin's to read."""
 
 
-def _check(response: httpx.Response, doing: str) -> Any:
+class _NotAllowed(_Refused):
+    """A 403: the bot lacks a permission, named in the message when the step has one."""
+
+
+def _check(response: httpx.Response, doing: str, needs: str | None = None) -> Any:
+    """The response's body, or _Refused saying why. `needs` is the permission this step
+    needs, so a 403 names that one and not every permission the bot uses (#212)."""
     if response.status_code in (200, 201, 204):
         return response.json() if response.content else None
     if response.status_code == 401:
         raise _Refused("Discord refused DISCORD_BOT_TOKEN")
     if response.status_code == 403:
-        raise _Refused(f"The bot isn't allowed to {doing}: give it {PERMISSIONS} in that channel")
+        if needs is None:
+            raise _NotAllowed(f"Discord refused to let the bot {doing}")
+        raise _NotAllowed(f"The bot can't {doing}: give it {needs} in that channel")
     if response.status_code == 404:
         raise _Refused(
             "Discord doesn't know DISCORD_SIGNUP_CHANNEL_ID, or the bot can't see it: "
@@ -129,6 +142,7 @@ def ensure(settings: Settings, http: httpx.Client) -> Outcome:
         pins = _check(
             http.get(f"{API}/channels/{channel}/messages/pins", headers=headers),
             "read the channel's pins",
+            READ_PINS,
         )
         existing = _ours(pins, bot_id) if isinstance(bot_id, str) else None
         if existing is not None:
@@ -143,18 +157,27 @@ def ensure(settings: Settings, http: httpx.Client) -> Outcome:
         posted = _check(
             http.post(f"{API}/channels/{channel}/messages", json=body, headers=headers),
             "post in the channel",
+            POST,
         )
         message_id = fields.get(posted, "id")
         if not isinstance(message_id, str):
             raise _Refused("Discord didn't say which message it posted")
         pinned = http.put(f"{API}/channels/{channel}/messages/pins/{message_id}", headers=headers)
         try:
-            _check(pinned, "pin its message")
-        except _Refused:
+            _check(pinned, "pin its message", PIN)
+        except _Refused as refused:
             # Unpinned, the next attempt wouldn't find it and would post another: take it
-            # back (authors may always delete their own messages), then report.
+            # back (authors may always delete their own messages), then say so, since the
+            # admin may have seen the post arrive and vanish (#212).
             http.delete(f"{API}/channels/{channel}/messages/{message_id}", headers=headers)
-            raise
+            if isinstance(refused, _NotAllowed):
+                raise _Refused(
+                    "Posted, but couldn't pin it, so the post was removed: "
+                    f"give the bot {PIN} in that channel"
+                ) from None
+            raise _Refused(
+                f"Posted, but couldn't pin it, so the post was removed: {refused}"
+            ) from None
     except _Refused as refused:
         logger.warning("Discord: the sign-up message wasn't updated: %s", refused)
         return Outcome(ok=False, action="none", error=str(refused))
