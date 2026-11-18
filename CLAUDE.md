@@ -37,7 +37,7 @@ Run scheduled jobs once: `uv run character-planner-worker --once` (sync, then po
 Changed a table in `db.py`? Add a migration in the same PR: `uv run alembic revision --autogenerate -m "..."`, then read and correct it (ADR 0022). `tests/test_migrations.py` fails until it matches. `uv run character-planner-db current` shows the schema version.
 Deploy (Docker): `docker compose up -d --build`; over Tailscale add `-f compose.tailscale.yaml`; on Postgres add `-f compose.postgres.yaml` (ADR 0038). Local test builds must set their own `PLANNER_IMAGE`, or they overwrite the `.env`'s image tag. See `docs/self-hosting.md`.
 Docs site (Read the Docs, `.readthedocs.yaml`): `uv run --group docs sphinx-build -W -b html docs docs/_build/html`. Warnings fail the build, as in CI.
-Release: bump `pyproject.toml`'s version in a PR, then the user tags `vX.Y.Z` on `main`; `release.yml` publishes to GHCR (ADR 0026, `docs/releasing.md`). Tagging is the user's call, like merging.
+Release: bump `pyproject.toml`'s version in a PR, then the user tags `vX.Y.Z` on `main`; `release.yml` publishes to GHCR (ADR 0026, `docs/releasing.md`). Tagging is the user's call, like merging. Each minor or major release starts `release/X.Y` from its tag and retires the previous one; patches are backported there by PR, tagged there, then merged back into `main` (ADR 0050).
 
 Project skills in `.claude/skills/` (Claude Code loads them): `ship-pr` takes finished work to a ready PR and watches its CI, `roadmap` edits #25 through `roadmap.py` (a diff first, `--save` to write), `cut-rc` tags a test release when Bryce asks, `stack-debug` looks into a running stack read-only, `layout-probe` measures and fixes layout bugs with Playwright, and `change-checklist` lists what each kind of change must also touch.
 
@@ -62,7 +62,8 @@ DCO sign-off). The rules here add what agents need on top.
 ## Workflow
 
 - One branch per issue, named `feature/<issue>-<slug>` (or `fix/<slug>` for small fixes
-  without an issue). Branch from an up-to-date `main`. Never commit or push to `main`.
+  without an issue). Branch from an up-to-date `main`, or from `release/X.Y` for a patch to the
+  current release (milestone `vX.Y.Z`, Z above 0; ADR 0050). Never commit or push to `main` or `release/*`.
 - Before opening a pull request, and before pushing more commits to an open one: fetch
   `main`, merge `origin/main` into the branch, resolve any conflicts, and rerun the full
   checks on the merged result. This catches conflicts and gaps between PRs (a test from
