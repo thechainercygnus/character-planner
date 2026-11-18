@@ -23,6 +23,7 @@ grep -m1 '^version' pyproject.toml        # X.Y.Z: rc tags don't bump it
 git tag --list "vX.Y.Z-rc.*" --sort=-v:refname | head -1   # the last rc: N is one more
 ```
 Tags carry the `v` prefix (`release.yml` runs on `v*`), even if Bryce writes `0.5.0-rc.4`.
+An rc for the next minor is tagged on `main`; an rc for a patch, on `release/X.Y`.
 A tag that failed is never reused: take the next N.
 
 ## 3. Tag the merge commit and push
@@ -55,6 +56,12 @@ Give Bryce:
   For each merged PR, write steps he can follow in the app, and what he should see. Skip
   PRs with nothing to see (docs, CI). Mark anything that needs a second account or
   Discord setup.
+
+## After a full release (not an rc)
+Full releases follow `docs/releasing.md`. For a minor or major one (`vX.Y.0`), its last
+step creates `release/X.Y` from the tag and retires the previous release branch: merge it
+into `main` if anything on it is missing, then delete it. Offer both to Bryce; deleting a
+branch is his go-ahead.
 
 ## 6. Offer the Portainer pin
 `deploy/portainer.yaml` pins its default image by tag and digest. Offer a small PR (via
