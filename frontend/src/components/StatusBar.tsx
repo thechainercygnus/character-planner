@@ -106,9 +106,12 @@ export function StatusBar() {
       <CharacterSwitcher />
       <span>Last sync: {lastSynced(status.data.latest_snapshots)}</span>
       {status.data.can_sync ? (
-        <button type="button" onClick={() => sync.mutate()} disabled={sync.isPending}>
-          {sync.isPending ? 'Syncing…' : 'Sync now'}
-        </button>
+        // Nothing to sync on a blank instance (#206): the switcher offers to add one.
+        status.data.character !== null && (
+          <button type="button" onClick={() => sync.mutate()} disabled={sync.isPending}>
+            {sync.isPending ? 'Syncing…' : 'Sync now'}
+          </button>
+        )
       ) : (
         <span className="warn" role="alert">
           No Battle.net client: set BNET_CLIENT_ID and BNET_CLIENT_SECRET in .env to sync.

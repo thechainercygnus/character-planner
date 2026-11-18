@@ -70,6 +70,7 @@ def current_character(session: Session, settings: Settings) -> Character | None:
 
 
 def seed_from_settings(session: Session, settings: Settings) -> Character | None:
+    # Optional since #206 (ADR 0049): without CHARACTER_NAME the planner starts blank.
     if not settings.character_name:
         return None
     character = Character(

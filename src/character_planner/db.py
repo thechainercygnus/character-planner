@@ -475,7 +475,7 @@ def save_owned[T: SQLModel](
 ) -> T:
     """Insert or update the character's row; the caller commits."""
     if character_id is None:
-        raise NoCharacter("No character yet: CHARACTER_NAME in .env names the first")
+        raise NoCharacter("No character yet: add one in the app")
     row = owned(session, model, character_id, **match)
     if row is None:
         row = model(character_id=character_id, **match, **values)

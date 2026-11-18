@@ -815,7 +815,7 @@ def create_app(
         """
         character = session.get(Character, character_id) if character_id is not None else None
         if character is None or character.id is None:
-            raise HTTPException(409, "No character to sync: CHARACTER_NAME in .env names the first")
+            raise HTTPException(409, "No character yet: add one in the app, then sync it")
         wait = jobs.sync_cooldown_left(session, character.id, settings.sync_cooldown_minutes)
         if wait > 0:
             minutes = max(1, round(wait / 60))
@@ -1214,7 +1214,7 @@ def create_app(
         """Fallback for data the API doesn't return: store it in the same shape, for the
         current character."""
         if character_id is None:
-            raise HTTPException(409, "No character: CHARACTER_NAME in .env names the first")
+            raise HTTPException(409, "No character yet: add one in the app")
         snapshot = Snapshot(
             character_id=character_id,
             source="manual",

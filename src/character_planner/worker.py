@@ -44,8 +44,8 @@ def sync_job(session: Session, settings: Settings, http: httpx.Client | None) ->
     # CredentialsError, which fails the job and sends the system alert.
     if not settings.has_credentials:
         return "skipped: no Battle.net client (BNET_CLIENT_ID, BNET_CLIENT_SECRET in .env)"
-    if current_character(session, settings) is None:  # seeds the first from .env
-        return "skipped: no character to sync (CHARACTER_NAME in .env names the first)"
+    if current_character(session, settings) is None:  # seeds the first, if .env names one
+        return "skipped: no character to sync yet (add one in the app)"
     outcomes: list[str] = []
     for character in all_characters(session):  # every tracked character (#14)
         statuses = jobs.sync_character(session, settings, character, http=http)

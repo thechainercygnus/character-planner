@@ -74,8 +74,11 @@ function FromAccount({ onPick, busy }: { onPick: (character: NewCharacter) => vo
   )
 }
 
-/** Adds a character to track, then selects and syncs it. */
-function AddCharacter({ onDone }: { onDone: () => void }) {
+/**
+ * Adds a character to track, then selects and syncs it. With `onDone` it can be cancelled
+ * (the header's switcher); without, it's the only way in (a blank instance's landing page).
+ */
+export function AddCharacter({ onDone }: { onDone?: () => void }) {
   const queryClient = useQueryClient()
   const [name, setName] = useState('')
   const [surname, setSurname] = useState('')
@@ -88,7 +91,7 @@ function AddCharacter({ onDone }: { onDone: () => void }) {
       return added
     },
     onSuccess: async () => {
-      onDone()
+      onDone?.()
       await queryClient.resetQueries()
     },
   })
@@ -124,9 +127,11 @@ function AddCharacter({ onDone }: { onDone: () => void }) {
         <button type="submit" disabled={add.isPending}>
           {add.isPending ? 'Adding and syncing…' : 'Add and sync'}
         </button>
-        <button type="button" className="secondary" onClick={onDone} disabled={add.isPending}>
-          Cancel
-        </button>
+        {onDone && (
+          <button type="button" className="secondary" onClick={onDone} disabled={add.isPending}>
+            Cancel
+          </button>
+        )}
         {add.isError && <span className="error">Couldn't add it: {add.error.message}</span>}
       </form>
     </div>
@@ -153,7 +158,20 @@ export function CharacterSwitcher() {
     }
   }, [list.data, chosen, known, queryClient])
 
-  if (!list.data || characters.length === 0) return null
+  if (!list.data) return null
+  // A blank instance (#206): nothing to switch between yet, only a first one to add.
+  if (characters.length === 0) {
+    return (
+      <span className="character-switcher">
+        {!adding && (
+          <button type="button" className="secondary" onClick={() => setAdding(true)}>
+            Add a character
+          </button>
+        )}
+        {adding && <AddCharacter onDone={() => setAdding(false)} />}
+      </span>
+    )
+  }
   const current = known ? chosen : list.data.default_id
 
   const change = (value: string) => {

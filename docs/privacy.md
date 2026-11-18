@@ -95,9 +95,9 @@ An operator handling a request can do it for anyone:
 docker compose exec app character-planner-db delete-user ACCOUNT_ID --yes
 ```
 
-**With no characters left,** the next start tracks the one `CHARACTER_NAME` and
-`CHARACTER_SURNAME` name again. To stop using a character's data for good, also stop the
-planner (`docker compose down`) or change those settings first.
+**With no characters left,** the planner is blank again, unless `CHARACTER_NAME` and
+`CHARACTER_SURNAME` are set: then the next start tracks that character again. To stop
+using it for good, remove those settings too.
 
 **Backups and logs:** they aren't touched. Delete them yourself if they hold the
 character's data.
