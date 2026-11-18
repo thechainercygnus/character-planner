@@ -82,7 +82,7 @@ def authorize_url(settings: Settings, state: str) -> str:
     return f"{AUTHORIZE_URL}?{urlencode(params)}"
 
 
-def _bot_headers(settings: Settings) -> dict[str, str]:
+def bot_headers(settings: Settings) -> dict[str, str]:
     # Discord asks bots for a "DiscordBot (url, version)" User-Agent.
     return {
         "Authorization": f"Bot {settings.discord_bot_token.get_secret_value()}",
@@ -141,7 +141,7 @@ def in_server(settings: Settings, http: httpx.Client, discord_user_id: str) -> b
     try:
         response = http.get(
             f"{API}/guilds/{settings.discord_guild_id}/members/{discord_user_id}",
-            headers=_bot_headers(settings),
+            headers=bot_headers(settings),
             timeout=10,
         )
     except httpx.HTTPError:
@@ -180,7 +180,7 @@ def send_dm(
     """Open (or reopen) the DM channel and post the message to it."""
     if not settings.discord_dms:
         return SendResult(ok=False, error="Discord DMs aren't set up on this instance", gone=True)
-    headers = _bot_headers(settings)
+    headers = bot_headers(settings)
     # A webhook's own fields (its display name) don't apply to a bot's message.
     body = {k: v for k, v in message.items() if k != "username"}
     try:
@@ -273,6 +273,7 @@ class DiscordView(BaseModel):
     linked: LinkView | None
     alerts: list[AlertInfo]  # the alerts a DM can carry: the user ones
     in_server: bool | None = None  # after linking or a test: whether they share the server
+    signup_message: bool = False  # the bot keeps a pinned sign-up message (#192)
 
 
 def view(
@@ -281,6 +282,7 @@ def view(
     destination = linked(session, user_id) if settings.discord_dms else None
     return DiscordView(
         available=settings.discord_dms,
+        signup_message=settings.discord_signup_message,
         invite_url=settings.discord_invite_url or None,
         linked=LinkView(
             name=destination.name,

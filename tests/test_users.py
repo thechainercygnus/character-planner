@@ -258,6 +258,7 @@ UNSCOPED = {
         "PUT /api/enchants/corrections/crafted/{item_id}",
         "DELETE /api/enchants/corrections/crafted/{item_id}",
         "PUT /api/enchants/corrections/per-slot",
+        "POST /api/discord/signup-message",  # the bot's pinned sign-up message (#192)
         "DELETE /api/enchants/corrections/per-slot",
     },
     # Shared reference data, the same for everyone: readable by any signed-in user.
