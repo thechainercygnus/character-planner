@@ -349,8 +349,9 @@ export interface GuestQuery {
 }
 
 export interface Status {
-  character: string
-  namespace: string
+  /** The selected character's slug; null on a blank instance (#206). */
+  character: string | null
+  namespace: string | null
   /** Syncs use the app's own token (#107): this says the Battle.net client is set. */
   can_sync: boolean
   /** The last sync's answer: false after a 404 (wrong name or region), null before one. */
