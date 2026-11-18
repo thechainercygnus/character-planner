@@ -2002,6 +2002,14 @@
             "title": "Imported",
             "type": "boolean"
           },
+          "items": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ItemInfo"
+            },
+            "default": {},
+            "title": "Items",
+            "type": "object"
+          },
           "uploaded_at": {
             "anyOf": [
               {
@@ -2833,6 +2841,56 @@
           "created_at"
         ],
         "title": "ItemChoiceView",
+        "type": "object"
+      },
+      "ItemInfo": {
+        "description": "What the app shows for an item id in the file (#185): the file has ids only.",
+        "properties": {
+          "icon_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Icon Url"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "quality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quality"
+          },
+          "wowhead": {
+            "title": "Wowhead",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "quality",
+          "icon_url",
+          "wowhead"
+        ],
+        "title": "ItemInfo",
         "type": "object"
       },
       "ItemStat": {
@@ -7513,7 +7571,7 @@
         "summary": "Get Game Data"
       },
       "post": {
-        "description": "Import CharacterPlannerExport.lua, sent as the request body\n(application/octet-stream), for the selected character. The file must be that\ncharacter's; it replaces their previous import. Read in chunks and refused past\nthe size limit, so a huge upload never fills memory.",
+        "description": "Import CharacterPlannerExport.lua, sent as the request body\n(application/octet-stream), for the selected character. The file must be that\ncharacter's; it replaces their previous import. Read in chunks and refused past\nthe size limit, so a huge upload never fills memory.\n\nItems no catalog names yet are then looked up in Blizzard's item data in the\nbackground; the status's `refreshing` shows \"game-items\" meanwhile (#185).",
         "operationId": "post_game_data_api_game_data_post",
         "parameters": [
           {

@@ -279,7 +279,7 @@ The character's newest import of the addon's data: bags, bank and quest log, wit
 
 ### `POST /api/game-data`
 
-Import CharacterPlannerExport.lua, sent as the request body (application/octet-stream), for the selected character. The file must be that character's; it replaces their previous import. Read in chunks and refused past the size limit, so a huge upload never fills memory.
+Import CharacterPlannerExport.lua, sent as the request body (application/octet-stream), for the selected character. The file must be that character's; it replaces their previous import. Read in chunks and refused past the size limit, so a huge upload never fills memory. Items no catalog names yet are then looked up in Blizzard's item data in the background; the status's `refreshing` shows "game-items" meanwhile (#185).
 
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
@@ -1349,6 +1349,7 @@ A character's imported game data, as the app shows it.
 | `addon_version` | string or null | no |
 | `captured` | [SectionAge](#schema-sectionage) or null | no |
 | `data` | [GameData](#schema-gamedata) or null | no |
+| `items` | map of [ItemInfo](#schema-iteminfo) | no |
 
 (schema-gearchange)=
 ### GearChange
@@ -1534,6 +1535,18 @@ The guild's alert channel (#163), as members see it: the webhook masked.
 | `name` | string | yes |
 | `choice` | string | yes |
 | `created_at` | string | yes |
+
+(schema-iteminfo)=
+### ItemInfo
+
+What the app shows for an item id in the file (#185): the file has ids only.
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `name` | string or null | yes |
+| `quality` | string or null | yes |
+| `icon_url` | string or null | yes |
+| `wowhead` | string | yes |
 
 (schema-itemstat)=
 ### ItemStat

@@ -1198,12 +1198,18 @@ def create_app(
 
     @app.post("/api/game-data", response_model_by_alias=False)
     async def post_game_data(
-        request: Request, session: SessionDep, character_id: CharacterIdDep
+        request: Request,
+        session: SessionDep,
+        character_id: CharacterIdDep,
+        background: BackgroundTasks,
     ) -> gamedata.GameDataView:
         """Import CharacterPlannerExport.lua, sent as the request body
         (application/octet-stream), for the selected character. The file must be that
         character's; it replaces their previous import. Read in chunks and refused past
-        the size limit, so a huge upload never fills memory."""
+        the size limit, so a huge upload never fills memory.
+
+        Items no catalog names yet are then looked up in Blizzard's item data in the
+        background; the status's `refreshing` shows "game-items" meanwhile (#185)."""
         character = game_data_character(session, character_id)
         assert character.id is not None
         limit = gamedata.LIMITS.max_bytes
@@ -1222,6 +1228,8 @@ def create_app(
             await run_in_threadpool(gamedata.import_for, session, character, bytes(body))
         except gamedata.GameDataError as error:
             raise HTTPException(422, str(error)) from error
+        if settings.has_credentials:
+            background.add_task(jobs.load_game_item_names, engine, settings, character.id, http)
         return await run_in_threadpool(gamedata.view, session, character.id)
 
     @app.delete("/api/game-data", response_model_by_alias=False)
