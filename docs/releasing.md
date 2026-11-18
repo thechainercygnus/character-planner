@@ -15,6 +15,26 @@ Releases are tags. Pushing a tag `vX.Y.Z` that matches `pyproject.toml`'s versio
      PRs;
    - the SBOM is attached.
 
+## Branches
+
+Development happens on `main`: every feature and fix goes there first, and minor and major
+releases (`vX.Y.0`) are tagged there. Each minor or major release also gets a release
+branch, `release/X.Y`, for its patches (Bryce, 2026-11-18):
+
+- **At most two targets at a time.** `main` holds the next version, and `release/X.Y`
+  holds fixes for the current one. A pull request targets `main`, unless it's a patch for
+  the current release (its milestone is `vX.Y.Z` with Z above 0).
+- **One release branch at a time.** Only the newest release gets patches. When
+  `vX.Y.0` is released, `release/X.Y` is created from its tag, and the previous release
+  branch retires: no more patches go to it. Its tags keep every release it made, so the
+  branch itself can be deleted.
+- **Patches flow back.** Each patch is merged back into `main` once it's tagged, so `main`
+  never lacks a fix that shipped.
+- **Dependabot updates `main` only.** A security fix a release needs is backported to
+  `release/X.Y` like any other patch.
+- **Protection:** `release/**` gets the same ruleset as `main`: changes by pull request,
+  with the required checks.
+
 ## Cutting a release
 
 1. **Bump the version** in `pyproject.toml` on a branch, run `uv lock`, and merge the PR.
@@ -43,6 +63,17 @@ Releases are tags. Pushing a tag `vX.Y.Z` that matches `pyproject.toml`'s versio
 
    The digest exists only once the image is published, so this comes after the release.
    Test releases (rc) can be pinned the same way while they're being tried.
+6. **Start its release branch, and retire the previous one.** For a minor or major
+   release (`vX.Y.0`), create `release/X.Y` from the tag:
+
+   ```bash
+   git branch release/0.6 v0.6.0
+   git push -u origin release/0.6
+   ```
+
+   Then retire the previous release branch. Merge it into `main` one last time if anything
+   on it isn't there yet, then delete it (`git push origin --delete release/0.5`). Its
+   tags stay.
 
 ### Test releases
 
@@ -59,22 +90,24 @@ pull it without logging in.
 ### Patch releases
 
 A patch (`vX.Y.Z` with Z above 0) holds only fixes for its release, even when `main` has
-moved on to the next one. It's built on a release branch:
+moved on to the next one. It's built on the release's branch, `release/X.Y`, which step 6
+above created:
 
-1. **Branch from the release's tag,** once per minor version, and push it:
-
-   ```bash
-   git branch release/0.5 v0.5.0
-   git push -u origin release/0.5
-   ```
-
-2. **Each fix is a branch from `release/X.Y`,** and its pull request targets it
+1. **The fix lands on `main` first,** as usual, when it applies there too. The patch then
+   backports it: a branch from `release/X.Y`, with the fix's commits cherry-picked
+   (`git cherry-pick -x <commit>`, so each names its original). A fix only the release
+   needs is written on that branch directly.
+2. **Each patch branch's pull request targets `release/X.Y`** and its pull request targets it
    (`gh pr create --base release/0.5`). CI runs on it as on `main`: the checks, CodeQL,
    Semgrep, Trivy and Dependency Review all trigger for `release/**`.
 3. **Bump the version** in `pyproject.toml` on the release branch, in its own pull
    request, then tag the merge commit on `release/X.Y` as in "Cutting a release".
-4. **Merge the release branch back into `main`** in a pull request, so `main` gets the
-   fixes too. Resolve the version in `pyproject.toml` in `main`'s favour.
+4. **Merge the release branch back into `main`** in a pull request, as a merge commit
+   (not a squash), so later patches merge back cleanly. Fixes that came from `main`
+   arrive unchanged; the version moves to the patch's. Keep `main`'s version if it has
+   already moved to the next minor.
+5. **Issues a patch closes** don't close themselves: GitHub only closes from the default
+   branch. The merge-back's `Closes #N` closes them.
 
 The release notes count from the previous release's tag, so a patch's notes list only
 its own pull requests.

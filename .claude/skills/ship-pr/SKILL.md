@@ -66,9 +66,10 @@ current system reminder; don't copy it from an old commit.
 git push -u origin <branch>
 gh issue view <n> --json milestone --jq .milestone.title   # the PR takes the issue's milestone
 gh pr create --base main --title "<title>" --body-file <file> --milestone <milestone>
-# A patch for a release (its milestone is vX.Y.Z, Z above 0): branch from release/X.Y,
-# merge release/X.Y in step 1 instead of main, and use --base release/X.Y
-# (docs/releasing.md, "Patch releases").
+# A patch for the current release (its milestone is vX.Y.Z, Z above 0): branch from
+# release/X.Y, merge release/X.Y in step 1 instead of main, and use --base release/X.Y.
+# Everything else targets main. Only the newest release/X.Y takes patches
+# (docs/releasing.md, "Branches" and "Patch releases").
 ```
 There's no PR template. Bodies follow this shape:
 ```
