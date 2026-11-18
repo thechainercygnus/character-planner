@@ -56,6 +56,29 @@ The first publish creates the package on GitHub as **private**. Make it public o
 the package's settings (Package settings, Danger zone, Change visibility), so others can
 pull it without logging in.
 
+### Patch releases
+
+A patch (`vX.Y.Z` with Z above 0) holds only fixes for its release, even when `main` has
+moved on to the next one. It's built on a release branch:
+
+1. **Branch from the release's tag,** once per minor version, and push it:
+
+   ```bash
+   git branch release/0.5 v0.5.0
+   git push -u origin release/0.5
+   ```
+
+2. **Each fix is a branch from `release/X.Y`,** and its pull request targets it
+   (`gh pr create --base release/0.5`). CI runs on it as on `main`: the checks, CodeQL,
+   Semgrep, Trivy and Dependency Review all trigger for `release/**`.
+3. **Bump the version** in `pyproject.toml` on the release branch, in its own pull
+   request, then tag the merge commit on `release/X.Y` as in "Cutting a release".
+4. **Merge the release branch back into `main`** in a pull request, so `main` gets the
+   fixes too. Resolve the version in `pyproject.toml` in `main`'s favour.
+
+The release notes count from the previous release's tag, so a patch's notes list only
+its own pull requests.
+
 ## Reproducible builds
 
 What's in an image, and whether building the same commit again gives the same bytes:
