@@ -103,6 +103,34 @@ def test_the_message_mentions_dms_only_when_they_are_offered(configured: Setting
     assert "Alerts as DMs" in text(dms)
 
 
+def test_a_plain_text_line_stands_without_the_card(configured: Settings) -> None:
+    """#213: shown where embeds are hidden, in previews and to screen readers."""
+    line = signup.message(configured)["content"]
+    assert line == (
+        "**Character Planner**: plan your WoW Forever character at "
+        "<http://localhost:8000/>. Sign-ups are open."
+    )
+    closed = configured.model_copy(update={"planner_signups": False})
+    assert signup.message(closed)["content"].endswith(" Sign-ups are closed for now.")
+    single = configured.model_copy(update={"planner_users": False})
+    assert signup.message(single)["content"].endswith("<http://localhost:8000/>.")
+    # No address to give (an unusable redirect URI): the line still reads on its own.
+    assert signup.headline(single, None) == (
+        "**Character Planner**: plan your WoW Forever character."
+    )
+
+
+@respx.mock
+def test_an_existing_message_gains_the_line_when_edited(configured: Settings) -> None:
+    """#213: the pinned message is edited in place, so it gets the line with no new post."""
+    routes = mock_discord(pinned(a_message(OURS, BOT, signup.MARKER)))
+    assert ensure(configured).action == "updated"
+    sent = json.loads(routes["edit"].calls.last.request.content)
+    assert sent["content"].startswith("**Character Planner**: plan your WoW Forever character")
+    assert sent["embeds"][0]["footer"]["text"] == signup.MARKER
+    assert not routes["post"].called
+
+
 def test_the_message_never_pings_and_carries_its_marker(configured: Settings) -> None:
     body = signup.message(configured)
     assert body["allowed_mentions"] == {"parse": []}
