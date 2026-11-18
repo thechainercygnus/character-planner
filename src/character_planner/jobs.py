@@ -382,24 +382,25 @@ def load_missing_data(engine: Engine, settings: Settings, http: httpx.Client | N
 GAME_ITEMS = "game-items"  # the lease, and its name in the status's `refreshing`
 
 
-def load_game_item_names(
+def load_game_item_details(
     engine: Engine, settings: Settings, character_id: int, http: httpx.Client | None = None
 ) -> None:
-    """After an import (#185): look up the items in it no catalog names yet, in the
-    background. One lookup at a time; a second import while one runs waits for the next."""
+    """After an import (#185): look up the names and icons of its items that no catalog
+    has yet, in the background. One lookup at a time; a second import while one runs
+    leaves its items for the next."""
     with Session(engine) as session:
-        unnamed = gamedata.unnamed_item_ids(session, character_id)
-        if not unnamed:
+        wanted = gamedata.wanted_lookups(session, character_id)
+        if not wanted.names and not wanted.icons:
             return
         try:
             with lease(engine, GAME_ITEMS):
-                result = gamedata.fetch_item_names(session, settings, unnamed, http)
+                result = gamedata.fetch_item_details(session, settings, wanted, http)
         except Busy:
-            logger.info("Game data: an item name lookup is already running")
+            logger.info("Game data: an item lookup is already running")
             return
         except Exception:
             session.rollback()
-            logger.exception("Game data: the item name lookup failed")
+            logger.exception("Game data: the item lookup failed")
             return
         for error in result.errors:
             logger.warning("Game data items: %s", error)
