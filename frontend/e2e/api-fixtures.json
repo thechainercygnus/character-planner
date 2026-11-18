@@ -9255,5 +9255,117 @@
    "recent": [],
    "system_alerts_to_user": true
   }
+ },
+ "/api/game-data": {
+  "status": 200,
+  "body": {
+   "imported": true,
+   "uploaded_at": "2026-11-18T19:54:38.626606Z",
+   "captured_at": "2026-11-14T23:46:40Z",
+   "addon_version": "0.1.0",
+   "captured": {
+    "bags": "2026-11-14T23:45:50Z",
+    "bank": "2026-11-13T20:00:00Z",
+    "quests": "2026-11-14T23:46:30Z"
+   },
+   "data": {
+    "schema_version": 1,
+    "addon_version": "0.1.0",
+    "captured_at": 1794700000,
+    "character": {
+     "name": "Brumboldt",
+     "surname": "Doomlet",
+     "level": 24,
+     "region": "US",
+     "realm": "91"
+    },
+    "bags": {
+     "captured_at": 1794699950,
+     "items": [
+      {
+       "container": 0,
+       "slot": 1,
+       "item_id": 270230,
+       "count": 1,
+       "quality": 3
+      },
+      {
+       "container": 0,
+       "slot": 2,
+       "item_id": 6948,
+       "count": 1,
+       "quality": 3
+      },
+      {
+       "container": 0,
+       "slot": 3,
+       "item_id": 2589,
+       "count": 1,
+       "quality": 3
+      },
+      {
+       "container": 0,
+       "slot": 4,
+       "item_id": 4306,
+       "count": 1,
+       "quality": 3
+      }
+     ]
+    },
+    "bank": {
+     "captured_at": 1794600000,
+     "items": []
+    },
+    "quests": {
+     "captured_at": 1794699990,
+     "log": [
+      {
+       "quest_id": 1640,
+       "title": "The Summoning",
+       "complete": false,
+       "objectives": [
+        {
+         "text": "Summon and defeat Bartleby",
+         "type": "monster",
+         "done": 0,
+         "needed": 1,
+         "finished": false
+        }
+       ]
+      }
+     ],
+     "completed": [
+      1638,
+      1639
+     ]
+    }
+   },
+   "items": {
+    "270230": {
+     "name": "Kindlegem Girdle",
+     "quality": "RARE",
+     "icon_url": "https://wow.zamimg.com/images/wow/icons/medium/inv_belt_20.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=270230"
+    },
+    "6948": {
+     "name": null,
+     "quality": "RARE",
+     "icon_url": null,
+     "wowhead": "https://www.wowhead.com/forever/item=6948"
+    },
+    "2589": {
+     "name": null,
+     "quality": "RARE",
+     "icon_url": null,
+     "wowhead": "https://www.wowhead.com/forever/item=2589"
+    },
+    "4306": {
+     "name": null,
+     "quality": "RARE",
+     "icon_url": null,
+     "wowhead": "https://www.wowhead.com/forever/item=4306"
+    }
+   }
+  }
  }
 }

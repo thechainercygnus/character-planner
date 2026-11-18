@@ -108,3 +108,23 @@ for (const [tab, opener] of DIALOGS) {
     await expect(page.getByRole('button', { name: opener }).first()).toBeFocused()
   })
 }
+
+test('importing game data sends the file as it is, and shows the bags and quest log (#185)', async ({ page }) => {
+  const sent = await serveApi(page)
+  await openTab(page, 'character')
+  const bags = page.getByRole('region', { name: 'Bags' })
+  await expect(bags.getByRole('link', { name: 'Kindlegem Girdle' })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Bank' })).toContainText('Empty.') // the schema example's bank: seen, and empty
+  await page.getByRole('button', { name: 'Import again' }).click()
+  const file = { name: 'CharacterPlannerExport.lua', mimeType: 'text/plain', buffer: Buffer.from('X = 1') }
+  await page.locator('dialog[open] input[type="file"]').setInputFiles(file)
+  await expect(page.locator('dialog[open]')).toContainText('Imported: Brumboldt')
+  const upload = sent.find((r) => r.method() === 'POST' && r.url().endsWith('/api/game-data'))!
+  expect(upload.postData()).toBe('X = 1')
+  expect(upload.headers()['content-type']).toBe('application/octet-stream')
+  await page.keyboard.press('Escape')
+  await openTab(page, 'plan')
+  await expect(
+    page.getByRole('region', { name: 'Quest log' }).getByRole('link', { name: 'The Summoning' }),
+  ).toBeVisible()
+})

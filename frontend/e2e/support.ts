@@ -46,6 +46,7 @@ export const DIALOGS: [string, RegExp][] = [
   ['talents', /^Edit plan$/],
   ['upgrades', /^Alerts$/],
   ['upgrades', /^Discord$/],
+  ['character', /^Import again$/],
 ]
 
 /** Open a dialog from its tab; on a phone its button may be in the More actions menu. */
