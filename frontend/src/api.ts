@@ -522,6 +522,63 @@ export interface DiscordLink {
   last_sent_at: string | null
 }
 
+/** Game data from the CharacterPlannerExport addon (#184, #185, ADR 0047). */
+export interface GameItem {
+  container: number
+  slot: number
+  item_id: number
+  count: number
+  quality: number
+}
+
+export interface GameItems {
+  captured_at: number // Unix seconds
+  items: GameItem[]
+}
+
+export interface GameObjective {
+  text: string
+  type: string
+  done: number
+  needed: number
+  finished: boolean
+}
+
+export interface GameQuest {
+  quest_id: number
+  title: string
+  complete: boolean
+  objectives: GameObjective[]
+}
+
+export interface GameData {
+  schema_version: number
+  addon_version: string
+  captured_at: number
+  character: { name: string; surname: string | null; level: number; region: string | null; realm: string | null }
+  bags: GameItems | null
+  bank: GameItems | null // null: the bank hasn't been opened since the addon was added
+  quests: { captured_at: number; log: GameQuest[]; completed: number[] } | null
+}
+
+/** An item id's name and link: the file has ids only. */
+export interface GameItemInfo {
+  name: string | null
+  quality: string | null
+  icon_url: string | null
+  wowhead: string
+}
+
+export interface GameDataView {
+  imported: boolean
+  uploaded_at: string | null
+  captured_at: string | null
+  addon_version: string | null
+  captured: { bags: string | null; bank: string | null; quests: string | null } | null
+  data: GameData | null
+  items: Record<string, GameItemInfo>
+}
+
 export interface DiscordView {
   /** The instance has a bot (DISCORD_* set). */
   available: boolean
@@ -1168,6 +1225,15 @@ export const api = {
   unlinkDiscord: () => request<DiscordView>('/api/discord', { method: 'DELETE' }),
   testDiscord: () => request<DiscordView>('/api/discord/test', { method: 'POST' }),
   updateSignupMessage: () => request<SignupOutcome>('/api/discord/signup-message', { method: 'POST' }),
+  gameData: () => request<GameDataView>('/api/game-data'),
+  /** The addon's SavedVariables file, sent as it is: the backend parses it (#184). */
+  importGameData: (file: Blob) =>
+    request<GameDataView>('/api/game-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/octet-stream' },
+      body: file,
+    }),
+  deleteGameData: () => request<GameDataView>('/api/game-data', { method: 'DELETE' }),
   activatePreset: (key: string) =>
     request<WeightsView>('/api/weights/active', {
       method: 'PUT',

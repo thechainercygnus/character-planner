@@ -5,6 +5,7 @@ character. The seeded character is Brumboldt Doomlet, US, as in addon/SCHEMA.md.
 from collections.abc import Iterator
 
 import pytest
+import respx
 from fastapi.testclient import TestClient
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, select
@@ -16,6 +17,7 @@ from character_planner.gamedata import LIMITS
 
 from .conftest import FIXTURES, api_client, tracked
 from .test_gamedata import schema_example
+from .test_items import mock_battlenet
 
 SAVED = FIXTURES / "savedvariables"
 OCTET = {"Content-Type": "application/octet-stream"}
@@ -23,7 +25,9 @@ OCTET = {"Content-Type": "application/octet-stream"}
 
 @pytest.fixture
 def client(settings: Settings, engine: Engine) -> Iterator[TestClient]:
-    with api_client(create_app(settings, engine)) as test_client:
+    # An import looks up unnamed items in Blizzard's data afterwards (#185): mocked.
+    with respx.mock, api_client(create_app(settings, engine)) as test_client:
+        mock_battlenet()
         yield test_client
 
 
@@ -44,6 +48,7 @@ def test_nothing_is_imported_at_first(client: TestClient) -> None:
         "addon_version": None,
         "captured": None,
         "data": None,
+        "items": {},
     }
 
 

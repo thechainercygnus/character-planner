@@ -6,6 +6,7 @@ import { CharacterSnapshot } from './components/CharacterSnapshot'
 import { Dungeons } from './components/Dungeons'
 import { Enchants } from './components/Enchants'
 import { Footer } from './components/Footer'
+import { GameDataPanel, QuestLog } from './components/GameData'
 import { Guild } from './components/Guild'
 import { GearTable } from './components/GearTable'
 import { Landing } from './components/Landing'
@@ -149,6 +150,8 @@ export default function App() {
               )}
               {classQuests.isError && <p className="error">Couldn't load class quests: {classQuests.error.message}</p>}
               {classQuests.data && <ClassQuests data={classQuests.data} />}
+              {/* The quest log from the addon's game data, beside the class quests (#185). */}
+              <QuestLog />
             </>
           )}
 
@@ -169,7 +172,12 @@ export default function App() {
           )}
 
           {tab === 'guild' && <Guild />}
-          {tab === 'character' && <CharacterSnapshot character={character.data} />}
+          {tab === 'character' && (
+            <>
+              <CharacterSnapshot character={character.data} />
+              <GameDataPanel battleNetLevel={character.data.level} />
+            </>
+          )}
         </>
       )}
       <Footer />

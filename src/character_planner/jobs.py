@@ -11,7 +11,7 @@ import httpx
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, col, select
 
-from character_planner import notify
+from character_planner import gamedata, notify
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
 from character_planner.characters import first_character, refresh_from_profile
@@ -377,6 +377,32 @@ def load_missing_data(engine: Engine, settings: Settings, http: httpx.Client | N
             except Exception:
                 session.rollback()
                 logger.exception("First data load: the %s refresh failed", name)
+
+
+GAME_ITEMS = "game-items"  # the lease, and its name in the status's `refreshing`
+
+
+def load_game_item_names(
+    engine: Engine, settings: Settings, character_id: int, http: httpx.Client | None = None
+) -> None:
+    """After an import (#185): look up the items in it no catalog names yet, in the
+    background. One lookup at a time; a second import while one runs waits for the next."""
+    with Session(engine) as session:
+        unnamed = gamedata.unnamed_item_ids(session, character_id)
+        if not unnamed:
+            return
+        try:
+            with lease(engine, GAME_ITEMS):
+                result = gamedata.fetch_item_names(session, settings, unnamed, http)
+        except Busy:
+            logger.info("Game data: an item name lookup is already running")
+            return
+        except Exception:
+            session.rollback()
+            logger.exception("Game data: the item name lookup failed")
+            return
+        for error in result.errors:
+            logger.warning("Game data items: %s", error)
 
 
 def _refresh_item_pool(

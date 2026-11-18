@@ -35,7 +35,11 @@ function Failure({ what, error }: { what: string; error: Error }) {
   )
 }
 
-const REFRESH_LABEL: Record<string, string> = { pool: 'the item pool', enchants: 'enchant data' }
+const REFRESH_LABEL: Record<string, string> = {
+  pool: 'the item pool',
+  enchants: 'enchant data',
+  'game-items': 'item names for your game data', // after an import (#185)
+}
 
 export function StatusBar() {
   const queryClient = useQueryClient()

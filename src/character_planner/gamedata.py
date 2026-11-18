@@ -9,18 +9,35 @@ keep fields of its own.
 `import_for` stores it for the character the upload names, once the file agrees with
 that character (#184): only the newest import is kept, beside the Battle.net data and
 never over it.
+
+The file carries item ids only (ADR 0047). `view` names them from the shared catalogs:
+Forever Companion's items, then Blizzard's (#185). `fetch_item_names` looks up the ids
+neither has, in Blizzard's item data, after an import.
 """
 
 import logging
 from datetime import UTC, datetime
 from typing import Annotated, Any, Final
 
+import httpx
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field, ValidationError
 from sqlmodel import Session, col, select
 
-from character_planner.companion import as_utc
-from character_planner.db import Character, GameDataImport, utcnow
+from character_planner import fields
+from character_planner.blizzard.client import BlizzardClient
+from character_planner.companion import as_utc, parse_item
+from character_planner.config import Settings
+from character_planner.db import (
+    BlizzardItem,
+    Character,
+    CompanionItem,
+    GameDataImport,
+    save_now,
+    utcnow,
+)
+from character_planner.retention import REFRESH_AFTER
 from character_planner.savedvariables import LIMITS, LuaValue, SavedVariablesError, parse
+from character_planner.tokens import CredentialsError, app_token
 
 logger = logging.getLogger(__name__)
 
@@ -218,6 +235,15 @@ class SectionAge(BaseModel):
     quests: datetime | None
 
 
+class ItemInfo(BaseModel):
+    """What the app shows for an item id in the file (#185): the file has ids only."""
+
+    name: str | None  # None until a catalog knows it: the app shows "Item <id>"
+    quality: str | None  # POOR ... LEGENDARY, as Blizzard names them
+    icon_url: str | None  # Forever Companion's items only
+    wowhead: str
+
+
 class GameDataView(BaseModel):
     """A character's imported game data, as the app shows it."""
 
@@ -227,6 +253,7 @@ class GameDataView(BaseModel):
     addon_version: str | None = None
     captured: SectionAge | None = None
     data: GameData | None = None  # by field name: bags.items[].item_id, ...
+    items: dict[int, ItemInfo] = {}  # every item id in bags and bank
 
 
 def view(session: Session, character_id: int) -> GameDataView:
@@ -245,4 +272,104 @@ def view(session: Session, character_id: int) -> GameDataView:
             quests=_moment(data.quests.captured_at) if data.quests else None,
         ),
         data=data,
+        items=item_details(session, data),
     )
+
+
+# --- naming the file's items (#185) ---------------------------------------------------------
+
+# Enum.ItemQuality's order (addon/SCHEMA.md), in Blizzard's API names.
+QUALITY: Final = ("POOR", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "ARTIFACT", "HEIRLOOM")
+WOWHEAD_ITEM: Final = "https://www.wowhead.com/forever/item={item_id}"
+
+
+def item_qualities(data: GameData) -> dict[int, int]:
+    """Every item id in the bags and bank, with the quality the game gave it."""
+    found: dict[int, int] = {}
+    for section in (data.bags, data.bank):
+        for item in section.items if section else []:
+            found.setdefault(item.item_id, item.quality)
+    return found
+
+
+def item_details(session: Session, data: GameData) -> dict[int, ItemInfo]:
+    qualities = item_qualities(data)
+    if not qualities:
+        return {}
+    ids = list(qualities)
+    companion = {
+        row.item_id: info
+        for row in session.exec(select(CompanionItem).where(col(CompanionItem.item_id).in_(ids)))
+        if row.found and (info := parse_item(row.payload)) is not None
+    }
+    blizzard = {
+        row.item_id: row.payload
+        for row in session.exec(select(BlizzardItem).where(col(BlizzardItem.item_id).in_(ids)))
+        if row.found
+    }
+    details: dict[int, ItemInfo] = {}
+    for item_id, quality in qualities.items():
+        info = companion.get(item_id)
+        name = info.name if info else None
+        name = name or fields.name(fields.get(blizzard.get(item_id), "name"))
+        details[item_id] = ItemInfo(
+            name=name,
+            quality=QUALITY[quality] if quality < len(QUALITY) else None,
+            icon_url=info.icon_url if info else None,
+            wowhead=(info.wowhead if info else None) or WOWHEAD_ITEM.format(item_id=item_id),
+        )
+    return details
+
+
+def unnamed_item_ids(session: Session, character_id: int) -> list[int]:
+    """The import's items no catalog names, and Blizzard hasn't been asked about in the
+    last REFRESH_AFTER (a 404 counts as asked)."""
+    view_ = view(session, character_id)
+    cutoff = utcnow() - REFRESH_AFTER
+    unnamed: list[int] = []
+    for item_id, info in view_.items.items():
+        if info.name is not None:
+            continue
+        asked = session.get(BlizzardItem, item_id)
+        if asked is None or as_utc(asked.fetched_at) < cutoff:
+            unnamed.append(item_id)
+    return sorted(unnamed)
+
+
+class NameLookup(BaseModel):
+    fetched: int = 0
+    errors: list[str] = []
+
+
+def fetch_item_names(
+    session: Session, settings: Settings, item_ids: list[int], http: httpx.Client | None = None
+) -> NameLookup:
+    """Blizzard's GET /data/wow/item/{id} for each id, into the shared BlizzardItem cache
+    (crafted gear's, ADR 0031). Best effort: errors are returned, never raised."""
+    outcome = NameLookup()
+    if not item_ids:
+        return outcome
+    try:
+        token = app_token(session, settings, http)
+    except (httpx.HTTPError, CredentialsError) as error:
+        outcome.errors.append(f"Blizzard token: {error}")
+        return outcome
+    with BlizzardClient(settings, token, http=http) as client:
+        for item_id in item_ids:
+            result = client.get("item", f"/data/wow/item/{item_id}", settings.static_namespace)
+            if result.status not in (200, 404):
+                outcome.errors.append(f"item {item_id}: HTTP {result.status}")
+                continue
+            found = result.status == 200
+            save_now(
+                session,
+                BlizzardItem(
+                    item_id=item_id,
+                    found=found,
+                    payload=result.body if found else None,
+                    fetched_at=utcnow(),
+                ),
+            )
+            outcome.fetched += 1
+    logger.info("Game data: looked up %d item names", outcome.fetched)
+    return outcome

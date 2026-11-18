@@ -11,6 +11,8 @@ out what to do next:
 - how your talents and gear compare with your plan;
 - the class quests to do, and any essential ones missed;
 - your professions' next trainer ranks and what they need.
+- with the CharacterPlannerExport addon, your bags, bank and quest log, which Battle.net
+  doesn't share. The Character tab's **Import game data** button takes the addon's file.
 
 It's free software (AGPL-3.0-or-later) that you host yourself.
 
