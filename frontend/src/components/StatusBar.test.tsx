@@ -61,6 +61,12 @@ describe('StatusBar', () => {
     expect(posts).toHaveLength(1)
   })
 
+  it('offers no sync on a blank instance, where there is nothing to sync (#206)', async () => {
+    renderBar([], { character: null })
+    await screen.findByText(/Last sync/)
+    expect(screen.queryByRole('button', { name: 'Sync now' })).toBeNull()
+  })
+
   it('offers no sign-up message without the setting', async () => {
     renderBar([])
     await screen.findByText(/Last sync/)

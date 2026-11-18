@@ -128,6 +128,14 @@ describe('CharacterSwitcher', () => {
     await waitFor(() => expect(calls.at(-1)?.character).toBe('2')) // refetched as Thrall
   })
 
+  it('offers to add the first character when there are none (#206)', async () => {
+    serve({ characters: [], default_id: null })
+    fireEvent.click(await screen.findByRole('button', { name: 'Add a character' }))
+    expect(screen.getByRole('form', { name: 'Add a character' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    expect(await screen.findByRole('button', { name: 'Add a character' })).toBeTruthy()
+  })
+
   it('adds a character, then selects and syncs it', async () => {
     const calls = serve()
     fireEvent.change(await screen.findByRole('combobox', { name: 'Character' }), { target: { value: 'add' } })

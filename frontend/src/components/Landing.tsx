@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api, isQueued, type GuestQuery, type Recommendations as RecommendationsData } from '../api'
+import { AddCharacter } from './CharacterSwitcher'
 import { Dungeons } from './Dungeons'
 import { Recommendations } from './Recommendations'
 
@@ -21,7 +22,9 @@ function MissingItemData({ data, level }: { data: RecommendationsData; level: nu
   return (
     <div className="missing-data">
       {fetchData.isSuccess && isQueued(fetchData.data) ? (
-        <p className="muted">Queued: the item data for {levels} loads in the background, and this updates when it's done.</p>
+        <p className="muted">
+          Queued: the item data for {levels} loads in the background, and this updates when it's done.
+        </p>
       ) : fetchData.isSuccess && !isQueued(fetchData.data) ? (
         <p className="muted">
           Fetched details for {fetchData.data.items_fetched} items for {levels}
@@ -185,7 +188,16 @@ export function Landing({ hasCharacter = false }: { hasCharacter?: boolean }) {
           </ul>
 
           <h2>Get your character in</h2>
-          {canSync ? (
+          {canSync && status.data?.character == null ? (
+            // A blank instance (#206): add the first character, and it's synced right away.
+            <>
+              <p>
+                Add your character: pick it from your Battle.net account, or type its first name, surname and region.
+                The planner syncs it right away, and keeps syncing on its own after that.
+              </p>
+              <AddCharacter />
+            </>
+          ) : canSync ? (
             <>
               <p>
                 Sync to pull {status.data?.character ?? 'your character'}'s profile, gear, talents and professions. No
@@ -201,8 +213,8 @@ export function Landing({ hasCharacter = false }: { hasCharacter?: boolean }) {
             </>
           ) : (
             <p>
-              This planner has no Battle.net client yet. Whoever runs it sets <code>BNET_CLIENT_ID</code>,{' '}
-              <code>BNET_CLIENT_SECRET</code> and the character's name in <code>.env</code>; see the{' '}
+              This planner has no Battle.net client yet. Whoever runs it sets <code>BNET_CLIENT_ID</code> and{' '}
+              <code>BNET_CLIENT_SECRET</code> in <code>.env</code>; see the{' '}
               <a href="https://character-planner.readthedocs.io/en/latest/self-hosting.html">self-hosting guide</a>.
             </p>
           )}

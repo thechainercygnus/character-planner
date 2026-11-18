@@ -14,8 +14,8 @@ Everything is kept in one SQLite database on a Docker volume.
 
 ## Before you start: keep it private
 
-The planner is built for one person and **has no sign-in of its own**. Anyone who can open
-the page can:
+Out of the box, the planner is built for one person and **has no sign-in of its own**.
+Anyone who can open the page can:
 
 - edit your plans;
 - set where alerts go;
@@ -28,7 +28,8 @@ So reach it only from places you trust:
 - a private network such as Tailscale;
 - behind a reverse proxy that asks for a password.
 
-Don't publish it on the open internet as it is.
+Don't publish it on the open internet as it is. To run it in public, turn users on first:
+see "In public" under step 8.
 
 ## 1. What you need
 
@@ -181,8 +182,8 @@ planner, so the address doesn't go into your Battle.net client.
 console, DNS), and an auth key (admin console, Settings, Keys). Your tailnet's name is
 under DNS.
 
-**A reverse proxy** must ask for a password, because the planner doesn't. With Caddy, for
-example (make the hash with `caddy hash-password`):
+**A reverse proxy**, with users off, must ask for a password, because the planner doesn't.
+With Caddy, for example (make the hash with `caddy hash-password`):
 
 ```
 planner.example.com {
@@ -216,13 +217,17 @@ Keep `.env` private: the secret is like a password. The planner never logs it.
 Besides the client:
 
 - `BNET_REGION`: your account's region, `us`, `eu`, `kr` or `tw`.
-- `CHARACTER_NAME` and `CHARACTER_SURNAME`: your character's first name and surname, as
-  shown in game. Forever looks characters up by both. They name the **first** character
-  only: on its first start the planner saves that character, with `BNET_REGION`, in its
-  database, and reads these settings no more (ADR 0036). Add more characters in the app,
-  from the character menu at the top left: **Add a character…**. After you **Sign in with
-  Battle.net**, the form lists your account's characters to pick from. Without signing in,
-  you type a character's name, surname and region instead. The worker syncs them all.
+- **Characters are added in the app.** Without one, the planner starts blank, and its
+  front page offers **Add your character**. Later ones come from the character menu at the
+  top left: **Add a character…**.
+  - After you **Sign in with Battle.net**, the form lists your account's characters to pick
+    from. Without signing in, you type a character's first name, surname and region.
+  - The worker syncs them all.
+- `CHARACTER_NAME` and `CHARACTER_SURNAME` (optional): a first character to track, by its
+  first name and surname as shown in game. Forever looks characters up by both.
+  - On its first start, the planner saves that character in its database, with
+    `BNET_REGION`, and reads these settings no more (ADR 0036). Left out, it starts blank
+    (#206, ADR 0049).
 - `PLANNER_IMAGE`: the release to run, for example
   `PLANNER_IMAGE=ghcr.io/thechainercygnus/character-planner:0.1`. `0.1` follows the
   latest `0.1.x`; `0.1.0` stays put.
@@ -301,6 +306,61 @@ Then `docker compose up -d`. Every page now asks for a Battle.net sign-in, so re
 - **Leaving:** each user can delete their own account on the Privacy page. To delete one
   for them, use `character-planner-db delete-user ACCOUNT_ID --yes` (see
   [Privacy](privacy.md)).
+
+### In public
+
+With users on, the planner can face the open internet: everyone signs in with Battle.net
+and sees only their own characters. Put it behind a reverse proxy with HTTPS, on the same
+machine. With [Caddy](https://caddyserver.com), which gets the certificate itself:
+
+```
+planner.example.com {
+	encode zstd gzip
+
+	# Metrics are for your scraper, not the internet (they also need METRICS_TOKEN).
+	respond /api/metrics 404
+
+	reverse_proxy 127.0.0.1:8000
+}
+```
+
+Point the domain's DNS at that machine, with ports 80 and 443 open. If Caddy runs as a
+container in the same Compose project, use `reverse_proxy app:8000`.
+
+In `.env`:
+
+```
+PLANNER_USERS=on
+PLANNER_SIGNUPS=on                 # or off, and let people in by turning it on briefly
+PLANNER_HOSTS=planner.example.com
+BNET_REDIRECT_URI=https://planner.example.com/auth/callback
+OPERATOR_CONTACT=<how people reach you>
+FORWARDED_ALLOW_IPS=*
+```
+
+- **`PLANNER_USERS=on` is what makes it safe to publish.** Without it there's no sign-in,
+  and anyone can see and change everything.
+- **`PLANNER_HOSTS`:** without your domain on it, requests get "Invalid host header" (#124).
+- **`BNET_REDIRECT_URI`:** register the same address on your Battle.net client (step 4).
+  With Discord DMs, also register `https://planner.example.com/auth/discord/callback` with
+  your Discord application.
+- **`OPERATOR_CONTACT`:** the privacy notice shows it, so people know whom to ask about
+  their data.
+- **`FORWARDED_ALLOW_IPS=*`:** the app trusts the proxy's `X-Forwarded-Proto` header only
+  from the addresses listed here (uvicorn's default is `127.0.0.1,::1`). Through Docker's
+  port mapping, Caddy's requests arrive from Docker's network instead. So without this
+  setting, the app thinks it's served over plain HTTP, and the sign-in cookie isn't
+  marked secure.
+  - `*` is safe only while the app's port is bound to `127.0.0.1` (the default), so only
+    the proxy can reach it.
+  - Don't combine it with `PLANNER_BIND=0.0.0.0`.
+- **Not with the Tailscale overlay:** `compose.tailscale.yaml` publishes no ports, so
+  `127.0.0.1:8000` doesn't reach the app. Run the public stack without it.
+
+Restart with `docker compose up -d`, then check:
+1. `https://planner.example.com/api/healthz` answers.
+2. Signing in with Battle.net brings you back to the app, signed in.
+3. Your browser's developer tools show the `planner_session` cookie marked **Secure**.
 
 ## 9. Alerts (optional)
 
@@ -532,7 +592,7 @@ turns it off.
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `Sync failed: Battle.net refused the client ID and secret (HTTP 401)` | A typo in `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET`, or the client was deleted or its secret changed | Copy both again from the developer portal, then `docker compose up -d` |
-| The status bar says `Battle.net can't find …`, and the logs say `character … not found` | Name, surname or region doesn't match the character | Fix `CHARACTER_NAME`, `CHARACTER_SURNAME` or `BNET_REGION` in `.env`. The mistyped character is already saved, so remove it with `docker compose exec app character-planner-db erase --yes` (it has no data to lose), then `docker compose up -d` and sync again |
+| The status bar says `Battle.net can't find …`, and the logs say `character … not found` | Name, surname or region doesn't match the character, or it's below level 10 | Delete the mistyped character on the Privacy page, then add it again from the character menu. If it came from `CHARACTER_NAME` in `.env`, fix or remove that too: with no characters left, the next start uses it again |
 | The status bar says `No Battle.net client`, and `worker.log` says `skipped: no Battle.net client` | `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET` is empty, or Compose didn't read `.env` | Fill in `.env` beside `compose.yaml`, then `docker compose up -d` |
 | The page says `Invalid host header` | The planner doesn't answer to the name in your address bar (#124) | Add that name to `PLANNER_HOSTS` in `.env` (comma separated), then `docker compose up -d` |
 | Upgrades and Dungeons stay empty after the first sync | Item data is still loading | Wait for the status bar's note to clear. `server.log` shows progress every 50 items |

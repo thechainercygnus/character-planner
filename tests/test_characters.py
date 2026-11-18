@@ -89,7 +89,12 @@ def test_without_a_name_there_is_no_character(engine: Engine, settings: Settings
         assert latest_by_kind(session, None) == {}
     with api_client(create_app(unnamed, engine)) as client:
         assert client.get("/api/character").json()["level"] is None
-        assert client.post("/api/sync").status_code == 409
+        assert client.get("/api/characters").json() == {"characters": [], "default_id": None}
+        assert client.get("/api/status").json()["character"] is None
+        refused = client.post("/api/sync")
+        assert refused.status_code == 409
+        # The way in is the app now, not .env (#206).
+        assert refused.json()["detail"] == "No character yet: add one in the app, then sync it"
 
 
 def test_two_characters_never_see_each_others_data(engine: Engine, settings: Settings) -> None:
