@@ -99,12 +99,39 @@ describe('Landing', () => {
     expect(screen.getByText(/only reads public character data/)).toBeTruthy()
   })
 
+  it('on a blank instance, offers to add the first character instead of a sync (#206)', async () => {
+    const calls: { url: string; method: string }[] = []
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        calls.push({ url, method: init?.method ?? 'GET' })
+        if (url === '/api/status') return Response.json({ ...status(true), character: null })
+        if (url === '/api/guest') return Response.json(options)
+        if (url === '/api/account/characters') return Response.json({ detail: 'Sign in' }, { status: 401 })
+        if (url === '/api/characters' && init?.method === 'POST') return Response.json({ id: 1 }, { status: 201 })
+        return Response.json(recommendations)
+      }),
+    )
+    renderLanding()
+
+    expect(await screen.findByText(/Add your character: pick it from your Battle.net account/)).toBeTruthy()
+    expect(screen.queryByText('Sync now')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Cancel' })).toBeNull() // nothing to go back to
+    expect(await screen.findByRole('link', { name: 'Sign in with Battle.net' })).toBeTruthy()
+    fireEvent.change(screen.getByRole('textbox', { name: 'First name' }), { target: { value: 'Lilalx' } })
+    fireEvent.change(screen.getByRole('textbox', { name: 'Surname' }), { target: { value: 'Horn' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Add and sync' }))
+    await waitFor(() => expect(calls.some((c) => c.url === '/api/sync' && c.method === 'POST')).toBe(true))
+  })
+
   it('offers a sync, with no login, when the client is set (#107)', async () => {
     const fetchMock = stubFetch(true)
     renderLanding()
 
     fireEvent.click(await screen.findByText('Sync now'))
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith('/api/sync', expect.objectContaining({ method: 'POST' })))
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith('/api/sync', expect.objectContaining({ method: 'POST' })),
+    )
   })
 
   it('shows guest recommendations for the chosen class, level, faction and play style', async () => {
