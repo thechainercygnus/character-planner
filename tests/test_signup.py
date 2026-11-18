@@ -144,7 +144,11 @@ def test_a_look_alike_by_someone_else_is_left_alone(configured: Settings) -> Non
     ("status", "why"),
     [
         (401, "Discord refused DISCORD_BOT_TOKEN"),
-        (403, "The bot isn't allowed to read the channel's pins: give it View Channel"),
+        (
+            403,
+            "The bot can't read the channel's pins: give it View Channel and Read Message "
+            "History in that channel",
+        ),
         (404, "Discord doesn't know DISCORD_SIGNUP_CHANNEL_ID"),
         (429, "rate limiting the bot"),
         (500, "Discord answered 500 when trying to read the channel's pins"),
@@ -161,12 +165,49 @@ def test_a_refusal_is_reported_once_and_nothing_more_is_tried(
 
 
 @respx.mock
-def test_a_refused_pin_takes_the_message_back(configured: Settings) -> None:
+def test_a_refused_pin_takes_the_message_back_and_names_only_pin_messages(
+    configured: Settings,
+) -> None:
     routes = mock_discord(pinned())
     routes["pin"].mock(return_value=httpx.Response(403, json={"code": 50013}))
     outcome = ensure(configured)
-    assert not outcome.ok and outcome.error is not None and "Pin Messages" in outcome.error
+    # #212: the post worked, so only Pin Messages can be missing; and the post was removed.
+    assert outcome.error == (
+        "Posted, but couldn't pin it, so the post was removed: "
+        "give the bot Pin Messages in that channel"
+    )
     assert routes["delete"].called  # or the next attempt would post a second one
+
+
+@respx.mock
+def test_a_pin_failing_otherwise_also_says_the_post_was_removed(configured: Settings) -> None:
+    routes = mock_discord(pinned())
+    routes["pin"].mock(return_value=httpx.Response(429, json={"retry_after": 5}))
+    outcome = ensure(configured)
+    assert outcome.error == (
+        "Posted, but couldn't pin it, so the post was removed: "
+        "Discord is rate limiting the bot: try again in a few minutes"
+    )
+    assert routes["delete"].called
+
+
+@respx.mock
+def test_a_refused_post_names_only_send_messages(configured: Settings) -> None:
+    routes = mock_discord(pinned())
+    routes["post"].mock(return_value=httpx.Response(403, json={"code": 50013}))
+    outcome = ensure(configured)
+    assert (
+        outcome.error == "The bot can't post in the channel: give it Send Messages in that channel"
+    )
+    assert not routes["pin"].called
+
+
+@respx.mock
+def test_a_refused_edit_names_no_permission(configured: Settings) -> None:
+    """Editing its own message needs no permission: a 403 there isn't one to grant."""
+    routes = mock_discord(pinned(a_message(OURS, BOT, signup.MARKER)))
+    routes["edit"].mock(return_value=httpx.Response(403, json={"code": 50005}))
+    assert ensure(configured).error == "Discord refused to let the bot edit its message"
 
 
 @respx.mock
