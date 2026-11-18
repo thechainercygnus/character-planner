@@ -47,8 +47,22 @@ class Outcome(BaseModel):
     error: str | None = None
 
 
+def headline(settings: Settings, address: str | None) -> str:
+    """The message's plain-text line (#213): it stands on its own, so the message shows
+    something where embeds are hidden, in notification previews and to screen readers.
+    The address is in <angle brackets>, Discord's way of linking without adding a preview
+    card under the message."""
+    line = "**Character Planner**: plan your WoW Forever character"
+    line += f" at <{address}>." if address else "."
+    if settings.planner_users:
+        line += (
+            " Sign-ups are open." if settings.planner_signups else " Sign-ups are closed for now."
+        )
+    return line
+
+
 def message(settings: Settings) -> dict[str, Any]:
-    """The message as it should read now."""
+    """The message as it should read now: a plain-text line, then the card."""
     address = app_url(settings)
     lines = [
         "Plan your WoW Forever character: the gear upgrades in reach, the dungeons worth "
@@ -73,6 +87,7 @@ def message(settings: Settings) -> dict[str, Any]:
             "your account and choose your alerts."
         )
     return {
+        "content": headline(settings, address),
         "embeds": [
             {
                 "title": "Character Planner",

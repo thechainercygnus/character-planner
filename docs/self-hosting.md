@@ -408,8 +408,9 @@ the reason until a test gets through. A refused bot token sends you a system ale
 ### A pinned sign-up message (optional)
 
 The bot can keep one pinned message in a channel of your server, saying what the planner
-is, where it is, and whether sign-ups are open (#192, ADR 0048). It needs only the bot's
-token, not the OAuth client.
+is, where it is, and whether sign-ups are open (#192, ADR 0048). It's a plain-text line
+followed by a card, so it still reads where Discord hides embeds (#213). It needs only the
+bot's token, not the OAuth client.
 
 1. In the channel's settings, under **Permissions**, allow the bot **View Channel**,
    **Send Messages**, **Read Message History** and **Pin Messages**. Or invite the bot
