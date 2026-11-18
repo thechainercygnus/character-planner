@@ -4,9 +4,9 @@ name: codeql
 
 on:
   push:
-    branches: [main]
+    branches: [main, "release/**"]
   pull_request:
-    branches: [main]
+    branches: [main, "release/**"]
   # Weekly, so new queries also look at code that hasn't changed.
   schedule:
     - cron: "41 5 * * 2"

@@ -36,6 +36,37 @@ describe('StatusBar', () => {
     vi.unstubAllGlobals()
   })
 
+  it('lets the admin update the pinned Discord sign-up message (#192)', async () => {
+    const posts: string[] = []
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        if (url === '/api/status') return Response.json(status([]))
+        if (url === '/api/discord') return Response.json({ available: false, signup_message: true })
+        if (url === '/api/discord/signup-message' && init?.method === 'POST') {
+          posts.push(url)
+          return Response.json({ ok: false, action: 'none', message_id: null, error: 'give it Pin Messages' })
+        }
+        return Response.json([])
+      }),
+    )
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    render(
+      <QueryClientProvider client={client}>
+        <StatusBar />
+      </QueryClientProvider>,
+    )
+    fireEvent.click(await screen.findByRole('button', { name: 'Update the Discord sign-up message' }))
+    expect(await screen.findByText("The sign-up message wasn't updated: give it Pin Messages")).toBeTruthy()
+    expect(posts).toHaveLength(1)
+  })
+
+  it('offers no sign-up message without the setting', async () => {
+    renderBar([])
+    await screen.findByText(/Last sync/)
+    expect(screen.queryByRole('button', { name: 'Update the Discord sign-up message' })).toBeNull()
+  })
+
   it('says what is loading in the background', async () => {
     renderBar(['enchants', 'pool'])
     expect((await screen.findByRole('status')).textContent).toBe(

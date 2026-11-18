@@ -252,5 +252,7 @@ def delete_character(session: Session, character_id: int) -> dict[str, int]:
     if dropped := drop_empty_channels(session):
         removed["notificationdestination"] = dropped
     session.commit()
-    logger.info("Deleted character %s: %d rows", character_id, sum(removed.values()))
+    # An int, and logged as one: no request text reaches the log (#198, CodeQL's log
+    # injection check can't see that the route already validated it as an integer).
+    logger.info("Deleted character %d: %d rows", int(character_id), sum(removed.values()))
     return removed
