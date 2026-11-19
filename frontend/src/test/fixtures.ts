@@ -77,7 +77,11 @@ export function candidate(item: PoolItem, gain: number, overrides: Partial<Candi
   }
 }
 
-export const girdle = poolItem({ item_id: 270230, name: 'Kindlegem Girdle' })
+export const girdle = poolItem({
+  item_id: 270230,
+  name: 'Kindlegem Girdle',
+  wowhead: 'https://www.wowhead.com/forever/item=270230',
+})
 export const laterBelt = poolItem({
   item_id: 2,
   name: 'Later Belt',
@@ -133,6 +137,7 @@ function enchantOption(overrides: Partial<EnchantOption> & Pick<EnchantOption, '
     effects_source: 'description',
     temporary: false,
     crafted_item_id: null,
+    wowhead: null,
     season_of_discovery: false,
     estimated_level: 1,
     reagents: [],
@@ -154,6 +159,7 @@ export const enchantAdvice: EnchantAdvice = {
     {
       slot: 'WRIST',
       item: 'Cryptwalker Bracers',
+      wowhead: null,
       current: null,
       current_is_weaker: false,
       picks: [
@@ -186,6 +192,7 @@ export const enchantAdvice: EnchantAdvice = {
     {
       slot: 'FEET',
       item: "Greaves of the People's Militia",
+      wowhead: null,
       current: { text: 'Enchanted: Stamina +3', effects: { Stamina: 3 }, score: 3 },
       current_is_weaker: true,
       picks: [
@@ -208,6 +215,7 @@ export const enchantAdvice: EnchantAdvice = {
     {
       slot: 'RANGED',
       item: 'Calibrated Blunderbuss',
+      wowhead: null,
       current: null,
       current_is_weaker: false,
       picks: [
@@ -230,6 +238,6 @@ export const enchantAdvice: EnchantAdvice = {
         },
       ],
     },
-    { slot: 'NECK', item: null, current: null, current_is_weaker: false, picks: [] },
+    { slot: 'NECK', item: null, wowhead: null, current: null, current_is_weaker: false, picks: [] },
   ],
 }

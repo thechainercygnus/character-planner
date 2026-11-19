@@ -15,6 +15,23 @@ function renderEnchants(data: EnchantAdvice = enchantAdvice) {
 }
 
 describe('Enchants', () => {
+  it('links worn items and crafted enchants to Wowhead, but not plain enchants (#225)', () => {
+    const scope = 'https://www.wowhead.com/forever/item=4405'
+    const data = structuredClone(enchantAdvice)
+    const row = data.rows[0]
+    row.wowhead = 'https://www.wowhead.com/forever/item=6542'
+    row.picks[0].option.crafted_item_id = 4405
+    row.picks[0].option.wowhead = scope
+    renderEnchants(data)
+
+    expect(screen.getByRole('link', { name: row.item! }).getAttribute('href')).toBe(row.wowhead)
+    expect(screen.getByRole('link', { name: 'Stamina' }).getAttribute('href')).toBe(scope)
+    // A plain enchant has no item, and no spell id is known: plain text.
+    const plain = row.picks[1].option.name.replace(/^Enchant [^-]+ - /, '')
+    expect(screen.getByText(plain)).toBeTruthy()
+    expect(screen.queryByRole('link', { name: plain })).toBeNull()
+  })
+
   it('lists what to look for per slot, with short names, effects and gains', () => {
     renderEnchants()
 

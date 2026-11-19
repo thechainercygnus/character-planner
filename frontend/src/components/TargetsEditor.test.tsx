@@ -25,7 +25,12 @@ function target(slot: string, item: string, overrides: Partial<GearTarget> = {})
 const targets: GearTargets = {
   targets: [
     target('WAIST', 'Old Belt', { level: 15 }),
-    target('BACK', 'Old Cape', { item_id: 7, armor: 20, level: 15 }),
+    target('BACK', 'Old Cape', {
+      item_id: 7,
+      armor: 20,
+      level: 15,
+      wowhead: 'https://www.wowhead.com/forever/item=7',
+    }),
     target('BACK', 'New Cape', { level: 20 }),
   ],
 }
@@ -83,6 +88,15 @@ describe('TargetsEditor', () => {
     ])
   })
 
+  it("links a saved target to its Wowhead page, as the server gave it", async () => {
+    stubFetch()
+    await openEditor()
+    expect(screen.getByRole('link', { name: 'Old Cape on Wowhead' }).getAttribute('href')).toBe(
+      'https://www.wowhead.com/forever/item=7',
+    )
+    expect(screen.queryByRole('link', { name: 'Old Belt on Wowhead' })).toBeNull()
+  })
+
   it('fills the item id and source from the pool by name, and shows its level', async () => {
     const fetchMock = stubFetch()
     await openEditor()
@@ -90,6 +104,11 @@ describe('TargetsEditor', () => {
     fireEvent.click(screen.getByText('Add waist target'))
     fireEvent.change(screen.getByLabelText('Waist target 2 item'), { target: { value: 'kindlegem girdle' } })
     expect((screen.getByLabelText('Waist target 2 source') as HTMLInputElement).value).toBe('Hall of Thanes – Plunder')
+    // Its Wowhead page, from the pool (#225); a name the pool doesn't know has none.
+    expect(screen.getByRole('link', { name: 'kindlegem girdle on Wowhead' }).getAttribute('href')).toBe(girdle.wowhead)
+    fireEvent.change(screen.getByLabelText('Waist target 2 item'), { target: { value: 'kindlegem girdl' } })
+    expect(screen.queryByRole('link', { name: 'kindlegem girdl on Wowhead' })).toBeNull()
+    fireEvent.change(screen.getByLabelText('Waist target 2 item'), { target: { value: 'kindlegem girdle' } })
     expect((screen.getByLabelText('Waist target 2 level') as HTMLInputElement).placeholder).toBe(
       String(girdle.effective_level ?? 'auto'),
     )

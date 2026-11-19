@@ -25,6 +25,8 @@ export interface EquippedItem {
   attack_speed?: number | null
   enchantments?: Enchantment[]
   icon_url: string | null
+  /** Its Wowhead page (#225). */
+  wowhead: string | null
 }
 
 /** An enchant on an equipped item (views.py Enchantment). */
@@ -36,6 +38,8 @@ export interface Enchantment {
   source_item_id: number | null
   /** PERMANENT; temporary kinds not seen yet. */
   kind: string | null
+  /** The source item's Wowhead page (#225). */
+  wowhead: string | null
 }
 
 export interface Stats {
@@ -124,6 +128,8 @@ export interface GearTarget {
   armor_type: string | null
   armor: number | null
   stats: Record<string, number>
+  /** Its Wowhead page from the id (#225); worked out by the server, never saved. */
+  wowhead?: string | null
 }
 
 /** Gear targets, one list (ADR 0015): edited in the app, or gear_targets.yaml (ADR 0014). Within a slot, list order is priority. */
@@ -266,6 +272,8 @@ export interface MemberNeed {
   item_id: number
   slot: string
   score_gain: number
+  /** Its Wowhead page (#225). */
+  wowhead: string | null
 }
 
 export interface GroupDungeon {
@@ -752,6 +760,8 @@ export interface ItemChoice {
   name: string
   choice: ChoiceKind
   created_at: string
+  /** Its Wowhead page (#225). */
+  wowhead: string | null
 }
 
 export interface SlotRecommendation {
@@ -938,6 +948,8 @@ export interface Reagent {
   quantity: number
   level: number | null
   level_source: LevelSource | null
+  /** Its Wowhead page (#225). */
+  wowhead: string | null
 }
 
 /** An enchant recipe from the catalog (enchants.py EnchantOption). */
@@ -961,6 +973,8 @@ export interface EnchantOption {
   season_of_discovery: boolean
   /** From the reagents' material levels; an estimate. */
   estimated_level: number | null
+  /** The crafted item's Wowhead page; null for a plain enchant: no spell id is known (#225). */
+  wowhead: string | null
 }
 
 export interface CurrentEnchant {
@@ -984,6 +998,8 @@ export interface SlotEnchants {
   slot: string
   /** Equipped item name; null when the slot is empty. */
   item: string | null
+  /** The equipped item's Wowhead page (#225). */
+  wowhead: string | null
   current: CurrentEnchant | null
   /** Biggest gain first. */
   picks: EnchantPick[]
@@ -997,6 +1013,8 @@ export interface MissingEffect {
   item_id: number
   recipe: string
   slots: string[]
+  /** Its Wowhead page (#225). */
+  wowhead: string | null
 }
 
 /** Corrections to the enchant reference data, made in the app (#36). */

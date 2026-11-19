@@ -7,6 +7,7 @@ import { Recommendations } from './Recommendations'
 
 const hidden: ItemChoice = {
   item_id: 5193,
+  wowhead: 'https://www.wowhead.com/forever/item=5193',
   name: 'Cape of the Brotherhood',
   choice: 'dismissed',
   created_at: '2026-11-12T10:00:00',
@@ -41,7 +42,7 @@ describe('Recommendations', () => {
 
     expect(screen.getByText('1 of 3 slots have an upgrade in reach', { exact: false })).toBeTruthy()
     expect(screen.getByText('(5 more without stats yet)', { exact: false })).toBeTruthy()
-    expect(screen.getByText('Kindlegem Girdle').closest('a')?.getAttribute('href')).toContain('item=1')
+    expect(screen.getByText('Kindlegem Girdle').closest('a')?.getAttribute('href')).toBe(girdle.wowhead)
     expect(screen.getByText('your target')).toBeTruthy()
     expect(screen.getByText('+9.7')).toBeTruthy()
     // Details stay hidden until the row is opened.

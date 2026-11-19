@@ -1,6 +1,7 @@
 import { slotLabel, type EnchantAdvice, type EnchantPick, type SlotEnchants } from '../api'
 import { signed } from '../format'
 import { EffectEditor, OptionCorrections, PerSlotControl } from './EnchantCorrections'
+import { ItemLink } from './ItemLink'
 
 /** "Enchant Bracer - Minor Deflect" -> "Minor Deflect": the slot is already in the row. */
 function shortName(name: string): string {
@@ -17,7 +18,9 @@ function Pick({ pick }: { pick: EnchantPick }) {
   const { option } = pick
   return (
     <div className="enchant-pick">
-      <span title={option.text ?? undefined}>{shortName(option.name)}</span>{' '}
+      <ItemLink href={option.wowhead} title={option.text ?? undefined}>
+        {shortName(option.name)}
+      </ItemLink>{' '}
       <small className="muted">
         {effectText(option.effects)} · {option.profession}
       </small>{' '}
@@ -36,7 +39,7 @@ function Row({ row }: { row: SlotEnchants }) {
     <tr>
       <td>{slotLabel(row.slot)}</td>
       <td>
-        {row.item ?? <span className="muted">empty</span>}
+        {row.item ? <ItemLink href={row.wowhead}>{row.item}</ItemLink> : <span className="muted">empty</span>}
         {row.current && (
           <small className="enchant">
             {' '}
@@ -107,7 +110,9 @@ export function Enchants({ data }: { data: EnchantAdvice }) {
               <ul>
                 {data.missing_effects.map((missing) => (
                   <li key={missing.item_id}>
-                    <strong>{missing.recipe}</strong>{' '}
+                    <strong>
+                      <ItemLink href={missing.wowhead}>{missing.recipe}</ItemLink>
+                    </strong>{' '}
                     <small className="muted">{missing.slots.map(slotLabel).join(', ')}</small>
                     <EffectEditor itemId={missing.item_id} effects={{}} corrected={false} label={missing.recipe} />
                   </li>

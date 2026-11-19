@@ -22,9 +22,9 @@ const striking: EnchantOption = {
   effects: { 'Weapon Damage': 1 },
   estimated_level: 12,
   reagents: [
-    { item_id: 10940, name: 'Strange Dust', quantity: 2, level: 1, level_source: 'shipped' },
-    { item_id: 10938, name: 'Lesser Magic Essence', quantity: 1, level: 12, level_source: 'corrected' },
-    { item_id: 10978, name: 'Small Glimmering Shard', quantity: 1, level: 11, level_source: 'shipped' },
+    { item_id: 10940, name: 'Strange Dust', quantity: 2, level: 1, level_source: 'shipped', wowhead: 'https://www.wowhead.com/forever/item=10940' },
+    { item_id: 10938, name: 'Lesser Magic Essence', quantity: 1, level: 12, level_source: 'corrected', wowhead: 'https://www.wowhead.com/forever/item=10938' },
+    { item_id: 10978, name: 'Small Glimmering Shard', quantity: 1, level: 11, level_source: 'shipped', wowhead: 'https://www.wowhead.com/forever/item=10978' },
   ],
 }
 // Crude Scope: its effect is on the crafted item, 4405.
@@ -37,18 +37,21 @@ const scope: EnchantOption = {
   crafted_item_id: 4405,
   effects: { 'Weapon Damage': 1 },
   effects_source: 'curated',
-  reagents: [{ item_id: 4371, name: 'Bronze Tube', quantity: 1, level: null, level_source: null }],
+  reagents: [{ item_id: 4371, name: 'Bronze Tube', quantity: 1, level: null, level_source: null, wowhead: 'https://www.wowhead.com/forever/item=4371' }],
 }
 
 const advice: EnchantAdvice = {
   ...enchantAdvice,
   per_slot: 2,
   per_slot_corrected: true,
-  missing_effects: [{ item_id: 6043, recipe: 'Iron Counterweight', slots: ['MAIN_HAND'] }],
+  missing_effects: [
+    { item_id: 6043, recipe: 'Iron Counterweight', slots: ['MAIN_HAND'], wowhead: 'https://www.wowhead.com/forever/item=6043' },
+  ],
   rows: [
     {
       slot: 'MAIN_HAND',
       item: 'Thelsamar Axe',
+      wowhead: null,
       current: null,
       current_is_weaker: false,
       picks: [{ option: striking, score: 2, score_gain: 2, usable_now: true, can_make: false }],
@@ -56,6 +59,7 @@ const advice: EnchantAdvice = {
     {
       slot: 'RANGED',
       item: 'Rough Boomstick',
+      wowhead: null,
       current: null,
       current_is_weaker: false,
       picks: [{ option: scope, score: 1, score_gain: 1, usable_now: true, can_make: true }],
