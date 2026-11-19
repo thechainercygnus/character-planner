@@ -631,7 +631,12 @@
        "level": 20,
        "score_delta": 8.7
       }
-     ]
+     ],
+     "owned": {
+      "where": "bags",
+      "count": 1,
+      "captured_at": "2026-11-18T01:30:01Z"
+     }
     },
     {
      "slot": "FEET",
@@ -2190,7 +2195,12 @@
        },
        "usable_now": true,
        "is_target": true,
-       "pinned": false
+       "pinned": false,
+       "owned": {
+        "where": "bags",
+        "count": 1,
+        "captured_at": "2026-11-18T01:30:01Z"
+       }
       },
       {
        "item": {

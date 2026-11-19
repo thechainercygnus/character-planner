@@ -9,6 +9,7 @@ import {
   type UpcomingTarget,
   type Verdict,
 } from '../api'
+import { OwnedTag } from './OwnedTag'
 
 export function Icon({ url }: { url: string | null }) {
   return url ? <img className="icon" src={url} alt="" width={28} height={28} /> : <span className="icon" />
@@ -72,6 +73,7 @@ function TargetName({ row }: { row: GearRow }) {
         ) : (
           row.target.item
         )}
+        <OwnedTag owned={row.owned} />
         {info ? (
           <>
             {details.length > 0 && <small>{details.join(' · ')}</small>}
@@ -157,6 +159,7 @@ function Upcoming({ upcoming }: { upcoming: UpcomingTarget[] }) {
             next.target.item
           )}
           {next.target.pinned && <span className="muted"> (pinned)</span>}
+          <OwnedTag owned={next.owned} />
           <small className="muted">
             {next.level !== null ? `level ${next.level}` : 'level unknown'}
             {next.score_delta !== null && ` · ${signed(next.score_delta, 1)} score`}

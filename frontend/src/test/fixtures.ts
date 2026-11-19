@@ -72,6 +72,7 @@ export function candidate(item: PoolItem, gain: number, overrides: Partial<Candi
     usable_now: true,
     is_target: false,
     pinned: false,
+    owned: null,
     ...overrides,
   }
 }
@@ -104,7 +105,7 @@ export const recommendations: Recommendations = {
       min_level: 13,
       max_level: 18,
       total_gain: 9.7,
-      upgrades: [{ slot: 'WAIST', item: girdle, score_gain: 9.7, source: hallDrop }],
+      upgrades: [{ slot: 'WAIST', item: girdle, score_gain: 9.7, source: hallDrop, owned: null }],
     },
     {
       dungeon_id: 'the-deadmines',
@@ -112,7 +113,7 @@ export const recommendations: Recommendations = {
       min_level: 17,
       max_level: 26,
       total_gain: 3.2,
-      upgrades: [{ slot: 'WAIST', item: laterBelt, score_gain: 3.2, source: deadminesQuest }],
+      upgrades: [{ slot: 'WAIST', item: laterBelt, score_gain: 3.2, source: deadminesQuest, owned: null }],
     },
   ],
   considered: 2,

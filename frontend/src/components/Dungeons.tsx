@@ -28,7 +28,7 @@ export function Dungeons({ data }: { data: Recommendations }) {
                 {dungeon.upgrades.map((upgrade) => (
                   <li key={upgrade.item.item_id}>
                     <span className="muted slot-label">{slotLabel(upgrade.slot)}</span>
-                    <PoolItemName item={upgrade.item} />
+                    <PoolItemName item={upgrade.item} owned={upgrade.owned} />
                     <span className="muted upgrade-source">
                       {upgrade.source.kind === 'quest'
                         ? `Quest: ${upgrade.source.detail ?? '?'}`

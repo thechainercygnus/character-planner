@@ -14,6 +14,7 @@ function event(overrides: Partial<LookAheadEvent>): LookAheadEvent {
     pinned: false,
     locked: false,
     link: null,
+    owned: null,
     ...overrides,
   }
 }
@@ -40,7 +41,13 @@ const data: LookAheadData = {
     {
       level: 22,
       events: [
-        event({ kind: 'target', title: 'Main Hand: Doomspike', detail: '+15.7 score · Wailing Caverns', pinned: true }),
+        event({
+          kind: 'target',
+          title: 'Main Hand: Doomspike',
+          detail: '+15.7 score · Wailing Caverns',
+          pinned: true,
+          owned: { where: 'bank', count: 1, captured_at: '2026-11-18T12:00:00Z' },
+        }),
         event({ kind: 'dungeon', title: 'City of Dalaran', locked: true }),
         event({ kind: 'class_quest', title: 'Class quest: The Islander', essential: true }),
       ],
@@ -83,6 +90,7 @@ describe('LookAhead', () => {
 
     const later = screen.getByRole('list', { name: 'Level 22' })
     expect(within(later).getByText('pinned')).toBeTruthy()
+    expect(within(later).getByText('owned: in your bank')).toBeTruthy()
     expect(within(later).getByText('not open yet')).toBeTruthy()
     expect(within(later).getByText('essential')).toBeTruthy()
     expect(fetchMock).toHaveBeenCalledWith('/api/look-ahead?levels=5', { headers: APP_HEADER })

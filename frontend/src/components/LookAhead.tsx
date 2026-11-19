@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api, type LookAheadEvent, type LookAheadKind } from '../api'
+import { OwnedTag } from './OwnedTag'
 
 const STORAGE_KEY = 'look-ahead-levels'
 const DEFAULT_LEVELS = 5
@@ -47,6 +48,7 @@ function Event({ event }: { event: LookAheadEvent }) {
         {title}
         {event.essential && <span className="tag warn">essential</span>}
         {event.pinned && <span className="tag">pinned</span>}
+        <OwnedTag owned={event.owned} />
         {event.locked && <span className="tag warn">not open yet</span>}
         {event.detail && <small className="muted">{event.detail}</small>}
       </span>

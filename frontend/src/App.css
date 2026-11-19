@@ -493,6 +493,12 @@ h4 {
   color: var(--warn);
 }
 
+/* Owned, not equipped (#186): already yours, go and get it. */
+.tag.owned {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
 tr.upgrade-row {
   cursor: pointer;
 }
