@@ -1,6 +1,7 @@
 # 0047: Game data from a SavedVariables addon: schema, upload, a purpose-built parser
 
-Status: accepted (2026-11-15)
+Status: accepted (2026-11-15). Point 8 amended by ADR 0051: the addon has its own
+repository; the schema stays here.
 
 ## Context
 
