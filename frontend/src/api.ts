@@ -84,6 +84,13 @@ export interface Specialization {
   talents: Talent[]
 }
 
+/** The level planning uses, its source, and when that source captured it (ADR 0052). */
+export interface PlanningLevel {
+  level: number
+  source: 'battle.net' | 'game'
+  at: string | null
+}
+
 export interface CharacterView {
   name: string | null
   surname: string | null
@@ -95,6 +102,8 @@ export interface CharacterView {
   equipped_item_level: number | null
   gear_slots_filled: number
   captured_at: string | null
+  /** The level planning uses: the game's when its data is newer than the last sync (#186, ADR 0052). */
+  level_source: PlanningLevel | null
   stats: Stats | null
   professions: Profession[]
   specialization: Specialization | null

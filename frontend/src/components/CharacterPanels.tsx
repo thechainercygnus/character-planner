@@ -1,4 +1,5 @@
 import { slotLabel, type CharacterView, type EquippedItem, type Profession, type Stats } from '../api'
+import { ago, parseTime } from '../gameData'
 import { ItemName } from './GearTable'
 
 export function CharacterHeader({ character }: { character: CharacterView }) {
@@ -6,12 +7,27 @@ export function CharacterHeader({ character }: { character: CharacterView }) {
   const who = [character.race, character.specialization?.name, character.character_class]
     .filter(Boolean)
     .join(' ')
+  // The level planning uses: the game's when its data is newer than the last sync (ADR 0052).
+  const source = character.level_source
+  const level = source?.level ?? character.level
+  const fromGame =
+    source?.source === 'game'
+      ? `From the game, ${source.at ? ago(parseTime(source.at)) : 'at an unknown time'}: newer than the last sync` +
+        (character.level !== null && character.level !== source.level ? ` (Battle.net says ${character.level})` : '')
+      : null
 
   return (
     <header className="character-header">
       <h1>{fullName || 'Unknown character'}</h1>
       <p>
-        Level {character.level ?? '?'} {who}
+        Level {level ?? '?'}
+        {fromGame && (
+          <span className="muted level-source" title={fromGame}>
+            {' '}
+            (from the game)
+          </span>
+        )}{' '}
+        {who}
         {character.guild && <> · &lt;{character.guild}&gt;</>}
         {character.equipped_item_level !== null && (
           <span title={`Average of the ${character.gear_slots_filled} gear slots filled (of 17)`}>

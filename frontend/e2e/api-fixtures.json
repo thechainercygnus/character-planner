@@ -509,7 +509,12 @@
      "enchantments": [],
      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132384.jpg"
     }
-   ]
+   ],
+   "level_source": {
+    "level": 19,
+    "source": "battle.net",
+    "at": "2026-11-12T23:16:47.164739Z"
+   }
   }
  },
  "/api/gear": {

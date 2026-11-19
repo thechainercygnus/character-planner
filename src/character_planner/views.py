@@ -108,6 +108,15 @@ class Specialization(BaseModel):
     talents: list[Talent] = []
 
 
+class LevelSource(BaseModel):
+    """The level planning uses, where it came from, and when that source captured it
+    (#186, ADR 0052): the game's when its data is newer than the last sync."""
+
+    level: int
+    source: Literal["battle.net", "game"]
+    at: datetime | None
+
+
 class CharacterView(BaseModel):
     name: str | None = None
     surname: str | None = None
@@ -120,6 +129,9 @@ class CharacterView(BaseModel):
     equipped_item_level: float | None = None
     gear_slots_filled: int = 0
     captured_at: datetime | None = None
+    # The level planning uses, and its source: the game's when its data is newer than the
+    # last sync (#186, ADR 0052). Set by the route; `level` stays the sync's.
+    level_source: LevelSource | None = None
     stats: Stats | None = None
     professions: list[Profession] = []
     specialization: Specialization | None = None
@@ -637,6 +649,7 @@ def gear_plan(
     companion: Mapping[int, CompanionInfo] | None = None,
     weights: Weights | None = None,
     item_levels: Mapping[int, int] | None = None,
+    level: int | None = None,
 ) -> GearPlan:
     """Per slot, the target to go for now and the ones coming up (ADR 0015).
 
@@ -648,7 +661,8 @@ def gear_plan(
     catalog = catalog or {}
     icons = icons or {}
     item_levels = item_levels or {}
-    level = character_level(_payload(latest, "profile"))
+    # The level planning uses (ADR 0052) when given, else the last sync's.
+    level = level if level is not None else character_level(_payload(latest, "profile"))
     reached_level = level or 0
     equipped = {
         item.slot: item.model_copy(update={"icon_url": icons.get(item.item_id or 0)})
