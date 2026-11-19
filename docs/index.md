@@ -14,6 +14,8 @@ out what to do next:
 - with the CharacterPlannerExport addon, your bags, bank and quest log, which Battle.net
   doesn't share. The Character tab's **Import game data** button takes the addon's file.
 
+![The planner's Upgrades tab for a level 19 Gnome Protection Warrior: per gear slot, the item equipped and the best upgrade in reach, with its icon, the level it needs, tags such as "your target" and "owned: in your bags", and how much it raises the gear score](_static/planner-upgrades.webp)
+
 It's free software (AGPL-3.0-or-later) that you host yourself.
 
 - **Run your own:** [Self-hosting](self-hosting.md) goes from nothing to a synced character.
