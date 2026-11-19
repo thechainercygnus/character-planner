@@ -351,6 +351,39 @@ export interface AdminView {
 /** The guild view (#18, ADR 0042). */
 export type Role = 'tank' | 'healer' | 'dps'
 
+/** One of your characters in a guild (#215). */
+export interface MyGuildCharacter {
+  id: number
+  name: string
+  /** In the guild's view now. */
+  joined: boolean
+  role: Role | null
+}
+
+/** A guild your characters are in, for the Guild tab's picker and the account page (#215, ADR 0059). */
+export interface MyGuild {
+  region: string
+  guild_id: number
+  name: string
+  /** You show your characters here as one player. */
+  grouped: boolean
+  characters: MyGuildCharacter[]
+}
+
+export interface MyGuilds {
+  guilds: MyGuild[]
+}
+
+export interface GuildMembersChange {
+  region: string
+  guild_id: number
+  join?: number[]
+  leave?: number[]
+  role?: Role | null
+  /** For each one joining; leave it out to change nothing. */
+  shared_alerts?: AlertKind[] | null
+}
+
 export interface GuildMember {
   character_id: number
   name: string
@@ -359,6 +392,8 @@ export interface GuildMember {
   role: Role | null
   level: number | null
   yours: boolean
+  /** Same number: one player, who chose to show their characters so (#215). Null: on its own. */
+  player: number | null
 }
 
 export interface MemberNeed {
@@ -1307,6 +1342,12 @@ export interface ClassQuestChecklist {
 }
 
 /** A JSON request body. */
+/** A request made as one character rather than the selected one (#215). */
+function asCharacter(id: number | undefined, init: RequestInit = {}): RequestInit {
+  if (id === undefined) return init
+  return { ...init, headers: { ...(init.headers as Record<string, string> | undefined), 'X-Character-Id': String(id) } }
+}
+
 function json(method: 'PUT' | 'POST', body: unknown): RequestInit {
   return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
 }
@@ -1376,17 +1417,26 @@ export const api = {
   about: () => request<About>('/api/about'),
   eraseCharacter: () => request<Erased>('/api/character', { method: 'DELETE' }),
   me: () => request<Me>('/api/me'),
-  guild: (going?: number[]) =>
+  // The guild view is seen through one character: the selected one, or `as`, one of yours in
+  // the guild the picker shows (#215).
+  guild: (going?: number[], as?: number) =>
     request<GuildView>(
       going && going.length > 0 ? `/api/guild?${going.map((id) => `going=${id}`).join('&')}` : '/api/guild',
+      asCharacter(as),
     ),
-  setGuildMembership: (optedIn: boolean, role: Role | null) =>
-    request<GuildView>('/api/guild/membership', json('PUT', { opted_in: optedIn, role })),
-  setGuildChannel: (url: string) => request<GuildView>('/api/guild/channel', json('PUT', { url })),
-  removeGuildChannel: () => request<GuildView>('/api/guild/channel', { method: 'DELETE' }),
-  testGuildChannel: () => request<SendResult>('/api/guild/channel/test', { method: 'POST' }),
-  setSharedAlerts: (alerts: AlertKind[]) =>
-    request<GuildView>('/api/guild/shared-alerts', json('PUT', { alerts })),
+  setGuildMembership: (optedIn: boolean, role: Role | null, as?: number) =>
+    request<GuildView>('/api/guild/membership', asCharacter(as, json('PUT', { opted_in: optedIn, role }))),
+  setGuildChannel: (url: string, as?: number) =>
+    request<GuildView>('/api/guild/channel', asCharacter(as, json('PUT', { url }))),
+  removeGuildChannel: (as?: number) => request<GuildView>('/api/guild/channel', asCharacter(as, { method: 'DELETE' })),
+  testGuildChannel: (as?: number) =>
+    request<SendResult>('/api/guild/channel/test', asCharacter(as, { method: 'POST' })),
+  setSharedAlerts: (alerts: AlertKind[], as?: number) =>
+    request<GuildView>('/api/guild/shared-alerts', asCharacter(as, json('PUT', { alerts }))),
+  myGuilds: () => request<MyGuilds>('/api/guilds'),
+  setGuildMembers: (change: GuildMembersChange) => request<MyGuilds>('/api/guilds/members', json('PUT', change)),
+  setGuildGrouping: (change: { region: string; guild_id: number; grouped: boolean }) =>
+    request<MyGuilds>('/api/guilds/grouping', json('PUT', change)),
   deleteAccount: () => request<Erased>('/api/account', { method: 'DELETE' }),
   account: () => request<AccountView>('/api/account'),
   /** Everything stored for you, as JSON in a zip (#217): a download, so an address. */

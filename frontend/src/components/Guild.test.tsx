@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { GuildView } from '../api'
+import type { GuildView, MyGuilds } from '../api'
 import { Guild } from './Guild'
 
 const GUILD = { id: 670649, name: 'Daves Discount Meats' }
@@ -19,8 +19,18 @@ const joined: GuildView = {
       role: 'tank',
       level: 19,
       yours: true,
+      player: null,
     },
-    { character_id: 3, name: 'Fizz Bang', character_class: 'Mage', spec: 'Fire', role: 'dps', level: 31, yours: false },
+    {
+      character_id: 3,
+      name: 'Fizz Bang',
+      character_class: 'Mage',
+      spec: 'Fire',
+      role: 'dps',
+      level: 31,
+      yours: false,
+      player: null,
+    },
   ],
   going: [1, 3],
   roles: { tank: 1, healer: 0, dps: 1 },
@@ -48,12 +58,29 @@ const joined: GuildView = {
   ],
 }
 
-function serve(view: GuildView) {
-  const calls: { url: string; method: string; body: unknown }[] = []
+type Call = { url: string; method: string; body: unknown; as: string | null }
+
+function serve(view: GuildView, mine: MyGuilds = { guilds: [] }) {
+  const calls: Call[] = []
   vi.stubGlobal(
     'fetch',
     vi.fn(async (url: string, init?: RequestInit) => {
-      calls.push({ url, method: init?.method ?? 'GET', body: init?.body ? JSON.parse(String(init.body)) : null })
+      const headers = (init?.headers ?? {}) as Record<string, string>
+      calls.push({
+        url,
+        method: init?.method ?? 'GET',
+        body: init?.body ? JSON.parse(String(init.body)) : null,
+        as: headers['X-Character-Id'] ?? null,
+      })
+      if (url.startsWith('/api/guilds')) return Response.json(mine)
+      if (url === '/api/notifications') {
+        return Response.json({
+          destinations: [],
+          alerts: [{ kind: 'level_up', audience: 'user', label: 'Level-ups' }],
+          recent: [],
+          system_alerts_to_user: false,
+        })
+      }
       return Response.json(view)
     }),
   )
@@ -81,7 +108,7 @@ describe('Guild', () => {
     fireEvent.change(screen.getByRole('combobox', { name: 'Your role' }), { target: { value: 'healer' } })
     fireEvent.click(screen.getByRole('button', { name: 'Join the guild view' }))
     await waitFor(() => expect(calls.some((c) => c.method === 'PUT')).toBe(true))
-    expect(calls.find((c) => c.method === 'PUT')).toEqual({
+    expect(calls.find((c) => c.method === 'PUT')).toMatchObject({
       url: '/api/guild/membership',
       method: 'PUT',
       body: { opted_in: true, role: 'healer' },
@@ -123,7 +150,7 @@ describe('Guild', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: 'Set' }))
     await waitFor(() =>
-      expect(calls.find((c) => c.url === '/api/guild/channel')).toEqual({
+      expect(calls.find((c) => c.url === '/api/guild/channel')).toMatchObject({
         url: '/api/guild/channel',
         method: 'PUT',
         body: { url: 'https://discord.com/api/webhooks/1/abc' },
@@ -158,5 +185,92 @@ describe('Guild', () => {
     const calls = serve(joined)
     fireEvent.click(await screen.findByRole('button', { name: 'Leave the guild view' }))
     await waitFor(() => expect(calls.find((c) => c.method === 'PUT')?.body).toEqual({ opted_in: false, role: null }))
+  })
+
+  describe('your guilds (#215)', () => {
+    const two: MyGuilds = {
+      guilds: [
+        {
+          region: 'us',
+          guild_id: 670649,
+          name: 'Daves Discount Meats',
+          grouped: false,
+          characters: [
+            { id: 1, name: 'Brum Doomlet', joined: true, role: 'tank' },
+            { id: 4, name: 'Brum Alt', joined: false, role: null },
+            { id: 5, name: 'Brum Third', joined: false, role: null },
+          ],
+        },
+        {
+          region: 'us',
+          guild_id: 111,
+          name: 'Other Guild',
+          grouped: false,
+          characters: [{ id: 6, name: 'Elsewhere', joined: false, role: null }],
+        },
+      ],
+    }
+
+    it('picks a guild, and sees it through one of your characters there', async () => {
+      const calls = serve(joined, two)
+      const other = await screen.findByRole('button', { name: 'Other Guild' })
+      expect(screen.getByRole('button', { name: 'Daves Discount Meats' }).getAttribute('aria-pressed')).toBe('true')
+      await waitFor(() => expect(calls).toContainEqual(expect.objectContaining({ url: '/api/guild', as: '1' })))
+      fireEvent.click(other)
+      await waitFor(() => expect(calls).toContainEqual(expect.objectContaining({ url: '/api/guild', as: '6' })))
+    })
+
+    it('joins with several at once, sharing chosen alerts for each', async () => {
+      const calls = serve(joined, two)
+      expect(await screen.findByText('Your characters in Daves Discount Meats')).toBeTruthy()
+      fireEvent.click(screen.getByRole('checkbox', { name: "Also share alerts with the guild's channel" }))
+      fireEvent.click(await screen.findByRole('checkbox', { name: 'Level-ups' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Join with these 2' }))
+      await waitFor(() =>
+        expect(calls.find((c) => c.url === '/api/guilds/members')?.body).toEqual({
+          region: 'us',
+          guild_id: 670649,
+          join: [4, 5],
+          role: null,
+          shared_alerts: ['level_up'],
+        }),
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Leave the guild view with Brum Doomlet' }))
+      await waitFor(() =>
+        expect(calls.filter((c) => c.url === '/api/guilds/members').map((c) => c.body)).toContainEqual({
+          region: 'us',
+          guild_id: 670649,
+          leave: [1],
+        }),
+      )
+    })
+
+    it('shows your characters as one player only when you choose to', async () => {
+      const calls = serve(joined, two)
+      fireEvent.click(await screen.findByRole('checkbox', { name: 'Show my characters here as one player' }))
+      await waitFor(() =>
+        expect(calls.find((c) => c.url === '/api/guilds/grouping')?.body).toEqual({
+          region: 'us',
+          guild_id: 670649,
+          grouped: true,
+        }),
+      )
+    })
+
+    it("marks a grouped player's characters, and lets only one of them go", async () => {
+      const grouped: GuildView = {
+        ...joined,
+        members: [
+          { ...joined.members[0]!, player: 1 },
+          { ...joined.members[0]!, character_id: 4, name: 'Brum Alt', level: 15, player: 1 },
+          joined.members[1]!,
+        ],
+        going: [1, 3],
+      }
+      const calls = serve(grouped)
+      expect(await screen.findAllByText('player 1')).toHaveLength(2)
+      fireEvent.click(screen.getByRole('checkbox', { name: 'Brum Alt is going' }))
+      await waitFor(() => expect(calls.map((c) => c.url)).toContain('/api/guild?going=3&going=4'))
+    })
   })
 })

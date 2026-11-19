@@ -82,10 +82,11 @@ export function Privacy() {
         computer or a private network. Alerts go to the Discord channels you choose, and DMs to the Discord account you
         link: with users on, only about your own characters. With users on, a character you add to its guild's view is
         shown to the other members who joined it: its name, level, spec, role and upgrades. Leave the view to stop that.
-        If the guild sets an alert channel, the alerts you choose to share post to that Discord channel, for anyone who
-        can read it. With users on, the admin, and any superusers the admin appoints, see a list of the accounts: each
-        one's Battle.net account id, role, when it signed up and last signed in, and its characters' names. Nothing more
-        of anyone's.
+        If you have several characters there, you can choose to show them as one player; until you do, nothing the guild
+        sees links them. If the guild sets an alert channel, the alerts you choose to share post to that Discord
+        channel, for anyone who can read it. With users on, the admin, and any superusers the admin appoints, see a list
+        of the accounts: each one's Battle.net account id, role, when it signed up and last signed in, and its
+        characters' names. Nothing more of anyone's.
       </p>
       <p>
         With users on, the admin can export everything stored for an account, for an access request, or delete it. A log

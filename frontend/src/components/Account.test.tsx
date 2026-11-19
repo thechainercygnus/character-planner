@@ -70,7 +70,7 @@ describe('Account', () => {
     expect(within(row).getByText('in the guild view')).toBeTruthy()
     expect(within(row).getByText('none')).toBeTruthy() // no game data
     expect(screen.getByRole('heading', { name: 'Guilds' })).toBeTruthy()
-    expect(screen.getByText(/Brumboldt Doomlet \(in the guild view\), Lilalx/)).toBeTruthy()
+    expect(screen.getByText(/Brumboldt Doomlet, Lilalx/)).toBeTruthy() // no guild view without users
     expect(screen.getByRole('link', { name: 'Download my data' }).getAttribute('href')).toBe('/api/account/export')
     expect(screen.getByRole('heading', { name: 'Alerts' })).toBeTruthy()
     // Without users: no sign-in, no account to delete.

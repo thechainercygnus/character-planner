@@ -2,10 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import {
   api,
+  selectedCharacter,
   type AlertKind,
   type GroupDungeon,
   type GuildMember,
   type GuildView,
+  type MyGuild,
   type Role,
   type SendResult,
 } from '../api'
@@ -57,20 +59,31 @@ function when(timestamp: string): string {
  * The guild's alert channel (#163, ADR 0046): any member sets its Discord webhook, and
  * each member ticks which of their own alerts post there. Nothing posts until they do.
  */
-function GuildChannelSection({ view, onSaved }: { view: GuildView; onSaved: (view: GuildView) => void }) {
+function GuildChannelSection({
+  view,
+  onSaved,
+  as,
+}: {
+  view: GuildView
+  onSaved: (view: GuildView) => void
+  as?: number | undefined
+}) {
   const [url, setUrl] = useState('')
   const [tested, setTested] = useState<SendResult | null>(null)
   const setChannel = useMutation({
-    mutationFn: api.setGuildChannel,
+    mutationFn: (next: string) => api.setGuildChannel(next, as),
     onSuccess: (saved) => {
       onSaved(saved)
       setUrl('')
       setTested(null)
     },
   })
-  const remove = useMutation({ mutationFn: api.removeGuildChannel, onSuccess: onSaved })
-  const test = useMutation({ mutationFn: api.testGuildChannel, onSuccess: setTested })
-  const share = useMutation({ mutationFn: api.setSharedAlerts, onSuccess: onSaved })
+  const remove = useMutation({ mutationFn: () => api.removeGuildChannel(as), onSuccess: onSaved })
+  const test = useMutation({ mutationFn: () => api.testGuildChannel(as), onSuccess: setTested })
+  const share = useMutation({
+    mutationFn: (alerts: AlertKind[]) => api.setSharedAlerts(alerts, as),
+    onSuccess: onSaved,
+  })
   const channel = view.channel
   const shared = view.shared_alerts ?? []
   const busy = setChannel.isPending || remove.isPending || test.isPending || share.isPending
@@ -161,15 +174,18 @@ function GuildChannelSection({ view, onSaved }: { view: GuildView; onSaved: (vie
  * and the dungeons worth most to the members going. Nothing about anyone shows until this
  * character opts in.
  */
-export function Guild() {
+function GuildPanel({ as }: { as?: number }) {
   const queryClient = useQueryClient()
   const [going, setGoing] = useState<number[] | null>(null)
-  const view = useQuery({ queryKey: ['guild', going], queryFn: () => api.guild(going ?? undefined) })
+  const view = useQuery({ queryKey: ['guild', as, going], queryFn: () => api.guild(going ?? undefined, as) })
   const [role, setRole] = useState<Role | null>(null)
   const membership = useMutation({
     mutationFn: ({ optedIn, chosen }: { optedIn: boolean; chosen: Role | null }) =>
-      api.setGuildMembership(optedIn, chosen),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['guild'] }),
+      api.setGuildMembership(optedIn, chosen, as),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['guild'] })
+      await queryClient.invalidateQueries({ queryKey: ['my-guilds'] })
+    },
   })
 
   if (view.isPending) return <p className="muted">Loading the guild…</p>
@@ -202,7 +218,14 @@ export function Guild() {
 
   const chosen = new Set(data.going)
   const toggle = (id: number) => {
-    const next = chosen.has(id) ? data.going.filter((g) => g !== id) : [...data.going, id]
+    // A grouped player runs on one character at a time (#215): picking one drops their others.
+    const player = data.members.find((m) => m.character_id === id)?.player ?? null
+    const others = new Set(
+      data.members
+        .filter((m) => player !== null && m.player === player && m.character_id !== id)
+        .map((m) => m.character_id),
+    )
+    const next = chosen.has(id) ? data.going.filter((g) => g !== id) : [...data.going.filter((g) => !others.has(g)), id]
     setGoing(next)
   }
 
@@ -248,6 +271,11 @@ export function Guild() {
                 <td>
                   {member.name}
                   {member.yours && <span className="muted"> (yours)</span>}
+                  {member.player !== null && (
+                    <span className="tag" title="These characters are one player's, who chose to show them so">
+                      player {member.player}
+                    </span>
+                  )}
                 </td>
                 <td>{member.level ?? '?'}</td>
                 <td>{[member.spec, member.character_class].filter(Boolean).join(' ') || '?'}</td>
@@ -262,7 +290,11 @@ export function Guild() {
           </p>
         )}
       </section>
-      <GuildChannelSection view={data} onSaved={(saved) => queryClient.setQueryData(['guild', going], saved)} />
+      <GuildChannelSection
+        view={data}
+        as={as}
+        onSaved={(saved) => queryClient.setQueryData(['guild', as, going], saved)}
+      />
       <section>
         <h2>Best runs for the group</h2>
         {data.dungeons.length === 0 ? (
@@ -286,6 +318,194 @@ export function Guild() {
           </ol>
         )}
       </section>
+    </>
+  )
+}
+
+/**
+ * Join a guild's view with several of your characters at once, or leave with any one (#215,
+ * ADR 0059), optionally sharing the same alerts to the guild's channel for each one joining.
+ * Also where you choose to show your characters here as one player. On the Guild tab and the
+ * account page.
+ */
+export function BulkJoin({ guild }: { guild: MyGuild }) {
+  const queryClient = useQueryClient()
+  const unjoined = guild.characters.filter((c) => !c.joined)
+  const [picked, setPicked] = useState<Set<number>>(new Set(unjoined.map((c) => c.id)))
+  const [role, setRole] = useState<Role | null>(null)
+  const [share, setShare] = useState(false)
+  const [alerts, setAlerts] = useState<Set<AlertKind>>(new Set())
+  const notifications = useQuery({ queryKey: ['notifications'], queryFn: api.notifications, enabled: share })
+  const refresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['my-guilds'] })
+    await queryClient.invalidateQueries({ queryKey: ['guild'] })
+    await queryClient.invalidateQueries({ queryKey: ['account'] })
+  }
+  const where = { region: guild.region, guild_id: guild.guild_id }
+  const change = useMutation({ mutationFn: api.setGuildMembers, onSuccess: refresh })
+  const grouping = useMutation({ mutationFn: api.setGuildGrouping, onSuccess: refresh })
+  const userAlerts = (notifications.data?.alerts ?? []).filter((a) => a.audience === 'user')
+  const joinable = unjoined.filter((c) => picked.has(c.id))
+  const failed = change.error ?? grouping.error
+
+  return (
+    <div className="bulk-join">
+      <ul className="bulk-join-characters">
+        {guild.characters.map((character) => (
+          <li key={character.id}>
+            {character.joined ? (
+              <>
+                {character.name} <span className="tag done">in the view</span>{' '}
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => change.mutate({ ...where, leave: [character.id] })}
+                  disabled={change.isPending}
+                  aria-label={`Leave the guild view with ${character.name}`}
+                >
+                  Leave
+                </button>
+              </>
+            ) : (
+              <label>
+                <input
+                  type="checkbox"
+                  checked={picked.has(character.id)}
+                  onChange={() => {
+                    const next = new Set(picked)
+                    if (next.has(character.id)) next.delete(character.id)
+                    else next.add(character.id)
+                    setPicked(next)
+                  }}
+                />{' '}
+                {character.name}
+              </label>
+            )}
+          </li>
+        ))}
+      </ul>
+      {unjoined.length > 0 && (
+        <>
+          <p>
+            <RolePicker value={role} onChange={setRole} />{' '}
+            <label>
+              <input type="checkbox" checked={share} onChange={(e) => setShare(e.target.checked)} /> Also share alerts
+              with the guild's channel
+            </label>
+          </p>
+          {share && (
+            <fieldset className="share-alerts">
+              <legend>Alerts to share, for each one joining</legend>
+              {userAlerts.map((alert) => (
+                <label key={alert.kind}>
+                  <input
+                    type="checkbox"
+                    checked={alerts.has(alert.kind)}
+                    onChange={() => {
+                      const next = new Set(alerts)
+                      if (next.has(alert.kind)) next.delete(alert.kind)
+                      else next.add(alert.kind)
+                      setAlerts(next)
+                    }}
+                  />{' '}
+                  {alert.label}
+                </label>
+              ))}
+            </fieldset>
+          )}
+          <p>
+            <button
+              type="button"
+              disabled={joinable.length === 0 || change.isPending}
+              onClick={() =>
+                change.mutate({
+                  ...where,
+                  join: joinable.map((c) => c.id),
+                  role,
+                  shared_alerts: share ? [...alerts] : null,
+                })
+              }
+            >
+              {joinable.length > 1 ? `Join with these ${joinable.length}` : 'Join with this one'}
+            </button>
+          </p>
+        </>
+      )}
+      {guild.characters.length > 1 && (
+        <p>
+          <label>
+            <input
+              type="checkbox"
+              checked={guild.grouped}
+              disabled={grouping.isPending}
+              onChange={(e) => grouping.mutate({ ...where, grouped: e.target.checked })}
+            />{' '}
+            Show my characters here as one player
+          </label>{' '}
+          <small className="muted">
+            Then only one of them goes at a time, and the group counts you once. Off, nothing the guild sees links them.
+          </small>
+        </p>
+      )}
+      {failed && <p className="error">{failed.message}</p>}
+    </div>
+  )
+}
+
+/** Which guild to show first: the selected character's, else the first. */
+function startingGuild(guilds: MyGuild[]): number {
+  const selected = selectedCharacter()
+  const index = guilds.findIndex((g) => g.characters.some((c) => c.id === selected))
+  return index >= 0 ? index : 0
+}
+
+/** The character to see a guild through: the selected one if it has joined, else a joined one, else any. */
+function viewer(guild: MyGuild): number {
+  const selected = selectedCharacter()
+  const joined = guild.characters.filter((c) => c.joined)
+  return (
+    joined.find((c) => c.id === selected)?.id ??
+    joined[0]?.id ??
+    guild.characters.find((c) => c.id === selected)?.id ??
+    guild.characters[0]!.id
+  )
+}
+
+/**
+ * The Guild tab (#18, #215): a picker over every guild your characters are in, then the
+ * chosen guild's view, seen through one of your characters there, and joining with several.
+ */
+export function Guild() {
+  const mine = useQuery({ queryKey: ['my-guilds'], queryFn: api.myGuilds })
+  const [chosen, setChosen] = useState<number | null>(null)
+  if (mine.isPending) return <p className="muted">Loading your guilds…</p>
+  if (mine.isError) return <p className="error">Couldn't load your guilds: {mine.error.message}</p>
+  const guilds = mine.data.guilds
+  if (guilds.length === 0) return <GuildPanel />
+  const index = Math.min(chosen ?? startingGuild(guilds), guilds.length - 1)
+  const guild = guilds[index]!
+  return (
+    <>
+      {guilds.length > 1 && (
+        <div className="guild-picker" role="group" aria-label="Your guilds">
+          {guilds.map((g, i) => (
+            <button
+              key={`${g.region}:${g.guild_id}`}
+              type="button"
+              className={i === index ? '' : 'secondary'}
+              aria-pressed={i === index}
+              onClick={() => setChosen(i)}
+            >
+              {g.name}
+            </button>
+          ))}
+        </div>
+      )}
+      <section>
+        <h2>Your characters in {guild.name}</h2>
+        <BulkJoin key={`${guild.region}:${guild.guild_id}`} guild={guild} />
+      </section>
+      <GuildPanel key={`${guild.region}:${guild.guild_id}`} as={viewer(guild)} />
     </>
   )
 }
