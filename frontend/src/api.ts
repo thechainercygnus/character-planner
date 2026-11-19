@@ -326,6 +326,30 @@ export interface BackupsView {
   last: BackupStatus | null
 }
 
+/** Instance health (health.py, #241). */
+export interface HealthFailure {
+  job: string
+  at: string | null
+  error: string
+}
+export interface HealthView {
+  ready: boolean
+  database: { reachable: boolean; migrated: boolean }
+  queue: {
+    configured: boolean
+    reachable: boolean
+    queued: number
+    started: number
+    failed: number
+    workers: number
+    last_heartbeat: string | null
+  }
+  failures: HealthFailure[]
+  budgets: { upstream: string; window_seconds: number; used: number; limit: number; waiting: boolean }[]
+  refreshes: { name: string; last: string | null }[]
+  leases: { name: string; expires_at: string }[]
+}
+
 /** Whether sign-ups are open, and where that comes from (#239, ADR 0057). */
 export interface SignupsView {
   open: boolean
@@ -1604,6 +1628,7 @@ export const api = {
   adminAccounts: () => request<AdminView>('/api/admin/accounts'),
   adminLog: () => request<AdminLogEntry[]>('/api/admin/log'),
   adminSignups: () => request<SignupsAdmin>('/api/admin/signups'),
+  adminHealth: () => request<HealthView>('/api/admin/health'),
   adminBackups: () => request<BackupsView>('/api/admin/backups'),
   backUpNow: () => request<BackupsView>('/api/admin/backups', { method: 'POST' }),
   setSignups: (open: boolean) => request<SignupsAdmin>('/api/admin/signups', json('PUT', { open })),

@@ -87,11 +87,11 @@ def sync_state(redis: Redis, character_id: int) -> SyncState:
     if status in (JobStatus.FAILED, JobStatus.STOPPED, JobStatus.CANCELED):
         latest = job.latest_result()
         lines = (latest.exc_string or "").strip().splitlines() if latest else []
-        return SyncState(state="failed", error=_reason(lines[-1]) if lines else "The sync failed")
+        return SyncState(state="failed", error=reason(lines[-1]) if lines else "The sync failed")
     return SyncState(state="started" if status == JobStatus.STARTED else "queued")
 
 
-def _reason(line: str) -> str:
+def reason(line: str) -> str:
     """A traceback's last line without its exception's module path, for the page:
     "character_planner.tokens.CredentialsError: no client" becomes "no client"."""
     name, separator, message = line.partition(": ")

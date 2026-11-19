@@ -67,6 +67,12 @@ Back up now, whatever the schedule (#240). Needs `backups.manage`. 409 when back
 
 **200:** [BackupsView](#schema-backupsview)
 
+### `GET /api/admin/health`
+
+Instance health (#241): the database, the queue, recent job failures, the upstream budget and the shared catalogs' refreshes. Needs `health.view`. Reads the state directly, so it works without METRICS_TOKEN.
+
+**200:** [Health](#schema-health)
+
 ### `POST /api/admin/invites`
 
 A link that lets one person sign up while sign-ups are closed: one use, valid for 7 days (#239, ADR 0057). The token is returned this once; only its hash is stored. Needs `signups.manage`. Logged.
@@ -1188,6 +1194,17 @@ What the planner stores about an account, and no more (#237): it's for running t
 | `crafted_item_id` | integer or null | no |
 | `wowhead` | string | yes |
 
+(schema-budgethealth)=
+### BudgetHealth
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `upstream` | string | yes |
+| `window_seconds` | integer | yes |
+| `used` | integer | yes |
+| `limit` | integer | yes |
+| `waiting` | boolean | yes |
+
 (schema-buildchoice)=
 ### BuildChoice
 
@@ -1378,6 +1395,14 @@ What's corrected, what ships, and the effect names a correction may use.
 | `name` | string | yes |
 | `url` | string | yes |
 | `sources` | list of [CreditLink](#schema-creditlink) | yes |
+
+(schema-databasehealth)=
+### DatabaseHealth
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `reachable` | boolean | yes |
+| `migrated` | boolean | yes |
 
 (schema-destinationupdate)=
 ### DestinationUpdate
@@ -1618,6 +1643,15 @@ An enchant on an equipped item, as the equipment endpoint reports it.
 | --- | --- | --- |
 | `removed` | map of integer | yes |
 
+(schema-failure)=
+### Failure
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `job` | string | yes |
+| `at` | string or null | no |
+| `error` | string | yes |
+
 (schema-gamedata)=
 ### GameData
 
@@ -1836,6 +1870,19 @@ The guild's alert channel (#163), as members see it: the webhook masked.
 | --- | --- | --- |
 | `detail` | list of [ValidationError](#schema-validationerror) | no |
 
+(schema-health)=
+### Health
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `ready` | boolean | yes |
+| `database` | [DatabaseHealth](#schema-databasehealth) | yes |
+| `queue` | [QueueHealth](#schema-queuehealth) | yes |
+| `failures` | list of [Failure](#schema-failure) | yes |
+| `budgets` | list of [BudgetHealth](#schema-budgethealth) | yes |
+| `refreshes` | list of [Refresh](#schema-refresh) | yes |
+| `leases` | list of [Lease](#schema-lease) | yes |
+
 (schema-invitetoken)=
 ### InviteToken
 
@@ -1906,6 +1953,14 @@ What the app shows for an item id in the file (#185): the file has ids only.
 | --- | --- | --- |
 | `capturedAt` | integer (minimum 0.0) | yes |
 | `items` | [LuaList_Item_](#schema-lualist_item_) | yes |
+
+(schema-lease)=
+### Lease
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `name` | string | yes |
+| `expires_at` | string | yes |
 
 (schema-levelgroup)=
 ### LevelGroup
@@ -2468,6 +2523,19 @@ One quest in a chain. Only quest_id and name are always known.
 | `log` | [LuaList_Quest_](#schema-lualist_quest_) | yes |
 | `completed` | [LuaList_Annotated_int__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_1_____](#schema-lualist_annotated_int__fieldinfo_annotation_nonetype__required_true__metadata__ge_ge_1_____) | no |
 
+(schema-queuehealth)=
+### QueueHealth
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `configured` | boolean | yes |
+| `reachable` | boolean | no |
+| `queued` | integer | no |
+| `started` | integer | no |
+| `failed` | integer | no |
+| `workers` | integer | no |
+| `last_heartbeat` | string or null | no |
+
 (schema-reagent)=
 ### Reagent
 
@@ -2534,6 +2602,14 @@ One quest in a chain. Only quest_id and name are always known.
 | `considered` | integer | yes |
 | `unscored` | integer | yes |
 | `attributions` | list of map of string | no |
+
+(schema-refresh)=
+### Refresh
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `name` | string | yes |
+| `last` | string or null | no |
 
 (schema-refreshresult)=
 ### RefreshResult

@@ -275,6 +275,7 @@ UNSCOPED = {
         "DELETE /api/admin/invites/{invite_id}",  # signups.manage: test_signups.py
         "GET /api/admin/backups",  # backups.manage: test_backup.py
         "POST /api/admin/backups",  # backups.manage: test_backup.py
+        "GET /api/admin/health",  # health.view: test_health.py
         "POST /api/pool/refresh",
         "POST /api/enchants/refresh",
         "PUT /api/enchants/corrections/materials/{item_id}",

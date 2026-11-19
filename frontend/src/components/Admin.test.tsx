@@ -10,6 +10,7 @@ const EVERY_PERMISSION = [
   'data.refresh',
   'discord.signup',
   'enchants.correct',
+  'health.view',
   'log.view',
   'roles.manage',
   'signups.manage',
@@ -112,6 +113,18 @@ const failed = {
   error: 'ClientError: NoSuchBucket',
   kept: null,
 }
+const health = {
+  ready: true,
+  database: { reachable: true, migrated: false },
+  queue: { configured: false, reachable: false, queued: 0, started: 0, failed: 0, workers: 0, last_heartbeat: null },
+  failures: [{ job: 'refresh pool', at: '2026-11-21T02:00:00Z', error: 'Forever Companion refused the request' }],
+  budgets: [{ upstream: 'forevercompanion', window_seconds: 60, used: 100, limit: 100, waiting: true }],
+  refreshes: [
+    { name: 'Item pool', last: '2026-11-21T01:00:00Z' },
+    { name: 'Enchants', last: null },
+  ],
+  leases: [{ name: 'pool', expires_at: '2026-11-21T05:00:00Z' }],
+}
 const backups = { configured: true, every_hours: 24, keep: 14, bucket: 'planner-backups', last: failed }
 
 function show(me: Me) {
@@ -121,6 +134,7 @@ function show(me: Me) {
     vi.fn(async (url: string, init?: RequestInit) => {
       if (url === '/api/me') return Response.json(me)
       if (url === '/api/admin/log') return Response.json(log)
+      if (url === '/api/admin/health') return Response.json(health)
       if (url === '/api/admin/backups' && init?.method === 'POST') {
         puts.push({ url, body: 'POST' })
         return Response.json({
@@ -252,6 +266,18 @@ describe('Admin', () => {
     fireEvent.click(within(section).getByRole('button', { name: 'Back up now' }))
     expect(await within(section).findByText(/120 rows, 48 kB, 2 kept/)).toBeTruthy()
     expect(requests).toContainEqual({ url: '/api/admin/backups', body: 'POST' })
+  })
+
+  it('shows the instance health (#241)', async () => {
+    show(ADMIN)
+    const section = (await screen.findByRole('heading', { name: 'Instance health' })).closest('section')!
+    expect(section.textContent).toContain('reachable, but not at the newest migration')
+    expect(section.textContent).toContain('not set up (REDIS_URL)')
+    expect(section.textContent).toContain('100 of 100 used (full: calls are waiting for room)')
+    expect(section.textContent).toContain('Enchants: last refreshed never')
+    expect(section.textContent).toContain('Running now: pool.')
+    expect(section.textContent).toContain('refresh pool')
+    expect(section.textContent).toContain('Forever Companion refused the request')
   })
 
   it('shows a user nothing', async () => {

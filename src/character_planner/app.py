@@ -153,6 +153,7 @@ from character_planner.guild import (
     set_grouping,
     set_membership,
 )
+from character_planner.health import Health, instance_health
 from character_planner.items import RefreshResult, refresh_item_sources
 from character_planner.jobs import (
     character_context,
@@ -325,6 +326,7 @@ ROUTE_PERMISSIONS: tuple[tuple[frozenset[str], str, str], ...] = (
     (READS | STATE_CHANGING, "/api/admin/signups", "signups.manage"),
     (READS | STATE_CHANGING, "/api/admin/invites", "signups.manage"),
     (READS | STATE_CHANGING, "/api/admin/backups", "backups.manage"),
+    (READS, "/api/admin/health", "health.view"),
 )
 # The header the web app sends with every request; state-changing ones need it (#124).
 APP_HEADER = "X-Requested-With"
@@ -1063,6 +1065,14 @@ def create_app(
             bucket=settings.backup_s3_bucket or None,
             last=backup.status(session),
         )
+
+    @app.get("/api/admin/health")
+    def get_health(session: SessionDep) -> Health:
+        """Instance health (#241): the database, the queue, recent job failures, the upstream
+        budget and the shared catalogs' refreshes. Needs `health.view`. Reads the state
+        directly, so it works without METRICS_TOKEN."""
+        users_only()
+        return instance_health(session, engine, redis)
 
     @app.get("/api/admin/backups")
     def get_backups(session: SessionDep) -> BackupsView:

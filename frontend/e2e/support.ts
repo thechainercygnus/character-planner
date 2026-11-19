@@ -57,6 +57,7 @@ const EVERY_PERMISSION = [
   'data.refresh',
   'discord.signup',
   'enchants.correct',
+  'health.view',
   'log.view',
   'roles.manage',
   'signups.manage',
@@ -102,6 +103,31 @@ const USERS_ON: Answers = {
           state: 'used',
         },
       ],
+    },
+  },
+  '/api/admin/health': {
+    body: {
+      ready: true,
+      database: { reachable: true, migrated: true },
+      queue: {
+        configured: true,
+        reachable: true,
+        queued: 1,
+        started: 0,
+        failed: 1,
+        workers: 1,
+        last_heartbeat: '2026-11-21T03:00:00Z',
+      },
+      failures: [{ job: 'refresh pool', at: '2026-11-21T02:00:00Z', error: 'Forever Companion refused the request' }],
+      budgets: [
+        { upstream: 'blizzard', window_seconds: 1, used: 3, limit: 50, waiting: false },
+        { upstream: 'forevercompanion', window_seconds: 60, used: 100, limit: 100, waiting: true },
+      ],
+      refreshes: [
+        { name: 'Item pool', last: '2026-11-21T01:00:00Z' },
+        { name: 'Enchants', last: null },
+      ],
+      leases: [{ name: 'pool', expires_at: '2026-11-21T05:00:00Z' }],
     },
   },
   '/api/admin/backups': {
