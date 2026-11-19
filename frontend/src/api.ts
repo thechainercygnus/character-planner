@@ -150,6 +150,8 @@ export interface TargetInfo {
   verified: number | null
   wowhead: string | null
   conflicts: string[]
+  /** The rewarding quests' game ids (#186). */
+  reward_quest_ids: number[]
 }
 
 export type Verdict = 'reached' | 'upgrade' | 'sidegrade' | 'downgrade' | 'unknown'
@@ -159,6 +161,18 @@ export interface OwnedItem {
   where: 'bags' | 'bank'
   count: number
   /** When that place was recorded in the game. */
+  captured_at: string
+}
+
+/** A quest in the character's log, from the addon's game data (#186, ADR 0052). */
+export interface QuestProgress {
+  quest_id: number
+  title: string
+  /** Every objective done: ready to hand in. */
+  complete: boolean
+  /** Summed over its objectives. */
+  done: number
+  needed: number
   captured_at: string
 }
 
@@ -182,6 +196,8 @@ export interface GearRow {
   upcoming: UpcomingTarget[]
   /** The target is in the bags or bank (#186); never set once it's worn. */
   owned: OwnedItem | null
+  /** Its reward quest, in the log (#186). */
+  quest: QuestProgress | null
 }
 
 /** A target above the character's level, shown early so you can prepare for it. */
@@ -192,6 +208,8 @@ export interface UpcomingTarget {
   /** Against what's worn now; null without stat data. */
   score_delta: number | null
   owned: OwnedItem | null
+  /** Its reward quest, in the log (#186). */
+  quest: QuestProgress | null
 }
 
 /** A slot whose targets are all above the character's level. */
@@ -675,6 +693,10 @@ export interface QuestStep {
   wowhead: string | null
   /** Described by Forever Companion, not just named. */
   known: boolean
+  /** In the character's log, from the addon's game data (#186). */
+  progress: QuestProgress | null
+  /** Among the quests the game reports completed (#186). */
+  completed: boolean
 }
 
 /** Pool items for the character's level window (pool.py PoolView). */
@@ -1035,6 +1057,8 @@ export interface LookAheadEvent {
   link: string | null
   /** A target already in the bags or bank (#186). */
   owned: OwnedItem | null
+  /** Its reward quest, in the log (#186). */
+  quest: QuestProgress | null
 }
 
 export interface LookAhead {

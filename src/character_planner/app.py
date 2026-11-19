@@ -27,7 +27,17 @@ from sqlmodel import Session, col, select
 from starlette.concurrency import run_in_threadpool
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from character_planner import discord, fields, gamedata, jobs, leases, notify, signup, upstream
+from character_planner import (
+    discord,
+    fields,
+    gamedata,
+    jobs,
+    leases,
+    notify,
+    questlog,
+    signup,
+    upstream,
+)
 from character_planner import guild as guild_alerts
 from character_planner import queue as job_queue
 from character_planner.account import AccountCharacter, parse_account
@@ -1074,8 +1084,10 @@ def create_app(
             targets,
             stored_choices(session, character_id),
         )
-        # Upgrades already in the bags or bank, from the addon's game data (#186).
-        return mark_recommendations(rec, owned_for(session, character_id))
+        # Upgrades already in the bags or bank, and quests in the log or done, from the
+        # addon's game data (#186).
+        rec = mark_recommendations(rec, owned_for(session, character_id))
+        return questlog.mark_recommendations(rec, questlog.quest_state_for(session, character_id))
 
     def guild_character(session: Session, character_id: int | None) -> Character:
         """The guild view's character: users must be on (ADR 0042), and one chosen."""
@@ -1464,8 +1476,10 @@ def create_app(
             jobs.item_levels(session, character_id),
             level=planning_level(session, character_id),  # newest of sync and game
         )
-        # Targets already in the bags or bank (#186): the Plan tab and Look ahead.
-        return mark_gear_plan(plan, owned_for(session, character_id))
+        # Targets already in the bags or bank, and reward quests in the log (#186): the
+        # Plan tab and Look ahead.
+        plan = mark_gear_plan(plan, owned_for(session, character_id))
+        return questlog.mark_gear_plan(plan, questlog.quest_state_for(session, character_id))
 
     @app.get("/api/gear")
     def gear(

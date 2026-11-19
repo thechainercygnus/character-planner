@@ -2237,6 +2237,16 @@
               }
             ]
           },
+          "quest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QuestProgress"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "reached": {
             "title": "Reached",
             "type": "boolean"
@@ -3234,6 +3244,16 @@
             "default": false,
             "title": "Pinned",
             "type": "boolean"
+          },
+          "quest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QuestProgress"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "title": {
             "title": "Title",
@@ -4742,9 +4762,54 @@
         "title": "Quest",
         "type": "object"
       },
+      "QuestProgress": {
+        "description": "A quest in the character's log, from the addon's game data (#186, ADR 0052).",
+        "properties": {
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "done": {
+            "title": "Done",
+            "type": "integer"
+          },
+          "needed": {
+            "title": "Needed",
+            "type": "integer"
+          },
+          "quest_id": {
+            "title": "Quest Id",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "quest_id",
+          "title",
+          "complete",
+          "done",
+          "needed",
+          "captured_at"
+        ],
+        "title": "QuestProgress",
+        "type": "object"
+      },
       "QuestStep": {
         "description": "One quest in a chain. Only quest_id and name are always known.",
         "properties": {
+          "completed": {
+            "default": false,
+            "title": "Completed",
+            "type": "boolean"
+          },
           "dungeon": {
             "anyOf": [
               {
@@ -4808,6 +4873,16 @@
           "name": {
             "title": "Name",
             "type": "string"
+          },
+          "progress": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QuestProgress"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "quest_id": {
             "anyOf": [
@@ -6222,6 +6297,14 @@
             ],
             "title": "Required Level"
           },
+          "reward_quest_ids": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Reward Quest Ids",
+            "type": "array"
+          },
           "rewards": {
             "default": [],
             "items": {
@@ -6322,6 +6405,16 @@
             "anyOf": [
               {
                 "$ref": "#/components/schemas/OwnedItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "quest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/QuestProgress"
               },
               {
                 "type": "null"

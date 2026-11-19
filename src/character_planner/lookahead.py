@@ -19,7 +19,7 @@ from character_planner.class_quests import ClassQuestChecklist
 from character_planner.crafting import ProfessionsView
 from character_planner.dungeons import Dungeon
 from character_planner.talents import TalentPlanView, level_for_point, points_at
-from character_planner.views import GearPlan, OwnedItem
+from character_planner.views import GearPlan, OwnedItem, QuestProgress
 
 DEFAULT_LEVELS = 5
 MAX_LEVELS = 10
@@ -37,6 +37,7 @@ class LookAheadEvent(BaseModel):
     locked: bool = False  # a dungeon not open yet in Forever
     link: str | None = None
     owned: OwnedItem | None = None  # a target already in the bags or bank (#186)
+    quest: QuestProgress | None = None  # a target's reward quest, in the log (#186)
 
 
 class LevelGroup(BaseModel):
@@ -107,6 +108,7 @@ def target_events(gear: GearPlan, level: int, until: int) -> list[tuple[int, Loo
                     pinned=target.pinned,
                     link=entry.target_info.wowhead if entry.target_info else None,
                     owned=entry.owned,
+                    quest=entry.quest,
                 ),
             )
         )

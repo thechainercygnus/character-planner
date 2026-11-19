@@ -1400,6 +1400,7 @@ Per slot (ADR 0015): the target to go for now, in rows, and what's coming up.
 | `level` | integer or null | no |
 | `upcoming` | list of [UpcomingTarget](#schema-upcomingtarget) | no |
 | `owned` | [OwnedItem](#schema-owneditem) or null | no |
+| `quest` | [QuestProgress](#schema-questprogress) or null | no |
 
 (schema-geartarget)=
 ### GearTarget
@@ -1643,6 +1644,7 @@ The level planning uses, where it came from, and when that source captured it (#
 | `locked` | boolean | no |
 | `link` | string or null | no |
 | `owned` | [OwnedItem](#schema-owneditem) or null | no |
+| `quest` | [QuestProgress](#schema-questprogress) or null | no |
 
 (schema-lualist_annotated_int__fieldinfo_annotation_nonetype__required_true__metadata__ge_ge_1_____)=
 ### LuaList_Annotated_int__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_1_____
@@ -2013,6 +2015,20 @@ An item in the character's bags or bank, from the addon's game data (#186, ADR 0
 | `complete` | boolean | yes |
 | `objectives` | [LuaList_Objective_](#schema-lualist_objective_) | yes |
 
+(schema-questprogress)=
+### QuestProgress
+
+A quest in the character's log, from the addon's game data (#186, ADR 0052).
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `quest_id` | integer | yes |
+| `title` | string | yes |
+| `complete` | boolean | yes |
+| `done` | integer | yes |
+| `needed` | integer | yes |
+| `captured_at` | string | yes |
+
 (schema-queststep)=
 ### QuestStep
 
@@ -2030,6 +2046,8 @@ One quest in a chain. Only quest_id and name are always known.
 | `dungeon` | string or null | no |
 | `wowhead` | string or null | no |
 | `known` | boolean | no |
+| `progress` | [QuestProgress](#schema-questprogress) or null | no |
+| `completed` | boolean | no |
 
 (schema-quests)=
 ### Quests
@@ -2328,6 +2346,7 @@ What we know about a target item, merged from every source (ADR 0004). Precedenc
 | `icon_url` | string or null | no |
 | `drops` | list of string | no |
 | `rewards` | list of string | no |
+| `reward_quest_ids` | list of integer | no |
 | `verified` | integer or null | no |
 | `wowhead` | string or null | no |
 | `conflicts` | list of string | no |
@@ -2354,6 +2373,7 @@ A target above the character's level: shown early so you can prepare for it.
 | `level` | integer or null | yes |
 | `score_delta` | number or null | no |
 | `owned` | [OwnedItem](#schema-owneditem) or null | no |
+| `quest` | [QuestProgress](#schema-questprogress) or null | no |
 
 (schema-usagerules)=
 ### UsageRules

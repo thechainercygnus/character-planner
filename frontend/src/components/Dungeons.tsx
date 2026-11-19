@@ -1,6 +1,7 @@
 import { slotLabel, type Recommendations } from '../api'
 import { levelRange, signed } from '../format'
 import { PoolItemName } from './PoolItems'
+import { QuestTag } from './QuestTag'
 
 /** Dungeons ranked by the upgrades they hold for you right now (ADR 0007). */
 export function Dungeons({ data }: { data: Recommendations }) {
@@ -33,6 +34,10 @@ export function Dungeons({ data }: { data: Recommendations }) {
                       {upgrade.source.kind === 'quest'
                         ? `Quest: ${upgrade.source.detail ?? '?'}`
                         : (upgrade.source.detail ?? 'drop')}
+                      <QuestTag
+                        progress={upgrade.source.quest?.progress}
+                        completed={upgrade.source.quest?.completed ?? false}
+                      />
                     </span>
                     <span className="gain">{signed(upgrade.score_gain, 1)}</span>
                   </li>

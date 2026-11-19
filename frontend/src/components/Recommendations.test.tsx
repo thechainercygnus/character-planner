@@ -85,6 +85,8 @@ describe('Recommendations', () => {
       dungeon: null,
       wowhead: null,
       known: true,
+      progress: null,
+      completed: false,
       ...overrides,
     })
     // From the real Hall of Thanes data; the second step stands in for a side-by-side one.
@@ -141,6 +143,45 @@ describe('Recommendations', () => {
       'https://www.wowhead.com/forever/quest=96391',
     )
     expect(within(chain).queryByRole('link', { name: 'Unmatched Quest' })).toBeNull()
+  })
+
+  it("marks a chain's quests from the game data: done, or how far along in the log (#186)", () => {
+    stubFetch()
+    const progress = {
+      quest_id: 96393,
+      title: 'Old Ironforge Incursion',
+      complete: false,
+      done: 3,
+      needed: 10,
+      captured_at: new Date().toISOString(),
+    }
+    const blank = { level: null, min_level: null, giver: null, location: null, zone: null, dungeon: null, wowhead: null }
+    const quest = { ...blank, known: true, progress: null, completed: false }
+    const blunderbuss = poolItem({
+      item_id: 279894,
+      name: 'Calibrated Blunderbuss',
+      sources: [
+        {
+          ...deadminesQuest,
+          detail: 'Old Ironforge Incursion',
+          quest: { ...quest, quest_id: 96393, name: 'Old Ironforge Incursion', progress },
+          chain: [[{ ...quest, quest_id: 96391, name: 'Underground Map', completed: true }]],
+        },
+      ],
+    })
+    renderRecommendations({
+      ...recommendations,
+      rows: [{ slot: 'RANGED', equipped: null, candidates: [candidate(blunderbuss, 5)] }],
+    })
+    fireEvent.click(screen.getByRole('button', { name: /^Show details for Ranged/ }))
+    const chain = screen.getByRole('list', { name: 'Quest chain for Old Ironforge Incursion' })
+    expect(within(chain).getAllByRole('listitem').map((li) => li.textContent)).toEqual([
+      'Underground Mapdone',
+      'Old Ironforge Incursionin your log 3/10',
+    ])
+    expect(within(chain).getByText('in your log 3/10').getAttribute('title')).toMatch(
+      /^Old Ironforge Incursion, in your quest log: from the game, just now/,
+    )
   })
 
   it('shows no chain for a quest without one', () => {

@@ -26,6 +26,7 @@ from character_planner import fields, upstream
 from character_planner.companion import BASE_URL, USER_AGENT, as_utc
 from character_planner.db import CompanionQuest, save_now, utcnow
 from character_planner.logs import JobLog
+from character_planner.views import QuestProgress
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +50,9 @@ class QuestStep(BaseModel):
     dungeon: str | None = None  # the dungeon it's done in (dungeon quests)
     wowhead: str | None = None
     known: bool = False  # described by Forever Companion, not just named
+    # From the addon's game data (#186, ADR 0052): the quest in the log, or already done.
+    progress: QuestProgress | None = None
+    completed: bool = False
 
     @property
     def start_level(self) -> int | None:
