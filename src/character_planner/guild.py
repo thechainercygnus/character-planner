@@ -16,6 +16,7 @@ from pydantic import BaseModel, computed_field
 from sqlmodel import Session, col, select
 
 from character_planner import fields, notify
+from character_planner.builds import build_role
 from character_planner.config import Settings
 from character_planner.db import (
     Character,
@@ -279,10 +280,18 @@ def set_membership(
 
 
 def _role_of(
-    roles: dict[str, dict[str, Role]], chosen: str | None, cls: str | None, spec: str | None
+    roles: dict[str, dict[str, Role]],
+    chosen: str | None,
+    cls: str | None,
+    spec: str | None,
+    build: Role | None = None,
 ) -> Role | None:
+    """The member's own choice in the view, then their build's role (#216), then their
+    synced spec's (ADR 0042, ADR 0060)."""
     if chosen in ROLES:
         return chosen  # type: ignore[return-value]
+    if build is not None:
+        return build
     if cls and spec:
         return roles.get(cls, {}).get(spec)
     return None
@@ -397,7 +406,13 @@ def guild_view(
                 name=f"{character.name} {character.surname}".strip(),
                 character_class=cls,
                 spec=spec.name if spec else None,
-                role=_role_of(roles, row.role, cls, spec.name if spec else None),
+                role=_role_of(
+                    roles,
+                    row.role,
+                    cls,
+                    spec.name if spec else None,
+                    build_role(session, settings.curated_dir, row.character_id),
+                ),
                 level=character_level(profile.payload if profile else None),
                 yours=user_id is not None and character.user_id == user_id,
             )

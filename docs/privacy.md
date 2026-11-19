@@ -15,7 +15,7 @@ This page repeats what the notice says, and covers what an operator needs to do.
 - the character's data from Blizzard's Battle.net API (profile, gear, stats, talents,
   professions and the like), fetched at each sync;
 - a short history for the Progress tab: the date, level and item level of each sync;
-- what's set in the app: gear targets, talent plan, stat weights, rules, dismissed items
+- what's set in the app: build, gear targets, talent plan, stat weights, rules, dismissed items
   and class quests marked done;
 - the Discord webhooks added for alerts, and the alerts waiting to be sent;
 - a Discord account linked for DMs: its id and name only, until it's unlinked;

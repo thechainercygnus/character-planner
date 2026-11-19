@@ -10233,5 +10233,42 @@
     }
    ]
   }
+ },
+ "/api/builds": {
+  "status": 200,
+  "body": {
+   "class_name": "Warrior",
+   "builds": [
+    {
+     "key": "protection-leveling",
+     "name": "Protection: leveling tank",
+     "role": "tank",
+     "preset": "leveling-tank",
+     "preset_name": "Leveling tank",
+     "talents": true,
+     "spec": "Protection"
+    },
+    {
+     "key": "protection-dungeon",
+     "name": "Protection: dungeon tank",
+     "role": "tank",
+     "preset": "dungeon-tank",
+     "preset_name": "Dungeon tank",
+     "talents": true,
+     "spec": "Protection"
+    },
+    {
+     "key": "arms-leveling",
+     "name": "Arms: leveling",
+     "role": "dps",
+     "preset": "solo-dps",
+     "preset_name": "Solo DPS",
+     "talents": true,
+     "spec": "Arms"
+    }
+   ],
+   "current": "protection-leveling",
+   "customised": []
+  }
  }
 }

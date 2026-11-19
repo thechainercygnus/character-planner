@@ -55,3 +55,15 @@ presets:
 
 # No curated gear targets or talent plan yet: build them in the app's editors.
 targets: []
+
+# Builds (#216, ADR 0060): what a character is for, as one choice. Each sets a weight preset
+# above and a role for the guild view. No talent orders yet: they come as they're written.
+builds:
+  - key: leveling
+    name: "Leveling"
+    role: dps
+    preset: rogue-leveling
+  - key: dungeon-dps
+    name: "Dungeon DPS"
+    role: dps
+    preset: rogue-dungeon

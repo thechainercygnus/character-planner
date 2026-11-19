@@ -43,6 +43,8 @@ function show(me: Me, view: AccountView) {
         return Response.json({ destinations: [], alerts: [], recent: [], system_alerts_to_user: false })
       }
       if (url === '/api/discord') return Response.json({ available: false })
+      if (url === '/api/builds')
+        return Response.json({ class_name: 'Warrior', builds: [], current: null, customised: [] })
       if (url === '/api/sync') return Response.json({ profile: 200 })
       if (url === '/api/character') return Response.json({ removed: { character: 1 } })
       return Response.json([])

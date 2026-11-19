@@ -81,3 +81,19 @@ presets:
 
 # No curated gear targets or talent plan yet: build them in the app's editors.
 targets: []
+
+# Builds (#216, ADR 0060): what a character is for, as one choice. Each sets a weight preset
+# above and a role for the guild view. No talent orders yet: they come as they're written.
+builds:
+  - key: enhancement-leveling
+    name: "Enhancement: leveling"
+    role: dps
+    preset: shaman-leveling
+  - key: elemental-caster
+    name: "Elemental: dungeon caster"
+    role: dps
+    preset: shaman-caster
+  - key: restoration-healer
+    name: "Restoration: dungeon healer"
+    role: healer
+    preset: shaman-healer

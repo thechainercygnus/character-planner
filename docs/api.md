@@ -124,6 +124,32 @@ Make a user a superuser, or a user again (#237). Needs `roles.manage`. The admin
 
 **200:** [Account](#schema-account)
 
+## `build`
+
+### `PUT /api/build`
+
+Follow a build: its weight preset becomes the active one and its talent order, when it has one, the talent plan (#216, ADR 0060). `key` null stops following one and changes nothing else. 404 for a build the class doesn't ship.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**Body:** [BuildChoice](#schema-buildchoice)
+
+**200:** [BuildsView](#schema-buildsview)
+
+## `builds`
+
+### `GET /api/builds`
+
+The builds the character's class ships, the one it follows, and which of its pieces (weights, talents) were changed since (#216, ADR 0060).
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**200:** [BuildsView](#schema-buildsview)
+
 ## `character`
 
 ### `GET /api/character`
@@ -1125,6 +1151,36 @@ What the planner stores about an account, and no more (#237): it's for running t
 | `known` | boolean | yes |
 | `crafted_item_id` | integer or null | no |
 | `wowhead` | string | yes |
+
+(schema-buildchoice)=
+### BuildChoice
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `key` | string or null | yes |
+
+(schema-buildsummary)=
+### BuildSummary
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `key` | string | yes |
+| `name` | string | yes |
+| `role` | `tank` \\| `healer` \\| `dps` | yes |
+| `preset` | string | yes |
+| `preset_name` | string | yes |
+| `talents` | boolean | yes |
+| `spec` | string or null | yes |
+
+(schema-buildsview)=
+### BuildsView
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `class_name` | string | yes |
+| `builds` | list of [BuildSummary](#schema-buildsummary) | yes |
+| `current` | string or null | yes |
+| `customised` | list of `weights` \\| `talents` | no |
 
 (schema-candidate)=
 ### Candidate

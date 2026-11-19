@@ -12,6 +12,7 @@ both get the Warrior's defaults, as the app always did.
 
 import logging
 from pathlib import Path
+from typing import Literal
 
 import yaml
 from pydantic import BaseModel
@@ -36,12 +37,39 @@ class PlayableClass(BaseModel):
     name: str  # "Warlock"
 
 
+class Build(BaseModel):
+    """What a character is for, as one choice (#216, ADR 0060): a weight preset, a role
+    for the guild view, and optionally a talent order."""
+
+    key: str
+    name: str
+    role: Literal["tank", "healer", "dps"]
+    preset: str  # a shipped preset's key
+    talents: TalentPlan | None = None
+
+
 class ClassDefaults(BaseModel):
     playable: PlayableClass
     rules: UsageRules
     presets: ShippedPresets
     targets: GearTargets
     talent_plan: TalentPlan
+    builds: list[Build] = []
+
+    def build(self, key: str | None) -> Build | None:
+        return next((b for b in self.builds if b.key == key), None)
+
+
+def _builds(entries: object, presets: ShippedPresets, source: str) -> list[Build]:
+    """A class's builds, each naming a preset it ships: a typo fails loudly."""
+    builds = [Build.model_validate(entry) for entry in fields.as_list(entries)]
+    for build in builds:
+        if presets.get(build.preset) is None:
+            raise ValueError(f"Build {build.key} in {source} names no preset {build.preset}")
+    keys = [b.key for b in builds]
+    if len(set(keys)) != len(keys):
+        raise ValueError(f"Duplicate build keys in {source}: {keys}")
+    return builds
 
 
 def class_key(name: str) -> str:
@@ -71,12 +99,19 @@ def load_class_defaults(curated_dir: Path, key: str) -> ClassDefaults:
     """A class's shipped defaults; the Warrior's for "warrior" or a class with no file."""
     path = _class_files(curated_dir).get(key)
     if key == WARRIOR or path is None:
+        presets = load_shipped_presets(curated_dir)
+        builds_file = curated_dir / "builds.yaml"
+        builds: object = []
+        if builds_file.is_file():
+            with builds_file.open(encoding="utf-8") as handle:
+                builds = fields.as_mapping(yaml.safe_load(handle)).get("builds")
         return ClassDefaults(
             playable=PlayableClass(key=WARRIOR, name="Warrior"),
             rules=load_rules(curated_dir / "recommend.yaml"),
-            presets=load_shipped_presets(curated_dir),
+            presets=presets,
             targets=load_gear_targets(curated_dir / "gear_targets.yaml"),
             talent_plan=load_default_plan(curated_dir / "talent_plan.yaml"),
+            builds=_builds(builds, presets, "builds.yaml"),
         )
 
     with path.open(encoding="utf-8") as handle:
@@ -96,12 +131,14 @@ def load_class_defaults(curated_dir: Path, key: str) -> ClassDefaults:
     if len(set(keys)) != len(keys):
         raise ValueError(f"Duplicate preset keys in {path.name}: {keys}")
     plan = data.get("talent_plan")
+    shipped = ShippedPresets(presets=presets)
     return ClassDefaults(
         playable=PlayableClass(key=key, name=str(data.get("name", key.title()))),
         rules=rules,
-        presets=ShippedPresets(presets=presets),
+        presets=shipped,
         targets=GearTargets.model_validate({"targets": data.get("targets") or []}),
         talent_plan=TalentPlan.model_validate(plan) if plan else TalentPlan(spec="", steps=[]),
+        builds=_builds(data.get("builds"), shipped, path.name),
     )
 
 

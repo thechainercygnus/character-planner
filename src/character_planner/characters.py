@@ -18,6 +18,7 @@ from character_planner.config import Region, Settings
 from character_planner.db import (
     ActiveWeightPreset,
     Character,
+    CharacterBuild,
     ClassQuestDone,
     GameDataImport,
     GuildMembership,
@@ -33,6 +34,7 @@ from character_planner.db import (
 
 # Everything a character owns (ADR 0036): rows from before #14 are adopted by the first.
 OWNED = (
+    CharacterBuild,
     GuildMembership,
     GameDataImport,
     Snapshot,

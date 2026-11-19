@@ -63,3 +63,15 @@ presets:
 
 # No curated gear targets or talent plan yet: build them in the app's editors.
 targets: []
+
+# Builds (#216, ADR 0060): what a character is for, as one choice. Each sets a weight preset
+# above and a role for the guild view. No talent orders yet: they come as they're written.
+builds:
+  - key: shadow-leveling
+    name: "Shadow: leveling"
+    role: dps
+    preset: priest-leveling
+  - key: holy-healer
+    name: "Holy: dungeon healer"
+    role: healer
+    preset: priest-healer

@@ -322,6 +322,18 @@ class SkillTier(SQLModel, table=True):
     fetched_at: datetime = Field(default_factory=utcnow)
 
 
+class CharacterBuild(SQLModel, table=True):
+    """The build a character follows (#216, ADR 0060): a shipped build's key, for its class.
+    Picking one set its weight preset and talent plan; edits to them show as customised."""
+
+    __table_args__ = (UniqueConstraint("character_id"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    character_id: int | None = Field(default=None, foreign_key="character.id", index=True)
+    key: str
+    chosen_at: datetime = Field(default_factory=utcnow)
+
+
 class StoredTalentPlan(SQLModel, table=True):
     """The talent plan as edited in the app; data/curated/talent_plan.yaml is the default."""
 

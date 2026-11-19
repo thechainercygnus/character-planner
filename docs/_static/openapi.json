@@ -365,6 +365,126 @@
         "title": "BookRecipe",
         "type": "object"
       },
+      "BuildChoice": {
+        "properties": {
+          "key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key"
+          }
+        },
+        "required": [
+          "key"
+        ],
+        "title": "BuildChoice",
+        "type": "object"
+      },
+      "BuildSummary": {
+        "properties": {
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "preset": {
+            "title": "Preset",
+            "type": "string"
+          },
+          "preset_name": {
+            "title": "Preset Name",
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "tank",
+              "healer",
+              "dps"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "spec": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spec"
+          },
+          "talents": {
+            "title": "Talents",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "key",
+          "name",
+          "role",
+          "preset",
+          "preset_name",
+          "talents",
+          "spec"
+        ],
+        "title": "BuildSummary",
+        "type": "object"
+      },
+      "BuildsView": {
+        "properties": {
+          "builds": {
+            "items": {
+              "$ref": "#/components/schemas/BuildSummary"
+            },
+            "title": "Builds",
+            "type": "array"
+          },
+          "class_name": {
+            "title": "Class Name",
+            "type": "string"
+          },
+          "current": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current"
+          },
+          "customised": {
+            "default": [],
+            "items": {
+              "enum": [
+                "weights",
+                "talents"
+              ],
+              "type": "string"
+            },
+            "title": "Customised",
+            "type": "array"
+          }
+        },
+        "required": [
+          "class_name",
+          "builds",
+          "current"
+        ],
+        "title": "BuildsView",
+        "type": "object"
+      },
       "Candidate": {
         "properties": {
           "armor_delta": {
@@ -8077,6 +8197,112 @@
           }
         },
         "summary": "Change Role"
+      }
+    },
+    "/api/build": {
+      "put": {
+        "description": "Follow a build: its weight preset becomes the active one and its talent order, when\nit has one, the talent plan (#216, ADR 0060). `key` null stops following one and\nchanges nothing else. 404 for a build the class doesn't ship.",
+        "operationId": "put_build_api_build_put",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BuildChoice"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Build"
+      }
+    },
+    "/api/builds": {
+      "get": {
+        "description": "The builds the character's class ships, the one it follows, and which of its\npieces (weights, talents) were changed since (#216, ADR 0060).",
+        "operationId": "get_builds_api_builds_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Builds"
       }
     },
     "/api/character": {

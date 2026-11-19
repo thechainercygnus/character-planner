@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api, isQueued, selectCharacter, selectedCharacter, type MyCharacter } from '../api'
 import { ago, parseTime } from '../gameData'
+import { BuildPicker } from './BuildPicker'
 import { AddCharacter } from './CharacterSwitcher'
 import { DiscordSettings } from './DiscordDialog'
 import { BulkJoin } from './Guild'
@@ -78,6 +79,7 @@ function Characters({ characters }: { characters: MyCharacter[] }) {
           <thead>
             <tr>
               <th scope="col">Character</th>
+              <th scope="col">Build</th>
               <th scope="col">Last sync</th>
               <th scope="col">Guild</th>
               <th scope="col">Game data</th>
@@ -99,6 +101,9 @@ function Characters({ characters }: { characters: MyCharacter[] }) {
                       .join(' · ')}
                   </span>
                   {character.default && <span className="tag">default</span>}
+                </td>
+                <td>
+                  <BuildPicker as={character.id} label={`Build for ${character.name}`} />
                 </td>
                 <td>{when(character.last_sync)}</td>
                 <td>

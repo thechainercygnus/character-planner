@@ -78,3 +78,19 @@ presets:
 
 # No curated gear targets or talent plan yet: build them in the app's editors.
 targets: []
+
+# Builds (#216, ADR 0060): what a character is for, as one choice. Each sets a weight preset
+# above and a role for the guild view. No talent orders yet: they come as they're written.
+builds:
+  - key: feral-leveling
+    name: "Feral: leveling"
+    role: dps
+    preset: druid-leveling
+  - key: feral-tank
+    name: "Feral: dungeon tank"
+    role: tank
+    preset: druid-tank
+  - key: restoration-healer
+    name: "Restoration: dungeon healer"
+    role: healer
+    preset: druid-healer
