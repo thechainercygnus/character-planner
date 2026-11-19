@@ -98,11 +98,21 @@ in them is about the character.
 **With users on,** the Privacy page also has **Delete my account**. It deletes your
 characters with all their data and settings, your sign-in sessions, your Battle.net token,
 your alert webhooks, a linked Discord account and your account. The admin can delete theirs only once nobody else uses the instance.
-An operator handling a request can do it for anyone:
+An operator handling a request can do it for anyone: in the admin area (**Admin** in the
+menu, then **Delete…** on the account), or from the command line:
 
 ```
 docker compose exec app character-planner-db delete-user ACCOUNT_ID --yes
 ```
+
+For an access request, the admin area's **Export** downloads everything stored for an
+account as JSON in a zip. Webhook URLs are masked, and sign-in sessions and tokens are left
+out.
+
+**The admin action log** records each deletion, export, role change and enchant
+correction: who did it, to which account and when, as Battle.net account ids, with a short
+detail but never the data. It's the record that a request was handled, so it stays after
+the account it names is deleted. Entries are deleted after a year.
 
 **With no characters left,** the planner is blank again, unless `CHARACTER_NAME` and
 `CHARACTER_SURNAME` are set: then the next start tracks that character again. To stop

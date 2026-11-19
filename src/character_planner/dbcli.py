@@ -16,6 +16,7 @@ from alembic.migration import MigrationContext
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
+from character_planner.admin_log import record
 from character_planner.config import get_settings
 from character_planner.db import init_db, make_engine
 from character_planner.dbcopy import TargetNotEmpty, copy_database
@@ -81,6 +82,10 @@ def main(argv: list[str] | None = None) -> int:
             with Session(engine) as session:
                 user = user_by_account(session, args.account_id)
                 removed = delete_user(session, user.id) if user and user.id else None
+                if removed is not None:
+                    # The record a data request was handled (#238, ADR 0056): no actor here.
+                    rows = f"{sum(removed.values())} rows, from the command line"
+                    record(session, "user.delete", actor=None, target=args.account_id, detail=rows)
         except LastAdmin as error:
             print(error)
             return 1

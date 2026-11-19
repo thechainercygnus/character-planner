@@ -15,7 +15,8 @@ from sqlmodel import Session, select
 from character_planner.app import create_app
 from character_planner.blizzard import oauth
 from character_planner.config import Settings
-from character_planner.db import Character, User, UserSession, utcnow
+from character_planner.db import AdminAction, Character, User, UserSession, utcnow
+from character_planner.roles import PERMISSIONS
 from character_planner.users import COOKIE
 
 from .conftest import api_client
@@ -23,13 +24,7 @@ from .test_cli import cli_settings  # noqa: F401  # pyright: ignore[reportUnused
 
 ACCOUNT_URL = "https://us.api.blizzard.com/profile/user/wow"
 ADMIN, GUILDMATE = 1001, 2002  # Battle.net account ids
-EVERY_PERMISSION = [
-    "accounts.view",
-    "data.refresh",
-    "discord.signup",
-    "enchants.correct",
-    "roles.manage",
-]
+EVERY_PERMISSION = sorted(PERMISSIONS)
 
 
 @pytest.fixture
@@ -265,6 +260,9 @@ UNSCOPED = {
     "admin": {
         "GET /api/admin/accounts",  # accounts.view: test_roles.py
         "PUT /api/admin/users/{user_id}/role",  # roles.manage: test_roles.py
+        "DELETE /api/admin/users/{user_id}",  # users.delete: test_data_requests.py
+        "GET /api/admin/users/{user_id}/export",  # users.export: test_data_requests.py
+        "GET /api/admin/log",  # log.view: test_data_requests.py
         "POST /api/pool/refresh",
         "POST /api/enchants/refresh",
         "PUT /api/enchants/corrections/materials/{item_id}",
@@ -423,3 +421,10 @@ def test_the_operator_can_delete_a_user(
     assert "Deleted the user" in capsys.readouterr().out
     with Session(engine) as session:
         assert [u.account_id for u in session.exec(select(User)).all()] == [ADMIN]
+        # Logged, with no actor: the command line (#238, ADR 0056).
+        (entry,) = session.exec(select(AdminAction)).all()
+        assert (entry.actor_account_id, entry.action, entry.target_account_id) == (
+            None,
+            "user.delete",
+            GUILDMATE,
+        )

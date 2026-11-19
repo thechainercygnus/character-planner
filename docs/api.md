@@ -43,6 +43,33 @@ Every account: its Battle.net account id, role, when it signed up and last signe
 
 **200:** [AdminView](#schema-adminview)
 
+### `GET /api/admin/log`
+
+What the admin area did, newest first: who, what, to whom and when (#238, ADR 0056). Account ids and actions only. Needs `log.view`.
+
+**200:** list of [Entry](#schema-entry)
+
+### `DELETE /api/admin/users/{user_id}`
+
+Delete an account and everything stored for it (#238, ADR 0056), as `character-planner-db delete-user` does. Needs `users.delete`, and `confirm` set to the account's Battle.net id (409 otherwise). The admin can't go while others remain (409). Logged.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `user_id` | path | integer | yes |  |
+| `confirm` | query | integer or null | no |  |
+
+**200:** map of map of integer
+
+### `GET /api/admin/users/{user_id}/export`
+
+Everything stored for an account, as JSON in a zip, for an access request (#238, ADR 0056). Webhook URLs masked; no sessions or tokens. Needs `users.export`. Logged.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `user_id` | path | integer | yes |  |
+
+**200:** no body
+
 ### `PUT /api/admin/users/{user_id}/role`
 
 Make a user a superuser, or a user again (#237). Needs `roles.manage`. The admin's role can't change (409), and only superuser or user can be granted (422).
@@ -1374,6 +1401,18 @@ An enchant on an equipped item, as the equipment endpoint reports it.
 | `source_item_id` | integer or null | no |
 | `kind` | string or null | no |
 | `wowhead` | string or null | yes |
+
+(schema-entry)=
+### Entry
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `id` | integer | yes |
+| `at` | string | yes |
+| `actor_account_id` | integer or null | yes |
+| `action` | string | yes |
+| `target_account_id` | integer or null | yes |
+| `detail` | string or null | yes |
 
 (schema-equippeditem)=
 ### EquippedItem

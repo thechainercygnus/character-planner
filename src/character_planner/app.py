@@ -28,6 +28,7 @@ from starlette.concurrency import run_in_threadpool
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from character_planner import (
+    admin_log,
     discord,
     fields,
     gamedata,
@@ -41,6 +42,7 @@ from character_planner import (
 from character_planner import guild as guild_alerts
 from character_planner import queue as job_queue
 from character_planner.account import AccountCharacter, parse_account
+from character_planner.admin_log import Entry as AdminLogEntry
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
 from character_planner.characters import (
@@ -93,6 +95,7 @@ from character_planner.db import (
     NotificationDestination,
     Snapshot,
     StoredToken,
+    User,
     catalog_by_name,
     icons_by_id,
     init_db,
@@ -126,6 +129,8 @@ from character_planner.enchants import (
     equipped_effects,
     load_enchant_data,
 )
+from character_planner.export import export_user
+from character_planner.export import filename as export_filename
 from character_planner.guest import (
     Faction,
     GuestError,
@@ -283,7 +288,10 @@ ROUTE_PERMISSIONS: tuple[tuple[frozenset[str], str, str], ...] = (
     (STATE_CHANGING, "/api/talents/refresh", "data.refresh"),
     (STATE_CHANGING, "/api/discord/signup-message", "discord.signup"),
     (READS, "/api/admin", "accounts.view"),
-    (STATE_CHANGING, "/api/admin/users/", "roles.manage"),
+    (frozenset({"PUT"}), "/api/admin/users/", "roles.manage"),
+    (frozenset({"DELETE"}), "/api/admin/users/", "users.delete"),
+    (READS, "/api/admin/users/", "users.export"),
+    (READS, "/api/admin/log", "log.view"),
 )
 # The header the web app sends with every request; state-changing ones need it (#124).
 APP_HEADER = "X-Requested-With"
@@ -808,6 +816,28 @@ def create_app(
         if not settings.planner_users:
             raise HTTPException(404, "There are no user accounts on this instance")
 
+    def log(
+        request: Request,
+        session: Session,
+        action: str,
+        *,
+        target: int | None = None,
+        detail: str | None = None,
+    ) -> None:
+        """Record an admin action (#238, ADR 0056): users on only, as that's when there's an
+        admin area. The actor is the signed-in user's Battle.net account id."""
+        if not settings.planner_users:
+            return
+        actor_id = getattr(request.state, "user_id", None)
+        actor = session.get(User, actor_id) if actor_id is not None else None
+        admin_log.record(
+            session,
+            action,
+            actor=actor.account_id if actor else None,
+            target=target,
+            detail=detail,
+        )
+
     @app.get("/api/admin/accounts")
     def admin_accounts(session: SessionDep) -> AdminView:
         """Every account: its Battle.net account id, role, when it signed up and last
@@ -817,17 +847,87 @@ def create_app(
         return admin_view(session)
 
     @app.put("/api/admin/users/{user_id}/role")
-    def change_role(user_id: int, change: RoleChange, session: SessionDep) -> Account:
+    def change_role(
+        user_id: int, change: RoleChange, request: Request, session: SessionDep
+    ) -> Account:
         """Make a user a superuser, or a user again (#237). Needs `roles.manage`. The
         admin's role can't change (409), and only superuser or user can be granted (422)."""
         users_only()
+        before = session.get(User, user_id)
+        was = before.role if before else None
         try:
-            return set_role(session, user_id, change.role)
+            account = set_role(session, user_id, change.role)
         except LookupError as error:
             raise HTTPException(404, "No such user") from error
         except RoleError as error:
             status = 409 if change.role in GRANTABLE else 422
             raise HTTPException(status, str(error)) from error
+        log(
+            request,
+            session,
+            "role.change",
+            target=account.account_id,
+            detail=f"{was} -> {account.role}",
+        )
+        return account
+
+    def account_of(session: Session, user_id: int) -> User:
+        user = session.get(User, user_id)
+        if user is None:
+            raise HTTPException(404, "No such user")
+        return user
+
+    @app.delete("/api/admin/users/{user_id}")
+    def admin_delete_user(
+        user_id: int, request: Request, session: SessionDep, confirm: int | None = None
+    ) -> dict[str, dict[str, int]]:
+        """Delete an account and everything stored for it (#238, ADR 0056), as
+        `character-planner-db delete-user` does. Needs `users.delete`, and `confirm` set
+        to the account's Battle.net id (409 otherwise). The admin can't go while others
+        remain (409). Logged."""
+        users_only()
+        user = account_of(session, user_id)
+        account_id = user.account_id
+        if confirm != account_id:
+            raise HTTPException(409, f"To confirm, give the account's id: {account_id}")
+        try:
+            removed = delete_user(session, user_id)
+        except LastAdmin as error:
+            raise HTTPException(409, str(error)) from error
+        log(
+            request,
+            session,
+            "user.delete",
+            target=account_id,
+            detail=f"{sum(removed.values())} rows",
+        )
+        return {"removed": removed}
+
+    @app.get("/api/admin/users/{user_id}/export")
+    def admin_export_user(user_id: int, request: Request, session: SessionDep) -> Response:
+        """Everything stored for an account, as JSON in a zip, for an access request
+        (#238, ADR 0056). Webhook URLs masked; no sessions or tokens. Needs
+        `users.export`. Logged."""
+        users_only()
+        user = account_of(session, user_id)
+        try:
+            data = export_user(session, user_id)
+        except LookupError as error:
+            raise HTTPException(404, "No such user") from error
+        log(request, session, "user.export", target=user.account_id)
+        name = export_filename(user.account_id)
+        return Response(
+            data,
+            media_type="application/zip",
+            headers={"Content-Disposition": f'attachment; filename="{name}"'},
+        )
+
+    @app.get("/api/admin/log")
+    def admin_log_entries(session: SessionDep) -> list[AdminLogEntry]:
+        """What the admin area did, newest first: who, what, to whom and when (#238, ADR
+        0056). Account ids and actions only. Needs `log.view`."""
+        users_only()
+        return admin_log.recent(session)
 
     @app.get("/api/status")
     def status(
@@ -1008,6 +1108,7 @@ def create_app(
 
     @app.put("/api/enchants/corrections/materials/{item_id}")
     def put_material_level(
+        request: Request,
         item_id: Annotated[int, FastAPIPath(gt=0)],
         update: LevelUpdate,
         session: SessionDep,
@@ -1015,10 +1116,14 @@ def create_app(
     ) -> CorrectionsView:
         """Correct the level a material is commonly found from."""
         set_reagent_level(session, item_id, update.level)
+        log(
+            request, session, "enchants.correct", detail=f"material {item_id}: level {update.level}"
+        )
         return corrections_view(session, shipped)
 
     @app.delete("/api/enchants/corrections/materials/{item_id}")
     def delete_material_level(
+        request: Request,
         item_id: Annotated[int, FastAPIPath(gt=0)],
         session: SessionDep,
         shipped: ShippedEnchantDataDep,
@@ -1026,10 +1131,12 @@ def create_app(
         """Go back to the shipped level (or the item's own)."""
         if not reset_reagent_level(session, item_id):
             raise HTTPException(404, f"No correction for material {item_id}")
+        log(request, session, "enchants.correct", detail=f"material {item_id}: reset")
         return corrections_view(session, shipped)
 
     @app.put("/api/enchants/corrections/crafted/{item_id}")
     def put_crafted_effects(
+        request: Request,
         item_id: Annotated[int, FastAPIPath(gt=0)],
         update: EffectsUpdate,
         session: SessionDep,
@@ -1040,10 +1147,12 @@ def create_app(
             set_crafted_effects(session, item_id, update.effects)
         except CorrectionError as error:
             raise HTTPException(400, str(error)) from error
+        log(request, session, "enchants.correct", detail=f"crafted {item_id}: effects")
         return corrections_view(session, shipped)
 
     @app.delete("/api/enchants/corrections/crafted/{item_id}")
     def delete_crafted_effects(
+        request: Request,
         item_id: Annotated[int, FastAPIPath(gt=0)],
         session: SessionDep,
         shipped: ShippedEnchantDataDep,
@@ -1051,21 +1160,29 @@ def create_app(
         """Go back to the shipped effect, or none."""
         if not reset_crafted_effects(session, item_id):
             raise HTTPException(404, f"No correction for crafted item {item_id}")
+        log(request, session, "enchants.correct", detail=f"crafted {item_id}: reset")
         return corrections_view(session, shipped)
 
     @app.put("/api/enchants/corrections/per-slot")
     def put_per_slot(
-        update: PerSlotUpdate, session: SessionDep, shipped: ShippedEnchantDataDep
+        update: PerSlotUpdate,
+        request: Request,
+        session: SessionDep,
+        shipped: ShippedEnchantDataDep,
     ) -> CorrectionsView:
         """How many enchants to list per slot."""
         set_per_slot(session, update.per_slot)
+        log(request, session, "enchants.correct", detail=f"per slot: {update.per_slot}")
         return corrections_view(session, shipped)
 
     @app.delete("/api/enchants/corrections/per-slot")
-    def delete_per_slot(session: SessionDep, shipped: ShippedEnchantDataDep) -> CorrectionsView:
+    def delete_per_slot(
+        request: Request, session: SessionDep, shipped: ShippedEnchantDataDep
+    ) -> CorrectionsView:
         """Go back to the shipped number."""
         if not reset_per_slot(session):
             raise HTTPException(404, "per_slot isn't corrected")
+        log(request, session, "enchants.correct", detail="per slot: reset")
         return corrections_view(session, shipped)
 
     @app.get("/api/enchants/recommendations")

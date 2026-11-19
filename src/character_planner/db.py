@@ -42,6 +42,20 @@ class User(SQLModel, table=True):
         return self.role == "admin"
 
 
+class AdminAction(SQLModel, table=True):
+    """What the admin area did, who did it and to whom (#238, ADR 0056): the record that a
+    data request was handled. Account ids and the action only, never the data. No foreign
+    keys: a deletion's record outlives the user it deleted."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    at: datetime = Field(default_factory=utcnow, index=True)
+    # Battle.net account ids. No actor: the command line (character-planner-db).
+    actor_account_id: int | None = None
+    action: str  # user.delete, user.export, role.change, enchants.correct
+    target_account_id: int | None = None
+    detail: str | None = None  # e.g. "user -> superuser"; never stored data
+
+
 class UserSession(SQLModel, table=True):
     """A signed-in browser (ADR 0037). Only the token's SHA-256 is stored; the cookie
     holds the token itself."""
