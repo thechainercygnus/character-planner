@@ -8,10 +8,11 @@ targets now (ADR 0014), and migrate_target_choices moves old ones across.
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 from sqlmodel import Session, col, select
 
 from character_planner.db import ItemChoice, delete_owned, save_owned, utcnow
+from character_planner.links import item_url
 
 ChoiceKind = Literal["dismissed"]
 
@@ -21,6 +22,11 @@ class ItemChoiceView(BaseModel):
     name: str
     choice: ChoiceKind
     created_at: datetime
+
+    @computed_field
+    @property
+    def wowhead(self) -> str | None:
+        return item_url(self.item_id)
 
 
 class Choices(BaseModel):

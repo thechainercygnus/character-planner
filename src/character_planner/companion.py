@@ -25,6 +25,7 @@ from sqlmodel import Session, select
 
 from character_planner import fields, upstream
 from character_planner.db import CompanionItem, save_now, utcnow
+from character_planner.links import item_url
 from character_planner.logs import JobLog
 
 logger = logging.getLogger(__name__)
@@ -157,7 +158,7 @@ def parse_item(payload: Any) -> CompanionInfo | None:
         verified=fields.as_int(fields.get(item, "verified")),
         classic_only=fields.get(item, "classicOnly"),
         icon_url=WOWHEAD_ICON.format(icon=icon) if isinstance(icon, str) and icon else None,
-        wowhead=fields.get(item, "wowhead"),
+        wowhead=item_url(item_id, w if isinstance(w := fields.get(item, "wowhead"), str) else None),
     )
 
 

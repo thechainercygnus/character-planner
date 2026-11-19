@@ -130,6 +130,7 @@ and keep it true as you go: edit its body with the `roadmap` skill's script, or 
 - `src/character_planner/targets.py`: gear targets edited in the app and pins from the Upgrades tab; `gear_targets.yaml` is the default (ADR 0014); per-target levels (ADR 0015)
 - `src/character_planner/savedvariables.py`: reads WoW SavedVariables files, a Lua subset, without executing anything; hard limits on size, depth, values and strings (#183, ADR 0047)
 - `src/character_planner/gamedata.py`: the addon's data (`addon/SCHEMA.md`) as strict models by schema version; `read_export` turns an upload into `GameData` (#183, ADR 0047); `import_for` checks it's the selected character's and keeps the newest in `GameDataImport`, served by `/api/game-data` (#184)
+- `src/character_planner/links.py`: Wowhead links, built here only: a source's own link, else one from the item id; every view model naming an item has a `wowhead`, which the frontend's `ItemLink` shows (#225, ADR 0053)
 - `src/character_planner/fields.py`: defensive JSON readers used by all parsers
 - `src/character_planner/views.py`: the only code that reads API response shapes; typed views for the frontend
 - `src/character_planner/summary.py`: Markdown rendering of those views, for pasting into a chat

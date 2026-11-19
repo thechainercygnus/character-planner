@@ -66,7 +66,9 @@ def is_customised(session: Session, character_id: int | None) -> bool:
 
 
 def save_targets(session: Session, targets: GearTargets, character_id: int | None) -> None:
-    values = {"targets": targets.model_dump(exclude_none=True), "updated_at": utcnow()}
+    # The link is worked out from the id each time: not stored.
+    dumped = targets.model_dump(exclude_none=True, exclude={"targets": {"__all__": {"wowhead"}}})
+    values = {"targets": dumped, "updated_at": utcnow()}
     save_owned(session, StoredGearTargets, character_id, {}, values)
     session.commit()
 

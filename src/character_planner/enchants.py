@@ -26,7 +26,7 @@ from typing import Any, Literal
 
 import httpx
 import yaml
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 from sqlmodel import Session, select
 
 from character_planner import fields
@@ -34,6 +34,7 @@ from character_planner.blizzard.client import BlizzardClient
 from character_planner.companion import CompanionInfo, as_utc, refresh_companion
 from character_planner.config import Settings
 from character_planner.db import RecipeData, save_now, utcnow
+from character_planner.links import item_url
 from character_planner.logs import JobLog
 from character_planner.recommend import EQUIPMENT_SLOTS, UsageRules, is_two_hander
 from character_planner.retention import REFRESH_AFTER
@@ -110,6 +111,11 @@ class Reagent(BaseModel):
     level: int | None = None  # the level it's commonly found from, when known
     level_source: LevelSource | None = None
 
+    @computed_field
+    @property
+    def wowhead(self) -> str | None:
+        return item_url(self.item_id)
+
 
 class EnchantData(BaseModel):
     """data/curated/enchants.yaml, with any corrections made in the app on top (#36)."""
@@ -147,6 +153,12 @@ class EnchantOption(BaseModel):
     crafted_item_id: int | None = None  # scopes, kits, stones: the effect is on this item
     season_of_discovery: bool = False
     estimated_level: int | None = None  # from reagent item levels; an estimate
+
+    @computed_field
+    @property
+    def wowhead(self) -> str | None:
+        """The crafted item's page; a plain enchant has none we know of (links.py)."""
+        return item_url(self.crafted_item_id)
 
 
 # --- effects ---------------------------------------------------------------------------
@@ -509,6 +521,7 @@ class EnchantPick(BaseModel):
 class SlotEnchants(BaseModel):
     slot: str
     item: str | None  # equipped item name; None when the slot is empty
+    wowhead: str | None = None  # the equipped item's page (#225)
     current: CurrentEnchant | None
     picks: list[EnchantPick]  # biggest gain first
     current_is_weaker: bool  # an enchant on and something better in reach
@@ -520,6 +533,11 @@ class MissingEffect(BaseModel):
     item_id: int  # the crafted item: corrections are keyed by it
     recipe: str
     slots: list[str]
+
+    @computed_field
+    @property
+    def wowhead(self) -> str | None:
+        return item_url(self.item_id)
 
 
 class EnchantAdvice(BaseModel):
@@ -661,6 +679,7 @@ def advise(
             SlotEnchants(
                 slot=slot,
                 item=worn.name,
+                wowhead=worn.wowhead,
                 current=current,
                 picks=picks[: data.per_slot],
                 current_is_weaker=current is not None and bool(picks),

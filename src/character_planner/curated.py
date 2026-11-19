@@ -4,9 +4,10 @@ from pathlib import Path
 from typing import Any, cast
 
 import yaml
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, computed_field, model_validator
 
 from character_planner import fields
+from character_planner.links import item_url
 
 
 class GearTarget(BaseModel):
@@ -29,6 +30,12 @@ class GearTarget(BaseModel):
     armor_type: str | None = None  # Cloth, Leather, Mail, Plate, Shield...
     armor: int | None = None
     stats: dict[str, int] = {}
+
+    @computed_field
+    @property
+    def wowhead(self) -> str | None:
+        """Its page from the id (#225); never saved (targets.save_targets)."""
+        return item_url(self.item_id)
 
     @property
     def has_manual_data(self) -> bool:

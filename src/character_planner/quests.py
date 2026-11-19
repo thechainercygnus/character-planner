@@ -25,6 +25,7 @@ from sqlmodel import Session, select
 from character_planner import fields, upstream
 from character_planner.companion import BASE_URL, USER_AGENT, as_utc
 from character_planner.db import CompanionQuest, save_now, utcnow
+from character_planner.links import quest_url
 from character_planner.logs import JobLog
 from character_planner.views import QuestProgress
 
@@ -32,9 +33,6 @@ logger = logging.getLogger(__name__)
 
 # Quest data rarely changes, and a zone quest's 404 won't often turn into a 200.
 QUEST_MAX_AGE = timedelta(days=7)
-# Every quest link in Forever Companion's data has this form (dungeon and elite quests);
-# steps it can't describe link there too.
-WOWHEAD_QUEST = "https://www.wowhead.com/forever/quest={quest_id}"
 
 
 class QuestStep(BaseModel):
@@ -92,7 +90,7 @@ def parse_quest(payload: Any) -> QuestStep | None:
         location=_text(fields.get(quest, "location")),
         zone=_text(fields.get(quest, "zone")),
         dungeon=_text(dungeon),
-        wowhead=_text(wowhead) or _wowhead(quest_id),
+        wowhead=_text(wowhead) or quest_url(quest_id),
         known=True,
     )
 
@@ -117,7 +115,7 @@ def chain_steps(refs: ChainRefs, known: Mapping[int, QuestStep]) -> list[list[Qu
         [
             known[quest_id]
             if quest_id is not None and quest_id in known
-            else QuestStep(quest_id=quest_id, name=name, wowhead=_wowhead(quest_id))
+            else QuestStep(quest_id=quest_id, name=name, wowhead=quest_url(quest_id))
             for quest_id, name in step
         ]
         for step in refs
@@ -211,7 +209,3 @@ def refresh_quests(
 
 def _text(value: Any) -> str | None:
     return value if isinstance(value, str) and value.strip() else None
-
-
-def _wowhead(quest_id: int | None) -> str | None:
-    return WOWHEAD_QUEST.format(quest_id=quest_id) if quest_id is not None else None

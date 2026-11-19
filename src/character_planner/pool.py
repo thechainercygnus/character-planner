@@ -15,7 +15,7 @@ from datetime import timedelta
 from typing import Literal
 
 import httpx
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel, computed_field, model_validator
 from sqlmodel import Session
 
 from character_planner.class_quests import refresh_class_quests
@@ -30,6 +30,7 @@ from character_planner.dungeons import (
     refresh_dungeons,
     stored_dungeons,
 )
+from character_planner.links import item_url
 from character_planner.quests import (
     QuestStep,
     chain_level,
@@ -102,6 +103,12 @@ class PoolItem(BaseModel):
     dps: float | None = None
     icon_url: str | None = None
     wowhead: str | None = None
+
+    @model_validator(mode="after")
+    def _link(self) -> PoolItem:
+        """Every item links to Wowhead (#225), whether or not its source gave a link."""
+        self.wowhead = item_url(self.item_id, self.wowhead)
+        return self
 
     @computed_field
     @property

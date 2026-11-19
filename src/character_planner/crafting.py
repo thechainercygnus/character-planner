@@ -30,6 +30,7 @@ from character_planner.blizzard.client import BlizzardClient
 from character_planner.companion import CompanionInfo, as_utc
 from character_planner.config import Settings
 from character_planner.db import BlizzardItem, CraftingRecipe, latest_by_kind, save_now, utcnow
+from character_planner.links import item_url
 from character_planner.logs import JobLog
 from character_planner.retention import REFRESH_AFTER
 from character_planner.tokens import CredentialsError, app_token
@@ -165,7 +166,7 @@ def item_info(payload: Any) -> CompanionInfo | None:
         armor=fields.as_int(fields.get(preview, "armor", "value")),
         stats=stats,
         dps=round(dps, 1) if isinstance(dps, int | float) else None,
-        wowhead=f"https://www.wowhead.com/forever/item={item_id}",
+        wowhead=item_url(item_id),
     )
 
 

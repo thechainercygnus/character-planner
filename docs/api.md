@@ -1272,6 +1272,7 @@ data/curated/enchants.yaml, with any corrections made in the app on top (#36).
 | `crafted_item_id` | integer or null | no |
 | `season_of_discovery` | boolean | no |
 | `estimated_level` | integer or null | no |
+| `wowhead` | string or null | yes |
 
 (schema-enchantpick)=
 ### EnchantPick
@@ -1296,6 +1297,7 @@ An enchant on an equipped item, as the equipment endpoint reports it.
 | `source_item` | string or null | no |
 | `source_item_id` | integer or null | no |
 | `kind` | string or null | no |
+| `wowhead` | string or null | yes |
 
 (schema-equippeditem)=
 ### EquippedItem
@@ -1316,6 +1318,7 @@ An enchant on an equipped item, as the equipment endpoint reports it.
 | `attack_speed` | number or null | no |
 | `enchantments` | list of [Enchantment](#schema-enchantment) | no |
 | `icon_url` | string or null | no |
+| `wowhead` | string or null | yes |
 
 (schema-erased)=
 ### Erased
@@ -1418,6 +1421,7 @@ Per slot (ADR 0015): the target to go for now, in rows, and what's coming up.
 | `armor_type` | string or null | no |
 | `armor` | integer or null | no |
 | `stats` | map of integer | no |
+| `wowhead` | string or null | yes |
 
 (schema-geartargets)=
 ### GearTargets
@@ -1540,6 +1544,7 @@ The guild's alert channel (#163), as members see it: the webhook masked.
 | `name` | string | yes |
 | `choice` | string | yes |
 | `created_at` | string | yes |
+| `wowhead` | string or null | yes |
 
 (schema-iteminfo)=
 ### ItemInfo
@@ -1706,6 +1711,7 @@ Type: list of [Quest](#schema-quest)
 | `item_id` | integer | yes |
 | `slot` | string | yes |
 | `score_gain` | number | yes |
+| `wowhead` | string or null | yes |
 
 (schema-missingeffect)=
 ### MissingEffect
@@ -1717,6 +1723,7 @@ A scope, kit or other crafted enchant in reach whose effect isn't known (#36).
 | `item_id` | integer | yes |
 | `recipe` | string | yes |
 | `slots` | list of string | yes |
+| `wowhead` | string or null | yes |
 
 (schema-newcharacter)=
 ### NewCharacter
@@ -2068,6 +2075,7 @@ One quest in a chain. Only quest_id and name are always known.
 | `quantity` | integer | yes |
 | `level` | integer or null | no |
 | `level_source` | `corrected` \\| `shipped` \\| `item` or null | no |
+| `wowhead` | string or null | yes |
 
 (schema-recentview)=
 ### RecentView
@@ -2169,6 +2177,7 @@ When each part was captured in the game: they can differ by days (the bank).
 | --- | --- | --- |
 | `slot` | string | yes |
 | `item` | string or null | yes |
+| `wowhead` | string or null | no |
 | `current` | [CurrentEnchant](#schema-currentenchant) or null | yes |
 | `picks` | list of [EnchantPick](#schema-enchantpick) | yes |
 | `current_is_weaker` | boolean | yes |
