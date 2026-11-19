@@ -12,6 +12,7 @@
     "data.refresh",
     "discord.signup",
     "enchants.correct",
+    "health.view",
     "log.view",
     "roles.manage",
     "signups.manage",

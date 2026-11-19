@@ -485,6 +485,39 @@
         "title": "BookRecipe",
         "type": "object"
       },
+      "BudgetHealth": {
+        "properties": {
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "upstream": {
+            "title": "Upstream",
+            "type": "string"
+          },
+          "used": {
+            "title": "Used",
+            "type": "integer"
+          },
+          "waiting": {
+            "title": "Waiting",
+            "type": "boolean"
+          },
+          "window_seconds": {
+            "title": "Window Seconds",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "upstream",
+          "window_seconds",
+          "used",
+          "limit",
+          "waiting"
+        ],
+        "title": "BudgetHealth",
+        "type": "object"
+      },
       "BuildChoice": {
         "properties": {
           "key": {
@@ -1291,6 +1324,24 @@
           "sources"
         ],
         "title": "DataCredit",
+        "type": "object"
+      },
+      "DatabaseHealth": {
+        "properties": {
+          "migrated": {
+            "title": "Migrated",
+            "type": "boolean"
+          },
+          "reachable": {
+            "title": "Reachable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "reachable",
+          "migrated"
+        ],
+        "title": "DatabaseHealth",
         "type": "object"
       },
       "DestinationUpdate": {
@@ -2457,6 +2508,36 @@
         "title": "Erased",
         "type": "object"
       },
+      "Failure": {
+        "properties": {
+          "at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "At"
+          },
+          "error": {
+            "title": "Error",
+            "type": "string"
+          },
+          "job": {
+            "title": "Job",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job",
+          "error"
+        ],
+        "title": "Failure",
+        "type": "object"
+      },
       "GameData": {
         "description": "Schema version 1 (`addon/SCHEMA.md`).",
         "properties": {
@@ -3460,6 +3541,59 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "Health": {
+        "properties": {
+          "budgets": {
+            "items": {
+              "$ref": "#/components/schemas/BudgetHealth"
+            },
+            "title": "Budgets",
+            "type": "array"
+          },
+          "database": {
+            "$ref": "#/components/schemas/DatabaseHealth"
+          },
+          "failures": {
+            "items": {
+              "$ref": "#/components/schemas/Failure"
+            },
+            "title": "Failures",
+            "type": "array"
+          },
+          "leases": {
+            "items": {
+              "$ref": "#/components/schemas/Lease"
+            },
+            "title": "Leases",
+            "type": "array"
+          },
+          "queue": {
+            "$ref": "#/components/schemas/QueueHealth"
+          },
+          "ready": {
+            "title": "Ready",
+            "type": "boolean"
+          },
+          "refreshes": {
+            "items": {
+              "$ref": "#/components/schemas/Refresh"
+            },
+            "title": "Refreshes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ready",
+          "database",
+          "queue",
+          "failures",
+          "budgets",
+          "refreshes",
+          "leases"
+        ],
+        "title": "Health",
+        "type": "object"
+      },
       "InviteToken": {
         "properties": {
           "token": {
@@ -3726,6 +3860,25 @@
           "items"
         ],
         "title": "Items",
+        "type": "object"
+      },
+      "Lease": {
+        "properties": {
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "expires_at"
+        ],
+        "title": "Lease",
         "type": "object"
       },
       "LevelGroup": {
@@ -6025,6 +6178,56 @@
         "title": "Quests",
         "type": "object"
       },
+      "QueueHealth": {
+        "properties": {
+          "configured": {
+            "title": "Configured",
+            "type": "boolean"
+          },
+          "failed": {
+            "default": 0,
+            "title": "Failed",
+            "type": "integer"
+          },
+          "last_heartbeat": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Heartbeat"
+          },
+          "queued": {
+            "default": 0,
+            "title": "Queued",
+            "type": "integer"
+          },
+          "reachable": {
+            "default": false,
+            "title": "Reachable",
+            "type": "boolean"
+          },
+          "started": {
+            "default": 0,
+            "title": "Started",
+            "type": "integer"
+          },
+          "workers": {
+            "default": 0,
+            "title": "Workers",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "configured"
+        ],
+        "title": "QueueHealth",
+        "type": "object"
+      },
       "Reagent": {
         "properties": {
           "item_id": {
@@ -6316,6 +6519,31 @@
           "unscored"
         ],
         "title": "Recommendations",
+        "type": "object"
+      },
+      "Refresh": {
+        "properties": {
+          "last": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "Refresh",
         "type": "object"
       },
       "RefreshResult": {
@@ -8064,6 +8292,25 @@
           }
         },
         "summary": "Post Backup"
+      }
+    },
+    "/api/admin/health": {
+      "get": {
+        "description": "Instance health (#241): the database, the queue, recent job failures, the upstream\nbudget and the shared catalogs' refreshes. Needs `health.view`. Reads the state\ndirectly, so it works without METRICS_TOKEN.",
+        "operationId": "get_health_api_admin_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Health"
       }
     },
     "/api/admin/invites": {

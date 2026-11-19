@@ -39,6 +39,7 @@ PERMISSIONS: Final[dict[str, str]] = {
     "users.export": "Download everything stored for an account, for an access request",
     "log.view": "See the log of what the admin area did",
     "backups.manage": "See the backups, and back up now",
+    "health.view": "See the instance's health: database, queue, failed jobs, budget and refreshes",
     "signups.manage": "Open or close sign-ups, and invite someone while they're closed",
 }
 # What each role starts with: migrations 0019 to 0024 store these.

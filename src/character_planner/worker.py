@@ -26,6 +26,7 @@ from sqlmodel import Session
 from character_planner import (
     admin_log,
     backup,
+    health,
     jobs,
     notify,
     retention,
@@ -208,6 +209,7 @@ def run_due(
             outcomes[job.name] = f"failed: {error.__class__.__name__}: {error}"
             logger.exception("%s failed", job.name)
             with Session(engine) as session:
+                health.record_failure(session, job.name, outcomes[job.name])
                 notify.job_failed(session, settings, job.name, outcomes[job.name])
     return outcomes
 

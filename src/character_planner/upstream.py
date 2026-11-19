@@ -31,6 +31,14 @@ class Window:
     limit: int
 
 
+@dataclass(frozen=True)
+class Usage:
+    upstream: str
+    window_seconds: int
+    used: int
+    limit: int
+
+
 # Below each upstream's published limit, with room for others on the same IP or client.
 BUDGETS: dict[str, tuple[Window, ...]] = {
     # 120 requests a minute per IP (forevercompanion.io/api).
@@ -58,6 +66,10 @@ class Store(Protocol):
         """Count one more request under key, and return the count so far."""
         ...
 
+    def get(self, key: str) -> int:
+        """The count under key so far, without counting a request."""
+        ...
+
 
 class LocalStore:
     """Counts for this process only."""
@@ -77,6 +89,10 @@ class LocalStore:
                 del self._counts[stale]
             return count + 1
 
+    def get(self, key: str) -> int:
+        count, expires = self._counts.get(key, (0, 0.0))
+        return count if expires > time.monotonic() else 0
+
 
 class RedisStore:
     """Counts shared by every process using the same Redis."""
@@ -91,6 +107,9 @@ class RedisStore:
         count, _ = pipe.execute()
         return int(count)
 
+    def get(self, key: str) -> int:
+        return int(self._redis.get(key) or 0)
+
 
 class Budget:
     def __init__(
@@ -101,6 +120,26 @@ class Budget:
         sleep: Callable[[float], None] = time.sleep,
     ) -> None:
         self._store, self._budgets, self._clock, self._sleep = store, budgets, clock, sleep
+
+    @staticmethod
+    def _key(name: str, window: Window, now: float) -> str:
+        return f"budget:{name}:{window.seconds}:{int(now // window.seconds)}"
+
+    def usage(self) -> list[Usage]:
+        now = self._clock()
+        return [
+            Usage(
+                name,
+                window.seconds,
+                min(
+                    self._store.get(f"budget:{name}:{window.seconds}:{int(now // window.seconds)}"),
+                    window.limit,
+                ),
+                window.limit,
+            )
+            for name, windows in sorted(self._budgets.items())
+            for window in windows
+        ]
 
     def wait(self, host: str) -> None:
         """Block until a request to host fits its budget, then count it."""
@@ -115,7 +154,7 @@ class Budget:
             waits: list[float] = []
             for window in windows:
                 slot = int(now // window.seconds)
-                key = f"budget:{name}:{window.seconds}:{slot}"
+                key = self._key(name, window, now)
                 if self._store.add(key, window.seconds + 1) > window.limit:
                     waits.append((slot + 1) * window.seconds - now)
             if not waits:
@@ -126,6 +165,11 @@ class Budget:
 
 
 _budget = Budget(LocalStore())
+
+
+def usage() -> list[Usage]:
+    """How much of each budget's current window is used (ADR 0040), for the admin area."""
+    return _budget.usage()
 
 
 def configure(settings: Settings) -> None:

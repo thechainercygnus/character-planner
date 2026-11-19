@@ -352,6 +352,83 @@ function Backups() {
   )
 }
 
+const when = (moment: string | null) => (moment ? new Date(moment).toLocaleString() : 'never')
+
+/**
+ * What /api/readyz and the metrics know (#241): the database, the queue, failed jobs, the
+ * upstream budget and the shared catalogs' refreshes. Read directly, so no METRICS_TOKEN.
+ */
+function Health() {
+  const view = useQuery({ queryKey: ['admin-health'], queryFn: api.adminHealth })
+  if (view.isError) return <p className="error">Couldn't load instance health: {view.error.message}</p>
+  if (!view.data) return null
+  const { database, queue, failures, budgets, refreshes, leases } = view.data
+  return (
+    <section>
+      <h2>Instance health</h2>
+      <ul>
+        <li>
+          Database:{' '}
+          {!database.reachable ? (
+            <span className="error">not reachable</span>
+          ) : database.migrated ? (
+            'reachable, at the newest migration'
+          ) : (
+            <span className="error">reachable, but not at the newest migration</span>
+          )}
+        </li>
+        <li>
+          Queue:{' '}
+          {!queue.configured ? (
+            'not set up (REDIS_URL): syncs run in the request'
+          ) : !queue.reachable ? (
+            <span className="error">Redis not reachable</span>
+          ) : (
+            `${queue.queued} waiting, ${queue.started} running, ${queue.failed} failed; ${queue.workers} ${
+              queue.workers === 1 ? 'worker' : 'workers'
+            }, last heartbeat ${when(queue.last_heartbeat)}`
+          )}
+        </li>
+      </ul>
+      <h3>Upstream budget</h3>
+      {budgets.length === 0 ? (
+        <p className="muted">No budgets.</p>
+      ) : (
+        <ul>
+          {budgets.map((budget) => (
+            <li key={`${budget.upstream}-${budget.window_seconds}`}>
+              {budget.upstream}, per {budget.window_seconds === 1 ? 'second' : `${budget.window_seconds} seconds`}:{' '}
+              {budget.used} of {budget.limit} used
+              {budget.waiting && <strong> (full: calls are waiting for room)</strong>}
+            </li>
+          ))}
+        </ul>
+      )}
+      <h3>Refreshes</h3>
+      <ul>
+        {refreshes.map((refresh) => (
+          <li key={refresh.name}>
+            {refresh.name}: last refreshed {when(refresh.last)}
+          </li>
+        ))}
+      </ul>
+      {leases.length > 0 && <p>Running now: {leases.map((lease) => lease.name).join(', ')}.</p>}
+      <h3>Recent job failures</h3>
+      {failures.length === 0 ? (
+        <p className="muted">None.</p>
+      ) : (
+        <ul>
+          {failures.map((failure) => (
+            <li key={`${failure.job}-${failure.at}-${failure.error}`}>
+              {failure.job}, {when(failure.at)}: {failure.error}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  )
+}
+
 const ACTION_LABEL: Record<string, string> = {
   'backup.run': 'Backed up',
   'signups.change': 'Changed sign-ups',
@@ -434,6 +511,7 @@ export function Admin() {
           />
           <Roles view={view.data} />
           {can(me.data, 'signups.manage') && <Signups />}
+          {can(me.data, 'health.view') && <Health />}
           {can(me.data, 'backups.manage') && <Backups />}
           {can(me.data, 'log.view') && <ActionLog />}
         </>
