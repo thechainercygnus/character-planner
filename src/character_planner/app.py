@@ -1070,23 +1070,20 @@ def create_app(
     def get_health(session: SessionDep) -> Health:
         """Instance health (#241): the database, the queue, recent job failures, the upstream
         budget and the shared catalogs' refreshes. Needs `health.view`. Reads the state
-        directly, so it works without METRICS_TOKEN."""
-        users_only()
+        directly, so it works without METRICS_TOKEN. Without users too (ADR 0062)."""
         return instance_health(session, engine, redis)
 
     @app.get("/api/admin/backups")
     def get_backups(session: SessionDep) -> BackupsView:
         """Whether backups are set up, how often and how many are kept, and the last one's
-        outcome (#240, ADR 0061). Needs `backups.manage`."""
-        users_only()
+        outcome (#240, ADR 0061). Needs `backups.manage`. Without users too (ADR 0062)."""
         return backups_view(session)
 
     @app.post("/api/admin/backups")
     def post_backup(request: Request, session: SessionDep) -> BackupsView:
         """Back up now, whatever the schedule (#240). Needs `backups.manage`. 409 when backups
         aren't set up; 502 when the dump, encryption or upload fails (recorded, as the
-        worker's are). Logged."""
-        users_only()
+        worker's are). Logged with users on. Without users too (ADR 0062)."""
         if not settings.backups:
             raise HTTPException(409, "Backups aren't set up: see BACKUP_S3_* in self-hosting")
         try:

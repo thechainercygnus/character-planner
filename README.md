@@ -63,7 +63,7 @@ addon behind it.
 | Edit gear targets (YAML is the default) | `PUT`/`DELETE /api/targets` (or **Edit targets** on the Plan tab) |
 | Pin an item as a target | `POST /api/targets/pins`, `DELETE /api/targets/pins/{item_id}` (or **Make target** in an expanded Upgrades row) |
 | Never suggest an item | `GET /api/choices`, `PUT`/`DELETE /api/choices/{item_id}` (or **Never suggest**) |
-| Guest mode: best items and dungeons for a class and level, no account | `/api/guest`, `/api/guest/recommendations?level=20&class=warrior&faction=alliance` (or the landing page, and **Guest mode** in the ⋯ menu) |
+| Guest mode: best items and dungeons for a class and level, no account | `/api/guest`, `/api/guest/recommendations?level=20&class=warrior&faction=alliance` (or the landing page, and **Guest mode** in the footer) |
 | Version, data credits and the source link shown in the page footer (`SOURCE_URL` points it at a fork) | `/api/about` |
 | Progress over time (one point per sync, gear changes, level-ups) | `/api/progress` |
 | Talent plan vs synced talents (next point, off-plan points) | `/api/talents`; the trees at `/api/talents/tree`; plan on the talent trees in the Talents tab (ADR 0025); the Character tab shows talents as spent, read-only (#41), default in `data/curated/talent_plan.yaml` |

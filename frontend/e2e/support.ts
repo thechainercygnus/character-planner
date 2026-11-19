@@ -272,20 +272,13 @@ export const DIALOGS: [string, RegExp][] = [
   ['upgrades', /^Stat weights/],
   ['plan', /^Edit targets/],
   ['talents', /^Edit plan$/],
-  ['upgrades', /^Alerts$/],
-  ['upgrades', /^Discord$/],
   ['character', /^Import again$/],
 ]
 
-/** Open a dialog from its tab; on a phone its button may be in the More actions menu. */
+/** Open a dialog from its tab. */
 export async function openDialog(page: Page, tab: string, opener: RegExp) {
   await openTab(page, tab)
-  let button = page.getByRole('button', { name: opener }).first()
-  if (!(await button.isVisible())) {
-    await page.getByTitle('More actions').click()
-    button = page.getByRole('button', { name: opener }).first()
-  }
-  await button.click()
+  await page.getByRole('button', { name: opener }).first().click()
   const dialog = page.locator('dialog[open]')
   await dialog.waitFor()
   return dialog

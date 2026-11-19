@@ -191,6 +191,8 @@ def test_the_worker_records_a_failing_job(settings: Settings, engine: Engine) ->
     assert "no luck" in row.value[0]["error"]
 
 
-def test_without_users_there_is_no_admin_area(settings: Settings, engine: Engine) -> None:
+def test_without_users_the_health_shows_too(settings: Settings, engine: Engine) -> None:
+    # A solo instance has Admin too (#260, ADR 0062): its health, not the accounts.
     with browser(create_app(settings, engine)) as client:
-        assert client.get("/api/admin/health").status_code == 404
+        assert client.get("/api/admin/health").json()["database"]["reachable"]
+        assert client.get("/api/admin/accounts").status_code == 404
