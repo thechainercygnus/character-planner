@@ -46,6 +46,7 @@ from character_planner.account_page import AccountView, account_view
 from character_planner.admin_log import Entry as AdminLogEntry
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
+from character_planner.builds import BuildsView, UnknownBuild, builds_view, choose
 from character_planner.characters import (
     CharacterList,
     CharacterSummary,
@@ -392,6 +393,10 @@ class Me(BaseModel):
     role: str | None = None  # admin, superuser or user (#237, ADR 0055)
     permissions: list[str] = []  # what the signed-in user may do; everything without users
     signups_open: bool
+
+
+class BuildChoice(BaseModel):
+    key: str | None
 
 
 class RoleChange(BaseModel):
@@ -1398,6 +1403,24 @@ def create_app(
         """Each synced profession: skill, rank, the next rank and crafted gear (#10)."""
         level = jobs.character_context(session, character_id)[0]
         return professions_view(session, data, level, character_id)
+
+    @app.get("/api/builds")
+    def get_builds(session: SessionDep, character_id: CharacterIdDep) -> BuildsView:
+        """The builds the character's class ships, the one it follows, and which of its
+        pieces (weights, talents) were changed since (#216, ADR 0060)."""
+        return builds_view(session, settings.curated_dir, character_id)
+
+    @app.put("/api/build")
+    def put_build(
+        change: BuildChoice, session: SessionDep, character_id: CharacterIdDep
+    ) -> BuildsView:
+        """Follow a build: its weight preset becomes the active one and its talent order, when
+        it has one, the talent plan (#216, ADR 0060). `key` null stops following one and
+        changes nothing else. 404 for a build the class doesn't ship."""
+        try:
+            return choose(session, settings.curated_dir, change.key, character_id)
+        except UnknownBuild as error:
+            raise HTTPException(404, str(error)) from error
 
     @app.get("/api/recipes")
     def get_recipes(session: SessionDep, character_id: CharacterIdDep) -> RecipeBook:
