@@ -42,6 +42,7 @@ from character_planner import (
 from character_planner import guild as guild_alerts
 from character_planner import queue as job_queue
 from character_planner.account import AccountCharacter, parse_account
+from character_planner.account_page import AccountView, account_view
 from character_planner.admin_log import Entry as AdminLogEntry
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
@@ -129,7 +130,7 @@ from character_planner.enchants import (
     equipped_effects,
     load_enchant_data,
 )
-from character_planner.export import export_user
+from character_planner.export import export_everything, export_user
 from character_planner.export import filename as export_filename
 from character_planner.guest import (
     Faction,
@@ -1753,6 +1754,31 @@ def create_app(
         if not settings.planner_users:
             current_character(session, settings)  # seeds the first from .env if there's none
         return character_list(session, user_id if settings.planner_users else None)
+
+    @app.get("/api/account")
+    def my_account(session: SessionDep, user_id: UserIdDep) -> AccountView:
+        """The account page (#217, ADR 0058): the signed-in account, and each of its
+        characters with its level, last sync, guild, guild view and game-data import.
+        Without users, every character and no account."""
+        return account_view(session, user_id, settings.planner_users)
+
+    @app.get("/api/account/export")
+    def export_mine(session: SessionDep, user_id: UserIdDep) -> Response:
+        """Everything stored for the signed-in account, as JSON in a zip, for an access
+        request the user makes themselves (#217, ADR 0058): the admin area's export (ADR
+        0056). Without users, everything there is: it's one person's instance."""
+        if settings.planner_users and user_id is not None:
+            user = session.get(User, user_id)
+            data = export_user(session, user_id)
+            name = export_filename(user.account_id if user else None)
+        else:
+            data = export_everything(session)
+            name = export_filename(None)
+        return Response(
+            data,
+            media_type="application/zip",
+            headers={"Content-Disposition": f'attachment; filename="{name}"'},
+        )
 
     @app.get("/api/account/characters")
     def account_characters(session: SessionDep, user_id: UserIdDep) -> AccountCharacters:

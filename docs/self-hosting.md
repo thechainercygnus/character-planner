@@ -305,7 +305,8 @@ Then `docker compose up -d`. Every page now asks for a Battle.net sign-in, so re
   see each other's needs and which dungeon is worth most to the group (ADR 0042). Only
   those who join see it. Any of them can set a Discord webhook as the guild's alert
   channel, and each picks which of their own alerts post there (ADR 0046).
-- **Leaving:** each user can delete their own account on the Privacy page. To delete one
+- **Leaving:** each user can download their data and delete their account on **My
+  account** (in the ⋯ menu). To delete one
   for them, use the admin area (**Admin** in the menu), or
   `character-planner-db delete-user ACCOUNT_ID --yes`. The admin area also exports an
   account's data for an access request, and logs both (see [Privacy](privacy.md)).
@@ -608,7 +609,7 @@ turns it off.
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `Sync failed: Battle.net refused the client ID and secret (HTTP 401)` | A typo in `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET`, or the client was deleted or its secret changed | Copy both again from the developer portal, then `docker compose up -d` |
-| The status bar says `Battle.net can't find …`, and the logs say `character … not found` | Name, surname or region doesn't match the character, or it's below level 10 | Delete the mistyped character on the Privacy page, then add it again from the character menu. If it came from `CHARACTER_NAME` in `.env`, fix or remove that too: with no characters left, the next start uses it again |
+| The status bar says `Battle.net can't find …`, and the logs say `character … not found` | Name, surname or region doesn't match the character, or it's below level 10 | Remove the mistyped character on My account (in the ⋯ menu), then add it again from the character menu. If it came from `CHARACTER_NAME` in `.env`, fix or remove that too: with no characters left, the next start uses it again |
 | The status bar says `No Battle.net client`, and `worker.log` says `skipped: no Battle.net client` | `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET` is empty, or Compose didn't read `.env` | Fill in `.env` beside `compose.yaml`, then `docker compose up -d` |
 | The page says `Invalid host header` | The planner doesn't answer to the name in your address bar (#124) | Add that name to `PLANNER_HOSTS` in `.env` (comma separated), then `docker compose up -d` |
 | Upgrades and Dungeons stay empty after the first sync | Item data is still loading | Wait for the status bar's note to clear. `server.log` shows progress every 50 items |

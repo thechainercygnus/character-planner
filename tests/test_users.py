@@ -244,6 +244,8 @@ UNSCOPED = {
         "GET /api/characters",
         "POST /api/characters",
         "GET /api/account/characters",
+        "GET /api/account",  # the account page (#217): test_account_page.py
+        "GET /api/account/export",  # test_account_page.py
         # A linked Discord account is the user's (#58): tested in test_discord.py.
         "GET /api/discord",
         "PATCH /api/discord",

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from './api'
+import { Account } from './components/Account'
 import { Admin } from './components/Admin'
 import { CharacterHeader } from './components/CharacterPanels'
 import { ClassQuests } from './components/ClassQuests'
@@ -47,6 +48,7 @@ export default function App() {
   const guestView = useHashIs('guest')
   const privacyView = useHashIs('privacy')
   const adminView = useHashIs('admin')
+  const accountView = useHashIs('account')
   const character = useQuery({ queryKey: ['character'], queryFn: api.character })
   const gear = useQuery({ queryKey: ['gear'], queryFn: api.gear })
   const recommendations = useQuery({ queryKey: ['recommendations'], queryFn: api.recommendations })
@@ -82,6 +84,15 @@ export default function App() {
     return (
       <main>
         <Admin />
+        <Footer />
+      </main>
+    )
+  }
+
+  if (accountView) {
+    return (
+      <main>
+        <Account />
         <Footer />
       </main>
     )

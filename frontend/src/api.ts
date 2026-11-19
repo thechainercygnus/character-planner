@@ -453,6 +453,31 @@ export interface NewCharacter {
 }
 
 /** What DELETE /api/character removed (#133): rows per table. */
+/** One of the user's characters, on the account page (account_page.py, #217). */
+export interface MyCharacter {
+  id: number
+  name: string
+  region: string
+  character_class: string | null
+  level: number | null
+  /** The one a request without X-Character-Id gets. */
+  default: boolean
+  last_sync: string | null
+  guild: string | null
+  /** Joined its guild's view (ADR 0042). */
+  in_guild_view: boolean
+  /** When the game wrote its newest addon import. */
+  game_data_at: string | null
+}
+
+/** The account page (#217, ADR 0058): no account without users. */
+export interface AccountView {
+  users: boolean
+  account_id: number | null
+  role: string | null
+  characters: MyCharacter[]
+}
+
 export interface Erased {
   removed: Record<string, number>
 }
@@ -1363,6 +1388,15 @@ export const api = {
   setSharedAlerts: (alerts: AlertKind[]) =>
     request<GuildView>('/api/guild/shared-alerts', json('PUT', { alerts })),
   deleteAccount: () => request<Erased>('/api/account', { method: 'DELETE' }),
+  account: () => request<AccountView>('/api/account'),
+  /** Everything stored for you, as JSON in a zip (#217): a download, so an address. */
+  exportMineUrl: '/api/account/export',
+  /** Sync one character, whichever is selected (#217). */
+  syncCharacter: (id: number) =>
+    request<SyncResult | SyncState>('/api/sync', { method: 'POST', headers: { 'X-Character-Id': String(id) } }),
+  /** Stop tracking one character and delete everything stored for it (#133, #217). */
+  removeCharacter: (id: number) =>
+    request<Erased>('/api/character', { method: 'DELETE', headers: { 'X-Character-Id': String(id) } }),
   logout: () => fetch('/api/logout', { method: 'POST', headers: APP_HEADER }),
   characters: () => request<CharacterList>('/api/characters'),
   accountCharacters: () => request<{ characters: AccountCharacter[] }>('/api/account/characters'),

@@ -181,6 +181,49 @@
         "title": "AccountCharacters",
         "type": "object"
       },
+      "AccountView": {
+        "properties": {
+          "account_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Id"
+          },
+          "characters": {
+            "items": {
+              "$ref": "#/components/schemas/MyCharacter"
+            },
+            "title": "Characters",
+            "type": "array"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "users": {
+            "title": "Users",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "users",
+          "characters"
+        ],
+        "title": "AccountView",
+        "type": "object"
+      },
       "AdminCharacter": {
         "properties": {
           "character_class": {
@@ -3892,6 +3935,101 @@
         "title": "MissingEffect",
         "type": "object"
       },
+      "MyCharacter": {
+        "properties": {
+          "character_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Class"
+          },
+          "default": {
+            "title": "Default",
+            "type": "boolean"
+          },
+          "game_data_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Game Data At"
+          },
+          "guild": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guild"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "in_guild_view": {
+            "title": "In Guild View",
+            "type": "boolean"
+          },
+          "last_sync": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Sync"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "region",
+          "character_class",
+          "level",
+          "default",
+          "last_sync",
+          "guild",
+          "in_guild_view",
+          "game_data_at"
+        ],
+        "title": "MyCharacter",
+        "type": "object"
+      },
       "NewCharacter": {
         "description": "A character to track, as Forever looks it up: first name, surname, region.",
         "properties": {
@@ -7388,6 +7526,23 @@
           }
         },
         "summary": "Delete Account"
+      },
+      "get": {
+        "description": "The account page (#217, ADR 0058): the signed-in account, and each of its\ncharacters with its level, last sync, guild, guild view and game-data import.\nWithout users, every character and no account.",
+        "operationId": "my_account_api_account_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "My Account"
       }
     },
     "/api/account/characters": {
@@ -7407,6 +7562,23 @@
           }
         },
         "summary": "Account Characters"
+      }
+    },
+    "/api/account/export": {
+      "get": {
+        "description": "Everything stored for the signed-in account, as JSON in a zip, for an access\nrequest the user makes themselves (#217, ADR 0058): the admin area's export (ADR\n0056). Without users, everything there is: it's one person's instance.",
+        "operationId": "export_mine_api_account_export_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Export Mine"
       }
     },
     "/api/admin/accounts": {

@@ -10211,5 +10211,27 @@
    ],
    "details_pending": 43
   }
+ },
+ "/api/account": {
+  "status": 200,
+  "body": {
+   "users": false,
+   "account_id": null,
+   "role": null,
+   "characters": [
+    {
+     "id": 1,
+     "name": "Brumboldt Doomlet",
+     "region": "us",
+     "character_class": "Warrior",
+     "level": 19,
+     "default": true,
+     "last_sync": "2026-11-12T23:16:47.164238+00:00",
+     "guild": "Daves Discount Meats",
+     "in_guild_view": false,
+     "game_data_at": "2026-11-14T23:46:40Z"
+    }
+   ]
+  }
  }
 }

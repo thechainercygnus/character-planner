@@ -127,7 +127,7 @@ export function StatusBar() {
       {status.data.character_found === false && !sync.isPending && (
         <span className="warn" role="alert">
           Battle.net can't find {status.data.character}. It only shares characters at level 10; below that, sync again
-          once it's there. Otherwise check its name and region: a mistyped character can be deleted under Privacy and
+          once it's there. Otherwise check its name and region: a mistyped character can be removed on My account and
           added again.
         </span>
       )}
@@ -139,6 +139,9 @@ export function StatusBar() {
           ⋯
         </summary>
         <div className="menu-items">
+          <a className="button secondary" href="#account" title="Your characters, guilds, alerts and data">
+            My account
+          </a>
           <a
             className="button secondary"
             href="#guest"

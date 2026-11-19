@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { Me, Status } from './api'
 import App from './App'
-import { Privacy } from './components/Privacy'
+import { Account } from './components/Account'
 import { StatusBar } from './components/StatusBar'
 
 const STATUS: Status = {
@@ -43,6 +43,13 @@ function serve(me: Me) {
         return Response.json({ detail: 'Sign in with Battle.net' }, { status: 401 })
       }
       if (url === '/api/status') return Response.json(STATUS)
+      if (url === '/api/account') {
+        return Response.json({ users: true, account_id: me.admin ? 1001 : 2002, role: me.role, characters: [] })
+      }
+      if (url === '/api/notifications') {
+        return Response.json({ destinations: [], alerts: [], recent: [], system_alerts_to_user: false })
+      }
+      if (url === '/api/discord') return Response.json({ available: false })
       return Response.json([])
     }),
   )
@@ -107,13 +114,13 @@ describe('With users on', () => {
     expect(screen.getByRole('link', { name: 'Admin' })).toBeTruthy()
   })
 
-  it('deletes the account from the privacy page, after a second click', async () => {
+  it('deletes the account from My account, after a second click (#217)', async () => {
     const assign = vi.fn()
     vi.stubGlobal('location', { ...window.location, assign })
     const calls = serve(GUILDMATE)
-    show(<Privacy />)
+    show(<Account />)
     fireEvent.click(await screen.findByRole('button', { name: 'Delete my account' }))
-    expect(calls.some((c) => c.url === '/api/account')).toBe(false)
+    expect(calls.some((c) => c.url === '/api/account' && c.method === 'DELETE')).toBe(false)
     fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my account' }))
     await waitFor(() => expect(assign).toHaveBeenCalledWith('/'))
     expect(calls).toContainEqual({ url: '/api/account', method: 'DELETE' })
@@ -121,7 +128,7 @@ describe('With users on', () => {
 
   it("says why the admin can't go first", async () => {
     serve(ADMIN)
-    show(<Privacy />)
+    show(<Account />)
     fireEvent.click(await screen.findByRole('button', { name: 'Delete my account' }))
     fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my account' }))
     expect(await screen.findByText(/Hand the instance over first/)).toBeTruthy()

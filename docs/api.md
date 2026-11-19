@@ -23,6 +23,12 @@ What the page footer shows (#43): the data credits, the source link (AGPL) and t
 
 ## `account`
 
+### `GET /api/account`
+
+The account page (#217, ADR 0058): the signed-in account, and each of its characters with its level, last sync, guild, guild view and game-data import. Without users, every character and no account.
+
+**200:** [AccountView](#schema-accountview)
+
 ### `DELETE /api/account`
 
 Delete the signed-in user and everything stored for them (#16, ADR 0037): their characters with all their data and settings, sessions and Battle.net token. Only with users on; the admin can't while others remain (409).
@@ -34,6 +40,12 @@ Delete the signed-in user and everything stored for them (#16, ADR 0037): their 
 The characters on the signed-in Battle.net account (#15), to pick ones to track. Fetched each time and never stored: the list names every character on the account (ADR 0034). Needs the optional Battle.net sign-in.
 
 **200:** [AccountCharacters](#schema-accountcharacters)
+
+### `GET /api/account/export`
+
+Everything stored for the signed-in account, as JSON in a zip, for an access request the user makes themselves (#217, ADR 0058): the admin area's export (ADR 0056). Without users, everything there is: it's one person's instance.
+
+**200:** no body
 
 ## `admin`
 
@@ -1041,6 +1053,16 @@ What the planner stores about an account, and no more (#237): it's for running t
 | --- | --- | --- |
 | `characters` | list of [AccountCharacter](#schema-accountcharacter) | yes |
 
+(schema-accountview)=
+### AccountView
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `users` | boolean | yes |
+| `account_id` | integer or null | no |
+| `role` | string or null | no |
+| `characters` | list of [MyCharacter](#schema-mycharacter) | yes |
+
 (schema-admincharacter)=
 ### AdminCharacter
 
@@ -1900,6 +1922,22 @@ A scope, kit or other crafted enchant in reach whose effect isn't known (#36).
 | `recipe` | string | yes |
 | `slots` | list of string | yes |
 | `wowhead` | string or null | yes |
+
+(schema-mycharacter)=
+### MyCharacter
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `id` | integer | yes |
+| `name` | string | yes |
+| `region` | string | yes |
+| `character_class` | string or null | yes |
+| `level` | integer or null | yes |
+| `default` | boolean | yes |
+| `last_sync` | string or null | yes |
+| `guild` | string or null | yes |
+| `in_guild_view` | boolean | yes |
+| `game_data_at` | string or null | yes |
 
 (schema-newcharacter)=
 ### NewCharacter
