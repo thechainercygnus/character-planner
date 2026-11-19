@@ -20,6 +20,8 @@ from the Battle.net API, keeps a history of snapshots, and tells you what to cha
 - **Progress** over time, Discord alerts, and guild views where opted-in members see each
   other's needs.
 
+![The planner's Upgrades tab for a level 19 Gnome Protection Warrior: per gear slot, the item equipped and the best upgrade in reach, with its icon, the level it needs, tags such as "your target" and "owned: in your bags", and how much it raises the gear score](docs/_static/planner-upgrades.webp)
+
 Run it for yourself, or for your guild with sign-in and per-user characters. Guest mode
 gives recommendations for any class and level without an account.
 
