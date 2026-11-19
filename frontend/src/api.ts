@@ -268,6 +268,22 @@ export function can(me: Me | undefined, permission: string): boolean {
   return (me.permissions ?? []).includes(permission)
 }
 
+/** What the admin area (#260) offers: anyone with one of these sees its link. */
+export const ADMIN_PERMISSIONS = [
+  'accounts.view',
+  'signups.manage',
+  'data.refresh',
+  'discord.signup',
+  'health.view',
+  'backups.manage',
+  'log.view',
+] as const
+
+/** Whether the admin area has anything for this person. Without users, it does. */
+export function canAdmin(me: Me | undefined): boolean {
+  return ADMIN_PERMISSIONS.some((permission) => can(me, permission))
+}
+
 /** A character in the admin's account list (roles.py AdminCharacter). */
 export interface AdminCharacter {
   id: number

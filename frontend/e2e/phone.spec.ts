@@ -32,11 +32,11 @@ for (const [width, height] of [
       })
     }
 
-    test('the open menu stays on screen', async ({ page }) => {
+    test('the status bar shows its links without a menu (#260)', async ({ page }) => {
       await serveApi(page)
       await open(page, 'upgrades')
-      await page.getByTitle('More actions').click()
-      await expect(page.getByRole('button', { name: 'Refresh item pool' })).toBeVisible()
+      await expect(page.getByRole('link', { name: 'My account' })).toBeInViewport()
+      await expect(page.getByRole('link', { name: 'Admin' })).toBeInViewport()
       expect(await overflow(page)).toBeLessThanOrEqual(0)
     })
 

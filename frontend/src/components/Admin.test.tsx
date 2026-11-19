@@ -27,6 +27,8 @@ const ADMIN: Me = {
 }
 const SUPERUSER: Me = { ...ADMIN, admin: false, role: 'superuser', permissions: ['accounts.view', 'data.refresh'] }
 const USER: Me = { ...ADMIN, admin: false, role: 'user', permissions: [] }
+/** Without users, everyone may do everything (ADR 0055); /api/me says so with users: false. */
+const SOLO: Me = { users: false, signed_in: false, admin: true, role: null, permissions: [], signups_open: false }
 
 const view: AdminView = {
   accounts: [
@@ -127,12 +129,21 @@ const health = {
 }
 const backups = { configured: true, every_hours: 24, keep: 14, bucket: 'planner-backups', last: failed }
 
-function show(me: Me) {
+/** The Accounts section, once it has loaded: the log names the same accounts. */
+async function accounts() {
+  await screen.findByRole('heading', { name: 'Accounts' })
+  return within(screen.getByRole('heading', { name: 'Accounts' }).closest('section')!)
+}
+
+function show(me: Me, routes: Record<string, () => Response> = {}) {
   const puts: { url: string; body: unknown }[] = []
   vi.stubGlobal(
     'fetch',
     vi.fn(async (url: string, init?: RequestInit) => {
+      const route = routes[`${init?.method ?? 'GET'} ${url}`]
+      if (route) return route()
       if (url === '/api/me') return Response.json(me)
+      if (url === '/api/discord') return Response.json({ available: false, signup_message: false })
       if (url === '/api/admin/log') return Response.json(log)
       if (url === '/api/admin/health') return Response.json(health)
       if (url === '/api/admin/backups' && init?.method === 'POST') {
@@ -180,9 +191,9 @@ describe('Admin', () => {
 
   it("lists the accounts, and lets the admin make a user a superuser, never changing the admin's role", async () => {
     const puts = show(ADMIN)
-    const row = (await screen.findByText('2002')).closest('tr')!
+    const row = (await accounts()).getByText('2002').closest('tr')!
     expect(within(row).getByText('none')).toBeTruthy()
-    const admin = screen.getByText('1001').closest('tr')!
+    const admin = (await accounts()).getByText('1001').closest('tr')!
     expect(within(admin).getByText('Brumboldt Doomlet (US)')).toBeTruthy()
     expect(within(admin).queryByRole('combobox')).toBeNull()
     expect(within(admin).getByText('Admin')).toBeTruthy()
@@ -208,10 +219,10 @@ describe('Admin', () => {
 
   it('exports an account, and deletes it only once its id is typed in', async () => {
     const requests = show(ADMIN)
-    const row = (await screen.findByText('2002')).closest('tr')!
+    const row = (await accounts()).getByText('2002').closest('tr')!
     expect(within(row).getByRole('link', { name: 'Export' }).getAttribute('href')).toBe('/api/admin/users/2/export')
     // The admin's own account can't be deleted from here.
-    const admin = screen.getByText('1001').closest('tr')!
+    const admin = (await accounts()).getByText('1001').closest('tr')!
     expect(within(admin).queryByRole('button', { name: 'Delete…' })).toBeNull()
 
     fireEvent.click(within(row).getByRole('button', { name: 'Delete…' }))
@@ -284,5 +295,48 @@ describe('Admin', () => {
     show(USER)
     expect(await screen.findByText('Only the admin and superusers can see this page.')).toBeTruthy()
     expect(screen.queryByText('2002')).toBeNull()
+  })
+
+  it('refreshes the shared data, saying when one is queued or cooling down (#260, #17)', async () => {
+    show(ADMIN, {
+      'POST /api/pool/refresh': () => Response.json({ state: 'queued', result: null, error: null }, { status: 202 }),
+      'POST /api/enchants/refresh': () =>
+        Response.json({ detail: 'Refreshed recently: again in about 7 minutes' }, { status: 429 }),
+    })
+    const section = within((await screen.findByRole('heading', { name: 'Shared data' })).closest('section')!)
+    fireEvent.click(section.getByRole('button', { name: 'Refresh item pool' }))
+    expect(await section.findByText('Queued: it runs in the background.')).toBeTruthy()
+    fireEvent.click(section.getByRole('button', { name: 'Refresh enchant data' }))
+    const note = await section.findByText('Refreshed recently: again in about 7 minutes')
+    expect(note.className).toBe('muted')
+    expect(section.queryByText(/failed/)).toBeNull()
+  })
+
+  it('updates the pinned Discord sign-up message, when the instance has one (#192)', async () => {
+    const requests = show(ADMIN, {
+      'GET /api/discord': () => Response.json({ available: false, signup_message: true }),
+      'POST /api/discord/signup-message': () =>
+        Response.json({ ok: false, action: 'none', message_id: null, error: 'give it Pin Messages' }),
+    })
+    fireEvent.click(await screen.findByRole('button', { name: 'Update the Discord sign-up message' }))
+    expect(await screen.findByText("The sign-up message wasn't updated: give it Pin Messages")).toBeTruthy()
+    expect(requests).toEqual([])
+  })
+
+  it('offers no sign-up message without the setting', async () => {
+    show(ADMIN)
+    await screen.findByRole('heading', { name: 'Shared data' })
+    expect(screen.queryByRole('button', { name: 'Update the Discord sign-up message' })).toBeNull()
+  })
+
+  it('shows the one person their shared data, health and backups without users, and no accounts (#260)', async () => {
+    show(SOLO)
+    expect(await screen.findByRole('heading', { name: 'Shared data' })).toBeTruthy()
+    expect(await screen.findByRole('heading', { name: 'Instance health' })).toBeTruthy()
+    expect(await screen.findByRole('heading', { name: 'Backups' })).toBeTruthy()
+    for (const name of ['Accounts', 'Roles', 'Sign-ups', 'Action log']) {
+      expect(screen.queryByRole('heading', { name })).toBeNull()
+    }
+    expect(screen.queryByText('Only the admin and superusers can see this page.')).toBeNull()
   })
 })

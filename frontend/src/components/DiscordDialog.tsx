@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useRef } from 'react'
 import { api, type AlertInfo, type DiscordLink, type DiscordView } from '../api'
 
 function Linked({
@@ -115,40 +114,6 @@ export function DiscordSettings() {
         </p>
       )}
       {data.in_server !== false && invite && <p className="muted">{invite}</p>}
-    </>
-  )
-}
-
-/**
- * Status bar: "Discord" opens the user's own Discord DM settings (#58, ADR 0044) in a dialog.
- * Not shown when the instance has no bot.
- */
-export function DiscordDialog() {
-  const dialogRef = useRef<HTMLDialogElement>(null)
-  const view = useQuery({ queryKey: ['discord'], queryFn: api.discord })
-  if (!view.data?.available) return null
-
-  return (
-    <>
-      <button type="button" className="secondary" onClick={() => dialogRef.current?.showModal()}>
-        Discord
-      </button>
-      <dialog
-        ref={dialogRef}
-        className="weights-dialog notifications-dialog"
-        aria-labelledby="discord-title"
-        onClick={(event) => {
-          if (event.target === event.currentTarget) dialogRef.current?.close()
-        }}
-      >
-        <header className="weights-dialog-header">
-          <h2 id="discord-title">Discord DMs</h2>
-          <button type="button" className="secondary" aria-label="Close" onClick={() => dialogRef.current?.close()}>
-            ✕
-          </button>
-        </header>
-        <DiscordSettings />
-      </dialog>
     </>
   )
 }
