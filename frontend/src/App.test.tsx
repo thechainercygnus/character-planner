@@ -15,6 +15,7 @@ const character: CharacterView = {
   equipped_item_level: 16.7,
   gear_slots_filled: 13,
   captured_at: '2026-11-13T05:29:06Z',
+  level_source: { level: 18, source: 'battle.net', at: '2026-11-13T05:29:06Z' },
   stats: null,
   professions: [],
   specialization: {

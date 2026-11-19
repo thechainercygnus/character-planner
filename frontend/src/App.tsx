@@ -175,7 +175,7 @@ export default function App() {
           {tab === 'character' && (
             <>
               <CharacterSnapshot character={character.data} />
-              <GameDataPanel battleNetLevel={character.data.level} />
+              <GameDataPanel battleNetLevel={character.data.level} levelSource={character.data.level_source} />
             </>
           )}
         </>
