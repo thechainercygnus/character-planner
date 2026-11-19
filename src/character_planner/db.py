@@ -56,6 +56,29 @@ class AdminAction(SQLModel, table=True):
     detail: str | None = None  # e.g. "user -> superuser"; never stored data
 
 
+class InstanceSetting(SQLModel, table=True):
+    """An instance-wide setting changed in the admin area (#239, ADR 0057). Once set, it
+    wins over its .env default for good, e.g. "signups_open" over PLANNER_SIGNUPS."""
+
+    key: str = Field(primary_key=True)
+    value: Any = Field(sa_column=Column(JSON, nullable=False))
+    updated_at: datetime = Field(default_factory=utcnow)
+
+
+class Invite(SQLModel, table=True):
+    """A link that lets one person sign up while sign-ups are closed (#239, ADR 0057). Only
+    the token's SHA-256 is stored; the link carries the token. One use, then it's spent."""
+
+    id: int | None = Field(default=None, primary_key=True)
+    token_hash: str = Field(unique=True, index=True)
+    created_at: datetime = Field(default_factory=utcnow)
+    expires_at: datetime
+    created_by_account_id: int | None = None  # Battle.net account ids: no foreign keys
+    used_at: datetime | None = None
+    used_by_account_id: int | None = None
+    revoked_at: datetime | None = None
+
+
 class UserSession(SQLModel, table=True):
     """A signed-in browser (ADR 0037). Only the token's SHA-256 is stored; the cookie
     holds the token itself."""

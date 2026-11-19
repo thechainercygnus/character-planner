@@ -12,8 +12,8 @@ from typing import Any
 from sqlalchemy import delete
 from sqlmodel import Session, SQLModel
 
-# Game data shared by every character, the job leases, and the roles (#237): instance
-# configuration, not character data. Never personal.
+# Game data shared by every character, the job leases, the roles (#237) and instance
+# settings (#239): configuration, not character data. Never personal.
 SHARED = frozenset(
     {
         "catalogitem",
@@ -31,6 +31,7 @@ SHARED = frozenset(
         "spellicon",
         "joblease",
         "role",
+        "instancesetting",
     }
 )
 

@@ -1,13 +1,23 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import type { ReactNode } from 'react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { GameDataView } from '../api'
 import { ago, parseTime, stacked } from '../gameData'
 import { GameDataPanel, ImportGameDataDialog, QuestLog } from './GameData'
 
 const NOW = Date.parse('2026-11-18T12:00:00Z')
 const HOURS_AGO = (hours: number) => new Date(NOW - hours * 3_600_000).toISOString()
+
+// The fixtures are dated from NOW: the clock is pinned there, or their ages drift with the
+// real date ("2 hours ago" becomes "yesterday"). Only Date: timers stay real for findBy.
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(NOW)
+})
+afterEach(() => {
+  vi.useRealTimers()
+})
 
 const empty: GameDataView = {
   imported: false,

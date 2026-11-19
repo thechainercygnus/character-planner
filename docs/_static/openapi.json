@@ -3090,6 +3090,107 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "InviteToken": {
+        "properties": {
+          "token": {
+            "maxLength": 128,
+            "minLength": 16,
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "title": "InviteToken",
+        "type": "object"
+      },
+      "InviteView": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by_account_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By Account Id"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          },
+          "state": {
+            "enum": [
+              "open",
+              "used",
+              "revoked",
+              "expired"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "used_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Used At"
+          },
+          "used_by_account_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Used By Account Id"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "expires_at",
+          "created_by_account_id",
+          "used_at",
+          "used_by_account_id",
+          "revoked_at",
+          "state"
+        ],
+        "title": "InviteView",
+        "type": "object"
+      },
       "Item": {
         "properties": {
           "container": {
@@ -3864,6 +3965,23 @@
           "url"
         ],
         "title": "NewDestination",
+        "type": "object"
+      },
+      "NewInvite": {
+        "properties": {
+          "invite": {
+            "$ref": "#/components/schemas/InviteView"
+          },
+          "token": {
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "invite",
+          "token"
+        ],
+        "title": "NewInvite",
         "type": "object"
       },
       "NewPreset": {
@@ -5919,6 +6037,78 @@
         "title": "SharedAlertsUpdate",
         "type": "object"
       },
+      "SignupsAdmin": {
+        "properties": {
+          "invites": {
+            "items": {
+              "$ref": "#/components/schemas/InviteView"
+            },
+            "title": "Invites",
+            "type": "array"
+          },
+          "setting": {
+            "title": "Setting",
+            "type": "boolean"
+          },
+          "signups": {
+            "$ref": "#/components/schemas/SignupsView"
+          }
+        },
+        "required": [
+          "signups",
+          "setting",
+          "invites"
+        ],
+        "title": "SignupsAdmin",
+        "type": "object"
+      },
+      "SignupsChange": {
+        "properties": {
+          "open": {
+            "title": "Open",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "open"
+        ],
+        "title": "SignupsChange",
+        "type": "object"
+      },
+      "SignupsView": {
+        "properties": {
+          "changed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changed At"
+          },
+          "open": {
+            "title": "Open",
+            "type": "boolean"
+          },
+          "source": {
+            "enum": [
+              "app",
+              "setting"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "open",
+          "source"
+        ],
+        "title": "SignupsView",
+        "type": "object"
+      },
       "SlotEnchants": {
         "properties": {
           "current": {
@@ -7238,6 +7428,65 @@
         "summary": "Admin Accounts"
       }
     },
+    "/api/admin/invites": {
+      "post": {
+        "description": "A link that lets one person sign up while sign-ups are closed: one use, valid\nfor 7 days (#239, ADR 0057). The token is returned this once; only its hash is\nstored. Needs `signups.manage`. Logged.",
+        "operationId": "post_invite_api_admin_invites_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewInvite"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Post Invite"
+      }
+    },
+    "/api/admin/invites/{invite_id}": {
+      "delete": {
+        "description": "Revoke an open invite (#239): its link stops working. 404 for no such invite,\n409 for one already used, revoked or expired. Needs `signups.manage`. Logged.",
+        "operationId": "delete_invite_api_admin_invites__invite_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invite_id",
+            "required": true,
+            "schema": {
+              "title": "Invite Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InviteView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Invite"
+      }
+    },
     "/api/admin/log": {
       "get": {
         "description": "What the admin area did, newest first: who, what, to whom and when (#238, ADR\n0056). Account ids and actions only. Needs `log.view`.",
@@ -7259,6 +7508,62 @@
           }
         },
         "summary": "Admin Log Entries"
+      }
+    },
+    "/api/admin/signups": {
+      "get": {
+        "description": "Whether sign-ups are open and where that comes from (the app's choice, or\nPLANNER_SIGNUPS), and every invite (#239, ADR 0057). Needs `signups.manage`.",
+        "operationId": "get_signups_api_admin_signups_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignupsAdmin"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Signups"
+      },
+      "put": {
+        "description": "Open or close sign-ups (#239, ADR 0057): from now on this wins over\nPLANNER_SIGNUPS. Needs `signups.manage`. Logged; the Discord bot's pinned sign-up\nmessage, when there is one, is brought up to date in the background.",
+        "operationId": "put_signups_api_admin_signups_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupsChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignupsAdmin"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Signups"
       }
     },
     "/api/admin/users/{user_id}": {
@@ -11136,6 +11441,38 @@
           }
         },
         "summary": "Discord Login"
+      }
+    },
+    "/auth/invite": {
+      "post": {
+        "description": "Hold an invite for the sign-in that follows (#239, ADR 0057). The web app sends\nthe token from its link's #invite= fragment, which never reaches the server's logs.\nIt's held for an hour, behind a random reference in an HttpOnly cookie, until Battle.net's\ncallback spends it. 404 when the invite is used, revoked, expired or unknown.",
+        "operationId": "accept_invite_auth_invite_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteToken"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Accept Invite"
       }
     },
     "/auth/login": {

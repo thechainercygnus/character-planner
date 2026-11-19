@@ -38,8 +38,9 @@ PERMISSIONS: Final[dict[str, str]] = {
     "users.delete": "Delete an account and everything stored for it",
     "users.export": "Download everything stored for an account, for an access request",
     "log.view": "See the log of what the admin area did",
+    "signups.manage": "Open or close sign-ups, and invite someone while they're closed",
 }
-# What each role starts with: migrations 0019 and 0020 store these.
+# What each role starts with: migrations 0019 to 0021 store these.
 DEFAULTS: Final[dict[str, list[str]]] = {
     ADMIN: sorted(PERMISSIONS),
     SUPERUSER: ["accounts.view", "data.refresh", "enchants.correct"],

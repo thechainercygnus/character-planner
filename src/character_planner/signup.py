@@ -47,22 +47,23 @@ class Outcome(BaseModel):
     error: str | None = None
 
 
-def headline(settings: Settings, address: str | None) -> str:
+def headline(settings: Settings, address: str | None, signups_open: bool | None = None) -> str:
     """The message's plain-text line (#213): it stands on its own, so the message shows
     something where embeds are hidden, in notification previews and to screen readers.
     The address is in <angle brackets>, Discord's way of linking without adding a preview
     card under the message."""
     line = "**Character Planner**: plan your WoW Forever character"
     line += f" at <{address}>." if address else "."
+    is_open = settings.planner_signups if signups_open is None else signups_open
     if settings.planner_users:
-        line += (
-            " Sign-ups are open." if settings.planner_signups else " Sign-ups are closed for now."
-        )
+        line += " Sign-ups are open." if is_open else " Sign-ups are closed for now."
     return line
 
 
-def message(settings: Settings) -> dict[str, Any]:
-    """The message as it should read now: a plain-text line, then the card."""
+def message(settings: Settings, signups_open: bool | None = None) -> dict[str, Any]:
+    """The message as it should read now: a plain-text line, then the card. Sign-ups are
+    open or closed as the app says (#239); PLANNER_SIGNUPS when it isn't given."""
+    is_open = settings.planner_signups if signups_open is None else signups_open
     address = app_url(settings)
     lines = [
         "Plan your WoW Forever character: the gear upgrades in reach, the dungeons worth "
@@ -73,7 +74,7 @@ def message(settings: Settings) -> dict[str, Any]:
         lines.append(f"**Open it:** {address} and sign in with Battle.net.")
     if not settings.planner_users:
         lines.append("It's a single-person instance: there's nothing to sign up for.")
-    elif settings.planner_signups:
+    elif is_open:
         lines.append("**Sign-ups are open:** your first sign-in creates your account.")
     else:
         contact = settings.operator_contact
@@ -87,7 +88,7 @@ def message(settings: Settings) -> dict[str, Any]:
             "your account and choose your alerts."
         )
     return {
-        "content": headline(settings, address),
+        "content": headline(settings, address, is_open),
         "embeds": [
             {
                 "title": "Character Planner",
@@ -143,14 +144,14 @@ def _ours(pins: Any, bot_id: str) -> str | None:
     return None
 
 
-def ensure(settings: Settings, http: httpx.Client) -> Outcome:
+def ensure(settings: Settings, http: httpx.Client, signups_open: bool | None = None) -> Outcome:
     """Make the channel's pinned sign-up message current: edit the bot's own, or post and
     pin a new one. One attempt; a refusal comes back as the outcome, never retried."""
     if not settings.discord_signup_message:
         return Outcome(ok=False, action="none", error="DISCORD_SIGNUP_CHANNEL_ID isn't set")
     channel = settings.discord_signup_channel_id
     headers = bot_headers(settings)
-    body = message(settings)
+    body = message(settings, signups_open)
     try:
         me = _check(http.get(f"{API}/users/@me", headers=headers), "read its own account")
         bot_id = fields.get(me, "id")

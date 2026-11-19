@@ -43,11 +43,41 @@ Every account: its Battle.net account id, role, when it signed up and last signe
 
 **200:** [AdminView](#schema-adminview)
 
+### `POST /api/admin/invites`
+
+A link that lets one person sign up while sign-ups are closed: one use, valid for 7 days (#239, ADR 0057). The token is returned this once; only its hash is stored. Needs `signups.manage`. Logged.
+
+**200:** [NewInvite](#schema-newinvite)
+
+### `DELETE /api/admin/invites/{invite_id}`
+
+Revoke an open invite (#239): its link stops working. 404 for no such invite, 409 for one already used, revoked or expired. Needs `signups.manage`. Logged.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `invite_id` | path | integer | yes |  |
+
+**200:** [InviteView](#schema-inviteview)
+
 ### `GET /api/admin/log`
 
 What the admin area did, newest first: who, what, to whom and when (#238, ADR 0056). Account ids and actions only. Needs `log.view`.
 
 **200:** list of [Entry](#schema-entry)
+
+### `GET /api/admin/signups`
+
+Whether sign-ups are open and where that comes from (the app's choice, or PLANNER_SIGNUPS), and every invite (#239, ADR 0057). Needs `signups.manage`.
+
+**200:** [SignupsAdmin](#schema-signupsadmin)
+
+### `PUT /api/admin/signups`
+
+Open or close sign-ups (#239, ADR 0057): from now on this wins over PLANNER_SIGNUPS. Needs `signups.manage`. Logged; the Discord bot's pinned sign-up message, when there is one, is brought up to date in the background.
+
+**Body:** [SignupsChange](#schema-signupschange)
+
+**200:** [SignupsAdmin](#schema-signupsadmin)
 
 ### `DELETE /api/admin/users/{user_id}`
 
@@ -948,6 +978,14 @@ Start linking a Discord account: off to Discord to approve `identify`.
 
 **200:** no body
 
+### `POST /auth/invite`
+
+Hold an invite for the sign-in that follows (#239, ADR 0057). The web app sends the token from its link's #invite= fragment, which never reaches the server's logs. It's held for an hour, behind a random reference in an HttpOnly cookie, until Battle.net's callback spends it. 404 when the invite is used, revoked, expired or unknown.
+
+**Body:** [InviteToken](#schema-invitetoken)
+
+**204:** no body
+
 ### `GET /auth/login`
 
 Login
@@ -1639,6 +1677,27 @@ The guild's alert channel (#163), as members see it: the webhook masked.
 | --- | --- | --- |
 | `detail` | list of [ValidationError](#schema-validationerror) | no |
 
+(schema-invitetoken)=
+### InviteToken
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `token` | string (minLength 16, maxLength 128) | yes |
+
+(schema-inviteview)=
+### InviteView
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `id` | integer | yes |
+| `created_at` | string | yes |
+| `expires_at` | string | yes |
+| `created_by_account_id` | integer or null | yes |
+| `used_at` | string or null | yes |
+| `used_by_account_id` | integer or null | yes |
+| `revoked_at` | string or null | yes |
+| `state` | `open` \\| `used` \\| `revoked` \\| `expired` | yes |
+
 (schema-item)=
 ### Item
 
@@ -1862,6 +1921,14 @@ A character to track, as Forever looks it up: first name, surname, region.
 | `url` | string | yes |
 | `audience` | `user` \\| `system` | no |
 | `alerts` | list of string or null | no |
+
+(schema-newinvite)=
+### NewInvite
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `invite` | [InviteView](#schema-inviteview) | yes |
+| `token` | string | yes |
 
 (schema-newpreset)=
 ### NewPreset
@@ -2333,6 +2400,31 @@ When each part was captured in the game: they can differ by days (the bank).
 | Field | Type | Required |
 | --- | --- | --- |
 | `alerts` | list of string | yes |
+
+(schema-signupsadmin)=
+### SignupsAdmin
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `signups` | [SignupsView](#schema-signupsview) | yes |
+| `setting` | boolean | yes |
+| `invites` | list of [InviteView](#schema-inviteview) | yes |
+
+(schema-signupschange)=
+### SignupsChange
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `open` | boolean | yes |
+
+(schema-signupsview)=
+### SignupsView
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `open` | boolean | yes |
+| `source` | `app` \\| `setting` | yes |
+| `changed_at` | string or null | no |
 
 (schema-slotenchants)=
 ### SlotEnchants

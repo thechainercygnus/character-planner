@@ -263,6 +263,10 @@ UNSCOPED = {
         "DELETE /api/admin/users/{user_id}",  # users.delete: test_data_requests.py
         "GET /api/admin/users/{user_id}/export",  # users.export: test_data_requests.py
         "GET /api/admin/log",  # log.view: test_data_requests.py
+        "GET /api/admin/signups",  # signups.manage: test_signups.py
+        "PUT /api/admin/signups",  # signups.manage: test_signups.py
+        "POST /api/admin/invites",  # signups.manage: test_signups.py
+        "DELETE /api/admin/invites/{invite_id}",  # signups.manage: test_signups.py
         "POST /api/pool/refresh",
         "POST /api/enchants/refresh",
         "PUT /api/enchants/corrections/materials/{item_id}",
@@ -284,6 +288,7 @@ PATH_VALUES = {
     "{quest_id}": "warrior-quest",
     "{destination_id}": "1",
     "{user_id}": "1",
+    "{invite_id}": "1",
 }
 
 

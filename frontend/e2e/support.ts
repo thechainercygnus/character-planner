@@ -56,6 +56,7 @@ const EVERY_PERMISSION = [
   'enchants.correct',
   'log.view',
   'roles.manage',
+  'signups.manage',
   'users.delete',
   'users.export',
 ]
@@ -70,6 +71,34 @@ const USERS_ON: Answers = {
       role: 'admin',
       permissions: EVERY_PERMISSION,
       signups_open: false,
+    },
+  },
+  '/api/admin/signups': {
+    body: {
+      signups: { open: false, source: 'app', changed_at: '2026-11-19T00:00:00Z' },
+      setting: true,
+      invites: [
+        {
+          id: 2,
+          created_at: '2026-11-19T00:00:00Z',
+          expires_at: '2026-11-26T00:00:00Z',
+          created_by_account_id: 1001,
+          used_at: null,
+          used_by_account_id: null,
+          revoked_at: null,
+          state: 'open',
+        },
+        {
+          id: 1,
+          created_at: '2026-11-12T00:00:00Z',
+          expires_at: '2026-11-19T00:00:00Z',
+          created_by_account_id: 1001,
+          used_at: '2026-11-13T00:00:00Z',
+          used_by_account_id: 2002,
+          revoked_at: null,
+          state: 'used',
+        },
+      ],
     },
   },
   '/api/admin/log': {

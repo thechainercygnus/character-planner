@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { AdminLogEntry, AdminView, Me } from '../api'
+import type { AdminLogEntry, AdminView, Me, SignupsAdmin } from '../api'
 import { Admin } from './Admin'
 
 const EVERY_PERMISSION = [
@@ -11,6 +11,7 @@ const EVERY_PERMISSION = [
   'enchants.correct',
   'log.view',
   'roles.manage',
+  'signups.manage',
   'users.delete',
   'users.export',
 ]
@@ -74,6 +75,33 @@ const log: AdminLogEntry[] = [
   },
 ]
 
+const signups: SignupsAdmin = {
+  signups: { open: false, source: 'setting', changed_at: null },
+  setting: false,
+  invites: [
+    {
+      id: 1,
+      created_at: '2026-11-18T00:00:00Z',
+      expires_at: '2026-11-25T00:00:00Z',
+      created_by_account_id: 1001,
+      used_at: null,
+      used_by_account_id: null,
+      revoked_at: null,
+      state: 'open',
+    },
+    {
+      id: 0,
+      created_at: '2026-11-10T00:00:00Z',
+      expires_at: '2026-11-17T00:00:00Z',
+      created_by_account_id: 1001,
+      used_at: '2026-11-11T00:00:00Z',
+      used_by_account_id: 2002,
+      revoked_at: null,
+      state: 'used',
+    },
+  ],
+}
+
 function show(me: Me) {
   const puts: { url: string; body: unknown }[] = []
   vi.stubGlobal(
@@ -81,6 +109,15 @@ function show(me: Me) {
     vi.fn(async (url: string, init?: RequestInit) => {
       if (url === '/api/me') return Response.json(me)
       if (url === '/api/admin/log') return Response.json(log)
+      if (url === '/api/admin/invites' && init?.method === 'POST') {
+        puts.push({ url, body: 'POST' })
+        return Response.json({ invite: signups.invites[0], token: 'a-token-of-thirty-two-characters' })
+      }
+      if (url === '/api/admin/signups' && !init?.method) return Response.json(signups)
+      if (url === '/api/admin/signups') {
+        puts.push({ url, body: JSON.parse(String(init!.body)) as unknown })
+        return Response.json({ ...signups, signups: { open: true, source: 'app', changed_at: '2026-11-20T00:00:00Z' } })
+      }
       if (init?.method === 'DELETE') {
         puts.push({ url, body: 'DELETE' })
         return Response.json({ removed: { user: 1 } })
@@ -170,6 +207,21 @@ describe('Admin', () => {
     expect(screen.queryByRole('link', { name: 'Export' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Delete…' })).toBeNull()
     expect(screen.queryByRole('heading', { name: 'Action log' })).toBeNull()
+  })
+
+  it('opens sign-ups, says where the setting comes from, and makes a one-time invite link', async () => {
+    const requests = show(ADMIN)
+    const section = (await screen.findByRole('heading', { name: 'Sign-ups' })).closest('section')!
+    expect(section.textContent).toContain('from PLANNER_SIGNUPS (off)')
+    expect(within(section).getByText(/by account 2002/)).toBeTruthy()
+
+    fireEvent.click(within(section).getByRole('button', { name: 'Open sign-ups' }))
+    await waitFor(() => expect(requests).toContainEqual({ url: '/api/admin/signups', body: { open: true } }))
+
+    fireEvent.click(within(section).getByRole('button', { name: 'Make an invite link' }))
+    const link = (await within(section).findByRole('textbox', { name: 'Invite link' })) as HTMLInputElement
+    expect(link.value).toBe(`${window.location.origin}/#invite=a-token-of-thirty-two-characters`)
+    expect(within(section).getByRole('button', { name: /Revoke the invite made/ })).toBeTruthy()
   })
 
   it('shows a user nothing', async () => {

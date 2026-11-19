@@ -293,8 +293,10 @@ Then `docker compose up -d`. Every page now asks for a Battle.net sign-in, so re
 
 - **Sign in first.** The first account to sign in becomes the admin and takes over every
   character already tracked.
-- **Sign-ups are closed after that.** To let others in, set `PLANNER_SIGNUPS=on`, then
-  turn it off again once they've signed in.
+- **Sign-ups are closed after that,** unless `PLANNER_SIGNUPS=on`. That setting is only the
+  default: open or close sign-ups in the admin area (**Admin** in the ⋯ menu), and that
+  choice wins from then on. To let one person in while they're closed, make an **invite
+  link** there: it works once, for 7 days, and can be revoked (ADR 0057).
 - **Each user sees only their own characters.**
 - **Only the admin** can change enchant corrections, start the bulk refreshes in the ⋯
   menu, and add system alert destinations. Each user adds their own alert webhooks, for
@@ -334,7 +336,7 @@ In `.env`:
 
 ```
 PLANNER_USERS=on
-PLANNER_SIGNUPS=on                 # or off, and let people in by turning it on briefly
+PLANNER_SIGNUPS=on                 # the default; the admin area can change it for good
 PLANNER_HOSTS=planner.example.com
 BNET_REDIRECT_URI=https://planner.example.com/auth/callback
 OPERATOR_CONTACT=<how people reach you>
@@ -428,8 +430,9 @@ bot's token, not the OAuth client.
    `DISCORD_SIGNUP_CHANNEL_ID` in `.env`. Restart.
 
 The worker posts and pins the message when it starts, and brings it up to date at every
-start after that, since its text comes from your settings (`PLANNER_SIGNUPS`,
-`OPERATOR_CONTACT`, the address). As admin, **Update the Discord sign-up message** in the
+start after that, since its text comes from your settings (sign-ups as the admin area has
+them, `OPERATOR_CONTACT`, the address). Opening or closing sign-ups in the admin area updates
+it too. As admin, **Update the Discord sign-up message** in the
 ⋯ menu does the same at once, and says what Discord answered. If Discord refuses, because
 of a missing permission or a wrong channel id, it says what to fix and doesn't retry.
 

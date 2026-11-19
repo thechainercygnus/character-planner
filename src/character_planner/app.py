@@ -205,6 +205,18 @@ from character_planner.scoring import (
     save_weights,
     weights_view,
 )
+from character_planner.signups import (
+    InviteView,
+    NewInvite,
+    SignupsView,
+    create_invite,
+    open_invite,
+    revoke,
+    set_signups,
+    signups,
+    signups_open,
+)
+from character_planner.signups import invites as list_invites
 from character_planner.summary import build_summary
 from character_planner.talent_trees import ClassTree, TalentRefresh, stored_tree
 from character_planner.talents import (
@@ -268,6 +280,10 @@ def route_label(request: Request) -> str:
 
 # On the 404 for an X-Character-Id that isn't (or isn't yours): the web app then forgets it.
 UNKNOWN_CHARACTER = "X-Character-Unknown"
+# An invite held for the sign-in that follows (#239): HttpOnly, gone after the callback.
+INVITE_COOKIE = "planner_invite"
+INVITE_COOKIE_SECONDS = 3600
+INVITE_GONE = "This invite has been used, revoked or has expired: ask for a new one"
 # With users on, what needs no sign-in (ADR 0037): health, the footer, who's signed in and
 # guest mode, which reads no character data (ADR 0017).
 PUBLIC_API = frozenset(
@@ -292,6 +308,8 @@ ROUTE_PERMISSIONS: tuple[tuple[frozenset[str], str, str], ...] = (
     (frozenset({"DELETE"}), "/api/admin/users/", "users.delete"),
     (READS, "/api/admin/users/", "users.export"),
     (READS, "/api/admin/log", "log.view"),
+    (READS | STATE_CHANGING, "/api/admin/signups", "signups.manage"),
+    (READS | STATE_CHANGING, "/api/admin/invites", "signups.manage"),
 )
 # The header the web app sends with every request; state-changing ones need it (#124).
 APP_HEADER = "X-Requested-With"
@@ -351,6 +369,20 @@ class Me(BaseModel):
 
 class RoleChange(BaseModel):
     role: str
+
+
+class SignupsChange(BaseModel):
+    open: bool
+
+
+class InviteToken(BaseModel):
+    token: Annotated[str, Field(min_length=16, max_length=128)]
+
+
+class SignupsAdmin(BaseModel):
+    signups: SignupsView
+    setting: bool  # PLANNER_SIGNUPS: the default until the app changes it
+    invites: list[InviteView]
 
 
 class AccountCharacters(BaseModel):
@@ -548,6 +580,10 @@ def create_app(
     owns_engine = engine is None
     engine = engine or make_engine(settings.database_url)
     pending_states: dict[str, float] = {}  # state -> created_at
+    # An invite held for the sign-in that follows (#239): the cookie carries a random
+    # reference, never the token itself (CodeQL: no user input in cookies). In memory, as
+    # the OAuth states are: a restart only means opening the link again.
+    pending_invites: dict[str, tuple[float, str]] = {}  # reference -> (created_at, token)
     # Discord links in progress (#58): state -> (created_at, the user linking)
     discord_states: dict[str, tuple[float, int | None]] = {}
     # Background jobs when REDIS_URL is set (#17, ADR 0039); syncs run in the request without.
@@ -736,6 +772,34 @@ def create_app(
         pending_states[state] = now
         return RedirectResponse(oauth.authorize_url(settings, state))
 
+    @app.post("/auth/invite", status_code=204)
+    def accept_invite(body: InviteToken, request: Request, session: SessionDep) -> Response:
+        """Hold an invite for the sign-in that follows (#239, ADR 0057). The web app sends
+        the token from its link's #invite= fragment, which never reaches the server's logs.
+        It's held for an hour, behind a random reference in an HttpOnly cookie, until Battle.net's
+        callback spends it. 404 when the invite is used, revoked, expired or unknown."""
+        if not settings.planner_users:
+            raise HTTPException(404, "There are no user accounts on this instance")
+        if open_invite(session, body.token) is None:
+            raise HTTPException(404, INVITE_GONE)
+        now = time.time()
+        for stale in [
+            r for r, (t, _) in pending_invites.items() if now - t > INVITE_COOKIE_SECONDS
+        ]:
+            del pending_invites[stale]
+        invite_ref = secrets.token_urlsafe(32)
+        pending_invites[invite_ref] = (now, body.token)
+        response = Response(status_code=204)
+        response.set_cookie(
+            INVITE_COOKIE,
+            invite_ref,
+            max_age=INVITE_COOKIE_SECONDS,
+            httponly=True,
+            samesite="lax",
+            secure=request.url.scheme == "https",
+        )
+        return response
+
     @app.get("/auth/callback")
     def callback(request: Request, session: SessionDep) -> RedirectResponse:
         params = request.query_params
@@ -758,11 +822,24 @@ def create_app(
             raise HTTPException(
                 502, f"Battle.net didn't say whose account this is ({account.status})"
             )
+        invite_ref = request.cookies.get(INVITE_COOKIE)
+        held = pending_invites.pop(invite_ref, None) if invite_ref else None
+        fresh = held is not None and time.time() - held[0] <= INVITE_COOKIE_SECONDS
+        invite = open_invite(session, held[1] if held and fresh else None)
         try:
-            user = sign_in(session, account_id, token, signups_open=settings.planner_signups)
+            user = sign_in(
+                session,
+                account_id,
+                token,
+                signups_open=signups_open(session, settings),
+                invite=invite,
+            )
         except SignupsClosed as error:
+            if invite_ref and invite is None:
+                raise HTTPException(403, INVITE_GONE) from error
             raise HTTPException(403, str(error)) from error
         redirect = RedirectResponse(settings.post_login_redirect, status_code=303)
+        redirect.delete_cookie(INVITE_COOKIE)
         redirect.set_cookie(
             SESSION_COOKIE,
             start_session(session, user),
@@ -797,7 +874,7 @@ def create_app(
         return response
 
     @app.get("/api/me")
-    def me(request: Request) -> Me:
+    def me(request: Request, session: SessionDep) -> Me:
         """Whether users are on, and who's signed in (ADR 0037). Public, so the page
         knows to offer the sign-in."""
         user_id = getattr(request.state, "user_id", None)
@@ -809,7 +886,7 @@ def create_app(
             role=getattr(request.state, "role", None),
             # Without users, everyone may do everything there is (ADR 0037).
             permissions=sorted(permissions if settings.planner_users else PERMISSIONS),
-            signups_open=settings.planner_signups,
+            signups_open=signups_open(session, settings),
         )
 
     def users_only() -> None:
@@ -928,6 +1005,73 @@ def create_app(
         0056). Account ids and actions only. Needs `log.view`."""
         users_only()
         return admin_log.recent(session)
+
+    def signups_admin(session: Session) -> SignupsAdmin:
+        return SignupsAdmin(
+            signups=signups(session, settings),
+            setting=settings.planner_signups,
+            invites=list_invites(session),
+        )
+
+    @app.get("/api/admin/signups")
+    def get_signups(session: SessionDep) -> SignupsAdmin:
+        """Whether sign-ups are open and where that comes from (the app's choice, or
+        PLANNER_SIGNUPS), and every invite (#239, ADR 0057). Needs `signups.manage`."""
+        users_only()
+        return signups_admin(session)
+
+    @app.put("/api/admin/signups")
+    def put_signups(
+        change: SignupsChange,
+        request: Request,
+        session: SessionDep,
+        background: BackgroundTasks,
+    ) -> SignupsAdmin:
+        """Open or close sign-ups (#239, ADR 0057): from now on this wins over
+        PLANNER_SIGNUPS. Needs `signups.manage`. Logged; the Discord bot's pinned sign-up
+        message, when there is one, is brought up to date in the background."""
+        users_only()
+        set_signups(session, settings, change.open)
+        log(request, session, "signups.change", detail="opened" if change.open else "closed")
+        if settings.discord_signup_message:
+            background.add_task(update_signup_message, change.open)
+        return signups_admin(session)
+
+    def update_signup_message(is_open: bool) -> None:
+        try:
+            if http is not None:
+                signup.ensure(settings, http, is_open)
+            else:
+                with notify.new_client() as client:
+                    signup.ensure(settings, client, is_open)
+        except Exception:
+            logger.exception("The Discord sign-up message failed")
+
+    @app.post("/api/admin/invites")
+    def post_invite(request: Request, session: SessionDep) -> NewInvite:
+        """A link that lets one person sign up while sign-ups are closed: one use, valid
+        for 7 days (#239, ADR 0057). The token is returned this once; only its hash is
+        stored. Needs `signups.manage`. Logged."""
+        users_only()
+        actor_id = getattr(request.state, "user_id", None)
+        actor = session.get(User, actor_id) if actor_id is not None else None
+        created = create_invite(session, actor.account_id if actor else None)
+        log(request, session, "invite.create", detail=f"invite {created.invite.id}")
+        return created
+
+    @app.delete("/api/admin/invites/{invite_id}")
+    def delete_invite(invite_id: int, request: Request, session: SessionDep) -> InviteView:
+        """Revoke an open invite (#239): its link stops working. 404 for no such invite,
+        409 for one already used, revoked or expired. Needs `signups.manage`. Logged."""
+        users_only()
+        try:
+            revoked = revoke(session, invite_id)
+        except LookupError as error:
+            raise HTTPException(404, "No such invite") from error
+        except ValueError as error:
+            raise HTTPException(409, str(error)) from error
+        log(request, session, "invite.revoke", detail=f"invite {invite_id}")
+        return revoked
 
     @app.get("/api/status")
     def status(

@@ -114,6 +114,10 @@ correction: who did it, to which account and when, as Battle.net account ids, wi
 detail but never the data. It's the record that a request was handled, so it stays after
 the account it names is deleted. Entries are deleted after a year.
 
+**Invites** let one person sign up while sign-ups are closed. Each keeps who made it and,
+once used, which account used it and when, as Battle.net account ids. The link's token is
+stored only as a hash. An invite is deleted 30 days after it's used, revoked or expired.
+
 **With no characters left,** the planner is blank again, unless `CHARACTER_NAME` and
 `CHARACTER_SURNAME` are set: then the next start tracks that character again. To stop
 using it for good, remove those settings too.
