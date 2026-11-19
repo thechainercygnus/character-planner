@@ -778,10 +778,12 @@ def create_app(
             raise HTTPException(404, "There are no user accounts on this instance")
         if open_invite(session, body.token) is None:
             raise HTTPException(404, INVITE_GONE)
+        invite_ref = secrets.token_urlsafe(32)
+        pending_invites[invite_ref] = body.token
         response = Response(status_code=204)
         response.set_cookie(
             INVITE_COOKIE,
-            body.token,
+            invite_ref,
             max_age=INVITE_COOKIE_SECONDS,
             httponly=True,
             samesite="lax",
