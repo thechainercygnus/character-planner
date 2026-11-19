@@ -2,14 +2,15 @@
 its snapshots, history, characters, users and settings.
 
 Both are brought to the newest schema first, so the tables match. The target must be
-empty. Tables are copied parents before children, so foreign keys hold, and Postgres's id
-sequences are moved past the copied ids so new rows don't collide with them.
+empty but for the rows its migrations seed. Tables are copied parents before children, so
+foreign keys hold, and Postgres's id sequences are moved past the copied ids so new rows
+don't collide with them.
 """
 
 import logging
 from typing import Any
 
-from sqlalchemy import func, insert, select
+from sqlalchemy import delete, func, insert, select
 from sqlalchemy.engine import Engine
 from sqlmodel import SQLModel
 
@@ -18,6 +19,9 @@ from character_planner.db import init_db
 logger = logging.getLogger(__name__)
 
 BATCH = 500
+# Tables a migration fills (0019, the roles): not data in the target. The source's rows
+# replace them, so roles edited there carry over.
+SEEDED = frozenset({"role"})
 
 
 class TargetNotEmpty(Exception):
@@ -33,13 +37,16 @@ def copy_database(source: Engine, target: Engine) -> dict[str, int]:
         used = [
             t.name
             for t in tables
-            if connection.execute(select(func.count()).select_from(t)).scalar()
+            if t.name not in SEEDED
+            and connection.execute(select(func.count()).select_from(t)).scalar()
         ]
     if used:
         raise TargetNotEmpty(f"The target already has data in: {', '.join(used)}")
     copied: dict[str, int] = {}
     with source.connect() as reading, target.begin() as writing:
         for table in tables:
+            if table.name in SEEDED:
+                writing.execute(delete(table))
             rows: list[dict[str, Any]] = [
                 dict(row) for row in reading.execute(select(table)).mappings()
             ]

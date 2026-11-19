@@ -90,7 +90,7 @@ def sign_in(session: Session, account_id: int, token: oauth.Token, *, signups_op
         first = session.exec(select(User)).first() is None
         if not first and not signups_open:
             raise SignupsClosed("Sign-ups are closed on this instance")
-        user = User(account_id=account_id, is_admin=first)
+        user = User(account_id=account_id, role="admin" if first else "user")
         session.add(user)
         session.flush()
         if first:

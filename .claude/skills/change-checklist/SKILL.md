@@ -10,8 +10,10 @@ that fail when a line is missed.
 
 ## A new or changed API route (`app.py`)
 - **Scope it:** routes about a character take `CharacterIdDep`. A route about the
-  signed-in user takes `UserIdDep` and filters by it. An admin route goes under
-  `ADMIN_WRITES`, or checks the admin. Another user's row answers **404**, not 403.
+  signed-in user takes `UserIdDep` and filters by it. An instance-wide route gets a
+  permission in `app.ROUTE_PERMISSIONS`. A new permission goes in `roles.PERMISSIONS`,
+  plus a migration adding it to the roles that should have it (ADR 0055). Never check a
+  role. Another user's row answers **404**, not 403.
 - **Unscoped routes:** classify them in `UNSCOPED` in `tests/test_users.py` (public, own,
   admin or shared), with a comment saying where they're tested.
   `test_every_route_keeps_users_apart` fails until you do.

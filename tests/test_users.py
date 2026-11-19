@@ -23,6 +23,13 @@ from .test_cli import cli_settings  # noqa: F401  # pyright: ignore[reportUnused
 
 ACCOUNT_URL = "https://us.api.blizzard.com/profile/user/wow"
 ADMIN, GUILDMATE = 1001, 2002  # Battle.net account ids
+EVERY_PERMISSION = [
+    "accounts.view",
+    "data.refresh",
+    "discord.signup",
+    "enchants.correct",
+    "roles.manage",
+]
 
 
 @pytest.fixture
@@ -68,6 +75,9 @@ def test_users_off_changes_nothing(settings: Settings, engine: Engine) -> None:
             "users": False,
             "signed_in": False,
             "admin": False,
+            "role": None,
+            # Without users, everyone may do everything there is (ADR 0037, ADR 0055).
+            "permissions": EVERY_PERMISSION,
             "signups_open": False,
         }
         assert client.get("/api/character").status_code == 200  # no sign-in needed
@@ -100,6 +110,8 @@ def test_the_first_sign_in_is_the_admin_and_adopts_the_characters(
             "users": True,
             "signed_in": True,
             "admin": True,
+            "role": "admin",
+            "permissions": EVERY_PERMISSION,
             "signups_open": False,
         }
         listed = admin.get("/api/characters").json()["characters"]
@@ -249,8 +261,10 @@ UNSCOPED = {
         "DELETE /api/notifications/destinations/{destination_id}",
         "POST /api/notifications/destinations/{destination_id}/test",
     },
-    # Instance-wide and the admin's: 403 for everyone else (ADR 0037).
+    # Instance-wide, behind a permission the admin has (ADR 0037, ADR 0055): 403 for a user.
     "admin": {
+        "GET /api/admin/accounts",  # accounts.view: test_roles.py
+        "PUT /api/admin/users/{user_id}/role",  # roles.manage: test_roles.py
         "POST /api/pool/refresh",
         "POST /api/enchants/refresh",
         "PUT /api/enchants/corrections/materials/{item_id}",
@@ -271,6 +285,7 @@ PATH_VALUES = {
     "{key}": "mine",
     "{quest_id}": "warrior-quest",
     "{destination_id}": "1",
+    "{user_id}": "1",
 }
 
 

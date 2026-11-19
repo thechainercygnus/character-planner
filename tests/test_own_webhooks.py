@@ -87,7 +87,7 @@ def own(session: Session, url: str, user_id: int | None) -> NotificationDestinat
 
 
 def two_users(session: Session) -> None:
-    session.add_all([User(id=1, account_id=ADMIN, is_admin=True), User(id=2, account_id=GUILDMATE)])
+    session.add_all([User(id=1, account_id=ADMIN, role="admin"), User(id=2, account_id=GUILDMATE)])
     session.commit()
 
 
@@ -97,7 +97,7 @@ def test_a_characters_alerts_reach_only_its_owners_webhooks(
     _digests(monkeypatch, Digest(level=19), Digest(level=20))
     with Session(engine) as session:
         session.add_all(
-            [User(id=1, account_id=ADMIN, is_admin=True), User(id=2, account_id=GUILDMATE)]
+            [User(id=1, account_id=ADMIN, role="admin"), User(id=2, account_id=GUILDMATE)]
         )
         character = tracked_character(session)
         character.user_id = 2
@@ -115,7 +115,7 @@ def test_a_characters_alerts_reach_only_its_owners_webhooks(
 def test_system_alerts_go_to_the_admins_webhooks_only(engine: Engine, settings: Settings) -> None:
     with Session(engine) as session:
         session.add_all(
-            [User(id=1, account_id=ADMIN, is_admin=True), User(id=2, account_id=GUILDMATE)]
+            [User(id=1, account_id=ADMIN, role="admin"), User(id=2, account_id=GUILDMATE)]
         )
         session.commit()
         admins = own(session, WEBHOOK, 1)
