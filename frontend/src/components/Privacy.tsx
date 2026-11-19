@@ -49,8 +49,8 @@ export function Privacy() {
         </li>
         <li>A short history for the Progress tab: the date, level and item level of each sync.</li>
         <li>
-          What you set in the app: gear targets, talent plan, stat weights, rules, dismissed items and class quests
-          marked done.
+          What you set in the app: build, gear targets, talent plan, stat weights, rules, dismissed items and class
+          quests marked done.
         </li>
         <li>The Discord webhooks you add for alerts, and the alerts waiting to be sent.</li>
         <li>A Discord account you link for DMs: its id and name only, until you unlink it.</li>

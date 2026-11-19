@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from './api'
 import { Account } from './components/Account'
 import { Admin } from './components/Admin'
+import { BuildPicker } from './components/BuildPicker'
 import { CharacterHeader } from './components/CharacterPanels'
 import { ClassQuests } from './components/ClassQuests'
 import { CharacterSnapshot } from './components/CharacterSnapshot'
@@ -204,6 +205,14 @@ export default function App() {
           {tab === 'guild' && <Guild />}
           {tab === 'character' && (
             <>
+              <section className="build">
+                <h2>Build</h2>
+                <p className="muted">
+                  What this character is for: picking a build sets its stat weights, talent plan and guild role together.
+                  Each can still be edited.
+                </p>
+                <BuildPicker label="Follow" />
+              </section>
               <CharacterSnapshot character={character.data} />
               <GameDataPanel battleNetLevel={character.data.level} levelSource={character.data.level_source} />
             </>

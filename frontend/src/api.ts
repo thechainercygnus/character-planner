@@ -488,6 +488,28 @@ export interface NewCharacter {
 }
 
 /** What DELETE /api/character removed (#133): rows per table. */
+/** A build the character's class ships (builds.py, #216, ADR 0060). */
+export interface BuildSummary {
+  key: string
+  name: string
+  role: Role
+  /** The weight preset it sets. */
+  preset: string
+  preset_name: string
+  /** It carries a talent order, which becomes the talent plan. */
+  talents: boolean
+  spec: string | null
+}
+
+export interface BuildsView {
+  class_name: string
+  builds: BuildSummary[]
+  /** The build the character follows; null: none. */
+  current: string | null
+  /** Pieces changed since it was picked. */
+  customised: ('weights' | 'talents')[]
+}
+
 /** One of the user's characters, on the account page (account_page.py, #217). */
 export interface MyCharacter {
   id: number
@@ -1434,6 +1456,8 @@ export const api = {
   setSharedAlerts: (alerts: AlertKind[], as?: number) =>
     request<GuildView>('/api/guild/shared-alerts', asCharacter(as, json('PUT', { alerts }))),
   myGuilds: () => request<MyGuilds>('/api/guilds'),
+  builds: (as?: number) => request<BuildsView>('/api/builds', asCharacter(as)),
+  setBuild: (key: string | null, as?: number) => request<BuildsView>('/api/build', asCharacter(as, json('PUT', { key }))),
   setGuildMembers: (change: GuildMembersChange) => request<MyGuilds>('/api/guilds/members', json('PUT', change)),
   setGuildGrouping: (change: { region: string; guild_id: number; grouped: boolean }) =>
     request<MyGuilds>('/api/guilds/grouping', json('PUT', change)),
