@@ -23,7 +23,7 @@ import httpx
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
-from character_planner import admin_log, jobs, notify, retention, signup, upstream
+from character_planner import admin_log, jobs, notify, retention, signup, signups, upstream
 from character_planner.characters import all_characters, current_character
 from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, make_engine, utcnow
@@ -110,6 +110,7 @@ def retention_job(session: Session, settings: Settings, http: httpx.Client | Non
     has stopped syncing."""
     result = retention.prune(session)
     logged = admin_log.prune(session)  # the admin action log: a year (#238, ADR 0056)
+    signups.prune(session)  # closed invites: 30 days (#239, ADR 0057)
     return f"deleted {result.total} rows older than 30 days, archived {result.archived} points" + (
         f", {logged} admin log entries older than a year" if logged else ""
     )
@@ -198,14 +199,18 @@ def tick_notifications(engine: Engine, settings: Settings, http: httpx.Client) -
         logger.exception("Notifications failed")
 
 
-def refresh_signup_message(settings: Settings) -> None:
-    """At start, make the pinned sign-up message match the settings (#192): its text comes
-    from settings, which only change with a restart. Never fails the worker."""
+def refresh_signup_message(settings: Settings, engine: Engine | None = None) -> None:
+    """At start, make the pinned sign-up message match the settings (#192), and sign-ups as
+    the app has them (#239): the API updates it when they change. Never fails the worker."""
     if not settings.discord_signup_message:
         return
     try:
+        is_open: bool | None = None
+        if engine is not None:
+            with Session(engine) as session:
+                is_open = signups.signups_open(session, settings)
         with notify.new_client() as http:
-            signup.ensure(settings, http)  # logs what happened
+            signup.ensure(settings, http, is_open)  # logs what happened
     except Exception:
         logger.exception("The Discord sign-up message failed")
 
@@ -228,7 +233,7 @@ def run(engine: Engine, settings: Settings, *, once: bool) -> int:
     """The worker loop, or one pass of it with once=True."""
     init_db(engine)
     schedule = default_schedule(settings)
-    refresh_signup_message(settings)
+    refresh_signup_message(settings, engine)
     if once:
         outcomes = run_due(engine, settings, schedule, utcnow())
         with notify.new_client() as discord:

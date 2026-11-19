@@ -19,12 +19,14 @@ from character_planner.blizzard import oauth
 from character_planner.companion import as_utc
 from character_planner.db import (
     Character,
+    Invite,
     NotificationDestination,
     User,
     UserSession,
     UserToken,
     utcnow,
 )
+from character_planner.signups import spend
 
 logger = logging.getLogger(__name__)
 
@@ -79,17 +81,27 @@ def end_session(session: Session, token: str | None) -> None:
         session.commit()
 
 
-def sign_in(session: Session, account_id: int, token: oauth.Token, *, signups_open: bool) -> User:
+def sign_in(
+    session: Session,
+    account_id: int,
+    token: oauth.Token,
+    *,
+    signups_open: bool,
+    invite: Invite | None = None,
+) -> User:
     """Find or create the user for a Battle.net account and keep its sign-in token.
 
     The very first account becomes the admin and adopts every character without an
     owner, so an instance turning users on keeps its data. Other new accounts need
-    sign-ups open, else SignupsClosed."""
+    sign-ups open, or an open invite, which they spend (#239); else SignupsClosed. An
+    existing account never spends an invite."""
     user = session.exec(select(User).where(col(User.account_id) == account_id)).first()
     if user is None:
         first = session.exec(select(User)).first() is None
         if not first and not signups_open:
-            raise SignupsClosed("Sign-ups are closed on this instance")
+            if invite is None:
+                raise SignupsClosed("Sign-ups are closed on this instance")
+            spend(session, invite, account_id)
         user = User(account_id=account_id, role="admin" if first else "user")
         session.add(user)
         session.flush()
