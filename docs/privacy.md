@@ -37,7 +37,9 @@ themselves are game data, shared and not tied to anyone.
 **How long:** data from Blizzard is kept for at most 30 days, and each sync replaces it.
 The progress history and settings stay until they're deleted. Log files, if the operator
 keeps them, can name the character in their lines; the operator decides how long to keep
-them.
+them. If the operator turns on backups, the planner copies what's set in the app (not
+Blizzard's data, tokens or sessions) to the operator's storage, encrypted, and keeps the
+newest few (`BACKUP_KEEP`, 14 by default); a deletion reaches them once they're replaced.
 
 **Who can see it:** anyone who can open the instance's address. The planner has no
 accounts of its own, so it's meant for your own computer or a private network
@@ -127,8 +129,9 @@ stored only as a hash. An invite is deleted 30 days after it's used, revoked or 
 `CHARACTER_SURNAME` are set: then the next start tracks that character again. To stop
 using it for good, remove those settings too.
 
-**Backups and logs:** they aren't touched. Delete them yourself if they hold the
-character's data.
+**Backups and logs:** they aren't touched. The planner's own backups drop out as newer
+ones replace them (`BACKUP_KEEP`); delete them yourself, and any other copies or logs that
+hold the character's data, if it can't wait.
 
 ## Extending the notice
 

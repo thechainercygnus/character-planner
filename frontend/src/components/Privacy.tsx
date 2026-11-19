@@ -73,7 +73,9 @@ export function Privacy() {
       <p>
         Data from Blizzard is kept for at most 30 days, as Blizzard's terms require; each sync replaces it. The progress
         history and your own settings stay until you delete them. If the operator keeps log files, their lines can name
-        the character; the operator decides how long to keep them.
+        the character; the operator decides how long to keep them. If the operator turns on backups, what's set in the
+        app (not Blizzard's data) is copied to their storage, encrypted, and the newest few are kept; a deletion reaches
+        them once newer backups replace them.
       </p>
 
       <h2>Who can see it</h2>
