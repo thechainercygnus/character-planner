@@ -580,6 +580,10 @@ def create_app(
     owns_engine = engine is None
     engine = engine or make_engine(settings.database_url)
     pending_states: dict[str, float] = {}  # state -> created_at
+    # An invite held for the sign-in that follows (#239): the cookie carries a random
+    # reference, never the token itself (CodeQL: no user input in cookies). In memory, as
+    # the OAuth states are: a restart only means opening the link again.
+    pending_invites: dict[str, tuple[float, str]] = {}  # reference -> (created_at, token)
     # Discord links in progress (#58): state -> (created_at, the user linking)
     discord_states: dict[str, tuple[float, int | None]] = {}
     # Background jobs when REDIS_URL is set (#17, ADR 0039); syncs run in the request without.
@@ -771,15 +775,20 @@ def create_app(
     @app.post("/auth/invite", status_code=204)
     def accept_invite(body: InviteToken, request: Request, session: SessionDep) -> Response:
         """Hold an invite for the sign-in that follows (#239, ADR 0057). The web app sends
-        the token from its link's #invite= fragment, which never reaches the server's logs;
-        it's kept in an HttpOnly cookie until Battle.net's callback spends it. 404 when the
-        invite is used, revoked, expired or unknown."""
+        the token from its link's #invite= fragment, which never reaches the server's logs.
+        It's held for an hour, behind a random reference in an HttpOnly cookie, until Battle.net's
+        callback spends it. 404 when the invite is used, revoked, expired or unknown."""
         if not settings.planner_users:
             raise HTTPException(404, "There are no user accounts on this instance")
         if open_invite(session, body.token) is None:
             raise HTTPException(404, INVITE_GONE)
+        now = time.time()
+        for stale in [
+            r for r, (t, _) in pending_invites.items() if now - t > INVITE_COOKIE_SECONDS
+        ]:
+            del pending_invites[stale]
         invite_ref = secrets.token_urlsafe(32)
-        pending_invites[invite_ref] = body.token
+        pending_invites[invite_ref] = (now, body.token)
         response = Response(status_code=204)
         response.set_cookie(
             INVITE_COOKIE,
@@ -813,8 +822,10 @@ def create_app(
             raise HTTPException(
                 502, f"Battle.net didn't say whose account this is ({account.status})"
             )
-        invite_token = request.cookies.get(INVITE_COOKIE)
-        invite = open_invite(session, invite_token)
+        invite_ref = request.cookies.get(INVITE_COOKIE)
+        held = pending_invites.pop(invite_ref, None) if invite_ref else None
+        fresh = held is not None and time.time() - held[0] <= INVITE_COOKIE_SECONDS
+        invite = open_invite(session, held[1] if held and fresh else None)
         try:
             user = sign_in(
                 session,
@@ -824,7 +835,7 @@ def create_app(
                 invite=invite,
             )
         except SignupsClosed as error:
-            if invite_token and invite is None:
+            if invite_ref and invite is None:
                 raise HTTPException(403, INVITE_GONE) from error
             raise HTTPException(403, str(error)) from error
         redirect = RedirectResponse(settings.post_login_redirect, status_code=303)

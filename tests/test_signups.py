@@ -88,12 +88,13 @@ def test_an_invite_lets_one_person_in_once(users: Settings, engine: Engine) -> N
         assert held.status_code == 204
         cookie = held.headers["set-cookie"]
         assert "planner_invite=" in cookie and "HttpOnly" in cookie
+        assert token not in cookie  # a random reference, never the token (CodeQL)
         assert sign_in(guildmate, GUILDMATE).status_code == 303
         assert "planner_invite" not in guildmate.cookies  # gone with the callback
 
         # Spent: nobody else gets in on it, whether they ask first or carry it in.
         assert third.post("/auth/invite", json={"token": token}).status_code == 404
-        third.cookies.set("planner_invite", token)
+        third.cookies.set("planner_invite", token)  # not a reference the server holds
         refused = sign_in(third, THIRD)
         assert refused.status_code == 403 and "used, revoked or has expired" in refused.text
 

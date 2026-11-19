@@ -20,8 +20,11 @@ again (#239).
    - **The token:** 32 random bytes, stored only as its SHA-256.
    - **The link is `/#invite=<token>`.** The fragment never reaches the server, so the
      token stays out of access logs. The sign-in page posts it to `/auth/invite`, which
-     checks it and holds it in an HttpOnly cookie for an hour. Battle.net's callback
-     spends it and clears the cookie.
+     checks it and holds it for an hour.
+   - **The cookie never carries the token,** only a random reference in an HttpOnly
+     cookie, so nothing the visitor sent goes into a cookie (CodeQL). The reference is
+     kept in memory, as the OAuth sign-in's states are. Battle.net's callback spends the
+     invite and clears the cookie; after a restart the link is simply opened again.
    - **An existing account signing in never spends an invite.**
    - **Who used it:** recorded as the account id, shown in the admin area.
    - **Closed invites** (used, revoked or expired) are pruned 30 days later by the

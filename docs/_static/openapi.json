@@ -11445,7 +11445,7 @@
     },
     "/auth/invite": {
       "post": {
-        "description": "Hold an invite for the sign-in that follows (#239, ADR 0057). The web app sends\nthe token from its link's #invite= fragment, which never reaches the server's logs;\nit's kept in an HttpOnly cookie until Battle.net's callback spends it. 404 when the\ninvite is used, revoked, expired or unknown.",
+        "description": "Hold an invite for the sign-in that follows (#239, ADR 0057). The web app sends\nthe token from its link's #invite= fragment, which never reaches the server's logs.\nIt's held for an hour, behind a random reference in an HttpOnly cookie, until Battle.net's\ncallback spends it. 404 when the invite is used, revoked, expired or unknown.",
         "operationId": "accept_invite_auth_invite_post",
         "requestBody": {
           "content": {

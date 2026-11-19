@@ -980,7 +980,7 @@ Start linking a Discord account: off to Discord to approve `identify`.
 
 ### `POST /auth/invite`
 
-Hold an invite for the sign-in that follows (#239, ADR 0057). The web app sends the token from its link's #invite= fragment, which never reaches the server's logs; it's kept in an HttpOnly cookie until Battle.net's callback spends it. 404 when the invite is used, revoked, expired or unknown.
+Hold an invite for the sign-in that follows (#239, ADR 0057). The web app sends the token from its link's #invite= fragment, which never reaches the server's logs. It's held for an hour, behind a random reference in an HttpOnly cookie, until Battle.net's callback spends it. 404 when the invite is used, revoked, expired or unknown.
 
 **Body:** [InviteToken](#schema-invitetoken)
 
