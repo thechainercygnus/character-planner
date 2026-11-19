@@ -89,6 +89,7 @@ def test_default_schedule_comes_from_settings(settings: Settings) -> None:
         ("enchants", timedelta(hours=168)),
         ("talents", timedelta(hours=168)),
         ("retention", timedelta(hours=24)),  # Blizzard data past 30 days (#131)
+        ("backup", timedelta(hours=1)),  # checked hourly, made when due (#240)
     ]
 
 

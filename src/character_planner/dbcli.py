@@ -5,19 +5,23 @@ character-planner-db current   # print the schema version
 character-planner-db erase --yes  # delete everything stored for the character (#133)
 character-planner-db delete-user ACCOUNT_ID --yes  # delete one user and their data (#16)
 COPY_TO_DATABASE_URL=... character-planner-db copy-to  # copy DATABASE_URL into another (#44)
+character-planner-db backup  # back up now, as the worker does (#240)
+character-planner-db restore --file BACKUP [--identity KEY] --yes  # into an empty database
 """
 
 import argparse
 import logging
 import os
 import sys
+from pathlib import Path
 
 from alembic.migration import MigrationContext
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
+from character_planner import backup
 from character_planner.admin_log import record
-from character_planner.config import get_settings
+from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, make_engine
 from character_planner.dbcopy import TargetNotEmpty, copy_database
 from character_planner.erase import erase_character
@@ -25,6 +29,43 @@ from character_planner.logs import configure_logging, safe_database_url
 from character_planner.users import LastAdmin, delete_user, user_by_account
 
 logger = logging.getLogger(__name__)
+
+
+def backup_now(engine: Engine, settings: Settings) -> int:
+    """Back up now (#240), as the worker's job does, whatever the schedule."""
+    if not settings.backups:
+        print(
+            "Backups aren't set up: set BACKUP_S3_* and BACKUP_AGE_RECIPIENT (docs/self-hosting.md)"
+        )
+        return 2
+    try:
+        init_db(engine)
+        with Session(engine) as session:
+            result = backup.run_backup(session, settings, backup.app_version())
+    except Exception as error:
+        print(f"Backup failed: {type(error).__name__}: {error}")
+        return 1
+    finally:
+        engine.dispose()
+    print(f"Backed up {result.rows} rows to {result.key} ({result.size} bytes); {result.kept} kept")
+    return 0
+
+
+def restore_file(engine: Engine, path: str, identity: str | None) -> int:
+    """Load a backup into DATABASE_URL, which must be empty (#240). An encrypted one needs
+    --identity; one decrypted with age on another machine needs nothing."""
+    data = Path(path).read_bytes()
+    try:
+        if identity is not None:
+            data = backup.decrypt(data, Path(identity).read_text(encoding="utf-8"))
+        restored = backup.restore(engine, data)
+    except (backup.NotEmpty, backup.WrongRevision, ValueError) as error:
+        print(error)
+        return 1
+    finally:
+        engine.dispose()
+    print(f"Restored {sum(restored.values())} rows in {len(restored)} tables")
+    return 0
 
 
 def copy_to(source: Engine) -> int:
@@ -59,13 +100,24 @@ def copy_to(source: Engine) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Database schema commands.")
     parser.add_argument(
-        "command", choices=["upgrade", "current", "erase", "delete-user", "copy-to"]
+        "command",
+        choices=["upgrade", "current", "erase", "delete-user", "copy-to", "backup", "restore"],
     )
     parser.add_argument("account_id", nargs="?", type=int, help="delete-user: the Battle.net id")
     parser.add_argument("--yes", action="store_true", help="confirm a deletion: it can't be undone")
+    parser.add_argument("--file", help="restore: the backup, as downloaded or decrypted (#240)")
+    parser.add_argument(
+        "--identity", help="restore: an age identity file, to decrypt here instead of with age"
+    )
     args = parser.parse_args(argv)
     if args.command == "delete-user" and args.account_id is None:
         print("delete-user needs the user's Battle.net account id")
+        return 2
+    if args.command == "restore" and not args.file:
+        print("restore needs --file: the backup, encrypted (.age, with --identity) or decrypted")
+        return 2
+    if args.command == "restore" and not args.yes:
+        print("restore loads a backup into DATABASE_URL, which must be empty; add --yes")
         return 2
     if args.command in ("erase", "delete-user") and not args.yes:
         what = "everything stored" if args.command == "erase" else "the user and their data"
@@ -76,6 +128,10 @@ def main(argv: list[str] | None = None) -> int:
     engine = make_engine(settings.database_url)
     if args.command == "copy-to":
         return copy_to(engine)
+    if args.command == "backup":
+        return backup_now(engine, settings)
+    if args.command == "restore":
+        return restore_file(engine, args.file, args.identity)
     if args.command == "delete-user":
         try:
             init_db(engine)

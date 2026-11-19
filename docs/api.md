@@ -55,6 +55,18 @@ Every account: its Battle.net account id, role, when it signed up and last signe
 
 **200:** [AdminView](#schema-adminview)
 
+### `GET /api/admin/backups`
+
+Whether backups are set up, how often and how many are kept, and the last one's outcome (#240, ADR 0061). Needs `backups.manage`.
+
+**200:** [BackupsView](#schema-backupsview)
+
+### `POST /api/admin/backups`
+
+Back up now, whatever the schedule (#240). Needs `backups.manage`. 409 when backups aren't set up; 502 when the dump, encryption or upload fails (recorded, as the worker's are). Logged.
+
+**200:** [BackupsView](#schema-backupsview)
+
 ### `POST /api/admin/invites`
 
 A link that lets one person sign up while sign-ups are closed: one use, valid for 7 days (#239, ADR 0057). The token is returned this once; only its hash is stored. Needs `signups.manage`. Logged.
@@ -1140,6 +1152,30 @@ What the planner stores about an account, and no more (#237): it's for running t
 | `kind` | `level_up` \\| `target_reached` \\| `target_in_reach` \\| `new_upgrade` \\| `job_failed` \\| `upstream_errors` | yes |
 | `audience` | `user` \\| `system` | yes |
 | `label` | string | yes |
+
+(schema-backupstatus)=
+### BackupStatus
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `at` | string | yes |
+| `ok` | boolean | yes |
+| `key` | string or null | no |
+| `size` | integer or null | no |
+| `rows` | integer or null | no |
+| `error` | string or null | no |
+| `kept` | integer or null | no |
+
+(schema-backupsview)=
+### BackupsView
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `configured` | boolean | yes |
+| `every_hours` | integer | yes |
+| `keep` | integer | yes |
+| `bucket` | string or null | yes |
+| `last` | [BackupStatus](#schema-backupstatus) or null | yes |
 
 (schema-bookrecipe)=
 ### BookRecipe

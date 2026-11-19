@@ -29,6 +29,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from character_planner import (
     admin_log,
+    backup,
     discord,
     fields,
     gamedata,
@@ -323,6 +324,7 @@ ROUTE_PERMISSIONS: tuple[tuple[frozenset[str], str, str], ...] = (
     (READS, "/api/admin/log", "log.view"),
     (READS | STATE_CHANGING, "/api/admin/signups", "signups.manage"),
     (READS | STATE_CHANGING, "/api/admin/invites", "signups.manage"),
+    (READS | STATE_CHANGING, "/api/admin/backups", "backups.manage"),
 )
 # The header the web app sends with every request; state-changing ones need it (#124).
 APP_HEADER = "X-Requested-With"
@@ -401,6 +403,14 @@ class BuildChoice(BaseModel):
 
 class RoleChange(BaseModel):
     role: str
+
+
+class BackupsView(BaseModel):
+    configured: bool  # BACKUP_S3_* and BACKUP_AGE_RECIPIENT set
+    every_hours: int
+    keep: int
+    bucket: str | None
+    last: backup.BackupStatus | None
 
 
 class SignupsChange(BaseModel):
@@ -1044,6 +1054,39 @@ def create_app(
             setting=settings.planner_signups,
             invites=list_invites(session),
         )
+
+    def backups_view(session: Session) -> BackupsView:
+        return BackupsView(
+            configured=settings.backups,
+            every_hours=settings.backup_every_hours,
+            keep=settings.backup_keep,
+            bucket=settings.backup_s3_bucket or None,
+            last=backup.status(session),
+        )
+
+    @app.get("/api/admin/backups")
+    def get_backups(session: SessionDep) -> BackupsView:
+        """Whether backups are set up, how often and how many are kept, and the last one's
+        outcome (#240, ADR 0061). Needs `backups.manage`."""
+        users_only()
+        return backups_view(session)
+
+    @app.post("/api/admin/backups")
+    def post_backup(request: Request, session: SessionDep) -> BackupsView:
+        """Back up now, whatever the schedule (#240). Needs `backups.manage`. 409 when backups
+        aren't set up; 502 when the dump, encryption or upload fails (recorded, as the
+        worker's are). Logged."""
+        users_only()
+        if not settings.backups:
+            raise HTTPException(409, "Backups aren't set up: see BACKUP_S3_* in self-hosting")
+        try:
+            result = backup.run_backup(session, settings, backup.app_version())
+        except Exception as error:
+            raise HTTPException(
+                502, f"The backup failed: {type(error).__name__}: {error}"
+            ) from error
+        log(request, session, "backup.run", detail=f"{result.rows} rows, {result.size} bytes")
+        return backups_view(session)
 
     @app.get("/api/admin/signups")
     def get_signups(session: SessionDep) -> SignupsAdmin:

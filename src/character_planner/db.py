@@ -611,6 +611,14 @@ def save_now(session: Session, row: SQLModel) -> None:
 MIGRATIONS = Path(__file__).parent / "migrations"
 
 
+def current_revision(engine: Engine) -> str | None:
+    """The database's schema revision (alembic); None before any migration ran."""
+    from alembic.migration import MigrationContext
+
+    with engine.connect() as connection:
+        return MigrationContext.configure(connection).get_current_revision()
+
+
 def init_db(engine: Engine) -> None:
     """Bring the schema up to date by running the migrations (#60, ADR 0022).
 

@@ -273,6 +273,8 @@ UNSCOPED = {
         "PUT /api/admin/signups",  # signups.manage: test_signups.py
         "POST /api/admin/invites",  # signups.manage: test_signups.py
         "DELETE /api/admin/invites/{invite_id}",  # signups.manage: test_signups.py
+        "GET /api/admin/backups",  # backups.manage: test_backup.py
+        "POST /api/admin/backups",  # backups.manage: test_backup.py
         "POST /api/pool/refresh",
         "POST /api/enchants/refresh",
         "PUT /api/enchants/corrections/materials/{item_id}",

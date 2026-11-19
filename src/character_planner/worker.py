@@ -23,7 +23,16 @@ import httpx
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
-from character_planner import admin_log, jobs, notify, retention, signup, signups, upstream
+from character_planner import (
+    admin_log,
+    backup,
+    jobs,
+    notify,
+    retention,
+    signup,
+    signups,
+    upstream,
+)
 from character_planner.characters import all_characters, current_character
 from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, make_engine, utcnow
@@ -116,6 +125,17 @@ def retention_job(session: Session, settings: Settings, http: httpx.Client | Non
     )
 
 
+def backup_job(session: Session, settings: Settings, http: httpx.Client | None) -> str:
+    """Back up when one is due (#240, ADR 0061). Checked hourly; the last good backup's
+    time, kept in the database, decides, so restarting the worker doesn't make one."""
+    if not settings.backups:
+        return "skipped: no backup storage set (BACKUP_S3_*, BACKUP_AGE_RECIPIENT)"
+    if not backup.due(session, settings):
+        return "not due"
+    result = backup.run_backup(session, settings, backup.app_version())  # raises: an alert
+    return f"backed up {result.rows} rows ({result.size} bytes), {result.kept} kept"
+
+
 def notify_upstream(session: Session, settings: Settings, job: str, errors: list[str]) -> None:
     """A system alert for many upstream errors, or for one that stopped the refresh: a
     rate limit, or an upstream list that came back empty (#87)."""
@@ -151,6 +171,8 @@ def default_schedule(settings: Settings) -> Schedule:
             Job("talents", timedelta(hours=settings.enchants_every_hours), talents_job),
             # Blizzard's terms: nothing from its APIs kept past 30 days (#131).
             Job("retention", timedelta(hours=24), retention_job),
+            # Encrypted backups, when set up (#240): checked hourly, made when due.
+            Job("backup", timedelta(hours=1), backup_job),
         ]
     )
 
