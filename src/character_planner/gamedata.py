@@ -186,7 +186,7 @@ def check_character(character: Character, data: GameData) -> None:
         )
 
 
-def _moment(seconds: int) -> datetime:
+def moment(seconds: int) -> datetime:
     return datetime.fromtimestamp(seconds, UTC)
 
 
@@ -200,12 +200,12 @@ def import_for(session: Session, character: Character, upload: bytes) -> GameDat
         character_id=character.id,
         schema_version=data.schema_version,
         addon_version=data.addon_version,
-        captured_at=_moment(data.captured_at),
+        captured_at=moment(data.captured_at),
         data={},
     )
     row.schema_version = data.schema_version
     row.addon_version = data.addon_version
-    row.captured_at = _moment(data.captured_at)
+    row.captured_at = moment(data.captured_at)
     row.uploaded_at = utcnow()
     row.data = data.model_dump(mode="json")
     session.add(row)
@@ -270,9 +270,9 @@ def view(session: Session, character_id: int) -> GameDataView:
         captured_at=as_utc(row.captured_at),
         addon_version=row.addon_version,
         captured=SectionAge(
-            bags=_moment(data.bags.captured_at) if data.bags else None,
-            bank=_moment(data.bank.captured_at) if data.bank else None,
-            quests=_moment(data.quests.captured_at) if data.quests else None,
+            bags=moment(data.bags.captured_at) if data.bags else None,
+            bank=moment(data.bank.captured_at) if data.bank else None,
+            quests=moment(data.quests.captured_at) if data.quests else None,
         ),
         data=data,
         items=item_details(session, data),

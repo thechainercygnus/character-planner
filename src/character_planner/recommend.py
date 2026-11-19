@@ -24,7 +24,7 @@ from character_planner.companion import ATTRIBUTION as COMPANION_ATTRIBUTION
 from character_planner.curated import GearTargets
 from character_planner.pool import PoolItem, PoolSource, PoolView
 from character_planner.scoring import Weights, score
-from character_planner.views import EquippedItem
+from character_planner.views import EquippedItem, OwnedItem
 
 # The order the recommendations are shown in.
 EQUIPMENT_SLOTS = [
@@ -102,6 +102,7 @@ class Candidate(BaseModel):
     usable_now: bool  # required level reached
     is_target: bool = False  # one of the gear targets
     pinned: bool = False  # a pinned target: listed even below the top picks
+    owned: OwnedItem | None = None  # already in the bags or bank (#186)
 
 
 class SlotRecommendation(BaseModel):
@@ -115,6 +116,7 @@ class DungeonUpgrade(BaseModel):
     item: PoolItem
     score_gain: float
     source: PoolSource  # how this dungeon gives it: boss drop or quest
+    owned: OwnedItem | None = None  # already in the bags or bank: no need to run it (#186)
 
 
 class DungeonValue(BaseModel):

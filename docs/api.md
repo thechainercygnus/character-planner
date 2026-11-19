@@ -952,6 +952,7 @@ Login
 | `usable_now` | boolean | yes |
 | `is_target` | boolean | no |
 | `pinned` | boolean | no |
+| `owned` | [OwnedItem](#schema-owneditem) or null | no |
 
 (schema-characterinfo)=
 ### CharacterInfo
@@ -1146,6 +1147,7 @@ A destination as the app shows it: the URL masked.
 | `item` | [PoolItem](#schema-poolitem) | yes |
 | `score_gain` | number | yes |
 | `source` | [PoolSource](#schema-poolsource) | yes |
+| `owned` | [OwnedItem](#schema-owneditem) or null | no |
 
 (schema-dungeonvalue)=
 ### DungeonValue
@@ -1396,6 +1398,7 @@ Per slot (ADR 0015): the target to go for now, in rows, and what's coming up.
 | `warning` | string or null | yes |
 | `level` | integer or null | no |
 | `upcoming` | list of [UpcomingTarget](#schema-upcomingtarget) | no |
+| `owned` | [OwnedItem](#schema-owneditem) or null | no |
 
 (schema-geartarget)=
 ### GearTarget
@@ -1627,6 +1630,7 @@ What the app shows for an item id in the file (#185): the file has ids only.
 | `pinned` | boolean | no |
 | `locked` | boolean | no |
 | `link` | string or null | no |
+| `owned` | [OwnedItem](#schema-owneditem) or null | no |
 
 (schema-lualist_annotated_int__fieldinfo_annotation_nonetype__required_true__metadata__ge_ge_1_____)=
 ### LuaList_Annotated_int__FieldInfo_annotation_NoneType__required_True__metadata__Ge_ge_1_____
@@ -1793,6 +1797,17 @@ What happened, for the admin.
 | `action` | `posted` \\| `updated` \\| `none` | yes |
 | `message_id` | string or null | no |
 | `error` | string or null | no |
+
+(schema-owneditem)=
+### OwnedItem
+
+An item in the character's bags or bank, from the addon's game data (#186, ADR 0052): owned, but not equipped.
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `where` | `bags` \\| `bank` | yes |
+| `count` | integer | yes |
+| `captured_at` | string | yes |
 
 (schema-perslotupdate)=
 ### PerSlotUpdate
@@ -2326,6 +2341,7 @@ A target above the character's level: shown early so you can prepare for it.
 | `target_info` | [TargetInfo](#schema-targetinfo) or null | yes |
 | `level` | integer or null | yes |
 | `score_delta` | number or null | no |
+| `owned` | [OwnedItem](#schema-owneditem) or null | no |
 
 (schema-usagerules)=
 ### UsageRules

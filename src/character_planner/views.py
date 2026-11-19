@@ -155,6 +155,15 @@ class TargetInfo(BaseModel):
     conflicts: list[str] = []
 
 
+class OwnedItem(BaseModel):
+    """An item in the character's bags or bank, from the addon's game data (#186, ADR 0052):
+    owned, but not equipped."""
+
+    where: Literal["bags", "bank"]  # the bags when it's in both: the nearer
+    count: int
+    captured_at: datetime  # when that place was recorded in the game
+
+
 class UpcomingTarget(BaseModel):
     """A target above the character's level: shown early so you can prepare for it."""
 
@@ -162,6 +171,7 @@ class UpcomingTarget(BaseModel):
     target_info: TargetInfo | None
     level: int | None
     score_delta: float | None = None  # against what's worn now
+    owned: OwnedItem | None = None  # in the bags or bank (#186)
 
 
 class GearRow(BaseModel):
@@ -179,6 +189,7 @@ class GearRow(BaseModel):
     warning: str | None
     level: int | None = None  # the level the target counts from (ADR 0015)
     upcoming: list[UpcomingTarget] = []  # the slot's next targets, nearest first
+    owned: OwnedItem | None = None  # the target is in the bags or bank (#186)
 
 
 class SlotOutlook(BaseModel):
