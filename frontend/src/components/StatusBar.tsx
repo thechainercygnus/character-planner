@@ -39,6 +39,7 @@ const REFRESH_LABEL: Record<string, string> = {
   pool: 'the item pool',
   enchants: 'enchant data',
   'game-items': 'item names and icons for your game data', // after an import (#185)
+  recipes: 'recipes for your professions', // after a sync (#226)
 }
 
 export function StatusBar() {

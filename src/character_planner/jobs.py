@@ -11,7 +11,7 @@ import httpx
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, col, select
 
-from character_planner import gamedata, notify
+from character_planner import gamedata, notify, recipe_book
 from character_planner.blizzard import oauth
 from character_planner.blizzard.client import BlizzardClient
 from character_planner.characters import first_character, refresh_from_profile
@@ -406,6 +406,43 @@ def load_game_item_details(
             return
         for error in result.errors:
             logger.warning("Game data items: %s", error)
+
+
+def recipes_wanted(session: Session, character_id: int | None) -> bool:
+    """The character's professions lack recipe data (#226): tiers or recipe details."""
+    try:
+        return bool(recipe_book.wanted(session, character_id))
+    except Exception:
+        logger.exception("Recipes: checking what's missing failed")
+        return False
+
+
+def load_recipe_book(
+    engine: Engine, settings: Settings, character_id: int, http: httpx.Client | None = None
+) -> None:
+    """After a sync (#226): the character's professions' recipes, known and not, in the
+    background. One refresh at a time across processes; a second waits for the next sync."""
+    with Session(engine) as session:
+        try:
+            with lease(engine, recipe_book.RECIPES):
+                result = recipe_book.refresh_recipe_book(session, settings, character_id, http=http)
+        except Busy:
+            logger.info("Recipes: a refresh is already running")
+            return
+        except Exception:
+            session.rollback()
+            logger.exception("Recipes: the refresh failed")
+            return
+        for error in result.errors:
+            logger.warning("Recipes: %s", error)
+
+
+def recipes_after_sync(
+    session: Session, settings: Settings, character_id: int, http: httpx.Client | None = None
+) -> None:
+    """The worker's scheduled sync: load the recipe book now, when anything is missing."""
+    if recipes_wanted(session, character_id):
+        load_recipe_book(_engine(session), settings, character_id, http)
 
 
 def _refresh_item_pool(

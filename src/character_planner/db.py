@@ -216,9 +216,9 @@ class ClassQuestDone(SQLModel, table=True):
 
 
 class CraftingRecipe(SQLModel, table=True):
-    """Raw Blizzard GET /data/wow/recipe/{id} for a recipe the character knows (#10,
-    ADR 0031). Kept apart from RecipeData, which holds the enchant catalog's recipes with
-    their category. found=False is a 404."""
+    """Raw Blizzard GET /data/wow/recipe/{id} for a recipe of a tracked character's
+    professions, known or not (#10, ADR 0031; #226, ADR 0054). Kept apart from RecipeData,
+    which holds the enchant catalog's recipes with their category. found=False is a 404."""
 
     recipe_id: int = Field(primary_key=True)
     profession: str
@@ -244,6 +244,17 @@ class RecipeData(SQLModel, table=True):
     recipe_id: int = Field(primary_key=True)
     profession: str
     category: str
+    payload: Any = Field(sa_column=Column(JSON, nullable=False))
+    fetched_at: datetime = Field(default_factory=utcnow)
+
+
+class SkillTier(SQLModel, table=True):
+    """Raw Blizzard GET /data/wow/profession/{id}/skill-tier/{tier}: every recipe a
+    profession has, by category (#226, ADR 0054). Shared game data, kept 30 days."""
+
+    tier_id: int = Field(primary_key=True)
+    profession_id: int
+    profession: str
     payload: Any = Field(sa_column=Column(JSON, nullable=False))
     fetched_at: datetime = Field(default_factory=utcnow)
 

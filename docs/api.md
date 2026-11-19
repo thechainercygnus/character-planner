@@ -560,6 +560,18 @@ Whether this instance can serve (ADR 0041): the database answers at the newest m
 
 **200:** no body
 
+## `recipes`
+
+### `GET /api/recipes`
+
+Each of the character's professions with its recipes by category: the ones it knows and the ones not learned yet, each linked to Wowhead (#226, ADR 0054). Unlearned recipes are listed once the profession's skill tier is cached, after a sync. No recipe has a skill requirement in Blizzard's data, so none is given. Season of Discovery recipes are flagged, for the tab to hide.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**200:** [RecipeBook](#schema-recipebook)
+
 ## `recommendations`
 
 ### `GET /api/recommendations`
@@ -938,6 +950,17 @@ Login
 | `kind` | `level_up` \\| `target_reached` \\| `target_in_reach` \\| `new_upgrade` \\| `job_failed` \\| `upstream_errors` | yes |
 | `audience` | `user` \\| `system` | yes |
 | `label` | string | yes |
+
+(schema-bookrecipe)=
+### BookRecipe
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `recipe_id` | integer | yes |
+| `name` | string | yes |
+| `known` | boolean | yes |
+| `crafted_item_id` | integer or null | no |
+| `wowhead` | string | yes |
 
 (schema-candidate)=
 ### Candidate
@@ -1967,6 +1990,21 @@ An item in the character's bags or bank, from the addon's game data (#186, ADR 0
 | `max_skill` | integer or null | no |
 | `primary` | boolean | yes |
 
+(schema-professionbook)=
+### ProfessionBook
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `name` | string | yes |
+| `primary` | boolean | yes |
+| `skill` | integer or null | yes |
+| `max_skill` | integer or null | yes |
+| `listed` | boolean | yes |
+| `known` | integer | yes |
+| `unlearned` | integer | yes |
+| `season_of_discovery` | integer | yes |
+| `categories` | list of [RecipeCategory](#schema-recipecategory) | yes |
+
 (schema-professionrow)=
 ### ProfessionRow
 
@@ -2089,6 +2127,23 @@ One quest in a chain. Only quest_id and name are always known.
 | `failed` | boolean | yes |
 | `attempts` | integer | yes |
 | `last_error` | string or null | yes |
+
+(schema-recipebook)=
+### RecipeBook
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `professions` | list of [ProfessionBook](#schema-professionbook) | yes |
+| `details_pending` | integer | yes |
+
+(schema-recipecategory)=
+### RecipeCategory
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `name` | string | yes |
+| `season_of_discovery` | boolean | no |
+| `recipes` | list of [BookRecipe](#schema-bookrecipe) | yes |
 
 (schema-reciperefresh)=
 ### RecipeRefresh

@@ -36,7 +36,7 @@ export async function openTab(page: Page, hash: string) {
   await page.evaluate(() => document.fonts.ready)
 }
 
-export const TABS = ['upgrades', 'dungeons', 'plan', 'talents', 'progress', 'character', 'privacy', 'guest']
+export const TABS = ['upgrades', 'dungeons', 'plan', 'talents', 'professions', 'progress', 'character', 'privacy', 'guest']
 
 /** Every dialog: [the tab it opens from, its opening button]. */
 export const DIALOGS: [string, RegExp][] = [

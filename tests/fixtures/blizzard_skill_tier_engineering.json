@@ -1,0 +1,424 @@
+{
+  "id": 2941,
+  "name": "Engineering",
+  "minimum_skill_level": 1,
+  "maximum_skill_level": 75,
+  "categories": [
+    {
+      "name": "Parts",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2413?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Rough Blasting Powder",
+          "id": 2413
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2417?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Handful of Copper Bolts",
+          "id": 2417
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2419?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Copper Tube",
+          "id": 2419
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2422?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Silver Contact",
+          "id": 2422
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2423?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Copper Modulator",
+          "id": 2423
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2425?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Coarse Blasting Powder",
+          "id": 2425
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/4294?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Arclight Spanner",
+          "id": 4294
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2433?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Bronze Tube",
+          "id": 2433
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2439?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Whirring Bronze Gizmo",
+          "id": 2439
+        }
+      ]
+    },
+    {
+      "name": "Explosives",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2414?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Rough Dynamite",
+          "id": 2414
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2418?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Rough Copper Bomb",
+          "id": 2418
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2427?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Coarse Dynamite",
+          "id": 2427
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2429?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Small Seaforium Charge",
+          "id": 2429
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2432?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Large Copper Bomb",
+          "id": 2432
+        }
+      ]
+    },
+    {
+      "name": "Ammunition",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2415?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Crafted Light Shot",
+          "id": 2415
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2426?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Crafted Heavy Shot",
+          "id": 2426
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2443?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Crafted Solid Shot",
+          "id": 2443
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/6866?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Hi-Impact Mithril Slugs",
+          "id": 6866
+        }
+      ]
+    },
+    {
+      "name": "Ranged Weapons",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2420?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Rough Boomstick",
+          "id": 2420
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2431?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Deadly Blunderbuss",
+          "id": 2431
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2436?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Lovingly Crafted Boomstick",
+          "id": 2436
+        }
+      ]
+    },
+    {
+      "name": "Scopes",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2421?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Crude Scope",
+          "id": 2421
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2435?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Standard Scope",
+          "id": 2435
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2459?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Accurate Scope",
+          "id": 2459
+        }
+      ]
+    },
+    {
+      "name": "Pets and Guardians",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2428?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Target Dummy",
+          "id": 2428
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2424?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Mechanical Squirrel",
+          "id": 2424
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2460?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Advanced Target Dummy",
+          "id": 2460
+        }
+      ]
+    },
+    {
+      "name": "Cloth Headgear",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2430?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Flying Tiger Goggles",
+          "id": 2430
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2437?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Shadow Goggles",
+          "id": 2437
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2450?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Green Tinted Goggles",
+          "id": 2450
+        }
+      ]
+    },
+    {
+      "name": "Gadgets",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2440?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Flame Deflector",
+          "id": 2440
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2446?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Minor Recombobulator",
+          "id": 2446
+        }
+      ]
+    },
+    {
+      "name": "Consumable Devices",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/4606?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Practice Lock",
+          "id": 4606
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/58794?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Harvester Override Signalcaster",
+          "id": 58794
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/2457?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Compact Harvest Reaper Kit",
+          "id": 2457
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/5067?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Aquadynamic Fish Attractor",
+          "id": 5067
+        }
+      ]
+    },
+    {
+      "name": "Devices",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/5068?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Goblin Jumper Cables",
+          "id": 5068
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/6946?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Goblin \"Boom\" Box",
+          "id": 6946
+        }
+      ]
+    },
+    {
+      "name": "Fireworks",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/12420?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Red Firework",
+          "id": 12420
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/12421?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Green Firework",
+          "id": 12421
+        }
+      ]
+    },
+    {
+      "name": "SEASON OF DISCOVERY",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/49656?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Soul Vessel",
+          "id": 49656
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/49864?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Polished Truesilver Gears",
+          "id": 49864
+        }
+      ]
+    },
+    {
+      "name": "Camping",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/52650?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Reagent Bot",
+          "id": 52650
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/57011?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Repair Bot",
+          "id": 57011
+        },
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/57035?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Anarchist's Workbench",
+          "id": 57035
+        }
+      ]
+    },
+    {
+      "name": "Leather Headgear",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/59091?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Bent Goggles",
+          "id": 59091
+        }
+      ]
+    },
+    {
+      "name": "Mail Headgear",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/59092?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Stuckbutton Goggles",
+          "id": 59092
+        }
+      ]
+    },
+    {
+      "name": "Plate Headgear",
+      "recipes": [
+        {
+          "key": {
+            "href": "https://us.api.blizzard.com/data/wow/recipe/59093?namespace=static-1.60.1_70399-forever-us"
+          },
+          "name": "Dented Goggles",
+          "id": 59093
+        }
+      ]
+    }
+  ]
+}

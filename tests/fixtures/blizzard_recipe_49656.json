@@ -1,0 +1,52 @@
+{
+  "id": 49656,
+  "name": "Soul Vessel",
+  "media": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/media/recipe/49656?namespace=static-1.60.1_70399-forever-us"
+    },
+    "id": 49656
+  },
+  "crafted_item": {
+    "key": {
+      "href": "https://us.api.blizzard.com/data/wow/item/211427?namespace=static-1.60.1_70399-forever-us"
+    },
+    "name": "Soul Vessel",
+    "id": 211427
+  },
+  "reagents": [
+    {
+      "reagent": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/item/1210?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Shadowgem",
+        "id": 1210
+      },
+      "quantity": 4
+    },
+    {
+      "reagent": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/item/9262?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Black Vitriol",
+        "id": 9262
+      },
+      "quantity": 1
+    },
+    {
+      "reagent": {
+        "key": {
+          "href": "https://us.api.blizzard.com/data/wow/item/16583?namespace=static-1.60.1_70399-forever-us"
+        },
+        "name": "Demonic Figurine",
+        "id": 16583
+      },
+      "quantity": 1
+    }
+  ],
+  "crafted_quantity": {
+    "value": 1.0
+  }
+}

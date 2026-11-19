@@ -1447,3 +1447,35 @@ ul.upcoming small {
 .import-summary {
   margin: 0.25rem 0 0.75rem;
 }
+
+/* The Professions tab's recipes (#226). */
+.profession-recipes h3 {
+  margin: 1rem 0 0.25rem;
+}
+
+.recipe-category {
+  border-top: 1px solid var(--border);
+  padding: 0.35rem 0;
+}
+
+.recipe-category summary {
+  cursor: pointer;
+}
+
+.recipes {
+  list-style: none;
+  margin: 0.35rem 0 0.25rem;
+  padding: 0;
+  columns: 16rem auto;
+  column-gap: 1.5rem;
+}
+
+.recipes li {
+  break-inside: avoid;
+  padding: 0.1rem 0;
+}
+
+.sod-toggle {
+  display: block;
+  margin: 0.5rem 0;
+}

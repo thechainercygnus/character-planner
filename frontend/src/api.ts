@@ -1117,6 +1117,44 @@ export interface ProfessionsView {
   professions: ProfessionRow[]
 }
 
+/** A recipe of one of the character's professions (recipe_book.py, #226). */
+export interface BookRecipe {
+  recipe_id: number
+  name: string
+  known: boolean
+  crafted_item_id: number | null
+  /** The crafted item's Wowhead page once the recipe is looked up; else Wowhead's search. */
+  wowhead: string
+}
+
+export interface RecipeCategory {
+  name: string
+  /** Recipes Forever players can't learn: hidden unless asked for. */
+  season_of_discovery: boolean
+  recipes: BookRecipe[]
+}
+
+export interface ProfessionBook {
+  name: string
+  primary: boolean
+  skill: number | null
+  max_skill: number | null
+  /** The profession's recipe list is loaded, so unlearned recipes are listed. */
+  listed: boolean
+  known: number
+  /** Not learned yet, Season of Discovery left out. */
+  unlearned: number
+  season_of_discovery: number
+  categories: RecipeCategory[]
+}
+
+/** Each of the character's professions with its recipes, known and not (#226, ADR 0054). */
+export interface RecipeBook {
+  professions: ProfessionBook[]
+  /** Listed recipes not looked up yet: their links search Wowhead meanwhile. */
+  details_pending: number
+}
+
 export type ClassQuestStatus = 'done' | 'missed' | 'now' | 'soon' | 'later'
 
 /** A quest that unlocks class abilities (class_quests.py ClassQuestRow, #8). */
@@ -1337,6 +1375,7 @@ export const api = {
     }),
   pool: () => request<PoolView>('/api/pool'),
   professions: () => request<ProfessionsView>('/api/professions'),
+  recipes: () => request<RecipeBook>('/api/recipes'),
   lookAhead: (levels: number) => request<LookAhead>(`/api/look-ahead?levels=${levels}`),
   classQuests: () => request<ClassQuestChecklist>('/api/class-quests'),
   setClassQuestDone: ({ id, done }: { id: string; done: boolean }) =>
