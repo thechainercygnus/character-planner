@@ -45,7 +45,10 @@ export function Footer() {
         <a href={source_url} target="_blank" rel="noreferrer">
           Source
         </a>{' '}
-        (AGPL-3.0) · <a href="#privacy">Privacy</a>
+        (AGPL-3.0) · <a href="#privacy">Privacy</a> ·{' '}
+        <a href="#guest" title="Recommendations for any class and level, without your character">
+          Guest mode
+        </a>
       </p>
     </footer>
   )

@@ -294,20 +294,20 @@ Then `docker compose up -d`. Every page now asks for a Battle.net sign-in, so re
 - **Sign in first.** The first account to sign in becomes the admin and takes over every
   character already tracked.
 - **Sign-ups are closed after that,** unless `PLANNER_SIGNUPS=on`. That setting is only the
-  default: open or close sign-ups in the admin area (**Admin** in the ⋯ menu), and that
+  default: open or close sign-ups in the admin area (**Admin** in the status bar), and that
   choice wins from then on. To let one person in while they're closed, make an **invite
   link** there: it works once, for 7 days, and can be revoked (ADR 0057).
 - **Each user sees only their own characters.**
-- **Only the admin** can change enchant corrections, start the bulk refreshes in the ⋯
-  menu, and add system alert destinations. Each user adds their own alert webhooks, for
+- **Only the admin** can change enchant corrections, start the bulk refreshes on
+  **Admin**, and add system alert destinations. Each user adds their own alert webhooks, for
   their own characters (ADR 0045).
 - **The Guild tab:** members of the same guild can each add their character to it, then
   see each other's needs and which dungeon is worth most to the group (ADR 0042). Only
   those who join see it. Any of them can set a Discord webhook as the guild's alert
   channel, and each picks which of their own alerts post there (ADR 0046).
 - **Leaving:** each user can download their data and delete their account on **My
-  account** (in the ⋯ menu). To delete one
-  for them, use the admin area (**Admin** in the menu), or
+  account** (in the status bar). To delete one
+  for them, use the admin area (**Admin** in the status bar), or
   `character-planner-db delete-user ACCOUNT_ID --yes`. The admin area also exports an
   account's data for an access request, and logs both (see [Privacy](privacy.md)).
 - **Roles:** the first sign-in is the admin. The admin can make users superusers, who
@@ -433,8 +433,8 @@ bot's token, not the OAuth client.
 The worker posts and pins the message when it starts, and brings it up to date at every
 start after that, since its text comes from your settings (sign-ups as the admin area has
 them, `OPERATOR_CONTACT`, the address). Opening or closing sign-ups in the admin area updates
-it too. As admin, **Update the Discord sign-up message** in the
-⋯ menu does the same at once, and says what Discord answered. If Discord refuses, because
+it too. As admin, **Update the Discord sign-up message** on
+**Admin** does the same at once, and says what Discord answered. If Discord refuses, because
 of a missing permission or a wrong channel id, it says what to fix and doesn't retry.
 
 If the bot can post but not pin, it removes its post again, so the next attempt doesn't
@@ -518,8 +518,8 @@ an [age](https://age-encryption.org) key whose private half never touches the se
      Amazon S3, `BACKUP_S3_ENDPOINT` and `BACKUP_S3_REGION`.
   4. Restart. The worker backs up every `BACKUP_EVERY_HOURS` (24) and keeps the newest
      `BACKUP_KEEP` (14).
-- **Check:** with users on, **Admin → Backups** shows the last backup, and **Back up now**
-  makes one. Without users, `docker compose exec app character-planner-db backup` does.
+- **Check:** **Admin → Backups** shows the last backup, and **Back up now** makes one,
+  with users on or off. So does `docker compose exec app character-planner-db backup`.
   A failed backup sends the "A scheduled job failed" alert.
 - **Restore:**
   1. Download a backup (`...planner-backup.age`) from the bucket, and decrypt it on your
@@ -604,7 +604,7 @@ With the queue, every process shares one request budget per upstream (ADR 0040).
 
 So however many people sync at once, the planner stays within both.
 
-The admin's refreshes in the ⋯ menu queue too, and the status bar shows them until
+The admin's refreshes on **Admin** queue too, and the status bar shows them until
 they're done. Each can be started by hand at most once per 10 minutes
 (`REFRESH_COOLDOWN_MINUTES`; 0 turns it off). The worker's schedule isn't limited.
 
@@ -638,15 +638,15 @@ turns it off.
   [Forever Companion](https://forevercompanion.io), a free fan-run service that allows 120
   requests a minute per IP address. The planner paces itself to stay under that. Leave
   `COMPANION_REQUEST_PAUSE` at its default; it's set for that limit.
-- **Refreshes:** the worker refreshes data on a schedule. The manual refreshes in the ⋯
-  menu are for when something looks out of date, not for running in a loop.
+- **Refreshes:** the worker refreshes data on a schedule. The manual refreshes on
+  **Admin** are for when something looks out of date, not for running in a loop.
 
 ## 13. Troubleshooting
 
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `Sync failed: Battle.net refused the client ID and secret (HTTP 401)` | A typo in `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET`, or the client was deleted or its secret changed | Copy both again from the developer portal, then `docker compose up -d` |
-| The status bar says `Battle.net can't find …`, and the logs say `character … not found` | Name, surname or region doesn't match the character, or it's below level 10 | Remove the mistyped character on My account (in the ⋯ menu), then add it again from the character menu. If it came from `CHARACTER_NAME` in `.env`, fix or remove that too: with no characters left, the next start uses it again |
+| The status bar says `Battle.net can't find …`, and the logs say `character … not found` | Name, surname or region doesn't match the character, or it's below level 10 | Remove the mistyped character on My account (in the status bar), then add it again from the character menu. If it came from `CHARACTER_NAME` in `.env`, fix or remove that too: with no characters left, the next start uses it again |
 | The status bar says `No Battle.net client`, and `worker.log` says `skipped: no Battle.net client` | `BNET_CLIENT_ID` or `BNET_CLIENT_SECRET` is empty, or Compose didn't read `.env` | Fill in `.env` beside `compose.yaml`, then `docker compose up -d` |
 | The page says `Invalid host header` | The planner doesn't answer to the name in your address bar (#124) | Add that name to `PLANNER_HOSTS` in `.env` (comma separated), then `docker compose up -d` |
 | Upgrades and Dungeons stay empty after the first sync | Item data is still loading | Wait for the status bar's note to clear. `server.log` shows progress every 50 items |

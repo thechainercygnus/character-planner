@@ -81,7 +81,8 @@ export default function App() {
     )
   }
 
-  if (adminView && me.data?.users) {
+  // Without users too (#260, ADR 0062): the one person's shared data, health and backups.
+  if (adminView) {
     return (
       <main>
         <Admin />

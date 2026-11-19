@@ -36,41 +36,22 @@ describe('StatusBar', () => {
     vi.unstubAllGlobals()
   })
 
-  it('lets the admin update the pinned Discord sign-up message (#192)', async () => {
-    const posts: string[] = []
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: string, init?: RequestInit) => {
-        if (url === '/api/status') return Response.json(status([]))
-        if (url === '/api/discord') return Response.json({ available: false, signup_message: true })
-        if (url === '/api/discord/signup-message' && init?.method === 'POST') {
-          posts.push(url)
-          return Response.json({ ok: false, action: 'none', message_id: null, error: 'give it Pin Messages' })
-        }
-        return Response.json([])
-      }),
-    )
-    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-    render(
-      <QueryClientProvider client={client}>
-        <StatusBar />
-      </QueryClientProvider>,
-    )
-    fireEvent.click(await screen.findByRole('button', { name: 'Update the Discord sign-up message' }))
-    expect(await screen.findByText("The sign-up message wasn't updated: give it Pin Messages")).toBeTruthy()
-    expect(posts).toHaveLength(1)
-  })
-
   it('offers no sync on a blank instance, where there is nothing to sync (#206)', async () => {
     renderBar([], { character: null })
     await screen.findByText(/Last sync/)
     expect(screen.queryByRole('button', { name: 'Sync now' })).toBeNull()
   })
 
-  it('offers no sign-up message without the setting', async () => {
+  it('holds only Sync, My account and Admin without users: no menu, alerts or refreshes (#260)', async () => {
     renderBar([])
     await screen.findByText(/Last sync/)
-    expect(screen.queryByRole('button', { name: 'Update the Discord sign-up message' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Sync now' })).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'My account' }).getAttribute('href')).toBe('#account')
+    expect(screen.getByRole('link', { name: 'Admin' }).getAttribute('href')).toBe('#admin')
+    expect(screen.queryByRole('button', { name: 'Sign out' })).toBeNull()
+    expect(screen.queryByTitle('More actions')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Alerts' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Refresh item pool' })).toBeNull()
   })
 
   it('says what is loading in the background', async () => {
@@ -125,32 +106,5 @@ describe('StatusBar', () => {
     const note = await screen.findByText('Synced recently: sync again in about 10 minutes')
     expect(note.className).toBe('muted')
     expect(screen.queryByText(/Sync failed/)).toBeNull()
-  })
-
-  it('says a refresh is queued, or cooling down, without calling it a failure (#17)', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: string, init?: RequestInit) => {
-        if (url === '/api/pool/refresh' && init?.method === 'POST') {
-          return Response.json({ state: 'queued', result: null, error: null }, { status: 202 })
-        }
-        if (url === '/api/enchants/refresh' && init?.method === 'POST') {
-          return Response.json({ detail: 'Refreshed recently: again in about 7 minutes' }, { status: 429 })
-        }
-        return Response.json(url === '/api/status' ? status([]) : [])
-      }),
-    )
-    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-    render(
-      <QueryClientProvider client={client}>
-        <StatusBar />
-      </QueryClientProvider>,
-    )
-    fireEvent.click(await screen.findByRole('button', { name: 'Refresh item pool' }))
-    expect(await screen.findByText('Queued: it runs in the background.')).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Refresh enchant data' }))
-    const note = await screen.findByText('Refreshed recently: again in about 7 minutes')
-    expect(note.className).toBe('muted')
-    expect(screen.queryByText(/failed/)).toBeNull()
   })
 })
