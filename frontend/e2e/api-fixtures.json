@@ -768,7 +768,15 @@
        "level": 20,
        "score_delta": 2.8
       }
-     ]
+     ],
+     "quest": {
+      "quest_id": 1,
+      "title": "A Long Quest Name To Test The Phone Layout",
+      "complete": true,
+      "done": 1,
+      "needed": 1,
+      "captured_at": "2026-11-18T01:30:01Z"
+     }
     },
     {
      "slot": "MAIN_HAND",
@@ -2161,7 +2169,15 @@
            "zone": null,
            "dungeon": "Ruins of Lordaeron",
            "wowhead": "https://www.wowhead.com/forever/quest=92415",
-           "known": true
+           "known": true,
+           "progress": {
+            "quest_id": 92415,
+            "title": "Remember That I Love You",
+            "complete": false,
+            "done": 3,
+            "needed": 10,
+            "captured_at": "2026-11-18T01:30:01Z"
+           }
           },
           "chain": [],
           "rare_id": null,

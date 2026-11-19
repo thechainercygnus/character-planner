@@ -15,6 +15,7 @@ function event(overrides: Partial<LookAheadEvent>): LookAheadEvent {
     locked: false,
     link: null,
     owned: null,
+    quest: null,
     ...overrides,
   }
 }

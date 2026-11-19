@@ -56,6 +56,7 @@ const downgrade: GearRow = {
     verified: null,
     wowhead: null,
     conflicts: [],
+    reward_quest_ids: [],
   },
   reached: false,
   verdict: 'downgrade',
@@ -68,6 +69,7 @@ const downgrade: GearRow = {
   level: 15,
   upcoming: [],
   owned: null,
+  quest: null,
 }
 
 const unknown: GearRow = {
@@ -86,6 +88,7 @@ const unknown: GearRow = {
   level: null,
   upcoming: [],
   owned: null,
+  quest: null,
 }
 
 const manualUpgrade: GearRow = {
@@ -192,6 +195,7 @@ describe('GearTable', () => {
           level: 20,
           score_delta: 4.2,
           owned: null,
+          quest: null,
         },
       ],
     }
@@ -199,7 +203,7 @@ describe('GearTable', () => {
       slot: 'HEAD',
       equipped: null,
       upcoming: [
-        { target: target('HEAD', "Guard's Silvered Chain Helm"), target_info: null, level: 20, score_delta: null, owned: null },
+        { target: target('HEAD', "Guard's Silvered Chain Helm"), target_info: null, level: 20, score_delta: null, owned: null, quest: null },
       ],
     }
     render(<GearTable plan={{ ...plan, rows: [cape], later: [later] }} />)
@@ -226,6 +230,7 @@ describe('GearTable', () => {
           level: 20,
           score_delta: null,
           owned: { ...owned, where: 'bank', count: 2 },
+          quest: null,
         },
       ],
     }
@@ -233,6 +238,13 @@ describe('GearTable', () => {
     expect(screen.getByText('owned: in your bags')).toBeTruthy()
     const bank = screen.getByText('owned: in your bank ×2')
     expect(bank.getAttribute('title')).toMatch(/^Owned, not equipped: from the game, just now/)
+  })
+
+  it("names a target's reward quest when it's in the log (#186)", () => {
+    const at = new Date().toISOString()
+    const quest = { quest_id: 96395, title: 'An Ancient Grudge', complete: true, done: 1, needed: 1, captured_at: at }
+    render(<GearTable plan={{ ...plan, rows: [{ ...unknown, slot: 'BACK', quest }] }} />)
+    expect(screen.getByText('An Ancient Grudge: ready to hand in')).toBeTruthy()
   })
 
   it('handles having no targets', () => {

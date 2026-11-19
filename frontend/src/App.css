@@ -499,6 +499,12 @@ h4 {
   color: var(--ok);
 }
 
+/* A quest the game reports completed (#186). */
+.tag.done {
+  border-color: var(--border);
+  color: var(--muted);
+}
+
 tr.upgrade-row {
   cursor: pointer;
 }
