@@ -488,6 +488,30 @@ Choose which of the character's alerts post to the guild's channel (#163). Nothi
 
 **200:** [GuildView](#schema-guildview)
 
+## `guilds`
+
+### `GET /api/guilds`
+
+The guilds your characters are in, each with which of them are in its view, and whether you show them there as one player (#215, ADR 0059): the Guild tab's picker and the account page.
+
+**200:** [MyGuilds](#schema-myguilds)
+
+### `PUT /api/guilds/grouping`
+
+Show your characters in a guild's view as one player, or not (#215, ADR 0059). Off by default: nothing the guild sees links them.
+
+**Body:** [GuildGroupingChange](#schema-guildgroupingchange)
+
+**200:** [MyGuilds](#schema-myguilds)
+
+### `PUT /api/guilds/members`
+
+Join a guild's view with several of your characters at once, and leave with others (#215, ADR 0059): still per character underneath. `shared_alerts`, when given, is set for each one joining (#163). 404 for a character that isn't yours or isn't in it.
+
+**Body:** [GuildMembersChange](#schema-guildmemberschange)
+
+**200:** [MyGuilds](#schema-myguilds)
+
 ## `healthz`
 
 ### `GET /api/healthz`
@@ -1659,6 +1683,15 @@ The guild's alert channel (#163), as members see it: the webhook masked.
 | --- | --- | --- |
 | `url` | string | yes |
 
+(schema-guildgroupingchange)=
+### GuildGroupingChange
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `region` | string | yes |
+| `guild_id` | integer | yes |
+| `grouped` | boolean | yes |
+
 (schema-guildinfo)=
 ### GuildInfo
 
@@ -1666,6 +1699,18 @@ The guild's alert channel (#163), as members see it: the webhook masked.
 | --- | --- | --- |
 | `id` | integer | yes |
 | `name` | string | yes |
+
+(schema-guildmemberschange)=
+### GuildMembersChange
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `region` | string | yes |
+| `guild_id` | integer | yes |
+| `join` | list of integer | no |
+| `leave` | list of integer | no |
+| `role` | `tank` \\| `healer` \\| `dps` or null | no |
+| `shared_alerts` | list of string or null | no |
 
 (schema-guildmembershipupdate)=
 ### GuildMembershipUpdate
@@ -1899,6 +1944,7 @@ Type: list of [Quest](#schema-quest)
 | `role` | `tank` \\| `healer` \\| `dps` or null | yes |
 | `level` | integer or null | yes |
 | `yours` | boolean | yes |
+| `player` | integer or null | no |
 
 (schema-memberneed)=
 ### MemberNeed
@@ -1938,6 +1984,34 @@ A scope, kit or other crafted enchant in reach whose effect isn't known (#36).
 | `guild` | string or null | yes |
 | `in_guild_view` | boolean | yes |
 | `game_data_at` | string or null | yes |
+
+(schema-myguild)=
+### MyGuild
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `region` | string | yes |
+| `guild_id` | integer | yes |
+| `name` | string | yes |
+| `grouped` | boolean | yes |
+| `characters` | list of [MyGuildCharacter](#schema-myguildcharacter) | yes |
+
+(schema-myguildcharacter)=
+### MyGuildCharacter
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `id` | integer | yes |
+| `name` | string | yes |
+| `joined` | boolean | yes |
+| `role` | `tank` \\| `healer` \\| `dps` or null | yes |
+
+(schema-myguilds)=
+### MyGuilds
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `guilds` | list of [MyGuild](#schema-myguild) | yes |
 
 (schema-newcharacter)=
 ### NewCharacter
