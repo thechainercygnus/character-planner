@@ -13,6 +13,7 @@
     "enchants.correct",
     "log.view",
     "roles.manage",
+    "signups.manage",
     "users.delete",
     "users.export"
    ],

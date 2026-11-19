@@ -174,6 +174,7 @@ export function Privacy() {
         Battle.net account ids, never the data. It stays after the account it names is deleted, as the record the
         request was handled, and its entries are deleted after a year.
       </p>
+      <p>An invite link that let you sign up keeps which account used it and when, until 30 days after it was used.</p>
 
       <h2>Sharing</h2>
       <p>

@@ -303,6 +303,43 @@ export interface AdminLogEntry {
   detail: string | null
 }
 
+/** Whether sign-ups are open, and where that comes from (#239, ADR 0057). */
+export interface SignupsView {
+  open: boolean
+  /** The app's choice, which wins for good once made, or PLANNER_SIGNUPS. */
+  source: 'app' | 'setting'
+  changed_at: string | null
+}
+
+export interface InviteView {
+  id: number
+  created_at: string
+  expires_at: string
+  created_by_account_id: number | null
+  used_at: string | null
+  used_by_account_id: number | null
+  revoked_at: string | null
+  state: 'open' | 'used' | 'revoked' | 'expired'
+}
+
+/** A new invite: its token is shown this once (#239). */
+export interface NewInvite {
+  invite: InviteView
+  token: string
+}
+
+export interface SignupsAdmin {
+  signups: SignupsView
+  /** PLANNER_SIGNUPS: the default until the app changes it. */
+  setting: boolean
+  invites: InviteView[]
+}
+
+/** The invite link for a token: the token rides in the fragment, which never reaches the server's logs. */
+export function inviteLink(token: string): string {
+  return `${window.location.origin}/#invite=${encodeURIComponent(token)}`
+}
+
 /** The admin area (#237, ADR 0055). */
 export interface AdminView {
   accounts: Account[]
@@ -1435,6 +1472,24 @@ export const api = {
   recipes: () => request<RecipeBook>('/api/recipes'),
   adminAccounts: () => request<AdminView>('/api/admin/accounts'),
   adminLog: () => request<AdminLogEntry[]>('/api/admin/log'),
+  adminSignups: () => request<SignupsAdmin>('/api/admin/signups'),
+  setSignups: (open: boolean) => request<SignupsAdmin>('/api/admin/signups', json('PUT', { open })),
+  createInvite: () => request<NewInvite>('/api/admin/invites', { method: 'POST' }),
+  revokeInvite: (id: number) => request<InviteView>(`/api/admin/invites/${id}`, { method: 'DELETE' }),
+  /** Hold an invite for the sign-in that follows (#239); throws ApiError when it can't be used. */
+  acceptInvite: async (token: string) => {
+    const response = await fetch('/auth/invite', json('POST', { token }))
+    if (!response.ok) {
+      let detail = response.statusText
+      try {
+        const body: unknown = await response.json()
+        if (body && typeof body === 'object' && 'detail' in body) detail = String(body.detail)
+      } catch {
+        // not JSON; keep statusText
+      }
+      throw new ApiError(response.status, detail)
+    }
+  },
   /** Delete an account and everything of theirs (#238); `confirm` is its Battle.net account id. */
   deleteUser: ({ userId, confirm }: { userId: number; confirm: number }) =>
     request<{ removed: Record<string, number> }>(`/api/admin/users/${userId}?confirm=${confirm}`, {

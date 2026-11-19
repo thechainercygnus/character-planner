@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { api, can, type Account, type AdminLogEntry, type AdminView } from '../api'
+import { api, can, inviteLink, type Account, type AdminLogEntry, type AdminView, type InviteView } from '../api'
 
 const ROLE_LABEL: Record<string, string> = { admin: 'Admin', superuser: 'Superuser', user: 'User' }
 
@@ -174,7 +174,127 @@ function Roles({ view }: { view: AdminView }) {
   )
 }
 
+const INVITE_STATE: Record<InviteView['state'], string> = {
+  open: 'open',
+  used: 'used',
+  revoked: 'revoked',
+  expired: 'expired',
+}
+
+function InviteRow({ invite }: { invite: InviteView }) {
+  const queryClient = useQueryClient()
+  const revoke = useMutation({
+    mutationFn: api.revokeInvite,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-signups'] }),
+  })
+  return (
+    <li>
+      Made {day(invite.created_at)}: <strong>{INVITE_STATE[invite.state]}</strong>
+      {invite.state === 'open' && <> · valid until {day(invite.expires_at)}</>}
+      {invite.state === 'used' && invite.used_by_account_id !== null && (
+        <>
+          {' '}
+          by account {invite.used_by_account_id}
+          {invite.used_at && <> on {day(invite.used_at)}</>}
+        </>
+      )}
+      {invite.state === 'open' && (
+        <>
+          {' '}
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => revoke.mutate(invite.id)}
+            disabled={revoke.isPending}
+            aria-label={`Revoke the invite made ${day(invite.created_at)}`}
+          >
+            Revoke
+          </button>
+        </>
+      )}
+      {revoke.isError && <small className="error"> {revoke.error.message}</small>}
+    </li>
+  )
+}
+
+/**
+ * Sign-ups (#239, ADR 0057): open or close them, which wins over PLANNER_SIGNUPS from then
+ * on, and invite one person at a time while they're closed.
+ */
+function Signups() {
+  const queryClient = useQueryClient()
+  const view = useQuery({ queryKey: ['admin-signups'], queryFn: api.adminSignups })
+  const refresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['admin-signups'] })
+    await queryClient.invalidateQueries({ queryKey: ['admin-log'] })
+    await queryClient.invalidateQueries({ queryKey: ['me'] })
+  }
+  const toggle = useMutation({ mutationFn: api.setSignups, onSuccess: refresh })
+  const invite = useMutation({ mutationFn: api.createInvite, onSuccess: refresh })
+  const [copied, setCopied] = useState(false)
+  if (view.isError) return <p className="error">Couldn't load sign-ups: {view.error.message}</p>
+  if (!view.data) return null
+  const { signups, setting, invites } = view.data
+  const link = invite.data ? inviteLink(invite.data.token) : null
+  return (
+    <section>
+      <h2>Sign-ups</h2>
+      <p>
+        Sign-ups are <strong>{signups.open ? 'open' : 'closed'}</strong>
+        {signups.source === 'app'
+          ? `, as set here${signups.changed_at ? ` on ${day(signups.changed_at)}` : ''}. PLANNER_SIGNUPS no longer applies.`
+          : `, from PLANNER_SIGNUPS (${setting ? 'on' : 'off'}). A change here wins from then on.`}{' '}
+        <button
+          type="button"
+          className="secondary"
+          onClick={() => toggle.mutate(!signups.open)}
+          disabled={toggle.isPending}
+        >
+          {signups.open ? 'Close sign-ups' : 'Open sign-ups'}
+        </button>
+      </p>
+      {toggle.isError && <p className="error">{toggle.error.message}</p>}
+
+      <h3>Invites</h3>
+      <p className="muted">
+        A link that lets one person sign up while sign-ups are closed: it works once, for 7 days, and can be revoked.
+      </p>
+      <p>
+        <button type="button" onClick={() => invite.mutate()} disabled={invite.isPending}>
+          Make an invite link
+        </button>
+      </p>
+      {invite.isError && <p className="error">{invite.error.message}</p>}
+      {link && (
+        <div className="invite-link" role="status">
+          <p>Send this link to the person you're inviting. It's shown only now:</p>
+          <input readOnly value={link} aria-label="Invite link" onFocus={(event) => event.target.select()} />{' '}
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => {
+              void navigator.clipboard?.writeText(link).then(() => setCopied(true))
+            }}
+          >
+            {copied ? 'Copied' : 'Copy'}
+          </button>
+        </div>
+      )}
+      {invites.length > 0 && (
+        <ul className="invites">
+          {invites.map((row) => (
+            <InviteRow key={row.id} invite={row} />
+          ))}
+        </ul>
+      )}
+    </section>
+  )
+}
+
 const ACTION_LABEL: Record<string, string> = {
+  'signups.change': 'Changed sign-ups',
+  'invite.create': 'Made an invite',
+  'invite.revoke': 'Revoked an invite',
   'user.delete': 'Deleted an account',
   'user.export': 'Exported an account',
   'role.change': 'Changed a role',
@@ -251,6 +371,7 @@ export function Admin() {
             requests={{ canExport: can(me.data, 'users.export'), canDelete: can(me.data, 'users.delete') }}
           />
           <Roles view={view.data} />
+          {can(me.data, 'signups.manage') && <Signups />}
           {can(me.data, 'log.view') && <ActionLog />}
         </>
       )}
