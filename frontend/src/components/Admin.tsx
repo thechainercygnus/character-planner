@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { api, can, type Account, type AdminView } from '../api'
+import { useState } from 'react'
+import { api, can, type Account, type AdminLogEntry, type AdminView } from '../api'
 
 const ROLE_LABEL: Record<string, string> = { admin: 'Admin', superuser: 'Superuser', user: 'User' }
 
@@ -12,7 +13,10 @@ function RoleCell({ account, canManage }: { account: Account; canManage: boolean
   const queryClient = useQueryClient()
   const change = useMutation({
     mutationFn: api.setRole,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin-accounts'] }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['admin-accounts'] })
+      await queryClient.invalidateQueries({ queryKey: ['admin-log'] })
+    },
   })
   const label = ROLE_LABEL[account.role] ?? account.role
   if (!canManage || account.role === 'admin') return <>{label}</>
@@ -32,7 +36,73 @@ function RoleCell({ account, canManage }: { account: Account; canManage: boolean
   )
 }
 
-function Accounts({ view, canManage }: { view: AdminView; canManage: boolean }) {
+/**
+ * Delete an account and everything stored for it (#238): only once its Battle.net account id
+ * is typed in, as the server checks too.
+ */
+function DeleteAccount({ account }: { account: Account }) {
+  const queryClient = useQueryClient()
+  const [open, setOpen] = useState(false)
+  const [typed, setTyped] = useState('')
+  const remove = useMutation({
+    mutationFn: api.deleteUser,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['admin-accounts'] })
+      await queryClient.invalidateQueries({ queryKey: ['admin-log'] })
+    },
+  })
+  if (!open) {
+    return (
+      <button type="button" className="secondary" onClick={() => setOpen(true)}>
+        Delete…
+      </button>
+    )
+  }
+  return (
+    <form
+      className="confirm-delete"
+      onSubmit={(event) => {
+        event.preventDefault()
+        remove.mutate({ userId: account.user_id, confirm: account.account_id })
+      }}
+    >
+      <label>
+        Type {account.account_id} to delete this account and everything stored for it. This can't be undone.{' '}
+        <input
+          inputMode="numeric"
+          value={typed}
+          onChange={(event) => setTyped(event.target.value)}
+          aria-label={`Type ${account.account_id} to confirm`}
+        />
+      </label>{' '}
+      <button type="submit" disabled={typed.trim() !== String(account.account_id) || remove.isPending}>
+        Delete for good
+      </button>{' '}
+      <button type="button" className="secondary" onClick={() => setOpen(false)}>
+        Cancel
+      </button>
+      {remove.isError && <p className="error">{remove.error.message}</p>}
+    </form>
+  )
+}
+
+function DataRequests({ account, me }: { account: Account; me: Requests }) {
+  return (
+    <div className="data-requests">
+      {me.canExport && (
+        <a className="button secondary" href={api.exportUrl(account.user_id)} download>
+          Export
+        </a>
+      )}{' '}
+      {me.canDelete && account.role !== 'admin' && <DeleteAccount account={account} />}
+    </div>
+  )
+}
+
+type Requests = { canExport: boolean; canDelete: boolean }
+
+function Accounts({ view, canManage, requests }: { view: AdminView; canManage: boolean; requests: Requests }) {
+  const asks = requests.canExport || requests.canDelete
   return (
     <section>
       <h2>Accounts</h2>
@@ -47,6 +117,7 @@ function Accounts({ view, canManage }: { view: AdminView; canManage: boolean }) 
             <th scope="col">Characters</th>
             <th scope="col">Signed up</th>
             <th scope="col">Last sign-in</th>
+            {asks && <th scope="col">Data requests</th>}
           </tr>
         </thead>
         <tbody>
@@ -65,6 +136,11 @@ function Accounts({ view, canManage }: { view: AdminView; canManage: boolean }) 
               </td>
               <td>{day(account.created_at)}</td>
               <td>{day(account.last_sign_in_at)}</td>
+              {asks && (
+                <td>
+                  <DataRequests account={account} me={requests} />
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
@@ -98,6 +174,59 @@ function Roles({ view }: { view: AdminView }) {
   )
 }
 
+const ACTION_LABEL: Record<string, string> = {
+  'user.delete': 'Deleted an account',
+  'user.export': 'Exported an account',
+  'role.change': 'Changed a role',
+  'enchants.correct': 'Corrected enchant data',
+}
+
+function LogRow({ entry }: { entry: AdminLogEntry }) {
+  return (
+    <tr>
+      <td>{new Date(entry.at).toLocaleString()}</td>
+      <td>{entry.actor_account_id ?? <span className="muted">command line</span>}</td>
+      <td>{ACTION_LABEL[entry.action] ?? entry.action}</td>
+      <td>{entry.target_account_id ?? <span className="muted">—</span>}</td>
+      <td>{entry.detail ?? ''}</td>
+    </tr>
+  )
+}
+
+/** What the admin area did (#238, ADR 0056): the record that a data request was handled. */
+function ActionLog() {
+  const log = useQuery({ queryKey: ['admin-log'], queryFn: api.adminLog })
+  return (
+    <section>
+      <h2>Action log</h2>
+      <p className="muted">
+        Who did what, to which account, and when: account ids and actions only, never the data. Kept for a year, and
+        kept after an account is deleted, as the record that its request was handled.
+      </p>
+      {log.isError && <p className="error">Couldn't load the log: {log.error.message}</p>}
+      {log.data && log.data.length === 0 && <p className="muted">Nothing yet.</p>}
+      {log.data && log.data.length > 0 && (
+        <table className="admin-log">
+          <thead>
+            <tr>
+              <th scope="col">When</th>
+              <th scope="col">By</th>
+              <th scope="col">What</th>
+              <th scope="col">Account</th>
+              <th scope="col">Detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            {log.data.map((entry) => (
+              <LogRow key={entry.id} entry={entry} />
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  )
+}
+
 /**
  * The admin area (#237, ADR 0055): every account, and what each role may do. For the admin
  * and superusers (`accounts.view`); only the admin changes roles (`roles.manage`).
@@ -116,8 +245,13 @@ export function Admin() {
       {view.isError && <p className="error">Couldn't load the accounts: {view.error.message}</p>}
       {view.data && (
         <>
-          <Accounts view={view.data} canManage={can(me.data, 'roles.manage')} />
+          <Accounts
+            view={view.data}
+            canManage={can(me.data, 'roles.manage')}
+            requests={{ canExport: can(me.data, 'users.export'), canDelete: can(me.data, 'users.delete') }}
+          />
           <Roles view={view.data} />
+          {can(me.data, 'log.view') && <ActionLog />}
         </>
       )}
     </article>

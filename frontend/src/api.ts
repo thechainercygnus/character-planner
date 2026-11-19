@@ -292,6 +292,17 @@ export interface RoleView {
   permissions: string[]
 }
 
+/** An entry in the admin action log (#238, ADR 0056): account ids and the action only. */
+export interface AdminLogEntry {
+  id: number
+  at: string
+  /** Battle.net account ids; no actor: the command line. */
+  actor_account_id: number | null
+  action: string
+  target_account_id: number | null
+  detail: string | null
+}
+
 /** The admin area (#237, ADR 0055). */
 export interface AdminView {
   accounts: Account[]
@@ -1423,6 +1434,14 @@ export const api = {
   professions: () => request<ProfessionsView>('/api/professions'),
   recipes: () => request<RecipeBook>('/api/recipes'),
   adminAccounts: () => request<AdminView>('/api/admin/accounts'),
+  adminLog: () => request<AdminLogEntry[]>('/api/admin/log'),
+  /** Delete an account and everything of theirs (#238); `confirm` is its Battle.net account id. */
+  deleteUser: ({ userId, confirm }: { userId: number; confirm: number }) =>
+    request<{ removed: Record<string, number> }>(`/api/admin/users/${userId}?confirm=${confirm}`, {
+      method: 'DELETE',
+    }),
+  /** The address of an account's export, a zip to download (#238). */
+  exportUrl: (userId: number) => `/api/admin/users/${userId}/export`,
   setRole: ({ userId, role }: { userId: number; role: string }) =>
     request<Account>(`/api/admin/users/${userId}/role`, json('PUT', { role })),
   lookAhead: (levels: number) => request<LookAhead>(`/api/look-ahead?levels=${levels}`),

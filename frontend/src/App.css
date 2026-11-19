@@ -1479,3 +1479,36 @@ ul.upcoming small {
   display: block;
   margin: 0.5rem 0;
 }
+
+/* The admin area's data requests (#238). */
+.data-requests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.confirm-delete input {
+  width: 8rem;
+}
+
+/* The action log wraps to fit rather than scrolling: it has nothing to focus, so a
+   scrolling table would be out of a keyboard's reach. */
+.admin-log {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-log th,
+.admin-log td {
+  text-align: left;
+  padding: 0.3rem 0.5rem 0.3rem 0;
+  border-bottom: 1px solid var(--border);
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+
+.admin-log th {
+  color: var(--muted);
+  font-weight: 600;
+}

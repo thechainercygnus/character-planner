@@ -1,10 +1,19 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { AdminView, Me } from '../api'
+import type { AdminLogEntry, AdminView, Me } from '../api'
 import { Admin } from './Admin'
 
-const EVERY_PERMISSION = ['accounts.view', 'data.refresh', 'discord.signup', 'enchants.correct', 'roles.manage']
+const EVERY_PERMISSION = [
+  'accounts.view',
+  'data.refresh',
+  'discord.signup',
+  'enchants.correct',
+  'log.view',
+  'roles.manage',
+  'users.delete',
+  'users.export',
+]
 const ADMIN: Me = {
   users: true,
   signed_in: true,
@@ -46,12 +55,36 @@ const view: AdminView = {
   },
 }
 
+const log: AdminLogEntry[] = [
+  {
+    id: 2,
+    at: '2026-11-19T12:00:00Z',
+    actor_account_id: null,
+    action: 'user.delete',
+    target_account_id: 3003,
+    detail: '12 rows, from the command line',
+  },
+  {
+    id: 1,
+    at: '2026-11-19T11:00:00Z',
+    actor_account_id: 1001,
+    action: 'role.change',
+    target_account_id: 2002,
+    detail: 'user -> superuser',
+  },
+]
+
 function show(me: Me) {
   const puts: { url: string; body: unknown }[] = []
   vi.stubGlobal(
     'fetch',
     vi.fn(async (url: string, init?: RequestInit) => {
       if (url === '/api/me') return Response.json(me)
+      if (url === '/api/admin/log') return Response.json(log)
+      if (init?.method === 'DELETE') {
+        puts.push({ url, body: 'DELETE' })
+        return Response.json({ removed: { user: 1 } })
+      }
       if (init?.method === 'PUT') {
         const body: unknown = JSON.parse(String(init.body))
         puts.push({ url, body })
@@ -100,6 +133,43 @@ describe('Admin', () => {
     show(SUPERUSER)
     expect(await screen.findByText('2002')).toBeTruthy()
     expect(screen.queryByRole('combobox')).toBeNull()
+  })
+
+  it('exports an account, and deletes it only once its id is typed in', async () => {
+    const requests = show(ADMIN)
+    const row = (await screen.findByText('2002')).closest('tr')!
+    expect(within(row).getByRole('link', { name: 'Export' }).getAttribute('href')).toBe('/api/admin/users/2/export')
+    // The admin's own account can't be deleted from here.
+    const admin = screen.getByText('1001').closest('tr')!
+    expect(within(admin).queryByRole('button', { name: 'Delete…' })).toBeNull()
+
+    fireEvent.click(within(row).getByRole('button', { name: 'Delete…' }))
+    const confirm = within(row).getByRole('button', { name: 'Delete for good' }) as HTMLButtonElement
+    expect(confirm.disabled).toBe(true)
+    fireEvent.change(within(row).getByRole('textbox', { name: 'Type 2002 to confirm' }), { target: { value: '2001' } })
+    expect(confirm.disabled).toBe(true)
+    fireEvent.change(within(row).getByRole('textbox', { name: 'Type 2002 to confirm' }), { target: { value: '2002' } })
+    fireEvent.click(confirm)
+    await waitFor(() => expect(requests).toEqual([{ url: '/api/admin/users/2?confirm=2002', body: 'DELETE' }]))
+  })
+
+  it('shows the action log, newest first, with the command line named', async () => {
+    show(ADMIN)
+    const heading = await screen.findByRole('heading', { name: 'Action log' })
+    const table = await within(heading.closest('section')!).findByRole('table')
+    const rows = within(table).getAllByRole('row').slice(1)
+    expect(rows.map((row) => row.textContent)).toEqual([
+      expect.stringContaining('command lineDeleted an account300312 rows, from the command line'),
+      expect.stringContaining('1001Changed a role2002user -> superuser'),
+    ])
+  })
+
+  it('gives a superuser no data requests and no log', async () => {
+    show(SUPERUSER)
+    expect(await screen.findByText('2002')).toBeTruthy()
+    expect(screen.queryByRole('link', { name: 'Export' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Delete…' })).toBeNull()
+    expect(screen.queryByRole('heading', { name: 'Action log' })).toBeNull()
   })
 
   it('shows a user nothing', async () => {

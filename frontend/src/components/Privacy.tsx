@@ -168,6 +168,12 @@ export function Privacy() {
         one's Battle.net account id, role, when it signed up and last signed in, and its characters' names. Nothing more
         of anyone's.
       </p>
+      <p>
+        With users on, the admin can export everything stored for an account, for an access request, or delete it. A log
+        records each deletion, export, role change and enchant correction: who did it, to which account and when, as
+        Battle.net account ids, never the data. It stays after the account it names is deleted, as the record the
+        request was handled, and its entries are deleted after a year.
+      </p>
 
       <h2>Sharing</h2>
       <p>

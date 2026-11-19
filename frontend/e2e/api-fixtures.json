@@ -11,7 +11,10 @@
     "data.refresh",
     "discord.signup",
     "enchants.correct",
-    "roles.manage"
+    "log.view",
+    "roles.manage",
+    "users.delete",
+    "users.export"
    ],
    "signups_open": true
   }

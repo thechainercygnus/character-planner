@@ -49,7 +49,16 @@ export const TABS = [
   'admin',
 ]
 
-const EVERY_PERMISSION = ['accounts.view', 'data.refresh', 'discord.signup', 'enchants.correct', 'roles.manage']
+const EVERY_PERMISSION = [
+  'accounts.view',
+  'data.refresh',
+  'discord.signup',
+  'enchants.correct',
+  'log.view',
+  'roles.manage',
+  'users.delete',
+  'users.export',
+]
 
 /** The admin signed in on an instance with users (#237): the admin page needs users on. */
 const USERS_ON: Answers = {
@@ -62,6 +71,26 @@ const USERS_ON: Answers = {
       permissions: EVERY_PERMISSION,
       signups_open: false,
     },
+  },
+  '/api/admin/log': {
+    body: [
+      {
+        id: 2,
+        at: '2026-11-19T12:00:00Z',
+        actor_account_id: null,
+        action: 'user.delete',
+        target_account_id: 3003,
+        detail: '12 rows, from the command line',
+      },
+      {
+        id: 1,
+        at: '2026-11-19T11:00:00Z',
+        actor_account_id: 1001,
+        action: 'role.change',
+        target_account_id: 2002,
+        detail: 'user -> superuser',
+      },
+    ],
   },
   '/api/admin/accounts': {
     body: {
