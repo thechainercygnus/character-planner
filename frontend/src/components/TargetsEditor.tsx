@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 import { api, EQUIPMENT_SLOTS, slotLabel, type GearTarget, type GearTargets, type PoolItem } from '../api'
 import { sourceText } from '../format'
+import { ItemLink } from './ItemLink'
 
 /** An error message for the first problem, or null when the targets can be saved. */
 function problem(targets: GearTarget[]): string | null {
@@ -69,6 +70,7 @@ export function TargetsEditor({ customised }: { customised: boolean }) {
     setTarget(index, {
       item,
       item_id: match?.item_id ?? null,
+      wowhead: match?.wowhead ?? null,
       source: match && !current.source ? match.sources.map(sourceText).join('; ') : current.source,
     })
   }
@@ -150,6 +152,11 @@ export function TargetsEditor({ customised }: { customised: boolean }) {
                           value={target.item}
                           onChange={(event) => rename(index, event.target.value)}
                         />
+                        {target.wowhead && (
+                          <ItemLink href={target.wowhead} label={`${target.item} on Wowhead`}>
+                            ↗
+                          </ItemLink>
+                        )}
                         <input
                           aria-label={`${name} source`}
                           placeholder="Where it comes from"

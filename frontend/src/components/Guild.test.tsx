@@ -33,7 +33,17 @@ const joined: GuildView = {
       max_level: 26,
       total_gain: 11.5,
       in_range: [1],
-      needs: { '1': [{ item: 'Cape of the Brotherhood', item_id: 5193, slot: 'BACK', score_gain: 6 }] },
+      needs: {
+        '1': [
+          {
+            item: 'Cape of the Brotherhood',
+            item_id: 5193,
+            slot: 'BACK',
+            score_gain: 6,
+            wowhead: 'https://www.wowhead.com/forever/item=5193',
+          },
+        ],
+      },
     },
   ],
 }
@@ -85,7 +95,9 @@ describe('Guild', () => {
     expect(screen.getByRole('status').textContent).toBe('No healer among the members going.')
     expect(screen.getByText('The Deadmines')).toBeTruthy()
     expect(screen.getByText(/\+11\.5 · 1 of 2 in range/)).toBeTruthy()
-    expect(screen.getByText(/Cape of the Brotherhood \(\+6\.0\)/)).toBeTruthy()
+    const cape = screen.getByRole('link', { name: 'Cape of the Brotherhood' })
+    expect(cape.getAttribute('href')).toBe('https://www.wowhead.com/forever/item=5193')
+    expect(cape.parentElement?.textContent).toBe('Cape of the Brotherhood (+6.0)')
   })
 
   it('asks again for just the members going', async () => {

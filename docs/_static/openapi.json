@@ -1658,6 +1658,19 @@
             "default": false,
             "title": "Two Handed",
             "type": "boolean"
+          },
+          "wowhead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The crafted item's page; a plain enchant has none we know of (links.py).",
+            "readOnly": true,
+            "title": "Wowhead"
           }
         },
         "required": [
@@ -1668,7 +1681,8 @@
           "slots",
           "text",
           "effects",
-          "reagents"
+          "reagents",
+          "wowhead"
         ],
         "title": "EnchantOption",
         "type": "object"
@@ -1755,10 +1769,24 @@
           "text": {
             "title": "Text",
             "type": "string"
+          },
+          "wowhead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The item that applied it (a scope, a kit), when there was one.",
+            "readOnly": true,
+            "title": "Wowhead"
           }
         },
         "required": [
-          "text"
+          "text",
+          "wowhead"
         ],
         "title": "Enchantment",
         "type": "object"
@@ -1898,11 +1926,24 @@
             },
             "title": "Stats",
             "type": "array"
+          },
+          "wowhead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Wowhead"
           }
         },
         "required": [
           "slot",
-          "name"
+          "name",
+          "wowhead"
         ],
         "title": "EquippedItem",
         "type": "object"
@@ -2433,12 +2474,26 @@
             "default": {},
             "title": "Stats",
             "type": "object"
+          },
+          "wowhead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Its page from the id (#225); never saved (targets.save_targets).",
+            "readOnly": true,
+            "title": "Wowhead"
           }
         },
         "required": [
           "slot",
           "item",
-          "source"
+          "source",
+          "wowhead"
         ],
         "title": "GearTarget",
         "type": "object"
@@ -2882,13 +2937,26 @@
           "name": {
             "title": "Name",
             "type": "string"
+          },
+          "wowhead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Wowhead"
           }
         },
         "required": [
           "item_id",
           "name",
           "choice",
-          "created_at"
+          "created_at",
+          "wowhead"
         ],
         "title": "ItemChoiceView",
         "type": "object"
@@ -3430,13 +3498,26 @@
           "slot": {
             "title": "Slot",
             "type": "string"
+          },
+          "wowhead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Wowhead"
           }
         },
         "required": [
           "item",
           "item_id",
           "slot",
-          "score_gain"
+          "score_gain",
+          "wowhead"
         ],
         "title": "MemberNeed",
         "type": "object"
@@ -3458,12 +3539,25 @@
             },
             "title": "Slots",
             "type": "array"
+          },
+          "wowhead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Wowhead"
           }
         },
         "required": [
           "item_id",
           "recipe",
-          "slots"
+          "slots",
+          "wowhead"
         ],
         "title": "MissingEffect",
         "type": "object"
@@ -4986,12 +5080,25 @@
           "quantity": {
             "title": "Quantity",
             "type": "integer"
+          },
+          "wowhead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Wowhead"
           }
         },
         "required": [
           "item_id",
           "name",
-          "quantity"
+          "quantity",
+          "wowhead"
         ],
         "title": "Reagent",
         "type": "object"
@@ -5469,6 +5576,17 @@
           "slot": {
             "title": "Slot",
             "type": "string"
+          },
+          "wowhead": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wowhead"
           }
         },
         "required": [

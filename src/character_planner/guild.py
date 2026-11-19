@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Literal
 
 import yaml
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 from sqlmodel import Session, col, select
 
 from character_planner import fields, notify
@@ -24,6 +24,7 @@ from character_planner.db import (
     NotificationOutbox,
     latest_by_kind,
 )
+from character_planner.links import item_url
 from character_planner.recommend import DungeonValue
 from character_planner.views import character_level, parse_specialization
 
@@ -43,6 +44,11 @@ class MemberNeed(BaseModel):
     item_id: int
     slot: str
     score_gain: float
+
+    @computed_field
+    @property
+    def wowhead(self) -> str | None:
+        return item_url(self.item_id)
 
 
 class Member(BaseModel):

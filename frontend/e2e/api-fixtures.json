@@ -184,7 +184,8 @@
      "dps": null,
      "attack_speed": null,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133149.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133149.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=4368"
     },
     {
      "slot": "SHOULDER",
@@ -209,7 +210,8 @@
      "dps": null,
      "attack_speed": null,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135036.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135036.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=3480"
     },
     {
      "slot": "SHIRT",
@@ -225,7 +227,8 @@
      "dps": null,
      "attack_speed": null,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135009.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135009.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=38"
     },
     {
      "slot": "CHEST",
@@ -250,7 +253,8 @@
      "dps": null,
      "attack_speed": null,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132624.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132624.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=271098"
     },
     {
      "slot": "WAIST",
@@ -266,7 +270,8 @@
      "dps": null,
      "attack_speed": null,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132493.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132493.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=1154"
     },
     {
      "slot": "LEGS",
@@ -291,7 +296,8 @@
      "dps": null,
      "attack_speed": null,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/134590.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/134590.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=9763"
     },
     {
      "slot": "FEET",
@@ -317,10 +323,12 @@
        "enchantment_id": 66,
        "source_item": "Enchant Boots - Minor Stamina",
        "source_item_id": 273478,
-       "kind": "PERMANENT"
+       "kind": "PERMANENT",
+       "wowhead": "https://www.wowhead.com/forever/item=273478"
       }
      ],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132535.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132535.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=5944"
     },
     {
      "slot": "WRIST",
@@ -345,7 +353,8 @@
      "dps": null,
      "attack_speed": null,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132602.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132602.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=280095"
     },
     {
      "slot": "HANDS",
@@ -374,7 +383,8 @@
      "dps": null,
      "attack_speed": null,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132939.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132939.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=3474"
     },
     {
      "slot": "FINGER_1",
@@ -395,7 +405,8 @@
      "dps": null,
      "attack_speed": null,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133349.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133349.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=286737"
     },
     {
      "slot": "BACK",
@@ -424,7 +435,8 @@
      "dps": null,
      "attack_speed": null,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133763.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133763.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=279899"
     },
     {
      "slot": "MAIN_HAND",
@@ -445,7 +457,8 @@
      "dps": 9.047619,
      "attack_speed": 2.1,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132402.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132402.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=3154"
     },
     {
      "slot": "OFF_HAND",
@@ -470,7 +483,8 @@
      "dps": null,
      "attack_speed": null,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/134949.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/134949.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=3655"
     },
     {
      "slot": "RANGED",
@@ -491,7 +505,8 @@
      "dps": 9.565217,
      "attack_speed": 2.3,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135610.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135610.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=279894"
     },
     {
      "slot": "AMMO",
@@ -507,7 +522,8 @@
      "dps": null,
      "attack_speed": null,
      "enchantments": [],
-     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132384.jpg"
+     "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132384.jpg",
+     "wowhead": "https://www.wowhead.com/forever/item=8068"
     }
    ],
    "level_source": {
@@ -538,7 +554,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132493.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132493.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=1154"
      },
      "target": {
       "slot": "WAIST",
@@ -551,7 +568,8 @@
       "item_level": null,
       "armor_type": null,
       "armor": null,
-      "stats": {}
+      "stats": {},
+      "wowhead": "https://www.wowhead.com/forever/item=270230"
      },
      "target_info": {
       "sources": [
@@ -601,7 +619,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=6460"
        },
        "target_info": {
         "sources": [
@@ -669,10 +688,12 @@
         "enchantment_id": 66,
         "source_item": "Enchant Boots - Minor Stamina",
         "source_item_id": 273478,
-        "kind": "PERMANENT"
+        "kind": "PERMANENT",
+        "wowhead": "https://www.wowhead.com/forever/item=273478"
        }
       ],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132535.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132535.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=5944"
      },
      "target": {
       "slot": "FEET",
@@ -685,7 +706,8 @@
       "item_level": null,
       "armor_type": null,
       "armor": null,
-      "stats": {}
+      "stats": {},
+      "wowhead": "https://www.wowhead.com/forever/item=270229"
      },
      "target_info": {
       "sources": [
@@ -738,7 +760,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=10411"
        },
        "target_info": {
         "sources": [
@@ -804,7 +827,8 @@
       "dps": 9.047619,
       "attack_speed": 2.1,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132402.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132402.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=3154"
      },
      "target": {
       "slot": "MAIN_HAND",
@@ -817,7 +841,8 @@
       "item_level": null,
       "armor_type": null,
       "armor": null,
-      "stats": {}
+      "stats": {},
+      "wowhead": "https://www.wowhead.com/forever/item=270256"
      },
      "target_info": {
       "sources": [
@@ -870,7 +895,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=1292"
        },
        "target_info": {
         "sources": [
@@ -932,7 +958,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/134590.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/134590.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=9763"
      },
      "target": {
       "slot": "LEGS",
@@ -945,7 +972,8 @@
       "item_level": null,
       "armor_type": null,
       "armor": null,
-      "stats": {}
+      "stats": {},
+      "wowhead": "https://www.wowhead.com/forever/item=270260"
      },
      "target_info": {
       "sources": [
@@ -1003,7 +1031,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=10410"
        },
        "target_info": {
         "sources": [
@@ -1073,7 +1102,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133763.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133763.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=279899"
      },
      "target": {
       "slot": "BACK",
@@ -1086,7 +1116,8 @@
       "item_level": null,
       "armor_type": null,
       "armor": null,
-      "stats": {}
+      "stats": {},
+      "wowhead": "https://www.wowhead.com/forever/item=271097"
      },
      "target_info": {
       "sources": [
@@ -1146,7 +1177,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=5193"
        },
        "target_info": {
         "sources": [
@@ -1212,7 +1244,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132939.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132939.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=3474"
      },
      "target": {
       "slot": "HANDS",
@@ -1225,7 +1258,8 @@
       "item_level": null,
       "armor_type": null,
       "armor": null,
-      "stats": {}
+      "stats": {},
+      "wowhead": "https://www.wowhead.com/forever/item=270231"
      },
      "target_info": {
       "sources": [
@@ -1283,7 +1317,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": null
        },
        "target_info": null,
        "level": 20,
@@ -1316,7 +1351,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/134949.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/134949.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=3655"
      },
      "target": {
       "slot": "OFF_HAND",
@@ -1329,7 +1365,8 @@
       "item_level": null,
       "armor_type": null,
       "armor": null,
-      "stats": {}
+      "stats": {},
+      "wowhead": "https://www.wowhead.com/forever/item=6187"
      },
      "target_info": {
       "sources": [
@@ -1347,7 +1384,7 @@
       "drops": [],
       "rewards": [],
       "verified": null,
-      "wowhead": null,
+      "wowhead": "https://www.wowhead.com/forever/item=6187",
       "conflicts": []
      },
      "reached": false,
@@ -1372,7 +1409,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=13245"
        },
        "target_info": {
         "sources": [
@@ -1430,7 +1468,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132624.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132624.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=271098"
      },
      "target": {
       "slot": "CHEST",
@@ -1443,7 +1482,8 @@
       "item_level": null,
       "armor_type": null,
       "armor": null,
-      "stats": {}
+      "stats": {},
+      "wowhead": "https://www.wowhead.com/forever/item=271098"
      },
      "target_info": {
       "sources": [
@@ -1495,7 +1535,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=2041"
        },
        "target_info": {
         "sources": [
@@ -1553,7 +1594,8 @@
       "dps": 9.565217,
       "attack_speed": 2.3,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135610.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135610.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=279894"
      },
      "target": {
       "slot": "RANGED",
@@ -1566,7 +1608,8 @@
       "item_level": null,
       "armor_type": null,
       "armor": null,
-      "stats": {}
+      "stats": {},
+      "wowhead": "https://www.wowhead.com/forever/item=279894"
      },
      "target_info": {
       "sources": [
@@ -1616,7 +1659,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=285292"
        },
        "target_info": {
         "sources": [
@@ -1678,7 +1722,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132602.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132602.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=280095"
      },
      "target": {
       "slot": "WRIST",
@@ -1691,7 +1736,8 @@
       "item_level": null,
       "armor_type": null,
       "armor": null,
-      "stats": {}
+      "stats": {},
+      "wowhead": "https://www.wowhead.com/forever/item=280095"
      },
      "target_info": {
       "sources": [
@@ -1745,7 +1791,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=273293"
        },
        "target_info": {
         "sources": [
@@ -1805,7 +1852,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133149.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133149.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=4368"
      },
      "upcoming": [
       {
@@ -1820,7 +1868,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=250529"
        },
        "target_info": {
         "sources": [
@@ -1838,7 +1887,7 @@
         "drops": [],
         "rewards": [],
         "verified": null,
-        "wowhead": null,
+        "wowhead": "https://www.wowhead.com/forever/item=250529",
         "conflicts": []
        },
        "level": 20,
@@ -1862,7 +1911,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=279870"
        },
        "target_info": {
         "sources": [
@@ -1920,7 +1970,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135036.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135036.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=3480"
      },
      "upcoming": [
       {
@@ -1935,7 +1986,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=6189"
        },
        "target_info": {
         "sources": [
@@ -1990,7 +2042,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133349.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133349.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=286737"
      },
      "upcoming": [
       {
@@ -2005,7 +2058,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=284715"
        },
        "target_info": {
         "sources": [
@@ -2058,7 +2112,8 @@
         "item_level": null,
         "armor_type": null,
         "armor": null,
-        "stats": {}
+        "stats": {},
+        "wowhead": "https://www.wowhead.com/forever/item=279867"
        },
        "target_info": {
         "sources": [
@@ -2140,7 +2195,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133149.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133149.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=4368"
      },
      "candidates": []
     },
@@ -2319,7 +2375,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135036.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135036.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=3480"
      },
      "candidates": []
     },
@@ -2352,7 +2409,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133763.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133763.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=279899"
      },
      "candidates": [
       {
@@ -2550,7 +2608,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132624.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132624.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=271098"
      },
      "candidates": [
       {
@@ -2741,7 +2800,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132602.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132602.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=280095"
      },
      "candidates": [
       {
@@ -2937,7 +2997,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132939.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132939.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=3474"
      },
      "candidates": [
       {
@@ -3138,7 +3199,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132493.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132493.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=1154"
      },
      "candidates": [
       {
@@ -3340,7 +3402,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/134590.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/134590.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=9763"
      },
      "candidates": [
       {
@@ -3562,10 +3625,12 @@
         "enchantment_id": 66,
         "source_item": "Enchant Boots - Minor Stamina",
         "source_item_id": 273478,
-        "kind": "PERMANENT"
+        "kind": "PERMANENT",
+        "wowhead": "https://www.wowhead.com/forever/item=273478"
        }
       ],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132535.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132535.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=5944"
      },
      "candidates": [
       {
@@ -3749,7 +3814,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133349.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/133349.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=286737"
      },
      "candidates": [
       {
@@ -4110,7 +4176,8 @@
       "dps": 9.047619,
       "attack_speed": 2.1,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132402.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/132402.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=3154"
      },
      "candidates": [
       {
@@ -4300,7 +4367,8 @@
       "dps": null,
       "attack_speed": null,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/134949.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/134949.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=3655"
      },
      "candidates": [
       {
@@ -4488,7 +4556,8 @@
       "dps": 9.565217,
       "attack_speed": 2.3,
       "enchantments": [],
-      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135610.jpg"
+      "icon_url": "https://render.worldofwarcraft.com/forever-us/icons/56/135610.jpg",
+      "wowhead": "https://www.wowhead.com/forever/item=279894"
      },
      "candidates": []
     }
@@ -7784,7 +7853,8 @@
      "item": null,
      "current": null,
      "picks": [],
-     "current_is_weaker": false
+     "current_is_weaker": false,
+     "wowhead": null
     },
     {
      "slot": "BACK",
@@ -7814,19 +7884,22 @@
           "name": "Small Glowing Shard",
           "quantity": 1,
           "level": 21,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=11138"
          },
          {
           "item_id": 11083,
           "name": "Soul Dust",
           "quantity": 1,
           "level": 21,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=11083"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 21
+        "estimated_level": 21,
+        "wowhead": null
        },
        "score": 3.0,
        "score_gain": 3.0,
@@ -7856,19 +7929,22 @@
           "name": "Strange Dust",
           "quantity": 3,
           "level": 1,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10940"
          },
          {
           "item_id": 10978,
           "name": "Small Glimmering Shard",
           "quantity": 1,
           "level": 11,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10978"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 11
+        "estimated_level": 11,
+        "wowhead": null
        },
        "score": 2.0,
        "score_gain": 2.0,
@@ -7898,12 +7974,14 @@
           "name": "Lesser Astral Essence",
           "quantity": 1,
           "level": 16,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10998"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 16
+        "estimated_level": 16,
+        "wowhead": null
        },
        "score": 1.8,
        "score_gain": 1.8,
@@ -7911,7 +7989,8 @@
        "can_make": false
       }
      ],
-     "current_is_weaker": false
+     "current_is_weaker": false,
+     "wowhead": "https://www.wowhead.com/forever/item=279899"
     },
     {
      "slot": "CHEST",
@@ -7941,12 +8020,14 @@
           "name": "Soul Dust",
           "quantity": 2,
           "level": 21,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=11083"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 21
+        "estimated_level": 21,
+        "wowhead": null
        },
        "score": 6.0,
        "score_gain": 6.0,
@@ -7976,19 +8057,22 @@
           "name": "Strange Dust",
           "quantity": 2,
           "level": 1,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10940"
          },
          {
           "item_id": 10998,
           "name": "Lesser Astral Essence",
           "quantity": 1,
           "level": 16,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10998"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 16
+        "estimated_level": 16,
+        "wowhead": null
        },
        "score": 4.0,
        "score_gain": 4.0,
@@ -8018,19 +8102,22 @@
           "name": "Strange Dust",
           "quantity": 1,
           "level": 1,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10940"
          },
          {
           "item_id": 10938,
           "name": "Lesser Magic Essence",
           "quantity": 1,
           "level": 1,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10938"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 1
+        "estimated_level": 1,
+        "wowhead": null
        },
        "score": 3.0,
        "score_gain": 3.0,
@@ -8038,7 +8125,8 @@
        "can_make": false
       }
      ],
-     "current_is_weaker": false
+     "current_is_weaker": false,
+     "wowhead": "https://www.wowhead.com/forever/item=271098"
     },
     {
      "slot": "WRIST",
@@ -8068,12 +8156,14 @@
           "name": "Soul Dust",
           "quantity": 3,
           "level": 21,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=11083"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 21
+        "estimated_level": 21,
+        "wowhead": null
        },
        "score": 5.0,
        "score_gain": 5.0,
@@ -8103,12 +8193,14 @@
           "name": "Soul Dust",
           "quantity": 1,
           "level": 21,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=11083"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 21
+        "estimated_level": 21,
+        "wowhead": null
        },
        "score": 4.0,
        "score_gain": 4.0,
@@ -8138,12 +8230,14 @@
           "name": "Lesser Magic Essence",
           "quantity": 1,
           "level": 1,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10938"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 1
+        "estimated_level": 1,
+        "wowhead": null
        },
        "score": 3.0,
        "score_gain": 3.0,
@@ -8151,21 +8245,24 @@
        "can_make": false
       }
      ],
-     "current_is_weaker": false
+     "current_is_weaker": false,
+     "wowhead": "https://www.wowhead.com/forever/item=280095"
     },
     {
      "slot": "HANDS",
      "item": "Gemmed Copper Gauntlets of the Defender",
      "current": null,
      "picks": [],
-     "current_is_weaker": false
+     "current_is_weaker": false,
+     "wowhead": "https://www.wowhead.com/forever/item=3474"
     },
     {
      "slot": "LEGS",
      "item": "Cadet Leggings of Fire Protection",
      "current": null,
      "picks": [],
-     "current_is_weaker": false
+     "current_is_weaker": false,
+     "wowhead": "https://www.wowhead.com/forever/item=9763"
     },
     {
      "slot": "FEET",
@@ -8201,12 +8298,14 @@
           "name": "Soul Dust",
           "quantity": 2,
           "level": 21,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=11083"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 21
+        "estimated_level": 21,
+        "wowhead": null
        },
        "score": 4.0,
        "score_gain": 1.0,
@@ -8214,7 +8313,8 @@
        "can_make": false
       }
      ],
-     "current_is_weaker": true
+     "current_is_weaker": true,
+     "wowhead": "https://www.wowhead.com/forever/item=5944"
     },
     {
      "slot": "MAIN_HAND",
@@ -8244,19 +8344,22 @@
           "name": "Soul Dust",
           "quantity": 1,
           "level": 21,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=11083"
          },
          {
           "item_id": 11084,
           "name": "Large Glimmering Shard",
           "quantity": 1,
           "level": 16,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=11084"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 21
+        "estimated_level": 21,
+        "wowhead": null
        },
        "score": 1.43,
        "score_gain": 1.43,
@@ -8286,26 +8389,30 @@
           "name": "Strange Dust",
           "quantity": 1,
           "level": 1,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10940"
          },
          {
           "item_id": 10938,
           "name": "Lesser Magic Essence",
           "quantity": 1,
           "level": 1,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10938"
          },
          {
           "item_id": 10978,
           "name": "Small Glimmering Shard",
           "quantity": 1,
           "level": 11,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10978"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 11
+        "estimated_level": 11,
+        "wowhead": null
        },
        "score": 0.71,
        "score_gain": 0.71,
@@ -8313,7 +8420,8 @@
        "can_make": false
       }
      ],
-     "current_is_weaker": false
+     "current_is_weaker": false,
+     "wowhead": "https://www.wowhead.com/forever/item=3154"
     },
     {
      "slot": "OFF_HAND",
@@ -8343,19 +8451,22 @@
           "name": "Strange Dust",
           "quantity": 1,
           "level": 1,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10940"
          },
          {
           "item_id": 10978,
           "name": "Small Glimmering Shard",
           "quantity": 1,
           "level": 11,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10978"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 11
+        "estimated_level": 11,
+        "wowhead": null
        },
        "score": 3.0,
        "score_gain": 3.0,
@@ -8385,19 +8496,22 @@
           "name": "Lesser Astral Essence",
           "quantity": 1,
           "level": 16,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10998"
          },
          {
           "item_id": 10940,
           "name": "Strange Dust",
           "quantity": 1,
           "level": 1,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10940"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 16
+        "estimated_level": 16,
+        "wowhead": null
        },
        "score": 3.0,
        "score_gain": 3.0,
@@ -8427,19 +8541,22 @@
           "name": "Lesser Astral Essence",
           "quantity": 1,
           "level": 16,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10998"
          },
          {
           "item_id": 10940,
           "name": "Strange Dust",
           "quantity": 2,
           "level": 1,
-          "level_source": "shipped"
+          "level_source": "shipped",
+          "wowhead": "https://www.wowhead.com/forever/item=10940"
          }
         ],
         "crafted_item_id": null,
         "season_of_discovery": false,
-        "estimated_level": 16
+        "estimated_level": 16,
+        "wowhead": null
        },
        "score": 0.15,
        "score_gain": 0.15,
@@ -8447,7 +8564,8 @@
        "can_make": false
       }
      ],
-     "current_is_weaker": false
+     "current_is_weaker": false,
+     "wowhead": "https://www.wowhead.com/forever/item=3655"
     },
     {
      "slot": "RANGED",
@@ -8477,26 +8595,30 @@
           "name": "Copper Tube",
           "quantity": 1,
           "level": null,
-          "level_source": null
+          "level_source": null,
+          "wowhead": "https://www.wowhead.com/forever/item=4361"
          },
          {
           "item_id": 774,
           "name": "Malachite",
           "quantity": 1,
           "level": null,
-          "level_source": null
+          "level_source": null,
+          "wowhead": "https://www.wowhead.com/forever/item=774"
          },
          {
           "item_id": 4359,
           "name": "Handful of Copper Bolts",
           "quantity": 1,
           "level": null,
-          "level_source": null
+          "level_source": null,
+          "wowhead": "https://www.wowhead.com/forever/item=4359"
          }
         ],
         "crafted_item_id": 4405,
         "season_of_discovery": false,
-        "estimated_level": null
+        "estimated_level": null,
+        "wowhead": "https://www.wowhead.com/forever/item=4405"
        },
        "score": 0.09,
        "score_gain": 0.09,
@@ -8504,7 +8626,8 @@
        "can_make": true
       }
      ],
-     "current_is_weaker": false
+     "current_is_weaker": false,
+     "wowhead": "https://www.wowhead.com/forever/item=279894"
     }
    ],
    "considered": 36,
@@ -8519,7 +8642,8 @@
       "HANDS",
       "LEGS",
       "FEET"
-     ]
+     ],
+     "wowhead": "https://www.wowhead.com/forever/item=252453"
     },
     {
      "item_id": 252437,
@@ -8529,7 +8653,8 @@
       "HANDS",
       "LEGS",
       "FEET"
-     ]
+     ],
+     "wowhead": "https://www.wowhead.com/forever/item=252437"
     },
     {
      "item_id": 252452,
@@ -8539,7 +8664,8 @@
       "HANDS",
       "LEGS",
       "FEET"
-     ]
+     ],
+     "wowhead": "https://www.wowhead.com/forever/item=252452"
     },
     {
      "item_id": 252436,
@@ -8549,7 +8675,8 @@
       "HANDS",
       "LEGS",
       "FEET"
-     ]
+     ],
+     "wowhead": "https://www.wowhead.com/forever/item=252436"
     }
    ],
    "per_slot": 3,

@@ -38,6 +38,7 @@ from character_planner.db import (
     utcnow,
 )
 from character_planner.items import icon_url
+from character_planner.links import item_url
 from character_planner.retention import REFRESH_AFTER
 from character_planner.savedvariables import LIMITS, LuaValue, SavedVariablesError, parse
 from character_planner.tokens import CredentialsError, app_token
@@ -283,7 +284,6 @@ def view(session: Session, character_id: int) -> GameDataView:
 
 # Enum.ItemQuality's order (addon/SCHEMA.md), in Blizzard's API names.
 QUALITY: Final = ("POOR", "COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "ARTIFACT", "HEIRLOOM")
-WOWHEAD_ITEM: Final = "https://www.wowhead.com/forever/item={item_id}"
 
 
 def item_qualities(data: GameData) -> dict[int, int]:
@@ -324,7 +324,7 @@ def item_details(session: Session, data: GameData) -> dict[int, ItemInfo]:
             name=name,
             quality=QUALITY[quality] if quality < len(QUALITY) else None,
             icon_url=(info.icon_url if info else None) or icons.get(item_id),
-            wowhead=(info.wowhead if info else None) or WOWHEAD_ITEM.format(item_id=item_id),
+            wowhead=item_url(item_id, info.wowhead if info else None) or "",
         )
     return details
 

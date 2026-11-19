@@ -38,10 +38,18 @@ def test_summary_compares_real_gear_to_current_targets(settings: Settings) -> No
 
     assert text.startswith("# Brumboldt Doomlet")
     assert "- Level: 18" in text
-    assert "| OFF_HAND | Burnished Shield (Uncommon) | Dwarven Defender |" in text
-    assert "| LEGS | Stormwind Guard Leggings (Uncommon) | Direhammer Leggings |" in text
-    assert "| Cape of the Brotherhood (level 20) |" in text  # coming up in BACK
-    assert "- HEAD: Guard's Silvered Chain Helm (level 20)" in text
+    # Items as Markdown links to Wowhead (#225), from their ids.
+    assert (
+        "| OFF_HAND | [Burnished Shield](https://www.wowhead.com/forever/item=3655) (Uncommon) "
+        "| [Dwarven Defender](https://www.wowhead.com/forever/item=6187) |"
+    ) in text
+    assert (
+        "| LEGS | [Stormwind Guard Leggings](https://www.wowhead.com/forever/item=6084) (Uncommon) "
+        "| [Direhammer Leggings](https://www.wowhead.com/forever/item=270260) |"
+    ) in text
+    item = "https://www.wowhead.com/forever/item="
+    assert f"| [Cape of the Brotherhood]({item}5193) (level 20) |" in text  # coming up in BACK
+    assert f"- HEAD: [Guard's Silvered Chain Helm]({item}250529) (level 20)" in text
 
 
 def test_summary_marks_reached_targets_and_empty_slots(settings: Settings) -> None:

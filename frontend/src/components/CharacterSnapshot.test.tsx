@@ -7,6 +7,7 @@ function item(slot: string, name: string): EquippedItem {
   return {
     slot,
     name,
+    wowhead: null,
     item_id: null,
     quality: 'UNCOMMON',
     quality_name: 'Uncommon',

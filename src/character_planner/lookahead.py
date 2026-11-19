@@ -106,7 +106,7 @@ def target_events(gear: GearPlan, level: int, until: int) -> list[tuple[int, Loo
                     title=f"{slot_label(target.slot)}: {target.item}",
                     detail=detail or None,
                     pinned=target.pinned,
-                    link=entry.target_info.wowhead if entry.target_info else None,
+                    link=entry.target_info.wowhead if entry.target_info else target.wowhead,
                     owned=entry.owned,
                     quest=entry.quest,
                 ),

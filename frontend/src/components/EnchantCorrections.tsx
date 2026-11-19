@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api, type EnchantOption, type LevelSource, type Reagent } from '../api'
 import { signed } from '../format'
+import { ItemLink } from './ItemLink'
 
 const SOURCE_LABEL: Record<LevelSource, string> = {
   corrected: 'corrected',
@@ -33,7 +34,7 @@ function MaterialRow({ reagent }: { reagent: Reagent }) {
   return (
     <li className="material">
       <span>
-        {reagent.quantity} × {reagent.name}
+        {reagent.quantity} × <ItemLink href={reagent.wowhead}>{reagent.name}</ItemLink>
       </span>
       <input
         type="number"

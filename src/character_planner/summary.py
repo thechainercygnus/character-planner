@@ -7,13 +7,14 @@ from collections.abc import Mapping
 from typing import Any
 
 from character_planner.companion import CompanionInfo
-from character_planner.curated import GearTargets
+from character_planner.curated import GearTarget, GearTargets
 from character_planner.db import CatalogItem, Snapshot
 from character_planner.scoring import Weights
 from character_planner.views import (
     GEAR_SLOTS,
     EquippedItem,
     GearRow,
+    TargetInfo,
     UpcomingTarget,
     character_level,
     character_view,
@@ -24,17 +25,29 @@ from character_planner.views import (
 __all__ = ["build_summary", "character_level", "equipped_by_slot"]
 
 
+def _link(name: str, url: str | None) -> str:
+    """An item as a Markdown link to its Wowhead page (#225), when it has one."""
+    if not url:
+        return name
+    return "[" + name.replace("[", "\\[").replace("]", "\\]") + f"]({url})"
+
+
+def _target(target: GearTarget, info: TargetInfo | None) -> str:
+    return _link(target.item, info.wowhead if info else target.wowhead)
+
+
 def _upcoming(upcoming: list[UpcomingTarget]) -> str:
     """Targets coming up in a slot, nearest first."""
     parts = [
-        f"{u.target.item} (level {u.level})" if u.level is not None else u.target.item
+        _target(u.target, u.target_info) + (f" (level {u.level})" if u.level is not None else "")
         for u in upcoming
     ]
     return "; ".join(parts) or "-"
 
 
-def _label(item: EquippedItem) -> str:
-    return f"{item.name} ({item.quality_name})" if item.quality_name else item.name
+def _label(item: EquippedItem, link: bool = False) -> str:
+    name = _link(item.name, item.wowhead) if link else item.name
+    return f"{name} ({item.quality_name})" if item.quality_name else name
 
 
 def equipped_by_slot(equipment: Any) -> dict[str, str]:
@@ -152,11 +165,12 @@ def build_summary(
         any_equipment = bool(view.equipment)
         for row in plan.rows:
             if row.equipped:
-                current = ("done: " if row.reached else "") + _label(row.equipped)
+                current = ("done: " if row.reached else "") + _label(row.equipped, link=True)
             else:
                 current = "empty" if any_equipment else "unknown"
             lines.append(
-                f"| {row.slot} | {current} | {row.target.item} | {row.target.source} "
+                f"| {row.slot} | {current} | {_target(row.target, row.target_info)} "
+                f"| {row.target.source} "
                 f"| {_verdict(row)} | {_upcoming(row.upcoming)} |"
             )
     if plan.later:

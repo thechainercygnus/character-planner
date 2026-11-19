@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, type Candidate } from '../api'
+import { ItemLink } from './ItemLink'
 
 /**
  * Pin and unpin targets (ADR 0014) and dismiss items (ADR 0012), then refresh what
@@ -76,7 +77,7 @@ export function DismissedItems() {
       <ul>
         {dismissed.map((choice) => (
           <li key={choice.item_id}>
-            {choice.name}{' '}
+            <ItemLink href={choice.wowhead}>{choice.name}</ItemLink>{' '}
             <button
               type="button"
               className="link"

@@ -9,13 +9,14 @@ from collections.abc import Mapping
 from datetime import datetime
 from typing import Any, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 
 from character_planner import fields
 from character_planner.companion import ATTRIBUTION as COMPANION_ATTRIBUTION
 from character_planner.companion import CompanionInfo
 from character_planner.curated import GearTarget, GearTargets
 from character_planner.db import CatalogItem, Snapshot
+from character_planner.links import item_url
 from character_planner.scoring import Weights, score
 
 # Short local names for the defensive readers.
@@ -43,6 +44,12 @@ class Enchantment(BaseModel):
     source_item_id: int | None = None
     kind: str | None = None  # enchantment_slot.type: PERMANENT (others not seen yet)
 
+    @computed_field
+    @property
+    def wowhead(self) -> str | None:
+        """The item that applied it (a scope, a kit), when there was one."""
+        return item_url(self.source_item_id)
+
 
 class EquippedItem(BaseModel):
     slot: str
@@ -61,6 +68,11 @@ class EquippedItem(BaseModel):
     attack_speed: float | None = None  # seconds; weapons only
     enchantments: list[Enchantment] = []
     icon_url: str | None = None
+
+    @computed_field
+    @property
+    def wowhead(self) -> str | None:
+        return item_url(self.item_id)
 
 
 class Stats(BaseModel):
@@ -521,7 +533,7 @@ def target_info(
         rewards=comp.rewards if comp else [],
         reward_quest_ids=comp.reward_quest_ids if comp else [],
         verified=comp.verified if comp else None,
-        wowhead=comp.wowhead if comp else None,
+        wowhead=item_url(item_id, comp.wowhead if comp else None),
         conflicts=conflicts,
     )
 

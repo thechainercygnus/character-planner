@@ -6,6 +6,7 @@ import { GearTable, ItemName } from './GearTable'
 const shield: EquippedItem = {
   slot: 'OFF_HAND',
   name: 'Burnished Shield',
+  wowhead: 'https://www.wowhead.com/forever/item=3655',
   item_id: 3655,
   quality: 'UNCOMMON',
   quality_name: 'Uncommon',
@@ -140,7 +141,10 @@ describe('GearTable', () => {
     const { container } = render(<GearTable plan={plan} />)
 
     expect(screen.getByText('Off Hand')).toBeTruthy()
-    expect(screen.getByText('Burnished Shield').className).toContain('quality-uncommon')
+    // The name links to its Wowhead page (#225), inside the quality-coloured cell.
+    const worn = screen.getByRole('link', { name: 'Burnished Shield' })
+    expect(worn.getAttribute('href')).toBe('https://www.wowhead.com/forever/item=3655')
+    expect(worn.closest('.item')?.className).toContain('quality-uncommon')
     expect(screen.getByText('ilvl 21 · Shield · 428 armor · +2 Strength · +3 Stamina')).toBeTruthy()
     expect(container.querySelector(`img[src="${shield.icon_url}"]`)).not.toBeNull()
   })
@@ -258,6 +262,7 @@ describe('ItemName', () => {
     slot: 'RANGED',
     name: 'Rough Boomstick',
     item_id: 2508,
+    wowhead: 'https://www.wowhead.com/forever/item=2508',
     quality: 'COMMON',
     quality_name: 'Common',
     item_level: 10,
@@ -273,6 +278,7 @@ describe('ItemName', () => {
         source_item: 'Crude Scope',
         source_item_id: 4405,
         kind: 'PERMANENT',
+        wowhead: 'https://www.wowhead.com/forever/item=4405',
       },
     ],
   }

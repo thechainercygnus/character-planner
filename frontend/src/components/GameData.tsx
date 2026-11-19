@@ -11,6 +11,7 @@ import {
 } from '../api'
 import { ago, parseTime, stacked } from '../gameData'
 import { Icon } from './GearTable'
+import { ItemLink } from './ItemLink'
 
 /** Enum.ItemQuality's order (addon/SCHEMA.md), for items no catalog knows yet. */
 const QUALITY = ['poor', 'common', 'uncommon', 'rare', 'epic', 'legendary', 'artifact', 'heirloom']
@@ -135,14 +136,11 @@ export function ImportGameDataDialog({ label = 'Import game data' }: { label?: s
 function GameItemRow({ item, info }: { item: GameItem; info: GameItemInfo | undefined }) {
   const quality = info?.quality?.toLowerCase() ?? QUALITY[item.quality] ?? 'common'
   const name = info?.name ?? `Item ${item.item_id}`
-  const link = info?.wowhead ?? `https://www.wowhead.com/forever/item=${item.item_id}`
   return (
     <li className="item-cell">
       <Icon url={info?.icon_url ?? null} />
       <div className={`item quality-${quality}`}>
-        <a className="item-link" href={link} target="_blank" rel="noreferrer">
-          {name}
-        </a>
+        <ItemLink href={info?.wowhead}>{name}</ItemLink>
         {item.count > 1 && <span className="muted"> ×{item.count}</span>}
       </div>
     </li>

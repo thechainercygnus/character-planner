@@ -11,6 +11,7 @@ import {
 } from '../api'
 import { OwnedTag } from './OwnedTag'
 import { QuestTag } from './QuestTag'
+import { ItemLink } from './ItemLink'
 
 export function Icon({ url }: { url: string | null }) {
   return url ? <img className="icon" src={url} alt="" width={28} height={28} /> : <span className="icon" />
@@ -31,7 +32,7 @@ export function ItemName({ item, compact = false }: { item: EquippedItem; compac
     <div className="item-cell">
       <Icon url={item.icon_url} />
       <span className={`item quality-${quality}`}>
-        {item.name}
+        <ItemLink href={item.wowhead}>{item.name}</ItemLink>
         {details.length > 0 && <small>{details.join(' · ')}</small>}
         {!compact && enchants.length > 0 && <small className="enchant">✦ {enchants.join(' · ')}</small>}
       </span>
@@ -67,13 +68,7 @@ function TargetName({ row }: { row: GearRow }) {
     <div className="item-cell">
       <Icon url={info?.icon_url ?? null} />
       <span className={info ? `item quality-${quality}` : 'item'}>
-        {info?.wowhead ? (
-          <a className="item-link" href={info.wowhead} target="_blank" rel="noreferrer">
-            {row.target.item}
-          </a>
-        ) : (
-          row.target.item
-        )}
+        <ItemLink href={info?.wowhead ?? row.target.wowhead}>{row.target.item}</ItemLink>
         <OwnedTag owned={row.owned} />
         <QuestTag progress={row.quest} named />
         {info ? (
@@ -153,13 +148,7 @@ function Upcoming({ upcoming }: { upcoming: UpcomingTarget[] }) {
     <ul className="upcoming">
       {upcoming.map((next) => (
         <li key={`${next.target.item}@${next.level ?? '?'}`} title={sourceOf(next)}>
-          {next.target_info?.wowhead ? (
-            <a className="item-link" href={next.target_info.wowhead} target="_blank" rel="noreferrer">
-              {next.target.item}
-            </a>
-          ) : (
-            next.target.item
-          )}
+          <ItemLink href={next.target_info?.wowhead ?? next.target.wowhead}>{next.target.item}</ItemLink>
           {next.target.pinned && <span className="muted"> (pinned)</span>}
           <OwnedTag owned={next.owned} />
           <QuestTag progress={next.quest} named />

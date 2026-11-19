@@ -9,6 +9,7 @@ import {
   type Role,
   type SendResult,
 } from '../api'
+import { ItemLink } from './ItemLink'
 
 const ROLE_LABEL: Record<Role, string> = { tank: 'Tank', healer: 'Healer', dps: 'DPS' }
 
@@ -35,7 +36,12 @@ function Needs({ dungeon, members }: { dungeon: GroupDungeon; members: GuildMemb
         <li key={id}>
           <strong>{names.get(Number(id)) ?? 'A member'}</strong>
           {!dungeon.in_range.includes(Number(id)) && <span className="muted"> (outside its levels)</span>}:{' '}
-          {needs.map((need) => `${need.item} (+${need.score_gain.toFixed(1)})`).join(', ')}
+          {needs.map((need, i) => (
+            <span key={need.item_id}>
+              {i > 0 && ', '}
+              <ItemLink href={need.wowhead}>{need.item}</ItemLink> (+{need.score_gain.toFixed(1)})
+            </span>
+          ))}
         </li>
       ))}
     </ul>

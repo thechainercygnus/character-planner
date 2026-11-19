@@ -3,6 +3,7 @@ import { itemDetails, questLevel, questWhere, sourceText } from '../format'
 import { Icon } from './GearTable'
 import { OwnedTag } from './OwnedTag'
 import { QuestTag } from './QuestTag'
+import { ItemLink } from './ItemLink'
 
 /** Icon and quality-coloured name linking to Wowhead, with optional tags and lines below. */
 export function PoolItemName({
@@ -27,19 +28,7 @@ export function PoolItemName({
     <div className="item-cell">
       <Icon url={item.icon_url} />
       <div className={`item quality-${quality}`}>
-        {item.wowhead ? (
-          <a
-            className="item-link"
-            href={item.wowhead}
-            target="_blank"
-            rel="noreferrer"
-            onClick={(event) => event.stopPropagation()}
-          >
-            {item.name}
-          </a>
-        ) : (
-          item.name
-        )}
+        <ItemLink href={item.wowhead}>{item.name}</ItemLink>
         {isTarget && <span className="tag">your target</span>}
         <OwnedTag owned={owned} />
         {!usableNow && <span className="tag warn">level {item.effective_level}</span>}
