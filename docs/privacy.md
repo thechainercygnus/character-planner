@@ -46,7 +46,8 @@ and DMs to the Discord account linked for them. With users on, each user's webho
 DMs get alerts about their own characters only.
 With users on, a character added to its guild's view (the Guild tab) is shown to the
 other members who joined it: its name, level, spec, role and upgrades. Leaving the view
-stops that. If the guild sets an alert channel, the alerts a member chooses to share post
+stops that. A player with several characters there can choose to show them as one
+player; until they do, nothing the guild sees links them. If the guild sets an alert channel, the alerts a member chooses to share post
 to that Discord channel, where anyone who can read it sees them. Nothing is shared until
 the member ticks it.
 With users on, the admin, and any superusers the admin appoints, see a list of the

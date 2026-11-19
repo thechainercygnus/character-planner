@@ -26,7 +26,7 @@ from typing import Any, cast
 from sqlmodel import Session, SQLModel, col, select
 
 from character_planner.characters import OWNED
-from character_planner.db import Character, NotificationDestination, User
+from character_planner.db import Character, GuildAltGrouping, NotificationDestination, User
 from character_planner.notify import masked
 
 README = """Everything Character Planner stores for this account, as of {at}.
@@ -38,6 +38,7 @@ characters/         One folder per character: character.json, then one file per 
                     settings edited in the app, game-data imports and so on).
 alerts.json         Alert destinations: Discord webhooks (each URL masked: it's a
                     credential) and Discord DMs.
+guild_grouping.json The guilds where your characters show as one player, if any.
 
 Not included: sign-in sessions and the Battle.net sign-in token, which are secrets kept
 only to sign in, and game data shared by every character (items, dungeons, recipes).
@@ -66,7 +67,10 @@ def export_user(session: Session, user_id: int, now: datetime | None = None) -> 
         .where(col(NotificationDestination.user_id) == user_id)
         .order_by(col(NotificationDestination.id))
     ).all()
-    return _archive(session, user, list(characters), list(destinations), now)
+    groupings = session.exec(
+        select(GuildAltGrouping).where(col(GuildAltGrouping.user_id) == user_id)
+    ).all()
+    return _archive(session, user, list(characters), list(destinations), now, list(groupings))
 
 
 def export_everything(session: Session, now: datetime | None = None) -> bytes:
@@ -85,6 +89,7 @@ def _archive(
     characters: list[Character],
     destinations: list[NotificationDestination],
     now: datetime | None,
+    groupings: list[GuildAltGrouping] | None = None,
 ) -> bytes:
     at = (now or datetime.now(UTC)).isoformat(timespec="seconds")
     buffer = io.BytesIO()
@@ -112,6 +117,9 @@ def _archive(
         for row in alerts:
             row["url"] = masked(row["url"]) if row["url"] else ""
         _write(archive, "alerts.json", alerts)
+        if groupings:
+            # The guilds where they show their characters as one player (#215).
+            _write(archive, "guild_grouping.json", _rows(groupings))
     return buffer.getvalue()
 
 

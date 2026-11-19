@@ -2962,6 +2962,29 @@
         "title": "GuildChannelUpdate",
         "type": "object"
       },
+      "GuildGroupingChange": {
+        "properties": {
+          "grouped": {
+            "title": "Grouped",
+            "type": "boolean"
+          },
+          "guild_id": {
+            "title": "Guild Id",
+            "type": "integer"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "required": [
+          "region",
+          "guild_id",
+          "grouped"
+        ],
+        "title": "GuildGroupingChange",
+        "type": "object"
+      },
       "GuildInfo": {
         "properties": {
           "id": {
@@ -2978,6 +3001,70 @@
           "name"
         ],
         "title": "GuildInfo",
+        "type": "object"
+      },
+      "GuildMembersChange": {
+        "properties": {
+          "guild_id": {
+            "title": "Guild Id",
+            "type": "integer"
+          },
+          "join": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Join",
+            "type": "array"
+          },
+          "leave": {
+            "default": [],
+            "items": {
+              "type": "integer"
+            },
+            "title": "Leave",
+            "type": "array"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "enum": [
+                  "tank",
+                  "healer",
+                  "dps"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "shared_alerts": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shared Alerts"
+          }
+        },
+        "required": [
+          "region",
+          "guild_id"
+        ],
+        "title": "GuildMembersChange",
         "type": "object"
       },
       "GuildMembershipUpdate": {
@@ -3810,6 +3897,17 @@
             "title": "Name",
             "type": "string"
           },
+          "player": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Player"
+          },
           "role": {
             "anyOf": [
               {
@@ -4028,6 +4126,98 @@
           "game_data_at"
         ],
         "title": "MyCharacter",
+        "type": "object"
+      },
+      "MyGuild": {
+        "properties": {
+          "characters": {
+            "items": {
+              "$ref": "#/components/schemas/MyGuildCharacter"
+            },
+            "title": "Characters",
+            "type": "array"
+          },
+          "grouped": {
+            "title": "Grouped",
+            "type": "boolean"
+          },
+          "guild_id": {
+            "title": "Guild Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "required": [
+          "region",
+          "guild_id",
+          "name",
+          "grouped",
+          "characters"
+        ],
+        "title": "MyGuild",
+        "type": "object"
+      },
+      "MyGuildCharacter": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "joined": {
+            "title": "Joined",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "enum": [
+                  "tank",
+                  "healer",
+                  "dps"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "joined",
+          "role"
+        ],
+        "title": "MyGuildCharacter",
+        "type": "object"
+      },
+      "MyGuilds": {
+        "properties": {
+          "guilds": {
+            "items": {
+              "$ref": "#/components/schemas/MyGuild"
+            },
+            "title": "Guilds",
+            "type": "array"
+          }
+        },
+        "required": [
+          "guilds"
+        ],
+        "title": "MyGuilds",
         "type": "object"
       },
       "NewCharacter": {
@@ -9485,6 +9675,103 @@
           }
         },
         "summary": "Put Shared Alerts"
+      }
+    },
+    "/api/guilds": {
+      "get": {
+        "description": "The guilds your characters are in, each with which of them are in its view, and\nwhether you show them there as one player (#215, ADR 0059): the Guild tab's picker\nand the account page.",
+        "operationId": "get_my_guilds_api_guilds_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyGuilds"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get My Guilds"
+      }
+    },
+    "/api/guilds/grouping": {
+      "put": {
+        "description": "Show your characters in a guild's view as one player, or not (#215, ADR 0059).\nOff by default: nothing the guild sees links them.",
+        "operationId": "put_guild_grouping_api_guilds_grouping_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuildGroupingChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyGuilds"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Guild Grouping"
+      }
+    },
+    "/api/guilds/members": {
+      "put": {
+        "description": "Join a guild's view with several of your characters at once, and leave with others\n(#215, ADR 0059): still per character underneath. `shared_alerts`, when given, is set\nfor each one joining (#163). 404 for a character that isn't yours or isn't in it.",
+        "operationId": "put_guild_members_api_guilds_members_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuildMembersChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyGuilds"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Guild Members"
       }
     },
     "/api/healthz": {

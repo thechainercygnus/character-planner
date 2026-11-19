@@ -246,6 +246,10 @@ UNSCOPED = {
         "GET /api/account/characters",
         "GET /api/account",  # the account page (#217): test_account_page.py
         "GET /api/account/export",  # test_account_page.py
+        # Your guilds (#215): your own characters only, tested in test_guild_bulk.py.
+        "GET /api/guilds",
+        "PUT /api/guilds/members",
+        "PUT /api/guilds/grouping",
         # A linked Discord account is the user's (#58): tested in test_discord.py.
         "GET /api/discord",
         "PATCH /api/discord",

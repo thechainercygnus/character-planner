@@ -139,7 +139,18 @@ from character_planner.guest import (
     guest_options,
     guest_recommendations,
 )
-from character_planner.guild import GuildView, NoGuild, Role, guild_view, set_membership
+from character_planner.guild import (
+    GuildView,
+    MyGuilds,
+    NoGuild,
+    NotYours,
+    Role,
+    guild_view,
+    join_many,
+    my_guilds,
+    set_grouping,
+    set_membership,
+)
 from character_planner.items import RefreshResult, refresh_item_sources
 from character_planner.jobs import (
     character_context,
@@ -349,6 +360,21 @@ class About(BaseModel):
 class GuildMembershipUpdate(BaseModel):
     opted_in: bool
     role: Role | None = None  # None: from the synced spec
+
+
+class GuildMembersChange(BaseModel):
+    region: str
+    guild_id: int
+    join: list[int] = []
+    leave: list[int] = []
+    role: Role | None = None  # for those joining; None keeps theirs, or the spec's
+    shared_alerts: list[str] | None = None  # for those joining; None: leave as they are
+
+
+class GuildGroupingChange(BaseModel):
+    region: str
+    guild_id: int
+    grouped: bool
 
 
 class GuildChannelUpdate(BaseModel):
@@ -1441,6 +1467,58 @@ def create_app(
         character = guild_character(session, character_id)
         assert character.id is not None
         return guild_view(session, settings, character.id, user_id, going)
+
+    def users_on_or_404() -> None:
+        if not settings.planner_users:
+            raise HTTPException(404, "The guild view needs users on (PLANNER_USERS)")
+
+    @app.get("/api/guilds")
+    def get_my_guilds(session: SessionDep, user_id: UserIdDep) -> MyGuilds:
+        """The guilds your characters are in, each with which of them are in its view, and
+        whether you show them there as one player (#215, ADR 0059): the Guild tab's picker
+        and the account page."""
+        users_on_or_404()
+        assert user_id is not None
+        return my_guilds(session, user_id)
+
+    @app.put("/api/guilds/members")
+    def put_guild_members(
+        change: GuildMembersChange, session: SessionDep, user_id: UserIdDep
+    ) -> MyGuilds:
+        """Join a guild's view with several of your characters at once, and leave with others
+        (#215, ADR 0059): still per character underneath. `shared_alerts`, when given, is set
+        for each one joining (#163). 404 for a character that isn't yours or isn't in it."""
+        users_on_or_404()
+        assert user_id is not None
+        try:
+            join_many(
+                session,
+                user_id,
+                change.region,
+                change.guild_id,
+                join=change.join,
+                leave=change.leave,
+                role=change.role,
+                shared_alerts=change.shared_alerts,
+            )
+        except NotYours as error:
+            raise HTTPException(404, str(error)) from error
+        except NoGuild as error:
+            raise HTTPException(409, str(error)) from error
+        except notify.NotifyError as error:
+            raise HTTPException(422, str(error)) from error
+        return my_guilds(session, user_id)
+
+    @app.put("/api/guilds/grouping")
+    def put_guild_grouping(
+        change: GuildGroupingChange, session: SessionDep, user_id: UserIdDep
+    ) -> MyGuilds:
+        """Show your characters in a guild's view as one player, or not (#215, ADR 0059).
+        Off by default: nothing the guild sees links them."""
+        users_on_or_404()
+        assert user_id is not None
+        set_grouping(session, user_id, change.region, change.guild_id, change.grouped)
+        return my_guilds(session, user_id)
 
     @app.put("/api/guild/membership")
     def put_guild_membership(

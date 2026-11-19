@@ -19,6 +19,7 @@ from character_planner import fields, notify
 from character_planner.config import Settings
 from character_planner.db import (
     Character,
+    GuildAltGrouping,
     GuildMembership,
     NotificationDestination,
     NotificationOutbox,
@@ -59,6 +60,9 @@ class Member(BaseModel):
     role: Role | None  # the member's own choice, else their spec's
     level: int | None
     yours: bool  # one of the signed-in user's characters
+    # Characters with the same number are one player, who chose to show them so (#215,
+    # ADR 0059): a number for this view only, never who they are. None: shown on its own.
+    player: int | None = None
 
 
 class GroupDungeon(BaseModel):
@@ -284,6 +288,69 @@ def _role_of(
     return None
 
 
+def _number_players(
+    session: Session,
+    members: list[Member],
+    owners: dict[int, int | None],
+    region: str,
+    guild_id: int,
+) -> None:
+    """Give the characters of each player who chose grouping here one number (#215)."""
+    grouped = set(
+        session.exec(
+            select(GuildAltGrouping.user_id).where(
+                col(GuildAltGrouping.region) == region,
+                col(GuildAltGrouping.guild_id) == guild_id,
+            )
+        ).all()
+    )
+    numbers: dict[int, int] = {}
+    for member in members:
+        owner = owners.get(member.character_id)
+        if owner is None or owner not in grouped:
+            continue
+        member.player = numbers.setdefault(owner, len(numbers) + 1)
+    # A "player" of one character tells nothing: shown on its own.
+    counts = {n: sum(m.player == n for m in members) for n in numbers.values()}
+    for member in members:
+        if member.player is not None and counts[member.player] < 2:
+            member.player = None
+
+
+def _default_going(members: list[Member], viewing: int) -> list[int]:
+    """Everyone, but one character per grouped player: the one viewing if it's theirs,
+    else their highest level."""
+    best: dict[int, Member] = {}
+    for member in members:
+        if member.player is None:
+            continue
+        current = best.get(member.player)
+        if current is None or (
+            current.character_id != viewing
+            and (member.character_id == viewing or (member.level or 0) > (current.level or 0))
+        ):
+            best[member.player] = member
+    return [
+        m.character_id
+        for m in members
+        if m.player is None or best[m.player].character_id == m.character_id
+    ]
+
+
+def _one_per_player(chosen: list[int], by_id: dict[int, Member]) -> list[int]:
+    """A player runs a dungeon on one character at a time: the first chosen of each."""
+    seen: set[int] = set()
+    out: list[int] = []
+    for character_id in chosen:
+        player = by_id[character_id].player
+        if player is not None:
+            if player in seen:
+                continue
+            seen.add(player)
+        out.append(character_id)
+    return out
+
+
 def guild_view(
     session: Session,
     settings: Settings,
@@ -308,6 +375,7 @@ def guild_view(
         )
     ).all()
     members: list[Member] = []
+    owners: dict[int, int | None] = {}  # character -> its user, for grouping only
     recommendations: dict[int, list[DungeonValue]] = {}
     for row in rows:
         # Still in the guild by its newest profile: a member who left drops out.
@@ -322,6 +390,7 @@ def guild_view(
             fields.get(profile.payload if profile else None, "character_class", "name")
         )
         spec = parse_specialization(specs.payload if specs else None)
+        owners[row.character_id] = character.user_id
         members.append(
             Member(
                 character_id=row.character_id,
@@ -337,10 +406,13 @@ def guild_view(
             session, settings, row.character_id
         ).dungeons
     members.sort(key=lambda m: (not m.yours, m.name))
+    _number_players(session, members, owners, mine.region, guild.id)
 
     ids = {m.character_id for m in members}
-    chosen = [i for i in (going or sorted(ids)) if i in ids]
     by_id = {m.character_id: m for m in members}
+    chosen = _one_per_player(
+        [i for i in (going or _default_going(members, character_id)) if i in ids], by_id
+    )
     counts = {role: sum(1 for i in chosen if by_id[i].role == role) for role in ROLES}
     missing: list[Role] = [r for r in ("tank", "healer") if counts[r] == 0] if chosen else []
 
@@ -387,3 +459,129 @@ def guild_view(
         shared_alerts=list(mine.shared_alerts or []),
         alerts=[a for a in notify.ALERTS if a.audience == "user"],
     )
+
+
+# --- your guilds: the picker, bulk joins and alt grouping (#215, ADR 0059) -----------------
+
+
+class MyGuildCharacter(BaseModel):
+    id: int
+    name: str
+    joined: bool  # in the guild's view now
+    role: Role | None  # its own choice in the view, if any
+
+
+class MyGuild(BaseModel):
+    region: str
+    guild_id: int
+    name: str
+    grouped: bool  # this player shows their characters here as one player
+    characters: list[MyGuildCharacter]  # the user's characters in this guild
+
+
+class MyGuilds(BaseModel):
+    guilds: list[MyGuild]
+
+
+class NotYours(Exception):
+    """A character that isn't the user's, or isn't in the guild (404: nothing to tell)."""
+
+
+def _grouped(session: Session, user_id: int, region: str, guild_id: int) -> GuildAltGrouping | None:
+    return session.exec(
+        select(GuildAltGrouping).where(
+            col(GuildAltGrouping.user_id) == user_id,
+            col(GuildAltGrouping.region) == region,
+            col(GuildAltGrouping.guild_id) == guild_id,
+        )
+    ).first()
+
+
+def my_guilds(session: Session, user_id: int) -> MyGuilds:
+    """The guilds the user's characters are in, by their newest profiles, with which of
+    them are in each guild's view."""
+    guilds: dict[tuple[str, int], MyGuild] = {}
+    characters = session.exec(
+        select(Character).where(col(Character.user_id) == user_id).order_by(col(Character.id))
+    ).all()
+    for character in characters:
+        assert character.id is not None
+        guild = profile_guild(session, character.id)
+        if guild is None:
+            continue
+        key = (character.region, guild.id)
+        entry = guilds.get(key)
+        if entry is None:
+            entry = guilds[key] = MyGuild(
+                region=character.region,
+                guild_id=guild.id,
+                name=guild.name,
+                grouped=_grouped(session, user_id, character.region, guild.id) is not None,
+                characters=[],
+            )
+        row = current_member(session, character.id)
+        entry.characters.append(
+            MyGuildCharacter(
+                id=character.id,
+                name=f"{character.name} {character.surname}".strip(),
+                joined=row is not None,
+                role=row.role if row is not None and row.role in ROLES else None,  # type: ignore[arg-type]
+            )
+        )
+    return MyGuilds(guilds=sorted(guilds.values(), key=lambda g: g.name))
+
+
+def _in_guild(
+    session: Session, user_id: int, region: str, guild_id: int, ids: list[int]
+) -> list[Character]:
+    out: list[Character] = []
+    for character_id in ids:
+        character = session.get(Character, character_id)
+        guild = profile_guild(session, character_id)
+        if (
+            character is None
+            or character.user_id != user_id
+            or character.region != region
+            or guild is None
+            or guild.id != guild_id
+        ):
+            raise NotYours(f"No character {character_id} of yours in that guild")
+        out.append(character)
+    return out
+
+
+def join_many(
+    session: Session,
+    user_id: int,
+    region: str,
+    guild_id: int,
+    *,
+    join: list[int],
+    leave: list[int],
+    role: Role | None = None,
+    shared_alerts: list[str] | None = None,
+) -> None:
+    """Join the guild's view with several of the user's characters, and leave with others:
+    each still per character (ADR 0042). A role given applies to those joining; shared
+    alerts given are set for each of them (#163). Raises NotYours before changing anything."""
+    joining = _in_guild(session, user_id, region, guild_id, join)
+    leaving = _in_guild(session, user_id, region, guild_id, leave)
+    for character in joining:
+        assert character.id is not None
+        current = membership(session, character.id)
+        keep = current.role if current is not None and role is None else role
+        set_membership(session, character, True, keep)  # type: ignore[arg-type]
+        if shared_alerts is not None:
+            set_shared_alerts(session, character.id, shared_alerts)
+    for character in leaving:
+        set_membership(session, character, False, None)
+
+
+def set_grouping(session: Session, user_id: int, region: str, guild_id: int, on: bool) -> None:
+    """Show the user's characters in this guild's view as one player, or not."""
+    row = _grouped(session, user_id, region, guild_id)
+    if on and row is None:
+        session.add(GuildAltGrouping(user_id=user_id, region=region, guild_id=guild_id))
+    elif not on and row is not None:
+        session.delete(row)
+    session.commit()

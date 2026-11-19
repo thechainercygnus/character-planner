@@ -48,6 +48,7 @@ export const TABS = [
   'guest',
   'admin',
   'account',
+  'guild',
 ]
 
 const EVERY_PERMISSION = [
@@ -158,8 +159,66 @@ const USERS_ON: Answers = {
   },
 }
 
-/** Serve the API as a tab needs it: the admin page with users on, the rest as recorded. */
+const member = (id: number, name: string, role: string, level: number, yours: boolean, player: number | null) => ({
+  character_id: id,
+  name,
+  character_class: 'Warrior',
+  spec: role === 'tank' ? 'Protection' : 'Arms',
+  role,
+  level,
+  yours,
+  player,
+})
+
+/** The Guild tab (#18, #215): two guilds, your alt not in the view yet, and another player's two characters grouped. */
+const GUILD: Answers = {
+  '/api/guilds': {
+    body: {
+      guilds: [
+        {
+          region: 'us',
+          guild_id: 670649,
+          name: 'Daves Discount Meats',
+          grouped: false,
+          characters: [
+            { id: 1, name: 'Brumboldt Doomlet', joined: true, role: 'tank' },
+            { id: 2, name: 'Brumalt Doomlet', joined: false, role: null },
+          ],
+        },
+        {
+          region: 'us',
+          guild_id: 111,
+          name: 'Another Guild',
+          grouped: false,
+          characters: [{ id: 3, name: 'Elsewhere Doomlet', joined: false, role: null }],
+        },
+      ],
+    },
+  },
+  '/api/guild': {
+    body: {
+      guild: { id: 670649, name: 'Daves Discount Meats' },
+      opted_in: true,
+      role: 'tank',
+      members: [
+        member(1, 'Brumboldt Doomlet', 'tank', 19, true, null),
+        member(7, 'Hollie Light', 'dps', 20, false, 1),
+        member(8, 'Hollie Alt', 'dps', 14, false, 1),
+      ],
+      going: [1, 7],
+      roles: { tank: 1, healer: 0, dps: 1 },
+      missing_roles: ['healer'],
+      dungeons: [],
+      channel: null,
+      shared_alerts: [],
+      alerts: [],
+    },
+  },
+}
+
+/** Serve the API as a tab needs it: the admin page and the Guild tab with users on, the rest as recorded. */
 export function serveTab(page: Page, tab: string): Promise<Request[]> {
+  if (tab === 'guild') return serveApi(page, { ...USERS_ON, ...GUILD })
   return serveApi(page, tab === 'admin' ? USERS_ON : {})
 }
 

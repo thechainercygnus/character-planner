@@ -4,6 +4,7 @@ import { api, isQueued, selectCharacter, selectedCharacter, type MyCharacter } f
 import { ago, parseTime } from '../gameData'
 import { AddCharacter } from './CharacterSwitcher'
 import { DiscordSettings } from './DiscordDialog'
+import { BulkJoin } from './Guild'
 import { NotificationsForm } from './NotificationsDialog'
 
 function when(timestamp: string | null): string {
@@ -126,8 +127,32 @@ function Characters({ characters }: { characters: MyCharacter[] }) {
   )
 }
 
-/** The guilds your characters are in, and which ones share their needs in the guild view. */
+/**
+ * The guilds your characters are in. With users on, join or leave each guild's view with
+ * several at once, and choose whether they show as one player (#215); without users there's
+ * no guild view, so just which guild each is in.
+ */
 function Guilds({ characters, users }: { characters: MyCharacter[]; users: boolean }) {
+  const mine = useQuery({ queryKey: ['my-guilds'], queryFn: api.myGuilds, enabled: users })
+  if (users) {
+    if (mine.isError) return <p className="error">Couldn't load your guilds: {mine.error.message}</p>
+    const guilds = mine.data?.guilds ?? []
+    if (guilds.length === 0) return null
+    return (
+      <section>
+        <h2>Guilds</h2>
+        {guilds.map((guild) => (
+          <div key={`${guild.region}:${guild.guild_id}`} className="my-guild">
+            <h3>{guild.name}</h3>
+            <BulkJoin guild={guild} />
+          </div>
+        ))}
+        <p className="muted">
+          The <a href="#guild">Guild tab</a> shows who needs what, and the runs worth most to the group.
+        </p>
+      </section>
+    )
+  }
   const guilds = new Map<string, MyCharacter[]>()
   for (const character of characters) {
     if (character.guild) guilds.set(character.guild, [...(guilds.get(character.guild) ?? []), character])
@@ -139,16 +164,10 @@ function Guilds({ characters, users }: { characters: MyCharacter[]; users: boole
       <ul className="my-guilds">
         {[...guilds].map(([guild, members]) => (
           <li key={guild}>
-            <strong>{guild}</strong>:{' '}
-            {members.map((m) => `${m.name}${m.in_guild_view ? ' (in the guild view)' : ''}`).join(', ')}
+            <strong>{guild}</strong>: {members.map((m) => m.name).join(', ')}
           </li>
         ))}
       </ul>
-      {users && (
-        <p className="muted">
-          Join or leave a guild's view with a character from its <a href="#guild">Guild tab</a>.
-        </p>
-      )}
     </section>
   )
 }

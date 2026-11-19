@@ -16,6 +16,9 @@ export function useHashTab<Id extends string>(tabs: readonly Tab<Id>[], fallback
 
   useEffect(() => {
     const onHashChange = () => setActive(fromHash(tabs, fallback))
+    // Tabs can arrive late: the Guild tab joins once /api/me says users are on (#215). A
+    // hash naming it from the start (a bookmark, a link) opens it then, not the fallback.
+    onHashChange()
     window.addEventListener('hashchange', onHashChange)
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [tabs, fallback])

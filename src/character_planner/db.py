@@ -137,6 +137,19 @@ class GuildMembership(SQLModel, table=True):
     joined_at: datetime = Field(default_factory=utcnow)
 
 
+class GuildAltGrouping(SQLModel, table=True):
+    """A player who chose to show their characters in a guild's view as one player (#215,
+    ADR 0059). Off (no row) by default: nothing the guild sees links them."""
+
+    __table_args__ = (UniqueConstraint("user_id", "region", "guild_id"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id", index=True)
+    region: str
+    guild_id: int
+    created_at: datetime = Field(default_factory=utcnow)
+
+
 class GameDataImport(SQLModel, table=True):
     """A character's newest import of the CharacterPlannerExport addon's data (#184, ADR
     0047): bags, bank and quest log, as parsed and checked by `gamedata.read_export`. Not

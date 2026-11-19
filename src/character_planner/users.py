@@ -19,6 +19,7 @@ from character_planner.blizzard import oauth
 from character_planner.companion import as_utc
 from character_planner.db import (
     Character,
+    GuildAltGrouping,
     Invite,
     NotificationDestination,
     User,
@@ -177,6 +178,14 @@ def delete_user(session: Session, user_id: int) -> dict[str, int]:
     if token is not None:
         session.delete(token)
         removed["usertoken"] = 1
+    # Their choice to show their characters in a guild as one player (#215).
+    groupings = session.exec(
+        select(GuildAltGrouping).where(col(GuildAltGrouping.user_id) == user_id)
+    ).all()
+    for row in groupings:
+        session.delete(row)
+    if groupings:
+        removed["guildaltgrouping"] = len(groupings)
     # Their alert webhooks and a linked Discord account (#58, #164), with unsent alerts.
     from character_planner.notify import delete_owned
 
