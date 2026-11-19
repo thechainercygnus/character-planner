@@ -97,60 +97,20 @@ and keep it true as you go: edit its body with the `roadmap` skill's script, or 
 
 ## Layout
 
-- `src/character_planner/blizzard/`: OAuth and the API client (raw JSON in, status always reported)
-- `src/character_planner/db.py`: SQLModel tables (`Character`, `Snapshot`, `StoredToken`...); `init_db` runs the migrations in `migrations/` (ADR 0022)
-- `src/character_planner/characters.py`: tracked characters; `.env` can seed the first, which adopts rows from before #14, and without `CHARACTER_NAME` the planner starts blank and characters are added in the app (#206, ADR 0049); snapshots, progress history and the settings edited in the app belong to one, and every reader takes a `character_id`; `db.owned`/`save_owned` read and write a character's settings row; a request picks its character with the `X-Character-Id` header, else the first (ADR 0036)
-- `src/character_planner/classes.py` + `data/curated/classes/*.yaml`: shipped defaults per class, chosen by the synced class; the Warrior's are the original curated files (ADR 0023)
-- `src/character_planner/builds.py` + `data/curated/builds.yaml`: builds, what a character is for: a weight preset, a role and optionally a talent order, curated per class (`builds:` in each class file; the Warrior's in builds.yaml), picked per character in `CharacterBuild`; edits show as customised; the guild view's role is the member's choice, then the build's, then the spec's (#216, ADR 0060)
-- `src/character_planner/curated.py` + `data/curated/*.yaml`: hand-maintained defaults (targets, stat weights, rules); edits made in the app live in the database
-- `src/character_planner/scoring.py`: gear scores from editable stat weights (ADR 0005) in named presets (ADR 0013); shipped presets in `data/curated/stat_weights.yaml` and `weight_presets.yaml`
-- `src/character_planner/items.py`: item catalog (Battle.net item search + icons), cached in SQLite (ADR 0003)
-- `src/character_planner/companion.py`: Forever Companion source, GET /items/{id} only (ADR 0004); spec in `docs/vendor/`
-- `src/character_planner/dungeons.py`: Forever Companion dungeons: drop tables and quest rewards (ADR 0006)
-- `src/character_planner/pool.py`: item pool built from dungeon data, level window, target id resolution (ADR 0006)
-- `src/character_planner/rares.py`: rares and their drops, a third pool source; merged by id because the list's cache ignores filters (ADR 0029)
-- `src/character_planner/crafting.py` + `data/curated/professions.yaml`: profession ranks and crafted gear from known recipes, a pool source (ADR 0031)
-- `src/character_planner/recipe_book.py`: the Professions tab's recipes, known and not learned yet, from each profession's skill tier (`SkillTier`) and every listed recipe's details, fetched in the background after a sync under the `recipes` lease (#226, ADR 0054)
-- `src/character_planner/lookahead.py`: what the next levels bring, built from the gear, talent, class quest, profession and dungeon views (ADR 0032)
-- `src/character_planner/class_quests.py`: the class quest checklist by class, faction, race and level; done marks set in the app (ADR 0030)
-- `src/character_planner/quests.py`: quest chains for quest rewards; steps no dungeon describes fetched by id, zone quests only named (ADR 0028)
-- `src/character_planner/retention.py`: Blizzard data kept at most 30 days: pruning, refresh-before-expiry ages, archived Progress points, forgetting a character Battle.net no longer has (ADR 0034, #131)
-- `src/character_planner/progress.py`: progress over time rebuilt from snapshots: points, gear changes, level-ups (ADR 0008)
-- `src/character_planner/talents.py`: the talent plan compared with synced talents (ADR 0009), matched by talent id; default in `data/curated/talent_plan.yaml`
-- `src/character_planner/talent_trees.py`: Forever's talent trees from Blizzard's game data, and the plan rules (prerequisites, points per row); the frontend's twin is `frontend/src/talentRules.ts` (ADR 0025)
-- `src/character_planner/enchants.py`: enchant catalog from Blizzard recipe data and per-slot enchant advice (ADR 0010); gaps filled in `data/curated/enchants.yaml`
-- `src/character_planner/recommend.py`: best upgrades per slot and dungeons worth running, from the pool (ADR 0007)
-- `src/character_planner/enchant_corrections.py`: corrections to `enchants.yaml` made in the app (material levels, crafted effects, per_slot), applied in `get_enchant_data` (ADR 0033)
-- `src/character_planner/rules.py`: the Upgrades rules edited in the app; `data/curated/recommend.yaml` is the default (ADR 0016)
-- `src/character_planner/guest.py`: guest mode, recommendations for a class and level from the shipped defaults; reads no character data, stores nothing (ADR 0017)
-- `src/character_planner/erase.py`: deletes everything stored for the character, from the Privacy page or `character-planner-db erase --yes`; every table but the shared game-data caches in `SHARED` (#133, ADR 0034)
-- `src/character_planner/queue.py`: background jobs on Redis with RQ, optional (`REDIS_URL`); one sync per character, polled with `GET /api/sync`, and the admin's refreshes, shown in the status's `refreshing`; `character-planner-jobs` (#17, ADR 0039). Manual refreshes have a cooldown (`leases.cool_down`)
-- `src/character_planner/metrics.py`: `/api/readyz` (database at the newest migration, the queue) and Prometheus metrics at `/api/metrics`, off unless `METRICS_TOKEN` is set (#17, ADR 0041)
-- `src/character_planner/upstream.py`: the upstream budget; every Battle.net and Forever Companion client comes from `upstream.client()`, which waits for room (shared through Redis with `REDIS_URL`); tests run with no budget (#17, ADR 0040)
-- `src/character_planner/users.py`: users, server-side sessions and per-user tokens when `PLANNER_USERS` is on; the first sign-in is the admin; characters belong to a user and requests resolve them through the signed-in user (#16, ADR 0037)
-- `src/character_planner/account_page.py`: the account page's view (`GET /api/account`): one user's characters with last sync, guild, guild view and game-data import; without users, every character and no account (#217, ADR 0058)
-- `src/character_planner/export.py`: everything stored for one user, as JSON in a zip, for an access request: the admin area's export, and the account page's to come (#238, #217, ADR 0056)
-- `src/character_planner/backup.py`: encrypted backups: a logical JSON dump without Blizzard's data or secrets (`EXCLUDED`), age-encrypted to a public key, kept in S3-compatible storage, pruned to `BACKUP_KEEP`; the worker backs up when due; restore into an empty database at the same revision (#240, ADR 0061)
-- `src/character_planner/admin_log.py`: the admin action log: who deleted, exported, changed a role or corrected shared data, as account ids, never the data; outlives deleted accounts, kept a year (#238, ADR 0056)
-- `src/character_planner/signups.py`: sign-ups open or closed (the app's choice in `InstanceSetting` wins over `PLANNER_SIGNUPS` once made) and one-use invites, hashed, held from the link's `#invite=` fragment behind a random cookie reference until the sign-in callback spends them (#239, ADR 0057)
-- `src/character_planner/roles.py`: roles (admin, superuser, user) with permissions as data in the `role` table; routes check a permission by name through `app.ROUTE_PERMISSIONS`, never a role; the admin area's account list (#237, ADR 0055)
-- `src/character_planner/guild.py` + `data/curated/roles.yaml`: the guild view; opted-in members of a guild see each other's needs and a group dungeon ranking, users on only; roles from specs (#18, ADR 0042); the guild's alert channel, a webhook any member sets, with each member's shared alerts (#163, ADR 0046); your guilds: a picker over every guild your characters are in, joining with several at once, and alts shown as one player only on opt-in (`GuildAltGrouping`, #215, ADR 0059)
-- `src/character_planner/account.py`: the signed-in account's characters (`/profile/user/wow`), to pick ones to track; fetched each time, never stored (#15, ADR 0036)
-- `src/character_planner/choices.py`: items dismissed in the app, on top of `exclude_item_ids` (ADR 0012)
-- `src/character_planner/targets.py`: gear targets edited in the app and pins from the Upgrades tab; `gear_targets.yaml` is the default (ADR 0014); per-target levels (ADR 0015)
-- `src/character_planner/savedvariables.py`: reads WoW SavedVariables files, a Lua subset, without executing anything; hard limits on size, depth, values and strings (#183, ADR 0047)
-- `src/character_planner/gamedata.py`: the addon's data (`addon/SCHEMA.md`) as strict models by schema version; `read_export` turns an upload into `GameData` (#183, ADR 0047); `import_for` checks it's the selected character's and keeps the newest in `GameDataImport`, served by `/api/game-data` (#184)
-- `src/character_planner/links.py`: Wowhead links, built here only: a source's own link, else one from the item id; every view model naming an item has a `wowhead`, which the frontend's `ItemLink` shows (#225, ADR 0053)
-- `src/character_planner/fields.py`: defensive JSON readers used by all parsers
-- `src/character_planner/views.py`: the only code that reads API response shapes; typed views for the frontend
-- `src/character_planner/summary.py`: Markdown rendering of those views, for pasting into a chat
-- `src/character_planner/notify.py`: alerts to Discord webhooks: destinations, change detection after a sync, an outbox the worker sends (ADR 0021); each user's webhooks are their own and get only their characters' alerts, system alerts the admin's (#164, ADR 0045)
-- `src/character_planner/discord.py`: Discord DMs from the instance's bot: account linking (`identify`), the `discord_dm` destination, refusals pause it; on with the `DISCORD_*` settings (#58, ADR 0043, ADR 0044)
-- `src/character_planner/signup.py`: the bot's pinned sign-up message in `DISCORD_SIGNUP_CHANNEL_ID`: found by its author and footer marker among the channel's pins, edited or posted and pinned; refusals reported, never retried (#192, ADR 0048)
-- `src/character_planner/logs.py`: logging for the API and the worker: console, rotating files with `LOG_DIR`, request ids, redaction of secrets in every line (ADR 0019)
-- `src/character_planner/tokens.py`: the app's own Battle.net token (Client Credentials), cached and renewed; syncs and every refresh use it, so no login is needed (ADR 0027)
-- `src/character_planner/leases.py`: one-at-a-time leases for long refreshes, shared by the API and the worker (ADR 0024)
-- `src/character_planner/jobs.py`: sync and pool refresh, shared by the API and the worker
-- `src/character_planner/worker.py`: scheduled jobs beside the API (ADR 0011); `Dockerfile`, `compose*.yaml` and `docs/self-hosting.md` deploy both
-- `addon/SCHEMA.md`: the contract between the CharacterPlannerExport addon and the planner's parser (ADR 0047). The addon itself lives in its own repository, `thechainercygnus/character-planner-export`, along with its issues (ADR 0051). Its Lua is Bryce's learning work: review and explain it when asked, don't write it.
-- `src/character_planner/app.py`: FastAPI routes, built by `create_app()`. Data routes live under `/api`, the optional Battle.net login under `/auth`; a built frontend in `frontend/dist` is served at `/`
+The full module map, one line per file with its issue and ADR, is in
+`docs/architecture.md` under **Modules**: grep it for the file or feature you're touching.
+What holds everywhere:
+
+- Python in `src/character_planner/`, one module per feature; routes in `app.py`
+  (`create_app()`), data under `/api`, the login under `/auth`, the built frontend at `/`.
+- Tables in `db.py`, migrations in `migrations/`. Shipped defaults in `data/curated/`;
+  edits made in the app live in the database.
+- `views.py` is the only code that reads API response shapes, through `fields.py`'s
+  defensive readers. Every Battle.net and Forever Companion client comes from
+  `upstream.client()`. Wowhead links are built only in `links.py`.
+- Per-character data: every reader takes a `character_id`; a request picks one with
+  `X-Character-Id` (ADR 0036). Routes check a permission by name through
+  `app.ROUTE_PERMISSIONS`, never a role (ADR 0055).
+- `addon/SCHEMA.md` is the contract with the CharacterPlannerExport addon, which lives in
+  `thechainercygnus/character-planner-export` with its issues (ADR 0051). Its Lua is
+  Bryce's learning work: review and explain it when asked, don't write it.

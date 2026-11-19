@@ -65,7 +65,7 @@ that fail when a line is missed.
 ## A new module, or a lasting decision
 - **ADR:** add one in `docs/adr/`, numbered, short and terse. The docs build picks it up.
   Bryce's choices go in as "Bryce chose ... (date)".
-- **CLAUDE.md:** add a line to **Layout** for a new module.
+- **`docs/architecture.md`:** add a line to **Modules** for a new module.
 - **`docs/architecture.md`:** update it if the picture changes (a new service, an outside
   API).
 
