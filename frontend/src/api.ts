@@ -303,6 +303,29 @@ export interface AdminLogEntry {
   detail: string | null
 }
 
+/** The last backup's outcome (backup.py, #240). */
+export interface BackupStatus {
+  at: string
+  ok: boolean
+  key: string | null
+  /** Bytes, encrypted. */
+  size: number | null
+  rows: number | null
+  error: string | null
+  /** Backups in the bucket after pruning. */
+  kept: number | null
+}
+
+/** Encrypted backups (#240, ADR 0061). */
+export interface BackupsView {
+  /** BACKUP_S3_* and BACKUP_AGE_RECIPIENT set. */
+  configured: boolean
+  every_hours: number
+  keep: number
+  bucket: string | null
+  last: BackupStatus | null
+}
+
 /** Whether sign-ups are open, and where that comes from (#239, ADR 0057). */
 export interface SignupsView {
   open: boolean
@@ -1581,6 +1604,8 @@ export const api = {
   adminAccounts: () => request<AdminView>('/api/admin/accounts'),
   adminLog: () => request<AdminLogEntry[]>('/api/admin/log'),
   adminSignups: () => request<SignupsAdmin>('/api/admin/signups'),
+  adminBackups: () => request<BackupsView>('/api/admin/backups'),
+  backUpNow: () => request<BackupsView>('/api/admin/backups', { method: 'POST' }),
   setSignups: (open: boolean) => request<SignupsAdmin>('/api/admin/signups', json('PUT', { open })),
   createInvite: () => request<NewInvite>('/api/admin/invites', { method: 'POST' }),
   revokeInvite: (id: number) => request<InviteView>(`/api/admin/invites/${id}`, { method: 'DELETE' }),

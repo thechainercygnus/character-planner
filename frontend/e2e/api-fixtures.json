@@ -8,6 +8,7 @@
    "role": null,
    "permissions": [
     "accounts.view",
+    "backups.manage",
     "data.refresh",
     "discord.signup",
     "enchants.correct",

@@ -6,6 +6,7 @@ import { Admin } from './Admin'
 
 const EVERY_PERMISSION = [
   'accounts.view',
+  'backups.manage',
   'data.refresh',
   'discord.signup',
   'enchants.correct',
@@ -102,6 +103,17 @@ const signups: SignupsAdmin = {
   ],
 }
 
+const failed = {
+  at: '2026-11-21T03:00:00Z',
+  ok: false,
+  key: null,
+  size: null,
+  rows: null,
+  error: 'ClientError: NoSuchBucket',
+  kept: null,
+}
+const backups = { configured: true, every_hours: 24, keep: 14, bucket: 'planner-backups', last: failed }
+
 function show(me: Me) {
   const puts: { url: string; body: unknown }[] = []
   vi.stubGlobal(
@@ -109,6 +121,14 @@ function show(me: Me) {
     vi.fn(async (url: string, init?: RequestInit) => {
       if (url === '/api/me') return Response.json(me)
       if (url === '/api/admin/log') return Response.json(log)
+      if (url === '/api/admin/backups' && init?.method === 'POST') {
+        puts.push({ url, body: 'POST' })
+        return Response.json({
+          ...backups,
+          last: { ...failed, ok: true, error: null, rows: 120, size: 48000, kept: 2 },
+        })
+      }
+      if (url === '/api/admin/backups') return Response.json(backups)
       if (url === '/api/admin/invites' && init?.method === 'POST') {
         puts.push({ url, body: 'POST' })
         return Response.json({ invite: signups.invites[0], token: 'a-token-of-thirty-two-characters' })
@@ -222,6 +242,16 @@ describe('Admin', () => {
     const link = (await within(section).findByRole('textbox', { name: 'Invite link' })) as HTMLInputElement
     expect(link.value).toBe(`${window.location.origin}/#invite=a-token-of-thirty-two-characters`)
     expect(within(section).getByRole('button', { name: /Revoke the invite made/ })).toBeTruthy()
+  })
+
+  it('shows a failed backup, and backs up now (#240)', async () => {
+    const requests = show(ADMIN)
+    const section = (await screen.findByRole('heading', { name: 'Backups' })).closest('section')!
+    expect(within(section).getByRole('alert').textContent).toContain('ClientError: NoSuchBucket')
+    expect(section.textContent).toContain('Every 24 hours to planner-backups, encrypted; the newest 14 kept.')
+    fireEvent.click(within(section).getByRole('button', { name: 'Back up now' }))
+    expect(await within(section).findByText(/120 rows, 48 kB, 2 kept/)).toBeTruthy()
+    expect(requests).toContainEqual({ url: '/api/admin/backups', body: 'POST' })
   })
 
   it('shows a user nothing', async () => {
