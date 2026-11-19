@@ -47,6 +47,7 @@ export const TABS = [
   'privacy',
   'guest',
   'admin',
+  'account',
 ]
 
 const EVERY_PERMISSION = [

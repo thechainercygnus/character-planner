@@ -74,7 +74,8 @@ function DestinationRow({
           className="secondary"
           disabled={busy}
           onClick={() => {
-            if (window.confirm(`Remove ${destination.name}? Its queued alerts are dropped.`)) remove.mutate(destination.id)
+            if (window.confirm(`Remove ${destination.name}? Its queued alerts are dropped.`))
+              remove.mutate(destination.id)
           }}
         >
           Remove
@@ -91,23 +92,19 @@ function DestinationRow({
           <span className="muted">Last sent {when(destination.last_sent_at)}</span>
         )}
       </div>
-      {(update.isError || remove.isError) && (
-        <p className="error">{(update.error ?? remove.error)?.message}</p>
-      )}
+      {(update.isError || remove.isError) && <p className="error">{(update.error ?? remove.error)?.message}</p>}
     </fieldset>
   )
 }
 
 /**
- * Status bar: "Alerts" opens the notification settings (#12, ADR 0021): Discord webhook
- * destinations, which alerts each one gets, test sends and what was sent recently. Each
- * user has their own (#164); only the admin adds system destinations.
+ * The alerts settings (#12, #164): the user's webhooks, adding one, and recent alerts. Shared
+ * by the header's Alerts dialog and the account page (#217), so there's one form, not two.
+ * Only the admin adds system destinations.
  */
-export function NotificationsDialog({ admin = true }: { admin?: boolean }) {
+export function NotificationsForm({ admin = true, enabled = true }: { admin?: boolean; enabled?: boolean }) {
   const queryClient = useQueryClient()
-  const dialogRef = useRef<HTMLDialogElement>(null)
-  const [open, setOpen] = useState(false)
-  const view = useQuery({ queryKey: ['notifications'], queryFn: api.notifications, enabled: open })
+  const view = useQuery({ queryKey: ['notifications'], queryFn: api.notifications, enabled })
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [audience, setAudience] = useState<Audience>('user')
@@ -122,6 +119,112 @@ export function NotificationsDialog({ admin = true }: { admin?: boolean }) {
     },
   })
   const data = view.data
+
+  return (
+    <>
+      <p className="muted">
+        Get alerts in Discord: level-ups, targets reached or now in reach, and upgrades worth having. In Discord, open a
+        channel's settings, then <strong>Integrations → Webhooks → New Webhook</strong>, copy its URL and paste it
+        below. Anyone with that URL can post to the channel, so it's kept private: it's never shown again in full.
+      </p>
+      {view.isPending && <p className="muted">Loading…</p>}
+      {view.isError && <p className="error">Couldn't load alerts: {view.error.message}</p>}
+
+      {data && (
+        <>
+          {data.destinations.length === 0 && <p>No destinations yet.</p>}
+          {data.destinations.map((destination) => (
+            <DestinationRow key={destination.id} destination={destination} alerts={data.alerts} onSaved={onSaved} />
+          ))}
+          {data.destinations.length > 0 && data.system_alerts_to_user && (
+            <p className="muted">
+              System alerts (failed jobs, upstream errors) go to your destinations while there's no system destination.
+            </p>
+          )}
+
+          <form
+            className="add-destination"
+            onSubmit={(event) => {
+              event.preventDefault()
+              add.mutate({ name, url, audience })
+            }}
+          >
+            <h3>Add a destination</h3>
+            <label>
+              Name{' '}
+              <input value={name} maxLength={60} placeholder="My alerts" onChange={(e) => setName(e.target.value)} />
+            </label>
+            <label>
+              Webhook URL{' '}
+              <input
+                value={url}
+                autoComplete="off"
+                spellCheck={false}
+                placeholder="https://discord.com/api/webhooks/…"
+                onChange={(e) => setUrl(e.target.value)}
+              />
+            </label>
+            {admin && (
+              <label>
+                For{' '}
+                <select value={audience} onChange={(e) => setAudience(e.target.value as Audience)}>
+                  <option value="user">My character's alerts</option>
+                  <option value="system">System alerts only (whoever runs this instance)</option>
+                </select>
+              </label>
+            )}
+            <button type="submit" disabled={add.isPending || !name.trim() || !url.trim()}>
+              {add.isPending ? 'Adding…' : 'Add'}
+            </button>
+            {add.isError && <span className="error">{add.error.message}</span>}
+          </form>
+
+          {data.recent.length > 0 && (
+            <>
+              <h3>Recent alerts</h3>
+              <table className="gear recent-alerts">
+                <thead>
+                  <tr>
+                    <th>Queued</th>
+                    <th>To</th>
+                    <th>Alert</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.recent.map((alert, index) => (
+                    // A read-only list in a fixed order with no id: its index is stable.
+                    // oxlint-disable-next-line react/no-array-index-key
+                    <tr key={index}>
+                      <td>{when(alert.created_at)}</td>
+                      <td>{alert.destination}</td>
+                      <td>{data.alerts.find((a) => a.kind === alert.kind)?.label ?? alert.kind}</td>
+                      <td>
+                        {alert.sent_at
+                          ? `sent ${when(alert.sent_at)}`
+                          : alert.failed
+                            ? `failed: ${alert.last_error ?? '?'}`
+                            : `waiting${alert.attempts ? ` (${alert.attempts} tries: ${alert.last_error})` : ''}`}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+        </>
+      )}
+    </>
+  )
+}
+
+/**
+ * Status bar: "Alerts" opens the alerts settings (#12) in a dialog. Every user has their own
+ * (#164); only the admin adds system destinations.
+ */
+export function NotificationsDialog({ admin = true }: { admin?: boolean }) {
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const [open, setOpen] = useState(false)
 
   return (
     <>
@@ -149,99 +252,7 @@ export function NotificationsDialog({ admin = true }: { admin?: boolean }) {
             ✕
           </button>
         </header>
-        <p className="muted">
-          Get alerts in Discord: level-ups, targets reached or now in reach, and upgrades worth having. In Discord, open a channel's settings, then <strong>Integrations → Webhooks → New
-          Webhook</strong>, copy its URL and paste it below. Anyone with that URL can post to the channel, so it's
-          kept private: it's never shown again in full.
-        </p>
-        {view.isPending && <p className="muted">Loading…</p>}
-        {view.isError && <p className="error">Couldn't load alerts: {view.error.message}</p>}
-
-        {data && (
-          <>
-            {data.destinations.length === 0 && <p>No destinations yet.</p>}
-            {data.destinations.map((destination) => (
-              <DestinationRow key={destination.id} destination={destination} alerts={data.alerts} onSaved={onSaved} />
-            ))}
-            {data.destinations.length > 0 && data.system_alerts_to_user && (
-              <p className="muted">
-                System alerts (failed jobs, upstream errors) go to your destinations while there's no system
-                destination.
-              </p>
-            )}
-
-            <form
-              className="add-destination"
-              onSubmit={(event) => {
-                event.preventDefault()
-                add.mutate({ name, url, audience })
-              }}
-            >
-              <h3>Add a destination</h3>
-              <label>
-                Name{' '}
-                <input value={name} maxLength={60} placeholder="My alerts" onChange={(e) => setName(e.target.value)} />
-              </label>
-              <label>
-                Webhook URL{' '}
-                <input
-                  value={url}
-                  autoComplete="off"
-                  spellCheck={false}
-                  placeholder="https://discord.com/api/webhooks/…"
-                  onChange={(e) => setUrl(e.target.value)}
-                />
-              </label>
-              {admin && (
-                <label>
-                  For{' '}
-                  <select value={audience} onChange={(e) => setAudience(e.target.value as Audience)}>
-                    <option value="user">My character's alerts</option>
-                    <option value="system">System alerts only (whoever runs this instance)</option>
-                  </select>
-                </label>
-              )}
-              <button type="submit" disabled={add.isPending || !name.trim() || !url.trim()}>
-                {add.isPending ? 'Adding…' : 'Add'}
-              </button>
-              {add.isError && <span className="error">{add.error.message}</span>}
-            </form>
-
-            {data.recent.length > 0 && (
-              <>
-                <h3>Recent alerts</h3>
-                <table className="gear recent-alerts">
-                  <thead>
-                    <tr>
-                      <th>Queued</th>
-                      <th>To</th>
-                      <th>Alert</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.recent.map((alert, index) => (
-                      // A read-only list in a fixed order with no id: its index is stable.
-                      // oxlint-disable-next-line react/no-array-index-key
-                      <tr key={index}>
-                        <td>{when(alert.created_at)}</td>
-                        <td>{alert.destination}</td>
-                        <td>{data.alerts.find((a) => a.kind === alert.kind)?.label ?? alert.kind}</td>
-                        <td>
-                          {alert.sent_at
-                            ? `sent ${when(alert.sent_at)}`
-                            : alert.failed
-                              ? `failed: ${alert.last_error ?? '?'}`
-                              : `waiting${alert.attempts ? ` (${alert.attempts} tries: ${alert.last_error})` : ''}`}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            )}
-          </>
-        )}
+        <NotificationsForm admin={admin} enabled={open} />
       </dialog>
     </>
   )

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { About } from '../api'
 import { Contact, Privacy } from './Privacy'
@@ -21,7 +21,6 @@ function renderPrivacy(contact: string) {
     'fetch',
     vi.fn(async (url: string, init?: RequestInit) => {
       calls.push({ url, method: init?.method ?? 'GET' })
-      if (url === '/api/character') return Response.json({ removed: { snapshot: 7, itemchoice: 2 } })
       return Response.json(about(contact))
     }),
   )
@@ -53,18 +52,11 @@ describe('Privacy', () => {
     expect(screen.getByText(/kept for at most 30 days/)).toBeTruthy()
   })
 
-  it('deletes the data only after a second click', async () => {
-    const calls = renderPrivacy('')
-    fireEvent.click(screen.getByRole('button', { name: "Delete the character's data" }))
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-    expect(calls.some((call) => call.method === 'DELETE')).toBe(false)
-
-    fireEvent.click(screen.getByRole('button', { name: "Delete the character's data" }))
-    fireEvent.click(screen.getByRole('button', { name: 'Yes, delete everything' }))
-    expect((await screen.findByRole('status')).textContent).toBe(
-      'Deleted 9 stored rows, and stopped tracking the character.',
-    )
-    expect(calls).toContainEqual({ url: '/api/character', method: 'DELETE' })
+  it('sends removal to My account, where it now lives (#217)', async () => {
+    renderPrivacy('')
+    const section = await screen.findByRole('heading', { name: 'Removing it' })
+    expect(section.nextElementSibling?.querySelector('a')?.getAttribute('href')).toBe('#account')
+    expect(screen.queryByRole('button', { name: "Delete the character's data" })).toBeNull()
   })
 })
 

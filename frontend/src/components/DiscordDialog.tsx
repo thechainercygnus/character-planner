@@ -77,12 +77,12 @@ function Linked({
 }
 
 /**
- * Status bar: "Discord" opens the user's own Discord DM settings (#58, ADR 0044): link an
- * account, choose alerts, test, unlink. Not shown when the instance has no bot.
+ * The user's own Discord DM settings (#58, ADR 0044): link an account, choose alerts, test,
+ * unlink. Shared by the header's Discord dialog and the account page (#217). Nothing when the
+ * instance has no bot.
  */
-export function DiscordDialog() {
+export function DiscordSettings() {
   const queryClient = useQueryClient()
-  const dialogRef = useRef<HTMLDialogElement>(null)
   const view = useQuery({ queryKey: ['discord'], queryFn: api.discord })
   const onSaved = (saved: DiscordView) => queryClient.setQueryData(['discord'], saved)
   const data = view.data
@@ -92,6 +92,41 @@ export function DiscordDialog() {
       Join the planner's Discord server
     </a>
   )
+  return (
+    <>
+      <p className="muted">
+        Get your characters' alerts as private messages from the planner's bot: level-ups, targets reached or now in
+        reach, and upgrades worth having. At most one DM a sync. The bot can only message you while you're in its server
+        and allow direct messages from its members.
+      </p>
+      {data.linked ? (
+        <Linked link={data.linked} alerts={data.alerts} onSaved={onSaved} />
+      ) : (
+        <p>
+          <a className="button" href="/auth/discord/login">
+            Link Discord
+          </a>{' '}
+          <span className="muted">Discord tells the planner your account's id and name, nothing else.</span>
+        </p>
+      )}
+      {data.in_server === false && (
+        <p className="warn" role="status">
+          You're not in the bot's server, so it can't message you. {invite}
+        </p>
+      )}
+      {data.in_server !== false && invite && <p className="muted">{invite}</p>}
+    </>
+  )
+}
+
+/**
+ * Status bar: "Discord" opens the user's own Discord DM settings (#58, ADR 0044) in a dialog.
+ * Not shown when the instance has no bot.
+ */
+export function DiscordDialog() {
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const view = useQuery({ queryKey: ['discord'], queryFn: api.discord })
+  if (!view.data?.available) return null
 
   return (
     <>
@@ -112,27 +147,7 @@ export function DiscordDialog() {
             ✕
           </button>
         </header>
-        <p className="muted">
-          Get your characters' alerts as private messages from the planner's bot: level-ups, targets reached or now in
-          reach, and upgrades worth having. At most one DM a sync. The bot can only message you while you're in its
-          server and allow direct messages from its members.
-        </p>
-        {data.linked ? (
-          <Linked link={data.linked} alerts={data.alerts} onSaved={onSaved} />
-        ) : (
-          <p>
-            <a className="button" href="/auth/discord/login">
-              Link Discord
-            </a>{' '}
-            <span className="muted">Discord tells the planner your account's id and name, nothing else.</span>
-          </p>
-        )}
-        {data.in_server === false && (
-          <p className="warn" role="status">
-            You're not in the bot's server, so it can't message you. {invite}
-          </p>
-        )}
-        {data.in_server !== false && invite && <p className="muted">{invite}</p>}
+        <DiscordSettings />
       </dialog>
     </>
   )

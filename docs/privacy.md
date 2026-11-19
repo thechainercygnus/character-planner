@@ -57,8 +57,8 @@ its characters' names. Nothing more of anyone's.
 API for the character by name and realm, and Forever Companion for items and dungeons by
 id. Neither request carries anything else.
 
-**Removing it:** the notice has a button that deletes everything stored for the
-character.
+**Removing it:** **My account** (in the ⋯ menu) removes any character, deleting
+everything stored for it, and downloads everything stored as JSON in a zip.
 
 ## Setting the contact
 
@@ -74,10 +74,14 @@ runs this instance".
 
 ## Deleting the data
 
-**From the app:** pick the character in the header, open **Privacy** in the footer, then
-**Delete the character's data**. The button asks for a second click to confirm. It
-deletes that character's snapshots, progress history and settings, and stops tracking
-it. Other characters, alert webhooks and shared game data stay.
+**From the app:** open **My account** in the ⋯ menu, then **Remove…** on the character.
+It asks for a second click to confirm. It deletes that character's snapshots, progress
+history and settings, and stops tracking it. Other characters, alert webhooks and shared
+game data stay.
+
+**A copy first:** **Download my data** on the same page gives everything stored for you as
+JSON in a zip: your characters' data and settings, and your alert destinations, with each
+webhook's address masked. Sign-in sessions and tokens are left out.
 
 **From the command line:**
 
@@ -95,7 +99,7 @@ stored for **every** character:
 Settings go back to the shipped defaults. The shared game-data caches stay, since nothing
 in them is about the character.
 
-**With users on,** the Privacy page also has **Delete my account**. It deletes your
+**With users on,** My account also has **Delete my account**. It deletes your
 characters with all their data and settings, your sign-in sessions, your Battle.net token,
 your alert webhooks, a linked Discord account and your account. The admin can delete theirs only once nobody else uses the instance.
 An operator handling a request can do it for anyone: in the admin area (**Admin** in the
