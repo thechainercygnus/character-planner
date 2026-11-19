@@ -147,7 +147,8 @@ table.gear tr.row-reached td {
   color: var(--muted);
 }
 
-button.secondary {
+button.secondary,
+.button.secondary {
   background: transparent;
   color: var(--text);
   border: 1px solid var(--border);
@@ -425,41 +426,11 @@ button.tab.active {
   font-weight: normal;
 }
 
-/* Status bar menu */
-details.menu {
-  position: relative;
-}
-
-details.menu > summary {
-  list-style: none;
-  cursor: pointer;
-  padding: 0.3rem 0.7rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
-}
-
-details.menu > summary::-webkit-details-marker {
-  display: none;
-}
-
-.menu-items {
-  position: absolute;
-  z-index: 10;
-  top: calc(100% + 0.3rem);
-  left: 0;
+/* Status bar: My account, Admin and Sign out (#260), kept together and to the right. */
+.account-links {
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  padding: 0.4rem;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  min-width: 12rem;
-}
-
-.menu-items button {
-  text-align: left;
+  gap: 0.5rem;
+  margin-left: auto;
 }
 
 /* Recommendations */
@@ -1310,12 +1281,6 @@ ul.upcoming small {
 
   section {
     padding: 0.75rem;
-  }
-
-  /* The menu opens in the page's flow instead of floating off the edge. */
-  .menu-items {
-    position: static;
-    margin-top: 0.3rem;
   }
 
   .character-switcher,

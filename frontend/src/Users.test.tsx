@@ -89,29 +89,29 @@ describe('With users on', () => {
     expect(screen.queryByRole('link', { name: 'Sign in with Battle.net' })).toBeNull()
   })
 
-  it("hides the admin's instance-wide actions from everyone else", async () => {
+  it('gives a user Sync, My account and Sign out, and no Admin (#260)', async () => {
     serve(GUILDMATE)
     show(<StatusBar />)
     expect(await screen.findByRole('button', { name: 'Sign out' })).toBeTruthy()
-    expect(screen.queryByRole('button', { name: 'Refresh item pool' })).toBeNull()
+    expect(screen.getByRole('link', { name: 'My account' })).toBeTruthy()
     expect(screen.queryByRole('link', { name: 'Admin' })).toBeNull()
-    // Alerts are everyone's own now (#164): the button is there, without system options.
-    expect(screen.getByRole('button', { name: 'Alerts' })).toBeTruthy()
+    // The instance's actions are on Admin, the alerts on My account: neither in the bar.
+    expect(screen.queryByRole('button', { name: 'Refresh item pool' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Alerts' })).toBeNull()
   })
 
-  it('shows them to the admin', async () => {
+  it('gives the admin the Admin link too', async () => {
     serve(ADMIN)
     show(<StatusBar />)
-    expect(await screen.findByRole('button', { name: 'Refresh item pool' })).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Sign out' })).toBeTruthy()
+    expect(await screen.findByRole('button', { name: 'Sign out' })).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Admin' }).getAttribute('href')).toBe('#admin')
+    expect(screen.queryByRole('button', { name: 'Refresh item pool' })).toBeNull()
   })
 
-  it('shows a superuser what their permissions allow, and no more (#237)', async () => {
-    serve({ ...GUILDMATE, role: 'superuser', permissions: ['accounts.view', 'data.refresh'] })
+  it('gives anyone with one admin permission the Admin link (#237, #260)', async () => {
+    serve({ ...GUILDMATE, role: 'superuser', permissions: ['data.refresh'] })
     show(<StatusBar />)
-    expect(await screen.findByRole('button', { name: 'Refresh item pool' })).toBeTruthy()
-    expect(screen.getByRole('link', { name: 'Admin' })).toBeTruthy()
+    expect(await screen.findByRole('link', { name: 'Admin' })).toBeTruthy()
   })
 
   it('deletes the account from My account, after a second click (#217)', async () => {
