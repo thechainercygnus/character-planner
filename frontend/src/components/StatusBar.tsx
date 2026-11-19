@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
-import { api, ApiError, isQueued, selectCharacter, type SyncResult } from '../api'
+import { api, ApiError, can, isQueued, selectCharacter, type SyncResult } from '../api'
 import { CharacterSwitcher } from './CharacterSwitcher'
 import { DiscordDialog } from './DiscordDialog'
 import { NotificationsDialog } from './NotificationsDialog'
@@ -45,8 +45,10 @@ const REFRESH_LABEL: Record<string, string> = {
 export function StatusBar() {
   const queryClient = useQueryClient()
   const me = useQuery({ queryKey: ['me'], queryFn: api.me, staleTime: Infinity })
-  // With users on, instance-wide actions are the admin's (ADR 0037); without users, everyone's.
+  // With users on, system alerts are the admin's (ADR 0037); without users, everyone's.
   const canAdminister = !me.data?.users || me.data.admin
+  // Instance-wide actions need their permission (#237, ADR 0055); without users, all are given.
+  const canRefresh = can(me.data, 'data.refresh')
   const signOut = useMutation({
     mutationFn: api.logout,
     onSuccess: () => {
@@ -149,7 +151,12 @@ export function StatusBar() {
               Sign out
             </button>
           )}
-          {canAdminister && (
+          {me.data?.users && can(me.data, 'accounts.view') && (
+            <a className="button secondary" href="#admin" title="Accounts and roles">
+              Admin
+            </a>
+          )}
+          {canRefresh && (
             <>
               <button
                 type="button"
@@ -178,7 +185,7 @@ export function StatusBar() {
               >
                 Refresh enchant data
               </button>
-              {discord.data?.signup_message && (
+              {discord.data?.signup_message && can(me.data, 'discord.signup') && (
                 <button
                   type="button"
                   className="secondary"

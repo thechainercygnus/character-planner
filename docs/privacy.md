@@ -22,8 +22,9 @@ This page repeats what the notice says, and covers what an operator needs to do.
 - game data imported from the CharacterPlannerExport addon: the character's bags, bank
   and quest log, as of when the game saved them. Only the newest import is kept; it's
   deleted with the character, or from the app;
-- with users on (`PLANNER_USERS`): each user's Battle.net account id, when they signed
-  in, their sign-in sessions (only a hash of each), and which characters are theirs;
+- with users on (`PLANNER_USERS`): each user's Battle.net account id, their role (admin,
+  superuser or user), when they signed in, their sign-in sessions (only a hash of each),
+  and which characters are theirs;
 - the Battle.net sign-in token, if someone signs in. With it, the planner can list the
   account's characters to pick from. That list is fetched when it's shown and never
   stored: only the characters picked are tracked.
@@ -48,6 +49,9 @@ other members who joined it: its name, level, spec, role and upgrades. Leaving t
 stops that. If the guild sets an alert channel, the alerts a member chooses to share post
 to that Discord channel, where anyone who can read it sees them. Nothing is shared until
 the member ticks it.
+With users on, the admin, and any superusers the admin appoints, see a list of the
+accounts: each one's Battle.net account id, role, when it signed up and last signed in, and
+its characters' names. Nothing more of anyone's.
 
 **Sharing:** nothing is sold, shared or used for advertising. The planner asks Blizzard's
 API for the character by name and realm, and Forever Companion for items and dungeons by

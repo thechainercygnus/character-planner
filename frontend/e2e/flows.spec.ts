@@ -12,7 +12,7 @@ const LOCKET = 279870
 const KALEIDOSCOPE = 273088
 
 // The tab bar's tabs; Privacy and guest mode open from links, not the bar.
-for (const tab of TABS.filter((t) => t !== 'privacy' && t !== 'guest')) {
+for (const tab of TABS.filter((t) => !['privacy', 'guest', 'admin'].includes(t))) {
   test(`the ${tab} tab opens from the tab bar and from its address`, async ({ page }) => {
     await serveApi(page)
     await openTab(page, tab === 'upgrades' ? 'plan' : 'upgrades')

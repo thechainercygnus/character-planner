@@ -5,6 +5,14 @@
    "users": false,
    "signed_in": false,
    "admin": false,
+   "role": null,
+   "permissions": [
+    "accounts.view",
+    "data.refresh",
+    "discord.signup",
+    "enchants.correct",
+    "roles.manage"
+   ],
    "signups_open": true
   }
  },

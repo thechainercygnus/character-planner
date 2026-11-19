@@ -159,7 +159,7 @@ def _recipients(session: Session, kind: str) -> list[NotificationDestination]:
         return system
     # No system destination: the admin's own destinations, never another user's (#164).
     # Without users, every destination is the one person's (owner None).
-    admins = set(session.exec(select(User.id).where(col(User.is_admin))).all())
+    admins = set(session.exec(select(User.id).where(col(User.role) == "admin")).all())
     return [
         d for d in subscribed if d.audience == "user" and (d.user_id is None or d.user_id in admins)
     ]

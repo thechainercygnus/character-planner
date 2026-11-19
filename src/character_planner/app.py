@@ -166,6 +166,16 @@ from character_planner.queue import (
 )
 from character_planner.recipe_book import RecipeBook, recipe_book
 from character_planner.recommend import Recommendations, UsageRules, recommend
+from character_planner.roles import (
+    GRANTABLE,
+    PERMISSIONS,
+    Account,
+    AdminView,
+    RoleError,
+    admin_view,
+    permissions_of,
+    set_role,
+)
 from character_planner.rules import (
     EditedRules,
     RulesError,
@@ -260,21 +270,24 @@ PUBLIC_API = frozenset(
     {"/api/healthz", "/api/readyz", "/api/metrics", "/api/about", "/api/me"}
 )
 PUBLIC_PREFIXES = ("/api/guest",)
-# Instance-wide: the admin's alone, even to read. None now: alert webhooks became each
-# user's own (#164), filtered in their routes.
-ADMIN_ALWAYS: tuple[str, ...] = ()
-ADMIN_WRITES = (
-    "/api/enchants/corrections",
-    "/api/items/refresh",
-    "/api/pool/refresh",
-    "/api/enchants/refresh",
-    "/api/talents/refresh",
-    "/api/discord/signup-message",
+# What each route needs, with users on (#237, ADR 0055): (methods, path prefix,
+# permission). Checked by name in the middleware; what a role may do is data (roles.py).
+# Alert webhooks are each user's own (#164), filtered in their routes.
+STATE_CHANGING = frozenset({"POST", "PUT", "PATCH", "DELETE"})
+READS = frozenset({"GET", "HEAD"})
+ROUTE_PERMISSIONS: tuple[tuple[frozenset[str], str, str], ...] = (
+    (STATE_CHANGING, "/api/enchants/corrections", "enchants.correct"),
+    (STATE_CHANGING, "/api/items/refresh", "data.refresh"),
+    (STATE_CHANGING, "/api/pool/refresh", "data.refresh"),
+    (STATE_CHANGING, "/api/enchants/refresh", "data.refresh"),
+    (STATE_CHANGING, "/api/talents/refresh", "data.refresh"),
+    (STATE_CHANGING, "/api/discord/signup-message", "discord.signup"),
+    (READS, "/api/admin", "accounts.view"),
+    (STATE_CHANGING, "/api/admin/users/", "roles.manage"),
 )
 # The header the web app sends with every request; state-changing ones need it (#124).
 APP_HEADER = "X-Requested-With"
 APP_HEADER_VALUE = "character-planner"
-STATE_CHANGING = frozenset({"POST", "PUT", "PATCH", "DELETE"})
 
 logger = logging.getLogger(__name__)
 access_logger = logging.getLogger(ACCESS_LOGGER)
@@ -323,7 +336,13 @@ class Me(BaseModel):
     users: bool  # PLANNER_USERS: sign-in needed (ADR 0037)
     signed_in: bool
     admin: bool
+    role: str | None = None  # admin, superuser or user (#237, ADR 0055)
+    permissions: list[str] = []  # what the signed-in user may do; everything without users
     signups_open: bool
+
+
+class RoleChange(BaseModel):
+    role: str
 
 
 class AccountCharacters(BaseModel):
@@ -583,18 +602,25 @@ def create_app(
             return await call_next(request)
         with Session(engine) as db:
             user = user_for(db, request.cookies.get(SESSION_COOKIE))
+        permissions: frozenset[str] = frozenset()
         if user is not None:
+            with Session(engine) as db:
+                permissions = permissions_of(db, user.role)
             request.state.user_id = user.id
             request.state.is_admin = user.is_admin
+            request.state.role = user.role
+            request.state.permissions = permissions
         if path in PUBLIC_API or path.startswith(PUBLIC_PREFIXES):
             return await call_next(request)
         if user is None:
             return JSONResponse({"detail": "Sign in with Battle.net"}, status_code=401)
-        admin_only = path.startswith(ADMIN_ALWAYS) or (
-            request.method in STATE_CHANGING and path.startswith(ADMIN_WRITES)
-        )
-        if admin_only and not user.is_admin:
-            return JSONResponse({"detail": "Only the admin can do that"}, status_code=403)
+        needed = {
+            permission
+            for methods, prefix, permission in ROUTE_PERMISSIONS
+            if request.method in methods and path.startswith(prefix)
+        }
+        if not needed <= permissions:
+            return JSONResponse({"detail": "You don't have permission to do that"}, status_code=403)
         return await call_next(request)
 
     # Added last, so it runs first: an unknown Host never reaches the app (#124).
@@ -767,12 +793,41 @@ def create_app(
         """Whether users are on, and who's signed in (ADR 0037). Public, so the page
         knows to offer the sign-in."""
         user_id = getattr(request.state, "user_id", None)
+        permissions: frozenset[str] = getattr(request.state, "permissions", frozenset())
         return Me(
             users=settings.planner_users,
             signed_in=user_id is not None,
             admin=bool(getattr(request.state, "is_admin", False)),
+            role=getattr(request.state, "role", None),
+            # Without users, everyone may do everything there is (ADR 0037).
+            permissions=sorted(permissions if settings.planner_users else PERMISSIONS),
             signups_open=settings.planner_signups,
         )
+
+    def users_only() -> None:
+        if not settings.planner_users:
+            raise HTTPException(404, "There are no user accounts on this instance")
+
+    @app.get("/api/admin/accounts")
+    def admin_accounts(session: SessionDep) -> AdminView:
+        """Every account: its Battle.net account id, role, when it signed up and last
+        signed in, and its characters; and what each role may do (#237, ADR 0055).
+        Needs `accounts.view`. Users on only (404 otherwise)."""
+        users_only()
+        return admin_view(session)
+
+    @app.put("/api/admin/users/{user_id}/role")
+    def change_role(user_id: int, change: RoleChange, session: SessionDep) -> Account:
+        """Make a user a superuser, or a user again (#237). Needs `roles.manage`. The
+        admin's role can't change (409), and only superuser or user can be granted (422)."""
+        users_only()
+        try:
+            return set_role(session, user_id, change.role)
+        except LookupError as error:
+            raise HTTPException(404, "No such user") from error
+        except RoleError as error:
+            status = 409 if change.role in GRANTABLE else 422
+            raise HTTPException(status, str(error)) from error
 
     @app.get("/api/status")
     def status(
@@ -1803,8 +1858,8 @@ def create_app(
 
     @app.post("/api/discord/signup-message")
     def post_signup_message() -> signup.Outcome:
-        """Make the pinned sign-up message current (#192): the admin's (ADMIN_WRITES). One
-        attempt; Discord's refusal comes back to read, never retried."""
+        """Make the pinned sign-up message current (#192): needs `discord.signup`, the
+        admin's (ADR 0055). One attempt; Discord's refusal comes back to read, never retried."""
         if not settings.discord_signup_message:
             raise HTTPException(404, "DISCORD_SIGNUP_CHANNEL_ID and DISCORD_BOT_TOKEN aren't set")
         if http is not None:

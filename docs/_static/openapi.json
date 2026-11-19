@@ -28,6 +28,50 @@
         "title": "About",
         "type": "object"
       },
+      "Account": {
+        "description": "What the planner stores about an account, and no more (#237): it's for running the\ninstance, not watching people.",
+        "properties": {
+          "account_id": {
+            "title": "Account Id",
+            "type": "integer"
+          },
+          "characters": {
+            "items": {
+              "$ref": "#/components/schemas/AdminCharacter"
+            },
+            "title": "Characters",
+            "type": "array"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "last_sign_in_at": {
+            "format": "date-time",
+            "title": "Last Sign In At",
+            "type": "string"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "user_id",
+          "account_id",
+          "role",
+          "created_at",
+          "last_sign_in_at",
+          "characters"
+        ],
+        "title": "Account",
+        "type": "object"
+      },
       "AccountCharacter": {
         "properties": {
           "blizzard_id": {
@@ -135,6 +179,73 @@
           "characters"
         ],
         "title": "AccountCharacters",
+        "type": "object"
+      },
+      "AdminCharacter": {
+        "properties": {
+          "character_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Class"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "region": {
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "region",
+          "character_class"
+        ],
+        "title": "AdminCharacter",
+        "type": "object"
+      },
+      "AdminView": {
+        "properties": {
+          "accounts": {
+            "items": {
+              "$ref": "#/components/schemas/Account"
+            },
+            "title": "Accounts",
+            "type": "array"
+          },
+          "permissions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Permissions",
+            "type": "object"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/RoleView"
+            },
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "accounts",
+          "roles",
+          "permissions"
+        ],
+        "title": "AdminView",
         "type": "object"
       },
       "AlertInfo": {
@@ -3422,6 +3533,25 @@
             "title": "Admin",
             "type": "boolean"
           },
+          "permissions": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Permissions",
+            "type": "array"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
           "signed_in": {
             "title": "Signed In",
             "type": "boolean"
@@ -5490,6 +5620,40 @@
         "title": "RefreshResult",
         "type": "object"
       },
+      "RoleChange": {
+        "properties": {
+          "role": {
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role"
+        ],
+        "title": "RoleChange",
+        "type": "object"
+      },
+      "RoleView": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Permissions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "permissions"
+        ],
+        "title": "RoleView",
+        "type": "object"
+      },
       "RulesView": {
         "properties": {
           "armor_type_options": {
@@ -6995,6 +7159,75 @@
         "summary": "Account Characters"
       }
     },
+    "/api/admin/accounts": {
+      "get": {
+        "description": "Every account: its Battle.net account id, role, when it signed up and last\nsigned in, and its characters; and what each role may do (#237, ADR 0055).\nNeeds `accounts.view`. Users on only (404 otherwise).",
+        "operationId": "admin_accounts_api_admin_accounts_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Admin Accounts"
+      }
+    },
+    "/api/admin/users/{user_id}/role": {
+      "put": {
+        "description": "Make a user a superuser, or a user again (#237). Needs `roles.manage`. The\nadmin's role can't change (409), and only superuser or user can be granted (422).",
+        "operationId": "change_role_api_admin_users__user_id__role_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Account"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Change Role"
+      }
+    },
     "/api/character": {
       "delete": {
         "description": "Stop tracking the character and delete everything stored for it (#133, #14):\nsnapshots, history, plans and settings edited in the app. Other characters and\nshared game data stay. With none left, the next start tracks the character .env\nnames again.",
@@ -7520,7 +7753,7 @@
     },
     "/api/discord/signup-message": {
       "post": {
-        "description": "Make the pinned sign-up message current (#192): the admin's (ADMIN_WRITES). One\nattempt; Discord's refusal comes back to read, never retried.",
+        "description": "Make the pinned sign-up message current (#192): needs `discord.signup`, the\nadmin's (ADR 0055). One attempt; Discord's refusal comes back to read, never retried.",
         "operationId": "post_signup_message_api_discord_signup_message_post",
         "responses": {
           "200": {

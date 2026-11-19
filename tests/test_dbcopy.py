@@ -33,7 +33,7 @@ def source(tmp_path: Path) -> Iterator[Engine]:
     engine = make_engine(f"sqlite:///{tmp_path / 'source.db'}")
     init_db(engine)
     with Session(engine) as session:
-        user = User(account_id=1001, is_admin=True)
+        user = User(account_id=1001, role="admin")
         session.add(user)
         session.flush()
         character = Character(
@@ -65,6 +65,7 @@ def source(tmp_path: Path) -> Iterator[Engine]:
 def test_everything_is_copied_as_it_was(source: Engine, engine: Engine) -> None:
     copied = copy_database(source, engine)
     assert copied == {
+        "role": 3,  # the source's roles replace the target's seeded ones (#237)
         "user": 1,
         "character": 1,
         "snapshot": 1,
@@ -77,6 +78,7 @@ def test_everything_is_copied_as_it_was(source: Engine, engine: Engine) -> None:
         assert snapshot.captured_at == AT  # time zones survive
         (character,) = session.exec(select(Character)).all()
         assert (character.slug, character.user_id) == ("brumboldt-doomlet", 1)
+        assert session.exec(select(User)).one().role == "admin"
         # New rows don't collide with the copied ids (Postgres sequences moved on).
         other = Character(region="eu", slug="someone-else", name="Someone", surname="Else")
         session.add(other)
@@ -110,7 +112,7 @@ def test_the_command_reads_the_target_from_the_environment(
     monkeypatch.setenv("COPY_TO_DATABASE_URL", engine.url.render_as_string(hide_password=False))
     assert dbcli.main(["copy-to"]) == 0
     out = capsys.readouterr().out
-    assert "Copied 5 rows" in out
+    assert "Copied 8 rows" in out  # 5, and the 3 roles
     assert "  snapshot: 1" in out
     if engine.url.password:  # Postgres: the password never reaches the output
         assert engine.url.password not in out

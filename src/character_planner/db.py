@@ -18,15 +18,28 @@ def utcnow() -> datetime:
     return datetime.now(UTC)
 
 
+class Role(SQLModel, table=True):
+    """A role and what it may do (#237, ADR 0055): permissions are data, not code. The
+    admin has every permission whatever its row says (roles.py)."""
+
+    name: str = Field(primary_key=True)  # admin, superuser, user
+    permissions: list[str] = Field(default_factory=list, sa_column=Column(JSON, nullable=False))
+
+
 class User(SQLModel, table=True):
     """A person signed in with Battle.net, when users are on (#16, ADR 0037). The key
     is the account id from /profile/user/wow."""
 
     id: int | None = Field(default=None, primary_key=True)
     account_id: int = Field(unique=True, index=True)
-    is_admin: bool = False
+    # A Role's name (#237, ADR 0055): the first sign-in is the admin; one admin only.
+    role: str = Field(default="user", index=True)
     created_at: datetime = Field(default_factory=utcnow)
     last_sign_in_at: datetime = Field(default_factory=utcnow)
+
+    @property
+    def is_admin(self) -> bool:
+        return self.role == "admin"
 
 
 class UserSession(SQLModel, table=True):

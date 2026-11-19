@@ -35,6 +35,26 @@ The characters on the signed-in Battle.net account (#15), to pick ones to track.
 
 **200:** [AccountCharacters](#schema-accountcharacters)
 
+## `admin`
+
+### `GET /api/admin/accounts`
+
+Every account: its Battle.net account id, role, when it signed up and last signed in, and its characters; and what each role may do (#237, ADR 0055). Needs `accounts.view`. Users on only (404 otherwise).
+
+**200:** [AdminView](#schema-adminview)
+
+### `PUT /api/admin/users/{user_id}/role`
+
+Make a user a superuser, or a user again (#237). Needs `roles.manage`. The admin's role can't change (409), and only superuser or user can be granted (422).
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `user_id` | path | integer | yes |  |
+
+**Body:** [RoleChange](#schema-rolechange)
+
+**200:** [Account](#schema-account)
+
 ## `character`
 
 ### `GET /api/character`
@@ -158,7 +178,7 @@ Choose which alerts arrive as DMs, or pause them all.
 
 ### `POST /api/discord/signup-message`
 
-Make the pinned sign-up message current (#192): the admin's (ADMIN_WRITES). One attempt; Discord's refusal comes back to read, never retried.
+Make the pinned sign-up message current (#192): needs `discord.signup`, the admin's (ADR 0055). One attempt; Discord's refusal comes back to read, never retried.
 
 **200:** [Outcome](#schema-outcome)
 
@@ -919,6 +939,20 @@ Login
 | `data` | [DataCredit](#schema-datacredit) | yes |
 | `operator_contact` | string | no |
 
+(schema-account)=
+### Account
+
+What the planner stores about an account, and no more (#237): it's for running the instance, not watching people.
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `user_id` | integer | yes |
+| `account_id` | integer | yes |
+| `role` | string | yes |
+| `created_at` | string | yes |
+| `last_sign_in_at` | string | yes |
+| `characters` | list of [AdminCharacter](#schema-admincharacter) | yes |
+
 (schema-accountcharacter)=
 ### AccountCharacter
 
@@ -941,6 +975,25 @@ Login
 | Field | Type | Required |
 | --- | --- | --- |
 | `characters` | list of [AccountCharacter](#schema-accountcharacter) | yes |
+
+(schema-admincharacter)=
+### AdminCharacter
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `id` | integer | yes |
+| `name` | string | yes |
+| `region` | string | yes |
+| `character_class` | string or null | yes |
+
+(schema-adminview)=
+### AdminView
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `accounts` | list of [Account](#schema-account) | yes |
+| `roles` | list of [RoleView](#schema-roleview) | yes |
+| `permissions` | map of string | yes |
 
 (schema-alertinfo)=
 ### AlertInfo
@@ -1710,6 +1763,8 @@ Type: list of [Quest](#schema-quest)
 | `users` | boolean | yes |
 | `signed_in` | boolean | yes |
 | `admin` | boolean | yes |
+| `role` | string or null | no |
+| `permissions` | list of string | no |
 | `signups_open` | boolean | yes |
 
 (schema-member)=
@@ -2181,6 +2236,21 @@ One quest in a chain. Only quest_id and name are always known.
 | `icons` | integer | no |
 | `companion_fetched` | integer | no |
 | `companion_not_found` | list of integer | no |
+
+(schema-rolechange)=
+### RoleChange
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `role` | string | yes |
+
+(schema-roleview)=
+### RoleView
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `name` | string | yes |
+| `permissions` | list of string | yes |
 
 (schema-rulesview)=
 ### RulesView

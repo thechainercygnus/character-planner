@@ -54,9 +54,10 @@ function show(element: React.ReactElement) {
   render(<QueryClientProvider client={client}>{element}</QueryClientProvider>)
 }
 
-const SIGNED_OUT: Me = { users: true, signed_in: false, admin: false, signups_open: false }
-const GUILDMATE: Me = { users: true, signed_in: true, admin: false, signups_open: false }
-const ADMIN: Me = { ...GUILDMATE, admin: true }
+const EVERY_PERMISSION = ['accounts.view', 'data.refresh', 'discord.signup', 'enchants.correct', 'roles.manage']
+const SIGNED_OUT: Me = { users: true, signed_in: false, admin: false, role: null, permissions: [], signups_open: false }
+const GUILDMATE: Me = { users: true, signed_in: true, admin: false, role: 'user', permissions: [], signups_open: false }
+const ADMIN: Me = { ...GUILDMATE, admin: true, role: 'admin', permissions: EVERY_PERMISSION }
 
 describe('With users on', () => {
   afterEach(() => {
@@ -86,6 +87,7 @@ describe('With users on', () => {
     show(<StatusBar />)
     expect(await screen.findByRole('button', { name: 'Sign out' })).toBeTruthy()
     expect(screen.queryByRole('button', { name: 'Refresh item pool' })).toBeNull()
+    expect(screen.queryByRole('link', { name: 'Admin' })).toBeNull()
     // Alerts are everyone's own now (#164): the button is there, without system options.
     expect(screen.getByRole('button', { name: 'Alerts' })).toBeTruthy()
   })
@@ -95,6 +97,14 @@ describe('With users on', () => {
     show(<StatusBar />)
     expect(await screen.findByRole('button', { name: 'Refresh item pool' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'Admin' }).getAttribute('href')).toBe('#admin')
+  })
+
+  it('shows a superuser what their permissions allow, and no more (#237)', async () => {
+    serve({ ...GUILDMATE, role: 'superuser', permissions: ['accounts.view', 'data.refresh'] })
+    show(<StatusBar />)
+    expect(await screen.findByRole('button', { name: 'Refresh item pool' })).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'Admin' })).toBeTruthy()
   })
 
   it('deletes the account from the privacy page, after a second click', async () => {

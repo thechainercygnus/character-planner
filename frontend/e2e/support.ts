@@ -36,7 +36,73 @@ export async function openTab(page: Page, hash: string) {
   await page.evaluate(() => document.fonts.ready)
 }
 
-export const TABS = ['upgrades', 'dungeons', 'plan', 'talents', 'professions', 'progress', 'character', 'privacy', 'guest']
+export const TABS = [
+  'upgrades',
+  'dungeons',
+  'plan',
+  'talents',
+  'professions',
+  'progress',
+  'character',
+  'privacy',
+  'guest',
+  'admin',
+]
+
+const EVERY_PERMISSION = ['accounts.view', 'data.refresh', 'discord.signup', 'enchants.correct', 'roles.manage']
+
+/** The admin signed in on an instance with users (#237): the admin page needs users on. */
+const USERS_ON: Answers = {
+  '/api/me': {
+    body: {
+      users: true,
+      signed_in: true,
+      admin: true,
+      role: 'admin',
+      permissions: EVERY_PERMISSION,
+      signups_open: false,
+    },
+  },
+  '/api/admin/accounts': {
+    body: {
+      accounts: [
+        {
+          user_id: 1,
+          account_id: 1001,
+          role: 'admin',
+          created_at: '2026-11-14T00:00:00Z',
+          last_sign_in_at: '2026-11-19T00:00:00Z',
+          characters: [{ id: 1, name: 'Brumboldt Doomlet', region: 'us', character_class: 'Warrior' }],
+        },
+        {
+          user_id: 2,
+          account_id: 2002,
+          role: 'superuser',
+          created_at: '2026-11-15T00:00:00Z',
+          last_sign_in_at: '2026-11-18T00:00:00Z',
+          characters: [],
+        },
+      ],
+      roles: [
+        { name: 'admin', permissions: EVERY_PERMISSION },
+        { name: 'superuser', permissions: ['accounts.view', 'data.refresh', 'enchants.correct'] },
+        { name: 'user', permissions: [] },
+      ],
+      permissions: {
+        'accounts.view': 'See every account, its role and its characters',
+        'roles.manage': 'Make a user a superuser, or a user again',
+        'data.refresh': 'Refresh the shared game data: items, the item pool, enchants and talents',
+        'enchants.correct': 'Correct the shared enchant data: material levels and crafted effects',
+        'discord.signup': "Update the Discord bot's pinned sign-up message",
+      },
+    },
+  },
+}
+
+/** Serve the API as a tab needs it: the admin page with users on, the rest as recorded. */
+export function serveTab(page: Page, tab: string): Promise<Request[]> {
+  return serveApi(page, tab === 'admin' ? USERS_ON : {})
+}
 
 /** Every dialog: [the tab it opens from, its opening button]. */
 export const DIALOGS: [string, RegExp][] = [

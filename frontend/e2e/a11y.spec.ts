@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
-import { DIALOGS, TABS, openDialog, openTab, serveApi } from './support.ts'
+import { DIALOGS, TABS, openDialog, openTab, serveApi, serveTab } from './support.ts'
 
 /**
  * Accessibility (#165): axe finds nothing on any tab or dialog, on a phone or a desktop.
@@ -23,7 +23,7 @@ for (const [size, width, height, phone] of [
 
     for (const tab of TABS) {
       test(`${tab} tab`, async ({ page }) => {
-        await serveApi(page)
+        await serveTab(page, tab)
         await openTab(page, tab)
         const { violations } = await new AxeBuilder({ page }).analyze()
         expect(describe(violations)).toEqual([])
