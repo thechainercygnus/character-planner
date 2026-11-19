@@ -144,7 +144,11 @@ export function Privacy() {
           pick from; that list isn't stored, only the characters you pick are tracked.
         </li>
       </ul>
-      <p>It also caches game data that's the same for every character: items, dungeons, recipes and talent trees.</p>
+      <p>
+        It also caches game data that's the same for every character: items, dungeons, talent trees, and recipes,
+        including every recipe of a tracked character's professions, learned or not. Which professions it looks up
+        follows from the characters tracked, but the recipes themselves are game data, shared and not tied to anyone.
+      </p>
 
       <h2>How long</h2>
       <p>

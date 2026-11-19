@@ -13,7 +13,7 @@ import { Landing } from './components/Landing'
 import { LookAhead } from './components/LookAhead'
 import { Privacy } from './components/Privacy'
 import { SignIn } from './components/SignIn'
-import { ProfessionMilestones } from './components/ProfessionMilestones'
+import { Professions } from './components/Professions'
 import { Progress } from './components/Progress'
 import { Recommendations } from './components/Recommendations'
 import { RulesDialog } from './components/RulesDialog'
@@ -25,18 +25,19 @@ import { useHashIs, useHashTab, type Tab } from './useHashTab'
 import { WeightsDialog } from './components/WeightsDialog'
 import './App.css'
 
-type TabId = 'upgrades' | 'dungeons' | 'plan' | 'talents' | 'progress' | 'guild' | 'character'
+type TabId = 'upgrades' | 'dungeons' | 'plan' | 'talents' | 'professions' | 'progress' | 'guild' | 'character'
 
 const TABS: readonly Tab<TabId>[] = [
   { id: 'upgrades', label: 'Upgrades' },
   { id: 'dungeons', label: 'Dungeons' },
   { id: 'plan', label: 'Plan' },
   { id: 'talents', label: 'Talents' },
+  { id: 'professions', label: 'Professions' },
   { id: 'progress', label: 'Progress' },
   { id: 'character', label: 'Character' },
 ]
 /** With users on, the guild view too (#18): it needs other people. */
-const TABS_WITH_GUILD: readonly Tab<TabId>[] = [...TABS.slice(0, 5), { id: 'guild', label: 'Guild' }, TABS[5]!]
+const TABS_WITH_GUILD: readonly Tab<TabId>[] = [...TABS.slice(0, -1), { id: 'guild', label: 'Guild' }, TABS.at(-1)!]
 
 export default function App() {
   const me = useQuery({ queryKey: ['me'], queryFn: api.me, staleTime: Infinity })
@@ -52,8 +53,9 @@ export default function App() {
   const professions = useQuery({
     queryKey: ['professions'],
     queryFn: api.professions,
-    enabled: tab === 'progress',
+    enabled: tab === 'professions',
   })
+  const recipes = useQuery({ queryKey: ['recipes'], queryFn: api.recipes, enabled: tab === 'professions' })
   // On the Plan tab, and for its tab count: essential class quests missed (#8).
   const classQuests = useQuery({ queryKey: ['class-quests'], queryFn: api.classQuests })
   const enchants = useQuery({ queryKey: ['enchants'], queryFn: api.enchants, enabled: tab === 'upgrades' })
@@ -159,8 +161,14 @@ export default function App() {
             <>
               {progress.isError && <p className="error">Couldn't load progress: {progress.error.message}</p>}
               {progress.data && <Progress data={progress.data} />}
+            </>
+          )}
+
+          {tab === 'professions' && (
+            <>
               {professions.isError && <p className="error">Couldn't load professions: {professions.error.message}</p>}
-              {professions.data && <ProfessionMilestones data={professions.data} />}
+              {recipes.isError && <p className="error">Couldn't load recipes: {recipes.error.message}</p>}
+              {professions.data && recipes.data && <Professions professions={professions.data} book={recipes.data} />}
             </>
           )}
 

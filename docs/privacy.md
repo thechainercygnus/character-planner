@@ -28,8 +28,10 @@ This page repeats what the notice says, and covers what an operator needs to do.
   account's characters to pick from. That list is fetched when it's shown and never
   stored: only the characters picked are tracked.
 
-It also caches game data that's the same for every character: items, dungeons, recipes
-and talent trees.
+It also caches game data that's the same for every character: items, dungeons, talent
+trees, and recipes, including every recipe of a tracked character's professions, learned or
+not. Which professions it looks up follows from the characters tracked, but the recipes
+themselves are game data, shared and not tied to anyone.
 
 **How long:** data from Blizzard is kept for at most 30 days, and each sync replaces it.
 The progress history and settings stay until they're deleted. Log files, if the operator

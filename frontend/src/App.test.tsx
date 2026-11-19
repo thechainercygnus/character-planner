@@ -89,7 +89,7 @@ describe('App tabs (#41)', () => {
     window.location.hash = ''
   })
 
-  it('orders the tabs Upgrades, Dungeons, Plan, Talents, Progress, Character', async () => {
+  it('orders the tabs Upgrades, Dungeons, Plan, Talents, Professions, Progress, Character', async () => {
     renderAt('')
     const tabs = await screen.findAllByRole('tab')
     expect(tabs.map((tab) => tab.textContent?.replace(/\d+$/, '').trim())).toEqual([
@@ -97,6 +97,7 @@ describe('App tabs (#41)', () => {
       'Dungeons',
       'Plan',
       'Talents',
+      'Professions',
       'Progress',
       'Character',
     ])

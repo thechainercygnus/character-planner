@@ -9525,5 +9525,679 @@
     }
    }
   }
+ },
+ "/api/recipes": {
+  "status": 200,
+  "body": {
+   "professions": [
+    {
+     "name": "Mining",
+     "primary": true,
+     "skill": 108,
+     "max_skill": 150,
+     "listed": false,
+     "known": 6,
+     "unlearned": 0,
+     "season_of_discovery": 0,
+     "categories": [
+      {
+       "name": "Known recipes",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 52643,
+         "name": "Lodestone",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Lodestone"
+        },
+        {
+         "recipe_id": 1570,
+         "name": "Mining",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Mining"
+        },
+        {
+         "recipe_id": 1600,
+         "name": "Smelt Bronze",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Smelt+Bronze"
+        },
+        {
+         "recipe_id": 3324,
+         "name": "Smelt Copper",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Smelt+Copper"
+        },
+        {
+         "recipe_id": 1599,
+         "name": "Smelt Silver",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Smelt+Silver"
+        },
+        {
+         "recipe_id": 1848,
+         "name": "Smelt Tin",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Smelt+Tin"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Engineering",
+     "primary": true,
+     "skill": 104,
+     "max_skill": 150,
+     "listed": true,
+     "known": 19,
+     "unlearned": 27,
+     "season_of_discovery": 2,
+     "categories": [
+      {
+       "name": "Parts",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 2413,
+         "name": "Rough Blasting Powder",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Rough+Blasting+Powder"
+        },
+        {
+         "recipe_id": 2417,
+         "name": "Handful of Copper Bolts",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Handful+of+Copper+Bolts"
+        },
+        {
+         "recipe_id": 2419,
+         "name": "Copper Tube",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Copper+Tube"
+        },
+        {
+         "recipe_id": 2422,
+         "name": "Silver Contact",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Silver+Contact"
+        },
+        {
+         "recipe_id": 2423,
+         "name": "Copper Modulator",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Copper+Modulator"
+        },
+        {
+         "recipe_id": 2425,
+         "name": "Coarse Blasting Powder",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Coarse+Blasting+Powder"
+        },
+        {
+         "recipe_id": 4294,
+         "name": "Arclight Spanner",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Arclight+Spanner"
+        },
+        {
+         "recipe_id": 2433,
+         "name": "Bronze Tube",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Bronze+Tube"
+        },
+        {
+         "recipe_id": 2439,
+         "name": "Whirring Bronze Gizmo",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Whirring+Bronze+Gizmo"
+        }
+       ]
+      },
+      {
+       "name": "Explosives",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 2414,
+         "name": "Rough Dynamite",
+         "known": true,
+         "crafted_item_id": 4358,
+         "wowhead": "https://www.wowhead.com/forever/item=4358"
+        },
+        {
+         "recipe_id": 2418,
+         "name": "Rough Copper Bomb",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Rough+Copper+Bomb"
+        },
+        {
+         "recipe_id": 2427,
+         "name": "Coarse Dynamite",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Coarse+Dynamite"
+        },
+        {
+         "recipe_id": 2429,
+         "name": "Small Seaforium Charge",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Small+Seaforium+Charge"
+        },
+        {
+         "recipe_id": 2432,
+         "name": "Large Copper Bomb",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Large+Copper+Bomb"
+        }
+       ]
+      },
+      {
+       "name": "Ammunition",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 2415,
+         "name": "Crafted Light Shot",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Crafted+Light+Shot"
+        },
+        {
+         "recipe_id": 2426,
+         "name": "Crafted Heavy Shot",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Crafted+Heavy+Shot"
+        },
+        {
+         "recipe_id": 2443,
+         "name": "Crafted Solid Shot",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Crafted+Solid+Shot"
+        },
+        {
+         "recipe_id": 6866,
+         "name": "Hi-Impact Mithril Slugs",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Hi-Impact+Mithril+Slugs"
+        }
+       ]
+      },
+      {
+       "name": "Ranged Weapons",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 2420,
+         "name": "Rough Boomstick",
+         "known": true,
+         "crafted_item_id": 4362,
+         "wowhead": "https://www.wowhead.com/forever/item=4362"
+        },
+        {
+         "recipe_id": 2431,
+         "name": "Deadly Blunderbuss",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Deadly+Blunderbuss"
+        },
+        {
+         "recipe_id": 2436,
+         "name": "Lovingly Crafted Boomstick",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Lovingly+Crafted+Boomstick"
+        }
+       ]
+      },
+      {
+       "name": "Scopes",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 2421,
+         "name": "Crude Scope",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Crude+Scope"
+        },
+        {
+         "recipe_id": 2435,
+         "name": "Standard Scope",
+         "known": false,
+         "crafted_item_id": 4406,
+         "wowhead": "https://www.wowhead.com/forever/item=4406"
+        },
+        {
+         "recipe_id": 2459,
+         "name": "Accurate Scope",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Accurate+Scope"
+        }
+       ]
+      },
+      {
+       "name": "Pets and Guardians",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 2428,
+         "name": "Target Dummy",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Target+Dummy"
+        },
+        {
+         "recipe_id": 2424,
+         "name": "Mechanical Squirrel",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Mechanical+Squirrel"
+        },
+        {
+         "recipe_id": 2460,
+         "name": "Advanced Target Dummy",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Advanced+Target+Dummy"
+        }
+       ]
+      },
+      {
+       "name": "Cloth Headgear",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 2430,
+         "name": "Flying Tiger Goggles",
+         "known": true,
+         "crafted_item_id": 4368,
+         "wowhead": "https://www.wowhead.com/forever/item=4368"
+        },
+        {
+         "recipe_id": 2437,
+         "name": "Shadow Goggles",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Shadow+Goggles"
+        },
+        {
+         "recipe_id": 2450,
+         "name": "Green Tinted Goggles",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Green+Tinted+Goggles"
+        }
+       ]
+      },
+      {
+       "name": "Gadgets",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 2440,
+         "name": "Flame Deflector",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Flame+Deflector"
+        },
+        {
+         "recipe_id": 2446,
+         "name": "Minor Recombobulator",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Minor+Recombobulator"
+        }
+       ]
+      },
+      {
+       "name": "Consumable Devices",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 4606,
+         "name": "Practice Lock",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Practice+Lock"
+        },
+        {
+         "recipe_id": 58794,
+         "name": "Harvester Override Signalcaster",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Harvester+Override+Signalcaster"
+        },
+        {
+         "recipe_id": 2457,
+         "name": "Compact Harvest Reaper Kit",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Compact+Harvest+Reaper+Kit"
+        },
+        {
+         "recipe_id": 5067,
+         "name": "Aquadynamic Fish Attractor",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Aquadynamic+Fish+Attractor"
+        }
+       ]
+      },
+      {
+       "name": "Devices",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 5068,
+         "name": "Goblin Jumper Cables",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Goblin+Jumper+Cables"
+        },
+        {
+         "recipe_id": 6946,
+         "name": "Goblin \"Boom\" Box",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Goblin+%22Boom%22+Box"
+        }
+       ]
+      },
+      {
+       "name": "Fireworks",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 12420,
+         "name": "Red Firework",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Red+Firework"
+        },
+        {
+         "recipe_id": 12421,
+         "name": "Green Firework",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Green+Firework"
+        }
+       ]
+      },
+      {
+       "name": "SEASON OF DISCOVERY",
+       "season_of_discovery": true,
+       "recipes": [
+        {
+         "recipe_id": 49656,
+         "name": "Soul Vessel",
+         "known": false,
+         "crafted_item_id": 211427,
+         "wowhead": "https://www.wowhead.com/forever/item=211427"
+        },
+        {
+         "recipe_id": 49864,
+         "name": "Polished Truesilver Gears",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Polished+Truesilver+Gears"
+        }
+       ]
+      },
+      {
+       "name": "Camping",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 52650,
+         "name": "Reagent Bot",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Reagent+Bot"
+        },
+        {
+         "recipe_id": 57011,
+         "name": "Repair Bot",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Repair+Bot"
+        },
+        {
+         "recipe_id": 57035,
+         "name": "Anarchist's Workbench",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Anarchist%27s+Workbench"
+        }
+       ]
+      },
+      {
+       "name": "Leather Headgear",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 59091,
+         "name": "Bent Goggles",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Bent+Goggles"
+        }
+       ]
+      },
+      {
+       "name": "Mail Headgear",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 59092,
+         "name": "Stuckbutton Goggles",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Stuckbutton+Goggles"
+        }
+       ]
+      },
+      {
+       "name": "Plate Headgear",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 59093,
+         "name": "Dented Goggles",
+         "known": false,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Dented+Goggles"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Cooking",
+     "primary": false,
+     "skill": 87,
+     "max_skill": 150,
+     "listed": false,
+     "known": 11,
+     "unlearned": 0,
+     "season_of_discovery": 0,
+     "categories": [
+      {
+       "name": "Known recipes",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 52640,
+         "name": "Basic Campfire",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Basic+Campfire"
+        },
+        {
+         "recipe_id": 1674,
+         "name": "Beer Basted Boar Ribs",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Beer+Basted+Boar+Ribs"
+        },
+        {
+         "recipe_id": 1872,
+         "name": "Blood Sausage",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Blood+Sausage"
+        },
+        {
+         "recipe_id": 3964,
+         "name": "Boiled Clams",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Boiled+Clams"
+        },
+        {
+         "recipe_id": 1535,
+         "name": "Charred Wolf Meat",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Charred+Wolf+Meat"
+        },
+        {
+         "recipe_id": 1538,
+         "name": "Coyote Steak",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Coyote+Steak"
+        },
+        {
+         "recipe_id": 1539,
+         "name": "Goretusk Liver Pie",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Goretusk+Liver+Pie"
+        },
+        {
+         "recipe_id": 4786,
+         "name": "Herb Baked Egg",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Herb+Baked+Egg"
+        },
+        {
+         "recipe_id": 1537,
+         "name": "Roasted Boar Meat",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Roasted+Boar+Meat"
+        },
+        {
+         "recipe_id": 1536,
+         "name": "Spiced Wolf Meat",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Spiced+Wolf+Meat"
+        },
+        {
+         "recipe_id": 1540,
+         "name": "Westfall Stew",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Westfall+Stew"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "First Aid",
+     "primary": false,
+     "skill": 87,
+     "max_skill": 150,
+     "listed": false,
+     "known": 7,
+     "unlearned": 0,
+     "season_of_discovery": 0,
+     "categories": [
+      {
+       "name": "Known recipes",
+       "season_of_discovery": false,
+       "recipes": [
+        {
+         "recipe_id": 4417,
+         "name": "Anti-Venom",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Anti-Venom"
+        },
+        {
+         "recipe_id": 52641,
+         "name": "First Aid Kit",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=First+Aid+Kit"
+        },
+        {
+         "recipe_id": 1839,
+         "name": "Heavy Linen Bandage",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Heavy+Linen+Bandage"
+        },
+        {
+         "recipe_id": 54192,
+         "name": "Lesser Healing Potion",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Lesser+Healing+Potion"
+        },
+        {
+         "recipe_id": 1838,
+         "name": "Linen Bandage",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Linen+Bandage"
+        },
+        {
+         "recipe_id": 54191,
+         "name": "Minor Healing Potion",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Minor+Healing+Potion"
+        },
+        {
+         "recipe_id": 1840,
+         "name": "Wool Bandage",
+         "known": true,
+         "crafted_item_id": null,
+         "wowhead": "https://www.wowhead.com/forever/search?q=Wool+Bandage"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "details_pending": 43
+  }
  }
 }
