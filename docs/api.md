@@ -57,19 +57,19 @@ Every account: its Battle.net account id, role, when it signed up and last signe
 
 ### `GET /api/admin/backups`
 
-Whether backups are set up, how often and how many are kept, and the last one's outcome (#240, ADR 0061). Needs `backups.manage`.
+Whether backups are set up, how often and how many are kept, and the last one's outcome (#240, ADR 0061). Needs `backups.manage`. Without users too (ADR 0062).
 
 **200:** [BackupsView](#schema-backupsview)
 
 ### `POST /api/admin/backups`
 
-Back up now, whatever the schedule (#240). Needs `backups.manage`. 409 when backups aren't set up; 502 when the dump, encryption or upload fails (recorded, as the worker's are). Logged.
+Back up now, whatever the schedule (#240). Needs `backups.manage`. 409 when backups aren't set up; 502 when the dump, encryption or upload fails (recorded, as the worker's are). Logged with users on. Without users too (ADR 0062).
 
 **200:** [BackupsView](#schema-backupsview)
 
 ### `GET /api/admin/health`
 
-Instance health (#241): the database, the queue, recent job failures, the upstream budget and the shared catalogs' refreshes. Needs `health.view`. Reads the state directly, so it works without METRICS_TOKEN.
+Instance health (#241): the database, the queue, recent job failures, the upstream budget and the shared catalogs' refreshes. Needs `health.view`. Reads the state directly, so it works without METRICS_TOKEN. Without users too (ADR 0062).
 
 **200:** [Health](#schema-health)
 

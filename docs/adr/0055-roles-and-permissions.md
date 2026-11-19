@@ -1,7 +1,8 @@
 # 0055: Roles, with permissions as data
 
 Status: accepted (2026-11-19). Amends ADR 0037: the admin is a role, and instance-wide
-routes need a permission instead of the admin.
+routes need a permission instead of the admin. Point 6 amended by ADR 0062: without users,
+Admin shows the instance's health, backups and shared data.
 
 ## Context
 
