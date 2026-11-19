@@ -273,3 +273,12 @@ def test_the_command_line_restores_an_encrypted_or_decrypted_file(
         assert "Restored" in capsys.readouterr().out
     # Into a database that has data: refused, nothing written.
     assert dbcli.main(["restore", "--file", str(tmp_path / "b.json.gz"), "--yes"]) == 1
+
+
+def test_the_app_imports_without_the_dev_only_stubs() -> None:
+    """The image has no boto3-stubs: importing them at runtime stopped it starting."""
+    import subprocess
+    import sys
+
+    code = "import sys; sys.modules['mypy_boto3_s3'] = None; import character_planner.app"
+    subprocess.run([sys.executable, "-c", code], check=True)  # noqa: S603  # a fixed command

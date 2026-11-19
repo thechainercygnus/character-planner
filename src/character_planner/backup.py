@@ -21,18 +21,20 @@ import json
 import logging
 from collections.abc import Callable, Iterable
 from datetime import UTC, datetime, timedelta
-from typing import Any, Final
+from typing import TYPE_CHECKING, Any, Final
 
 import boto3
 import pyrage
 from botocore.config import Config as BotoConfig
-from mypy_boto3_s3 import S3Client
 from pydantic import BaseModel
 from sqlalchemy import Table, delete, insert, select
 from sqlalchemy.engine import Connection, Engine
 from sqlmodel import Session, SQLModel
 
 from character_planner.config import Settings
+
+if TYPE_CHECKING:  # the stubs are a dev dependency, absent from the image
+    from mypy_boto3_s3 import S3Client
 from character_planner.db import InstanceSetting, current_revision, init_db, utcnow
 from character_planner.dbcopy import SEEDED, move_sequences
 
