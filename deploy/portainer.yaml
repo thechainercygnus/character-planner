@@ -17,6 +17,13 @@
 #   PLANNER_USERS         on: Battle.net sign-in needed; the first account is the admin
 #   PLANNER_SIGNUPS       on: let more accounts sign up after the first
 #   OPERATOR_CONTACT      shown on the privacy notice
+#   BACKUP_S3_BUCKET      encrypted backups (#240): the bucket, its endpoint (empty: Amazon
+#   BACKUP_S3_ENDPOINT    S3) and region, an access key, and the age public key that
+#   BACKUP_S3_REGION      encrypts them. All of BUCKET, KEY_ID, SECRET and RECIPIENT set
+#   BACKUP_S3_KEY_ID      turns them on; docs/self-hosting.md, "Backups", has the steps
+#   BACKUP_S3_SECRET
+#   BACKUP_AGE_RECIPIENT  age1...: the public key only
+#   BACKUP_EVERY_HOURS    default 24; BACKUP_KEEP, the newest kept: default 14
 #   PLANNER_IMAGE         another release (default: the pinned one below)
 
 name: character-planner
@@ -37,6 +44,14 @@ x-planner: &planner
     PLANNER_USERS: ${PLANNER_USERS:-off}
     PLANNER_SIGNUPS: ${PLANNER_SIGNUPS:-off}
     OPERATOR_CONTACT: ${OPERATOR_CONTACT:-}
+    BACKUP_S3_ENDPOINT: ${BACKUP_S3_ENDPOINT:-}
+    BACKUP_S3_BUCKET: ${BACKUP_S3_BUCKET:-}
+    BACKUP_S3_REGION: ${BACKUP_S3_REGION:-us-east-1}
+    BACKUP_S3_KEY_ID: ${BACKUP_S3_KEY_ID:-}
+    BACKUP_S3_SECRET: ${BACKUP_S3_SECRET:-}
+    BACKUP_AGE_RECIPIENT: ${BACKUP_AGE_RECIPIENT:-}
+    BACKUP_EVERY_HOURS: ${BACKUP_EVERY_HOURS:-24}
+    BACKUP_KEEP: ${BACKUP_KEEP:-14}
   volumes:
     - planner-data:/data
   restart: unless-stopped

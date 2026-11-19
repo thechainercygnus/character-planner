@@ -326,6 +326,126 @@
         "title": "AlertInfo",
         "type": "object"
       },
+      "BackupStatus": {
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "kept": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kept"
+          },
+          "key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "rows": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rows"
+          },
+          "size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size"
+          }
+        },
+        "required": [
+          "at",
+          "ok"
+        ],
+        "title": "BackupStatus",
+        "type": "object"
+      },
+      "BackupsView": {
+        "properties": {
+          "bucket": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bucket"
+          },
+          "configured": {
+            "title": "Configured",
+            "type": "boolean"
+          },
+          "every_hours": {
+            "title": "Every Hours",
+            "type": "integer"
+          },
+          "keep": {
+            "title": "Keep",
+            "type": "integer"
+          },
+          "last": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BackupStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "configured",
+          "every_hours",
+          "keep",
+          "bucket",
+          "last"
+        ],
+        "title": "BackupsView",
+        "type": "object"
+      },
       "BookRecipe": {
         "properties": {
           "crafted_item_id": {
@@ -7908,6 +8028,42 @@
           }
         },
         "summary": "Admin Accounts"
+      }
+    },
+    "/api/admin/backups": {
+      "get": {
+        "description": "Whether backups are set up, how often and how many are kept, and the last one's\noutcome (#240, ADR 0061). Needs `backups.manage`.",
+        "operationId": "get_backups_api_admin_backups_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Backups"
+      },
+      "post": {
+        "description": "Back up now, whatever the schedule (#240). Needs `backups.manage`. 409 when backups\naren't set up; 502 when the dump, encryption or upload fails (recorded, as the\nworker's are). Logged.",
+        "operationId": "post_backup_api_admin_backups_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BackupsView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Post Backup"
       }
     },
     "/api/admin/invites": {

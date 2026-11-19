@@ -291,7 +291,69 @@ function Signups() {
   )
 }
 
+function size(bytes: number | null): string {
+  if (bytes === null) return '?'
+  return bytes >= 1_000_000 ? `${(bytes / 1_000_000).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1000))} kB`
+}
+
+/**
+ * Encrypted backups (#240, ADR 0061): whether they're set up, the last one's outcome, and a
+ * button to back up now. Restoring is a command, and needs the age private key, which the
+ * server never has.
+ */
+function Backups() {
+  const queryClient = useQueryClient()
+  const view = useQuery({ queryKey: ['admin-backups'], queryFn: api.adminBackups })
+  const now = useMutation({
+    mutationFn: api.backUpNow,
+    onSuccess: async (saved) => {
+      queryClient.setQueryData(['admin-backups'], saved)
+      await queryClient.invalidateQueries({ queryKey: ['admin-log'] })
+    },
+    onError: () => queryClient.invalidateQueries({ queryKey: ['admin-backups'] }),
+  })
+  if (view.isError) return <p className="error">Couldn't load backups: {view.error.message}</p>
+  if (!view.data) return null
+  const { configured, every_hours, keep, bucket, last } = view.data
+  return (
+    <section>
+      <h2>Backups</h2>
+      {!configured ? (
+        <p className="muted">
+          Not set up. Set BACKUP_S3_* and BACKUP_AGE_RECIPIENT to back up to S3-compatible storage, encrypted with your
+          age public key: see the self-hosting guide.
+        </p>
+      ) : (
+        <>
+          <p className="muted">
+            Every {every_hours === 1 ? 'hour' : `${every_hours} hours`} to {bucket}, encrypted; the newest {keep} kept.
+            Battle.net's data is left out: the next sync fetches it again after a restore.
+          </p>
+          {last === null && <p>No backup yet.</p>}
+          {last?.ok && (
+            <p role="status">
+              Last backup {new Date(last.at).toLocaleString()}: {last.rows} rows, {size(last.size)}, {last.kept} kept.
+            </p>
+          )}
+          {last && !last.ok && (
+            <p className="error" role="alert">
+              The last backup failed {new Date(last.at).toLocaleString()}: {last.error}
+            </p>
+          )}
+          <p>
+            <button type="button" onClick={() => now.mutate()} disabled={now.isPending}>
+              {now.isPending ? 'Backing up…' : 'Back up now'}
+            </button>
+          </p>
+          {now.isError && <p className="error">{now.error.message}</p>}
+        </>
+      )}
+    </section>
+  )
+}
+
 const ACTION_LABEL: Record<string, string> = {
+  'backup.run': 'Backed up',
   'signups.change': 'Changed sign-ups',
   'invite.create': 'Made an invite',
   'invite.revoke': 'Revoked an invite',
@@ -372,6 +434,7 @@ export function Admin() {
           />
           <Roles view={view.data} />
           {can(me.data, 'signups.manage') && <Signups />}
+          {can(me.data, 'backups.manage') && <Backups />}
           {can(me.data, 'log.view') && <ActionLog />}
         </>
       )}

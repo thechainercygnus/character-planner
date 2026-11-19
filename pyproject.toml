@@ -18,6 +18,8 @@ dependencies = [
     "rq>=2.0",
     "redis>=5.0",
     "prometheus-client>=0.21",
+    "pyrage>=1.4.0",
+    "boto3>=1.44.6",
 ]
 
 [project.scripts]
@@ -43,6 +45,8 @@ dev = [
     "httpx2>=2.16.0",
     "fakeredis>=2.26",
     "hypothesis>=6.170.15",
+    "moto[s3]>=5.2.5",
+    "boto3-stubs[s3]>=1.44.6",
 ]
 docs = ["furo>=2025.12.19", "myst-parser>=5.2.0", "sphinx>=9.2.0"]
 

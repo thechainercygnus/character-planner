@@ -500,7 +500,44 @@ Battle.net to 30 days (ADR 0034):
 Your own settings, plans and manual entries stay until you change them. A backup holds
 whatever the database held that day, so treat it like the database.
 
-**Back up** the database, one file on the volume:
+**Scheduled, encrypted backups (recommended).** The worker can back up what people made
+in the planner to S3-compatible storage (Amazon S3, Backblaze B2 and others), encrypted with
+an [age](https://age-encryption.org) key whose private half never touches the server
+(#240, ADR 0061):
+- **What's in them:** users, characters, settings, plans, builds, manual snapshots,
+  game-data imports, the admin log and invites. Battle.net's data, tokens and sessions are
+  left out, so backups can be kept longer than 30 days. After a restore, the next sync
+  fetches the Battle.net data again, and people sign in again.
+- **Set up:**
+  1. On your own machine, make a key pair with `age-keygen -o planner-backup.key`. It
+     prints the public key (`age1...`). Keep `planner-backup.key` safe and off the server:
+     it's the only way to read the backups.
+  2. Make a bucket and an access key that can write, list and delete in it.
+  3. In `.env` (or Portainer), set `BACKUP_S3_BUCKET`, `BACKUP_S3_KEY_ID`,
+     `BACKUP_S3_SECRET`, `BACKUP_AGE_RECIPIENT` (the public key) and, for anything but
+     Amazon S3, `BACKUP_S3_ENDPOINT` and `BACKUP_S3_REGION`.
+  4. Restart. The worker backs up every `BACKUP_EVERY_HOURS` (24) and keeps the newest
+     `BACKUP_KEEP` (14).
+- **Check:** with users on, **Admin → Backups** shows the last backup, and **Back up now**
+  makes one. Without users, `docker compose exec app character-planner-db backup` does.
+  A failed backup sends the "A scheduled job failed" alert.
+- **Restore:**
+  1. Download a backup (`...planner-backup.age`) from the bucket, and decrypt it on your
+     own machine: `age -d -i planner-backup.key -o backup.json.gz <file>.age`.
+  2. Start an empty database with the **same planner version** that made the backup (its
+     name ends in that version): a new volume, or a new Postgres database.
+  3. Copy `backup.json.gz` in and restore it, then delete the copy:
+
+     ```bash
+     docker compose cp backup.json.gz app:/tmp/backup.json.gz
+     docker compose exec app character-planner-db restore --file /tmp/backup.json.gz --yes
+     docker compose exec app rm /tmp/backup.json.gz
+     ```
+
+  4. Upgrade to the current version as usual. `restore` refuses a database that already
+     has data, and a backup from another schema version.
+
+**Back up by hand** instead: the database, one file on the volume:
 
 ```bash
 docker run --rm -v character-planner_planner-data:/data -v "$PWD:/backup" alpine \

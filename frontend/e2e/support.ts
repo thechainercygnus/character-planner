@@ -53,6 +53,7 @@ export const TABS = [
 
 const EVERY_PERMISSION = [
   'accounts.view',
+  'backups.manage',
   'data.refresh',
   'discord.signup',
   'enchants.correct',
@@ -101,6 +102,23 @@ const USERS_ON: Answers = {
           state: 'used',
         },
       ],
+    },
+  },
+  '/api/admin/backups': {
+    body: {
+      configured: true,
+      every_hours: 24,
+      keep: 14,
+      bucket: 'planner-backups',
+      last: {
+        at: '2026-11-21T03:00:00Z',
+        ok: true,
+        key: 'character-planner/20261121T030000Z-0.8.0.planner-backup.age',
+        size: 48213,
+        rows: 1204,
+        error: null,
+        kept: 14,
+      },
     },
   },
   '/api/admin/log': {

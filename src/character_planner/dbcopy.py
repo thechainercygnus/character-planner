@@ -8,10 +8,11 @@ don't collide with them.
 """
 
 import logging
+from collections.abc import Sequence
 from typing import Any
 
-from sqlalchemy import delete, func, insert, select
-from sqlalchemy.engine import Engine
+from sqlalchemy import Table, delete, func, insert, select
+from sqlalchemy.engine import Connection, Engine
 from sqlmodel import SQLModel
 
 from character_planner.db import init_db
@@ -54,13 +55,20 @@ def copy_database(source: Engine, target: Engine) -> dict[str, int]:
                 writing.execute(insert(table), rows[start : start + BATCH])
             if rows:
                 copied[table.name] = len(rows)
-        if target.dialect.name == "postgresql":
-            for table in tables:
-                id_column = table.columns.get("id")
-                if id_column is None or not id_column.autoincrement or not id_column.primary_key:
-                    continue
-                highest = writing.execute(select(func.max(id_column))).scalar()
-                sequence = func.pg_get_serial_sequence(f'"{table.name}"', "id")
-                writing.execute(select(func.setval(sequence, highest or 1, highest is not None)))
+        move_sequences(writing, tables)
     logger.info("Copied %d rows in %d tables", sum(copied.values()), len(copied))
     return copied
+
+
+def move_sequences(writing: Connection, tables: Sequence[Table]) -> None:
+    """On Postgres, move each id sequence past the ids just written, so new rows don't
+    collide with them. Nothing to do on SQLite."""
+    if writing.dialect.name != "postgresql":
+        return
+    for table in tables:
+        id_column = table.columns.get("id")
+        if id_column is None or not id_column.autoincrement or not id_column.primary_key:
+            continue
+        highest = writing.execute(select(func.max(id_column))).scalar()
+        sequence = func.pg_get_serial_sequence(f'"{table.name}"', "id")
+        writing.execute(select(func.setval(sequence, highest or 1, highest is not None)))

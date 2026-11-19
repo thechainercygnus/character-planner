@@ -103,6 +103,20 @@ class Settings(BaseSettings):
     # Empty: no message. Needs DISCORD_BOT_TOKEN, and the bot in that channel's server.
     discord_signup_channel_id: str = ""
 
+    # Backups (#240, ADR 0061): encrypted with an age public key, uploaded to S3-compatible
+    # storage by the worker. Off until the bucket, keys and recipient are all set. The
+    # secret key is never logged (ADR 0019); restoring needs the age private key, which
+    # stays off the server.
+    backup_s3_endpoint: str = ""  # https://...; empty: Amazon S3 itself
+    backup_s3_bucket: str = ""
+    backup_s3_region: str = "us-east-1"
+    backup_s3_key_id: str = ""
+    backup_s3_secret: SecretStr = SecretStr("")
+    backup_s3_prefix: str = "character-planner/"
+    backup_age_recipient: str = ""  # an age public key: age1...
+    backup_every_hours: int = 24
+    backup_keep: int = 14  # the newest kept; older ones deleted after each backup
+
     @property
     def trusted_hosts(self) -> list[str]:
         extra = [host.strip().lower() for host in self.planner_hosts.split(",") if host.strip()]
@@ -134,6 +148,45 @@ class Settings(BaseSettings):
             name = (info.field_name or "").upper()
             raise ValueError(f"{name} must be a Discord id (digits)")
         return value
+
+    @field_validator("backup_s3_endpoint")
+    @classmethod
+    def _backup_endpoint(cls, value: str) -> str:
+        # Where the backups go, with the instance's data in them: https only.
+        value = value.strip()
+        if value and (not value.startswith("https://") or any(c.isspace() for c in value)):
+            raise ValueError("BACKUP_S3_ENDPOINT must be an https address")
+        return value
+
+    @field_validator("backup_age_recipient")
+    @classmethod
+    def _age_recipient(cls, value: str) -> str:
+        # The public key only: an age secret key here would let the server decrypt.
+        value = value.strip()
+        if value.upper().startswith("AGE-SECRET-KEY-"):
+            raise ValueError(
+                "BACKUP_AGE_RECIPIENT takes the age public key (age1...), never the secret key"
+            )
+        if value and not (value.startswith("age1") and value.isalnum()):
+            raise ValueError("BACKUP_AGE_RECIPIENT must be an age public key (age1...)")
+        return value
+
+    @field_validator("backup_every_hours", "backup_keep")
+    @classmethod
+    def _at_least_one(cls, value: int, info: ValidationInfo) -> int:
+        if value < 1:
+            raise ValueError(f"{(info.field_name or '').upper()} must be 1 or more")
+        return value
+
+    @property
+    def backups(self) -> bool:
+        """Whether backups run (#240): a bucket, its keys and an age recipient."""
+        return bool(
+            self.backup_s3_bucket
+            and self.backup_s3_key_id
+            and self.backup_s3_secret.get_secret_value()
+            and self.backup_age_recipient
+        )
 
     @field_validator("operator_contact")
     @classmethod
