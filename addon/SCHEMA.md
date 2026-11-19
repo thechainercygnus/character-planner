@@ -93,7 +93,7 @@ Lua; the planner maps them to its own names.
 | `character.surname` | string | no | The character's Forever surname, if the addon can read it (#179 finds out how). |
 | `character.level` | integer | yes | `UnitLevel("player")`. |
 | `character.region` | string | no | `"US"`, `"EU"`, `"KR"` or `"TW"`, if the client says (verify `GetCurrentRegionName()` on Forever). |
-| `character.realm` | string | no | `GetRealmName()`, for diagnostics. On Forever the WTF folder is `91`; the API may say something else. |
+| `character.realm` | string | no | `GetRealmName()`, for diagnostics. On Forever it's the server's name (`"CAMWOW US2 Realm 7 PvE"` in the first real file), not the WTF folder's `91`. |
 | `bags` | table | no | Absent until the bags are first recorded. |
 | `bags.capturedAt` | integer | yes | When the bags were recorded. |
 | `bags.items` | list | yes | One entry per occupied slot; empty slots are left out. |

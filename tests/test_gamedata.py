@@ -51,6 +51,31 @@ def test_a_windows_file_with_a_bom_reads_the_same() -> None:
     assert from_windows == read_export(schema_example().encode())
 
 
+def test_a_real_file_from_the_addon_reads_as_written() -> None:
+    """The first real file (addon 0.2.0, 2026-11-18), byte for byte as the game wrote it:
+    CRLF, keys in the game's order, the bank not opened yet."""
+    data = read_export((SAVED / "real_addon_0.2.0_crlf.lua").read_bytes())
+    assert (data.schema_version, data.addon_version) == (1, "0.2.0")
+    character = data.character
+    assert (character.name, character.surname, character.level, character.region) == (
+        "Brumboldt",
+        "Doomlet",
+        22,
+        "US",
+    )
+    # GetRealmName() on Forever: the server's name, not the WTF folder's "91".
+    assert character.realm == "CAMWOW US2 Realm 7 PvE"
+    assert data.bags is not None and len(data.bags.items) == 36
+    assert {item.container for item in data.bags.items} == {0, 1, 2, 5}
+    assert data.bank is None  # not seen yet
+    assert data.quests is not None
+    assert (len(data.quests.log), len(data.quests.completed)) == (28, 207)
+    objectives = [o for quest in data.quests.log for o in quest.objectives]
+    assert {o.type for o in objectives} == {"item", "log", "monster", "event", "object"}
+    # The game writes most counts into the text, which the quest log relies on (#185).
+    assert sum(f"{o.done}/{o.needed}" in o.text for o in objectives) == 31
+
+
 def test_only_the_header_is_required() -> None:
     data = read_export((SAVED / "minimal_v1.lua").read_bytes())
     assert (data.character.name, data.character.level) == ("Lilalx", 10)
