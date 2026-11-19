@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from './api'
+import { Admin } from './components/Admin'
 import { CharacterHeader } from './components/CharacterPanels'
 import { ClassQuests } from './components/ClassQuests'
 import { CharacterSnapshot } from './components/CharacterSnapshot'
@@ -45,6 +46,7 @@ export default function App() {
   const [tab, setTab] = useHashTab(tabs, 'upgrades')
   const guestView = useHashIs('guest')
   const privacyView = useHashIs('privacy')
+  const adminView = useHashIs('admin')
   const character = useQuery({ queryKey: ['character'], queryFn: api.character })
   const gear = useQuery({ queryKey: ['gear'], queryFn: api.gear })
   const recommendations = useQuery({ queryKey: ['recommendations'], queryFn: api.recommendations })
@@ -71,6 +73,15 @@ export default function App() {
     return (
       <main>
         {guestView ? <Landing hasCharacter={false} /> : <SignIn signupsOpen={me.data.signups_open} />}
+        <Footer />
+      </main>
+    )
+  }
+
+  if (adminView && me.data?.users) {
+    return (
+      <main>
+        <Admin />
         <Footer />
       </main>
     )

@@ -164,7 +164,9 @@ export function Privacy() {
         link: with users on, only about your own characters. With users on, a character you add to its guild's view is
         shown to the other members who joined it: its name, level, spec, role and upgrades. Leave the view to stop that.
         If the guild sets an alert channel, the alerts you choose to share post to that Discord channel, for anyone who
-        can read it.
+        can read it. With users on, the admin, and any superusers the admin appoints, see a list of the accounts: each
+        one's Battle.net account id, role, when it signed up and last signed in, and its characters' names. Nothing more
+        of anyone's.
       </p>
 
       <h2>Sharing</h2>

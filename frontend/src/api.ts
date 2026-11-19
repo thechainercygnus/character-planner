@@ -251,7 +251,53 @@ export interface Me {
   users: boolean
   signed_in: boolean
   admin: boolean
+  /** admin, superuser or user (#237, ADR 0055); null when nobody's signed in. */
+  role: string | null
+  /** What the signed-in user may do; every permission when users are off. */
+  permissions: string[]
   signups_open: boolean
+}
+
+/**
+ * Whether the signed-in user may do something (#237): checked by name, never by role. Without
+ * users, everyone may do everything (ADR 0037), as the server says too.
+ */
+export function can(me: Me | undefined, permission: string): boolean {
+  if (me === undefined) return false
+  if (!me.users) return true
+  return (me.permissions ?? []).includes(permission)
+}
+
+/** A character in the admin's account list (roles.py AdminCharacter). */
+export interface AdminCharacter {
+  id: number
+  name: string
+  region: string
+  character_class: string | null
+}
+
+/** What the planner stores about an account, and no more (#237). */
+export interface Account {
+  user_id: number
+  /** The Battle.net account id. */
+  account_id: number
+  role: string
+  created_at: string
+  last_sign_in_at: string
+  characters: AdminCharacter[]
+}
+
+export interface RoleView {
+  name: string
+  permissions: string[]
+}
+
+/** The admin area (#237, ADR 0055). */
+export interface AdminView {
+  accounts: Account[]
+  roles: RoleView[]
+  /** Every permission, with what it allows. */
+  permissions: Record<string, string>
 }
 
 /** The guild view (#18, ADR 0042). */
@@ -1376,6 +1422,9 @@ export const api = {
   pool: () => request<PoolView>('/api/pool'),
   professions: () => request<ProfessionsView>('/api/professions'),
   recipes: () => request<RecipeBook>('/api/recipes'),
+  adminAccounts: () => request<AdminView>('/api/admin/accounts'),
+  setRole: ({ userId, role }: { userId: number; role: string }) =>
+    request<Account>(`/api/admin/users/${userId}/role`, json('PUT', { role })),
   lookAhead: (levels: number) => request<LookAhead>(`/api/look-ahead?levels=${levels}`),
   classQuests: () => request<ClassQuestChecklist>('/api/class-quests'),
   setClassQuestDone: ({ id, done }: { id: string; done: boolean }) =>

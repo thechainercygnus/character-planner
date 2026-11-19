@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { TABS, openTab as open, serveApi } from './support.ts'
+import { TABS, openTab as open, serveApi, serveTab } from './support.ts'
 
 /**
  * Phone screens (#153): no sideways scroll in portrait on any tab, and in landscape the
@@ -26,7 +26,7 @@ for (const [width, height] of [
 
     for (const tab of TABS) {
       test(`${tab}: nothing wider than the screen`, async ({ page }) => {
-        await serveApi(page)
+        await serveTab(page, tab)
         await open(page, tab)
         expect(await overflow(page)).toBeLessThanOrEqual(0)
       })
@@ -62,7 +62,7 @@ for (const [width, height] of [
     // table overflowed it and zoomed the whole page out.
     for (const tab of TABS) {
       test(`${tab}: nothing wider than the screen`, async ({ page }) => {
-        await serveApi(page)
+        await serveTab(page, tab)
         await open(page, tab)
         expect(await overflow(page)).toBeLessThanOrEqual(0)
       })
