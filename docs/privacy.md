@@ -60,7 +60,7 @@ its characters' names. Nothing more of anyone's.
 API for the character by name and realm, and Forever Companion for items and dungeons by
 id. Neither request carries anything else.
 
-**Removing it:** **My account** (in the ⋯ menu) removes any character, deleting
+**Removing it:** **My account** (in the status bar) removes any character, deleting
 everything stored for it, and downloads everything stored as JSON in a zip.
 
 ## Setting the contact
@@ -77,7 +77,7 @@ runs this instance".
 
 ## Deleting the data
 
-**From the app:** open **My account** in the ⋯ menu, then **Remove…** on the character.
+**From the app:** open **My account** in the status bar, then **Remove…** on the character.
 It asks for a second click to confirm. It deletes that character's snapshots, progress
 history and settings, and stops tracking it. Other characters, alert webhooks and shared
 game data stay.

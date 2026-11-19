@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { AlertInfo, DiscordLink, DiscordView } from '../api'
-import { DiscordDialog } from './DiscordDialog'
+import { DiscordSettings } from './DiscordDialog'
 
 const alerts: AlertInfo[] = [
   { kind: 'level_up', audience: 'user', label: 'Level-ups' },
@@ -37,17 +37,18 @@ function serve(view: DiscordView, answers: Partial<Record<string, DiscordView>> 
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   const { container } = render(
     <QueryClientProvider client={client}>
-      <DiscordDialog />
+      <DiscordSettings />
     </QueryClientProvider>,
   )
   return { calls, container }
 }
 
+/** Wait for the settings to load: My account shows them in place (#260), no dialog to open. */
 async function open() {
-  fireEvent.click(await screen.findByRole('button', { name: 'Discord' }))
+  await screen.findByText(/as private messages from the planner's bot/)
 }
 
-describe('DiscordDialog', () => {
+describe('DiscordSettings', () => {
   afterEach(() => vi.unstubAllGlobals())
 
   it('shows nothing when the instance has no bot', async () => {

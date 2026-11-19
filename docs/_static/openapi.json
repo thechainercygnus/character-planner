@@ -8260,7 +8260,7 @@
     },
     "/api/admin/backups": {
       "get": {
-        "description": "Whether backups are set up, how often and how many are kept, and the last one's\noutcome (#240, ADR 0061). Needs `backups.manage`.",
+        "description": "Whether backups are set up, how often and how many are kept, and the last one's\noutcome (#240, ADR 0061). Needs `backups.manage`. Without users too (ADR 0062).",
         "operationId": "get_backups_api_admin_backups_get",
         "responses": {
           "200": {
@@ -8277,7 +8277,7 @@
         "summary": "Get Backups"
       },
       "post": {
-        "description": "Back up now, whatever the schedule (#240). Needs `backups.manage`. 409 when backups\naren't set up; 502 when the dump, encryption or upload fails (recorded, as the\nworker's are). Logged.",
+        "description": "Back up now, whatever the schedule (#240). Needs `backups.manage`. 409 when backups\naren't set up; 502 when the dump, encryption or upload fails (recorded, as the\nworker's are). Logged with users on. Without users too (ADR 0062).",
         "operationId": "post_backup_api_admin_backups_post",
         "responses": {
           "200": {
@@ -8296,7 +8296,7 @@
     },
     "/api/admin/health": {
       "get": {
-        "description": "Instance health (#241): the database, the queue, recent job failures, the upstream\nbudget and the shared catalogs' refreshes. Needs `health.view`. Reads the state\ndirectly, so it works without METRICS_TOKEN.",
+        "description": "Instance health (#241): the database, the queue, recent job failures, the upstream\nbudget and the shared catalogs' refreshes. Needs `health.view`. Reads the state\ndirectly, so it works without METRICS_TOKEN. Without users too (ADR 0062).",
         "operationId": "get_health_api_admin_health_get",
         "responses": {
           "200": {

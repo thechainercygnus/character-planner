@@ -246,6 +246,17 @@ def test_without_settings_there_is_nothing_to_back_up(engine: Engine, settings: 
         assert admin.post("/api/admin/backups").status_code == 409
 
 
+@respx.mock
+@pytest.mark.usefixtures("s3")
+def test_without_users_the_one_person_backs_up(engine: Engine, configured: Settings) -> None:
+    # A solo instance has Admin too (#260, ADR 0062), and no admin log to write to.
+    with browser(create_app(configured, engine)) as client:
+        assert client.get("/api/admin/backups").json()["last"] is None
+        after = client.post("/api/admin/backups").json()
+        assert after["last"]["ok"]
+        assert client.get("/api/admin/log").status_code == 404
+
+
 def test_the_command_line_restores_an_encrypted_or_decrypted_file(
     engine: Engine,
     cli_settings: Settings,  # noqa: F811

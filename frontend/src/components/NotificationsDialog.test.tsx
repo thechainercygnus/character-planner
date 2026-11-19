@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { AlertInfo, Destination, NotificationsView, SendResult } from '../api'
-import { NotificationsDialog } from './NotificationsDialog'
+import { NotificationsForm } from './NotificationsDialog'
 
 const alerts: AlertInfo[] = [
   { kind: 'target_reached', audience: 'user', label: 'Gear target reached' },
@@ -54,14 +54,15 @@ function stubFetch(view: NotificationsView, test: SendResult = sent) {
   return fetchMock
 }
 
+/** The form as My account shows it (#260): in place, no dialog to open. */
 async function openDialog(admin = true) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   render(
     <QueryClientProvider client={client}>
-      <NotificationsDialog admin={admin} />
+      <NotificationsForm admin={admin} />
     </QueryClientProvider>,
   )
-  fireEvent.click(screen.getByRole('button', { name: 'Alerts' }))
+  await screen.findByRole('button', { name: 'Add' })
 }
 
 function bodyOf(fetchMock: ReturnType<typeof stubFetch>, method: string): unknown {
@@ -69,7 +70,7 @@ function bodyOf(fetchMock: ReturnType<typeof stubFetch>, method: string): unknow
   return JSON.parse(String(call[1]!.body))
 }
 
-describe('NotificationsDialog', () => {
+describe('NotificationsForm', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
   })

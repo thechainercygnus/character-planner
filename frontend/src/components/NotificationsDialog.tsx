@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { api, type AlertInfo, type Audience, type Destination, type NotificationsView, type SendResult } from '../api'
 
 function when(timestamp: string | null): string {
@@ -98,8 +98,8 @@ function DestinationRow({
 }
 
 /**
- * The alerts settings (#12, #164): the user's webhooks, adding one, and recent alerts. Shared
- * by the header's Alerts dialog and the account page (#217), so there's one form, not two.
+ * The alerts settings (#12, #164): the user's webhooks, adding one, and recent alerts, on
+ * My account (#217; the status bar's dialog went in #260).
  * Only the admin adds system destinations.
  */
 export function NotificationsForm({ admin = true, enabled = true }: { admin?: boolean; enabled?: boolean }) {
@@ -214,46 +214,6 @@ export function NotificationsForm({ admin = true, enabled = true }: { admin?: bo
           )}
         </>
       )}
-    </>
-  )
-}
-
-/**
- * Status bar: "Alerts" opens the alerts settings (#12) in a dialog. Every user has their own
- * (#164); only the admin adds system destinations.
- */
-export function NotificationsDialog({ admin = true }: { admin?: boolean }) {
-  const dialogRef = useRef<HTMLDialogElement>(null)
-  const [open, setOpen] = useState(false)
-
-  return (
-    <>
-      <button
-        type="button"
-        className="secondary"
-        onClick={() => {
-          setOpen(true)
-          dialogRef.current?.showModal()
-        }}
-      >
-        Alerts
-      </button>
-      <dialog
-        ref={dialogRef}
-        className="weights-dialog notifications-dialog"
-        aria-labelledby="notifications-title"
-        onClick={(event) => {
-          if (event.target === event.currentTarget) dialogRef.current?.close()
-        }}
-      >
-        <header className="weights-dialog-header">
-          <h2 id="notifications-title">Alerts</h2>
-          <button type="button" className="secondary" aria-label="Close" onClick={() => dialogRef.current?.close()}>
-            ✕
-          </button>
-        </header>
-        <NotificationsForm admin={admin} enabled={open} />
-      </dialog>
     </>
   )
 }

@@ -1,6 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { api, can, inviteLink, type Account, type AdminLogEntry, type AdminView, type InviteView } from '../api'
+import {
+  api,
+  ApiError,
+  can,
+  canAdmin,
+  inviteLink,
+  isQueued,
+  type Account,
+  type AdminLogEntry,
+  type AdminView,
+  type InviteView,
+} from '../api'
 
 const ROLE_LABEL: Record<string, string> = { admin: 'Admin', superuser: 'Superuser', user: 'User' }
 
@@ -429,6 +440,138 @@ function Health() {
   )
 }
 
+/** A refresh the job queue will run (#17): the status bar's "Loading … in the background" follows it. */
+function Queued() {
+  return <p className="muted">Queued: it runs in the background.</p>
+}
+
+/** A refresh that failed, or is cooling down (429, #17): the cooldown isn't a failure. */
+function Failure({ what, error }: { what: string; error: Error }) {
+  if (error instanceof ApiError && error.status === 429) return <p className="muted">{error.message}</p>
+  return (
+    <p className="error">
+      {what} failed: {error.message}
+    </p>
+  )
+}
+
+/**
+ * The data every character shares (#260, moved from the status bar's menu): item data, the
+ * item pool and enchants, refreshed now rather than on the worker's schedule; and the Discord
+ * bot's pinned sign-up message (#192). `data.refresh` and `discord.signup`.
+ */
+function SharedData({ canRefresh, canSignup }: { canRefresh: boolean; canSignup: boolean }) {
+  const queryClient = useQueryClient()
+  const refreshItems = useMutation({
+    mutationFn: api.refreshItems,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['gear'] }),
+  })
+  const refreshPool = useMutation({
+    mutationFn: () => api.refreshPool(),
+    onSuccess: () => queryClient.invalidateQueries(),
+  })
+  const refreshEnchants = useMutation({
+    mutationFn: api.refreshEnchants,
+    onSuccess: () => queryClient.invalidateQueries(),
+  })
+  const discord = useQuery({ queryKey: ['discord'], queryFn: api.discord, enabled: canSignup })
+  const signupMessage = useMutation({ mutationFn: api.updateSignupMessage })
+  const signup = canSignup && discord.data?.signup_message
+  if (!canRefresh && !signup) return null
+  return (
+    <section className="shared-data">
+      <h2>Shared data</h2>
+      {canRefresh && (
+        <>
+          <p className="muted">
+            Item data, the item pool and enchants are shared by every character here. The worker refreshes them on a
+            schedule; refresh one now after an update to the game or to Forever Companion.
+          </p>
+          <p className="row-actions">
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => refreshItems.mutate()}
+              disabled={refreshItems.isPending}
+              title="Look up every gear target in Battle.net item data again"
+            >
+              {refreshItems.isPending ? 'Looking up items…' : 'Refresh item data'}
+            </button>
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => refreshPool.mutate()}
+              disabled={refreshPool.isPending}
+              title="Fetch dungeon drops and quest rewards from Forever Companion (first run takes a few minutes)"
+            >
+              {refreshPool.isPending ? 'Refreshing the pool…' : 'Refresh item pool'}
+            </button>
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => refreshEnchants.mutate()}
+              disabled={refreshEnchants.isPending}
+              title="Fetch enchant recipes from Battle.net and their reagents from Forever Companion"
+            >
+              {refreshEnchants.isPending ? 'Fetching enchants…' : 'Refresh enchant data'}
+            </button>
+          </p>
+          {refreshPool.isPending && <p className="muted">The item pool's first run takes a few minutes.</p>}
+          {refreshItems.isError && <Failure what="Item lookup" error={refreshItems.error} />}
+          {isQueued(refreshItems.data) && <Queued />}
+          {refreshItems.data && !isQueued(refreshItems.data) && (
+            <p className="muted">
+              Items: Blizzard found {refreshItems.data.found.length}, Forever Companion fetched{' '}
+              {refreshItems.data.companion_fetched}
+              {refreshItems.data.errors.length > 0 && `, ${refreshItems.data.errors.length} errors`}.
+            </p>
+          )}
+          {refreshPool.isError && <Failure what="Pool refresh" error={refreshPool.error} />}
+          {isQueued(refreshPool.data) && <Queued />}
+          {refreshPool.data && !isQueued(refreshPool.data) && (
+            <p className="muted">
+              Pool: {refreshPool.data.in_window} items in reach, {refreshPool.data.items_fetched} fetched
+              {refreshPool.data.errors.length > 0 && `, ${refreshPool.data.errors.length} errors`}.
+            </p>
+          )}
+          {refreshEnchants.isError && <Failure what="Enchant refresh" error={refreshEnchants.error} />}
+          {isQueued(refreshEnchants.data) && <Queued />}
+          {refreshEnchants.data && !isQueued(refreshEnchants.data) && (
+            <p className="muted">
+              Enchants: {refreshEnchants.data.recipes_listed} recipes, {refreshEnchants.data.recipes_fetched} fetched
+              {refreshEnchants.data.errors.length > 0 && `, ${refreshEnchants.data.errors.length} errors`}.
+            </p>
+          )}
+        </>
+      )}
+      {signup && (
+        <>
+          <h3>Discord sign-up message</h3>
+          <p>
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => signupMessage.mutate()}
+              disabled={signupMessage.isPending}
+              title="Post, or bring up to date, the bot's pinned sign-up message in DISCORD_SIGNUP_CHANNEL_ID"
+            >
+              Update the Discord sign-up message
+            </button>
+          </p>
+          {signupMessage.isError && <Failure what="The sign-up message" error={signupMessage.error} />}
+          {signupMessage.data && (
+            <p className={signupMessage.data.ok ? 'muted' : 'error'} role="status">
+              {signupMessage.data.ok
+                ? `Sign-up message ${signupMessage.data.action} in Discord.`
+                : `The sign-up message wasn't updated: ${signupMessage.data.error}`}
+            </p>
+          )}
+        </>
+      )}
+    </section>
+  )
+}
+
 const ACTION_LABEL: Record<string, string> = {
   'backup.run': 'Backed up',
   'signups.change': 'Changed sign-ups',
@@ -487,13 +630,17 @@ function ActionLog() {
 }
 
 /**
- * The admin area (#237, ADR 0055): every account, and what each role may do. For the admin
- * and superusers (`accounts.view`); only the admin changes roles (`roles.manage`).
+ * The admin area (#237, ADR 0055): every account, and what each role may do, for the admin
+ * and superusers (`accounts.view`); only the admin changes roles (`roles.manage`). The
+ * instance's shared data, health and backups too (#260), each behind its own permission.
+ * Without users (ADR 0062) it's the one person's: those, and no accounts.
  */
 export function Admin() {
   const me = useQuery({ queryKey: ['me'], queryFn: api.me, staleTime: Infinity })
-  const allowed = can(me.data, 'accounts.view')
-  const view = useQuery({ queryKey: ['admin-accounts'], queryFn: api.adminAccounts, enabled: allowed })
+  const users = me.data?.users ?? false
+  const allowed = canAdmin(me.data)
+  const accounts = users && can(me.data, 'accounts.view')
+  const view = useQuery({ queryKey: ['admin-accounts'], queryFn: api.adminAccounts, enabled: accounts })
   return (
     <article className="admin">
       <p>
@@ -510,12 +657,13 @@ export function Admin() {
             requests={{ canExport: can(me.data, 'users.export'), canDelete: can(me.data, 'users.delete') }}
           />
           <Roles view={view.data} />
-          {can(me.data, 'signups.manage') && <Signups />}
-          {can(me.data, 'health.view') && <Health />}
-          {can(me.data, 'backups.manage') && <Backups />}
-          {can(me.data, 'log.view') && <ActionLog />}
         </>
       )}
+      {users && can(me.data, 'signups.manage') && <Signups />}
+      {allowed && <SharedData canRefresh={can(me.data, 'data.refresh')} canSignup={can(me.data, 'discord.signup')} />}
+      {can(me.data, 'health.view') && <Health />}
+      {can(me.data, 'backups.manage') && <Backups />}
+      {users && can(me.data, 'log.view') && <ActionLog />}
     </article>
   )
 }
