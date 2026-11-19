@@ -141,5 +141,5 @@ and keep it true as you go: edit its body with the `roadmap` skill's script, or 
 - `src/character_planner/leases.py`: one-at-a-time leases for long refreshes, shared by the API and the worker (ADR 0024)
 - `src/character_planner/jobs.py`: sync and pool refresh, shared by the API and the worker
 - `src/character_planner/worker.py`: scheduled jobs beside the API (ADR 0011); `Dockerfile`, `compose*.yaml` and `docs/self-hosting.md` deploy both
-- `addon/`: the in-game addon `CharacterPlannerExport` (#177) and `SCHEMA.md`, the contract between it and the planner's parser (ADR 0047). The addon's Lua (#179–#182) is Bryce's learning work: review and explain it when asked, don't write it.
+- `addon/SCHEMA.md`: the contract between the CharacterPlannerExport addon and the planner's parser (ADR 0047). The addon itself lives in its own repository, `thechainercygnus/character-planner-export`, along with its issues (ADR 0051). Its Lua is Bryce's learning work: review and explain it when asked, don't write it.
 - `src/character_planner/app.py`: FastAPI routes, built by `create_app()`. Data routes live under `/api`, the optional Battle.net login under `/auth`; a built frontend in `frontend/dist` is served at `/`
