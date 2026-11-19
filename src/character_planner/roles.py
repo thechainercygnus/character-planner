@@ -35,8 +35,11 @@ PERMISSIONS: Final[dict[str, str]] = {
     "data.refresh": "Refresh the shared game data: items, the item pool, enchants and talents",
     "enchants.correct": "Correct the shared enchant data: material levels and crafted effects",
     "discord.signup": "Update the Discord bot's pinned sign-up message",
+    "users.delete": "Delete an account and everything stored for it",
+    "users.export": "Download everything stored for an account, for an access request",
+    "log.view": "See the log of what the admin area did",
 }
-# What each role starts with; the migration that adds roles stores these (0019).
+# What each role starts with: migrations 0019 and 0020 store these.
 DEFAULTS: Final[dict[str, list[str]]] = {
     ADMIN: sorted(PERMISSIONS),
     SUPERUSER: ["accounts.view", "data.refresh", "enchants.correct"],

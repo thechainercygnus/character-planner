@@ -304,8 +304,11 @@ Then `docker compose up -d`. Every page now asks for a Battle.net sign-in, so re
   those who join see it. Any of them can set a Discord webhook as the guild's alert
   channel, and each picks which of their own alerts post there (ADR 0046).
 - **Leaving:** each user can delete their own account on the Privacy page. To delete one
-  for them, use `character-planner-db delete-user ACCOUNT_ID --yes` (see
-  [Privacy](privacy.md)).
+  for them, use the admin area (**Admin** in the menu), or
+  `character-planner-db delete-user ACCOUNT_ID --yes`. The admin area also exports an
+  account's data for an access request, and logs both (see [Privacy](privacy.md)).
+- **Roles:** the first sign-in is the admin. The admin can make users superusers, who
+  see the accounts and can refresh and correct shared game data (ADR 0055).
 
 ### In public
 

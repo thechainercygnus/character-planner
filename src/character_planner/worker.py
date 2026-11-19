@@ -23,7 +23,7 @@ import httpx
 from sqlalchemy.engine import Engine
 from sqlmodel import Session
 
-from character_planner import jobs, notify, retention, signup, upstream
+from character_planner import admin_log, jobs, notify, retention, signup, upstream
 from character_planner.characters import all_characters, current_character
 from character_planner.config import Settings, get_settings
 from character_planner.db import init_db, make_engine, utcnow
@@ -109,7 +109,10 @@ def retention_job(session: Session, settings: Settings, http: httpx.Client | Non
     """Blizzard data older than 30 days goes (#131, ADR 0034), even on an instance that
     has stopped syncing."""
     result = retention.prune(session)
-    return f"deleted {result.total} rows older than 30 days, archived {result.archived} points"
+    logged = admin_log.prune(session)  # the admin action log: a year (#238, ADR 0056)
+    return f"deleted {result.total} rows older than 30 days, archived {result.archived} points" + (
+        f", {logged} admin log entries older than a year" if logged else ""
+    )
 
 
 def notify_upstream(session: Session, settings: Settings, job: str, errors: list[str]) -> None:
