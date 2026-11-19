@@ -1,0 +1,76 @@
+# The Warrior's builds (#216, ADR 0060): what a character is for, as one choice. Each sets a
+# stat-weight preset (stat_weights.yaml, weight_presets.yaml), a role for the guild view and,
+# here, a talent order. Other classes list theirs in classes/<class>.yaml.
+#
+# The talent orders are DRAFTS by Claude from classic-era practice, fitted to Forever's own
+# trees (#88: Vanguard, Bastion and the rest are Forever's): each passes the planner's tree
+# rules (5 points per row, prerequisites maxed first, 51 points by level 60). Bryce reviews
+# them; Forever's talents may play differently from their names.
+#
+# A step raises a talent to a rank, one point per level from 10. The Protection order starts
+# with the 9 points the synced character spent at level 18 (talent_plan.yaml).
+
+protection_talents: &protection
+  spec: Protection
+  steps:
+    - {talent: Shield Specialization, talent_id: 135507, rank: 5}
+    - {talent: Anticipation, talent_id: 135506, rank: 1}
+    - {talent: Improved Revenge, talent_id: 135500, rank: 3}
+    - {talent: Anticipation, talent_id: 135506, rank: 5}
+    - {talent: Last Stand, talent_id: 135501, rank: 1}
+    - {talent: Defiance, talent_id: 142602, rank: 3}
+    - {talent: Master of Defense, talent_id: 135502, rank: 2}
+    - {talent: Improved Sunder Armor, talent_id: 135499, rank: 3}
+    - {talent: Vanguard, talent_id: 135497, rank: 1}
+    - {talent: Concussion Blow, talent_id: 135496, rank: 1}
+    - {talent: Focused Rage, talent_id: 135492, rank: 3}
+    - {talent: Bastion, talent_id: 135493, rank: 5}
+    - {talent: Shield Slam, talent_id: 135490, rank: 1}
+    - {talent: Deflection, talent_id: 135488, rank: 5}
+    - {talent: Improved Heroic Strike, talent_id: 135489, rank: 3}
+    - {talent: Improved Tactical Mastery, talent_id: 135485, rank: 3}
+    - {talent: Anger Management, talent_id: 135482, rank: 1}
+    - {talent: Improved Shield Wall, talent_id: 135495, rank: 2}
+    - {talent: Improved Thunder Clap, talent_id: 135503, rank: 3}
+    - {talent: Improved Bloodrage, talent_id: 135505, rank: 1}
+
+builds:
+  - key: protection-leveling
+    name: "Protection: leveling tank"
+    role: tank
+    preset: leveling-tank
+    talents: *protection
+
+  - key: protection-dungeon
+    name: "Protection: dungeon tank"
+    role: tank
+    preset: dungeon-tank
+    talents: *protection
+
+  # Two-handed Arms to Mortal Strike, then Fury for crits and Execute.
+  - key: arms-leveling
+    name: "Arms: leveling"
+    role: dps
+    preset: solo-dps
+    talents:
+      spec: Arms
+      steps:
+        - {talent: Improved Heroic Strike, talent_id: 135489, rank: 3}
+        - {talent: Deflection, talent_id: 135488, rank: 2}
+        - {talent: Improved Rend, talent_id: 135487, rank: 3}
+        - {talent: Improved Tactical Mastery, talent_id: 135485, rank: 3}
+        - {talent: Improved Overpower, talent_id: 135483, rank: 2}
+        - {talent: Anger Management, talent_id: 135482, rank: 1}
+        - {talent: Deep Wounds, talent_id: 135481, rank: 3}
+        - {talent: Two-Handed Weapon Specialization, talent_id: 135479, rank: 3}
+        - {talent: Impale, talent_id: 135478, rank: 2}
+        - {talent: Sweeping Strikes, talent_id: 135476, rank: 1}
+        - {talent: Weaponmaster, talent_id: 135475, rank: 5}
+        - {talent: Improved Slam, talent_id: 142604, rank: 2}
+        - {talent: Mortal Strike, talent_id: 135472, rank: 1}
+        - {talent: Cruelty, talent_id: 135470, rank: 5}
+        - {talent: Unbridled Wrath, talent_id: 135468, rank: 5}
+        - {talent: Blood Craze, talent_id: 135465, rank: 3}
+        - {talent: Furious Precision, talent_id: 135484, rank: 3}
+        - {talent: Improved Execute, talent_id: 135463, rank: 2}
+        - {talent: Enrage, talent_id: 135462, rank: 2}
