@@ -228,6 +228,11 @@ export function GameDataPanel({ battleNetLevel }: { battleNetLevel: number | nul
   )
 }
 
+/** Whether the objective's own text already shows its count, as "3/10". */
+function hasCount(text: string, done: number, needed: number): boolean {
+  return new RegExp(`(^|\\D)${done}/${needed}(\\D|$)`).test(text)
+}
+
 function QuestEntry({ quest }: { quest: GameQuest }) {
   return (
     <li>
@@ -239,11 +244,13 @@ function QuestEntry({ quest }: { quest: GameQuest }) {
         <ul className="objectives">
           {quest.objectives.map((objective) => (
             <li key={`${objective.type}:${objective.text}`} className={objective.finished ? 'muted' : undefined}>
-              {objective.text}{' '}
-              <span className={objective.finished ? 'muted' : 'tag'}>
-                {objective.done}/{objective.needed}
-                {objective.finished && ' ✓'}
-              </span>
+              {objective.text} {/* The game writes most counts into the text ("0/10 Redridge Brute slain"). */}
+              {!hasCount(objective.text, objective.done, objective.needed) && (
+                <span className={objective.finished ? 'muted' : 'tag'}>
+                  {objective.done}/{objective.needed}
+                </span>
+              )}
+              {objective.finished && <span aria-label="done"> ✓</span>}
             </li>
           ))}
         </ul>

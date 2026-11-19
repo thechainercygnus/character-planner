@@ -50,6 +50,8 @@ const imported: GameDataView = {
           objectives: [
             { text: 'Summon and defeat Bartleby', type: 'monster', done: 0, needed: 1, finished: false },
             { text: 'Bartleby the Drunk', type: 'item', done: 1, needed: 1, finished: true },
+            // As the game writes most objectives: the count is in the text (a real file, #185).
+            { text: '3/10 Redridge Brute slain', type: 'monster', done: 3, needed: 10, finished: false },
           ],
         },
       ],
@@ -187,7 +189,12 @@ describe('QuestLog', () => {
     const quest = await screen.findByRole('link', { name: 'The Summoning' })
     expect(quest.getAttribute('href')).toBe('https://www.wowhead.com/forever/quest=1640')
     expect(screen.getByText('0/1')).toBeTruthy()
-    expect(screen.getByText(/1\/1/)).toBeTruthy()
+    expect(screen.getByText('1/1')).toBeTruthy()
+    expect(screen.getAllByLabelText('done')).toHaveLength(1)
+    // A count the text already has isn't shown twice.
+    const brutes = screen.getByText(/Redridge Brute slain/)
+    expect(brutes.textContent).toBe('3/10 Redridge Brute slain ')
+    expect(screen.queryByText('3/10')).toBeNull()
   })
 
   it('points to the import when there is none', async () => {
