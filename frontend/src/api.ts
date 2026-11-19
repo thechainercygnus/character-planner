@@ -145,6 +145,14 @@ export interface TargetInfo {
 
 export type Verdict = 'reached' | 'upgrade' | 'sidegrade' | 'downgrade' | 'unknown'
 
+/** An item in the bags or bank, from the addon's game data (#186, ADR 0052): owned, not equipped. */
+export interface OwnedItem {
+  where: 'bags' | 'bank'
+  count: number
+  /** When that place was recorded in the game. */
+  captured_at: string
+}
+
 export interface GearRow {
   slot: string
   equipped: EquippedItem | null
@@ -163,6 +171,8 @@ export interface GearRow {
   level: number | null
   /** The slot's next targets above the character's level, nearest first. */
   upcoming: UpcomingTarget[]
+  /** The target is in the bags or bank (#186); never set once it's worn. */
+  owned: OwnedItem | null
 }
 
 /** A target above the character's level, shown early so you can prepare for it. */
@@ -172,6 +182,7 @@ export interface UpcomingTarget {
   level: number | null
   /** Against what's worn now; null without stat data. */
   score_delta: number | null
+  owned: OwnedItem | null
 }
 
 /** A slot whose targets are all above the character's level. */
@@ -698,6 +709,8 @@ export interface Candidate {
   is_target: boolean
   /** A pinned target: listed even when it isn't a top pick. */
   pinned: boolean
+  /** Already in the bags or bank (#186). */
+  owned: OwnedItem | null
 }
 
 export type ChoiceKind = 'dismissed'
@@ -722,6 +735,8 @@ export interface DungeonUpgrade {
   score_gain: number
   /** How this dungeon gives it: a boss drop or a quest. */
   source: PoolSource
+  /** Already in the bags or bank: no need to run it for this (#186). */
+  owned: OwnedItem | null
 }
 
 export interface DungeonValue {
@@ -1009,6 +1024,8 @@ export interface LookAheadEvent {
   /** A dungeon not open yet in Forever. */
   locked: boolean
   link: string | null
+  /** A target already in the bags or bank (#186). */
+  owned: OwnedItem | null
 }
 
 export interface LookAhead {

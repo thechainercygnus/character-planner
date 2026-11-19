@@ -1,6 +1,7 @@
-import type { PoolItem, PoolSource, QuestStep } from '../api'
+import type { OwnedItem, PoolItem, PoolSource, QuestStep } from '../api'
 import { itemDetails, questLevel, questWhere, sourceText } from '../format'
 import { Icon } from './GearTable'
+import { OwnedTag } from './OwnedTag'
 
 /** Icon and quality-coloured name linking to Wowhead, with optional tags and lines below. */
 export function PoolItemName({
@@ -9,12 +10,15 @@ export function PoolItemName({
   usableNow = true,
   showDetails = false,
   showSources = false,
+  owned = null,
 }: {
   item: PoolItem
   isTarget?: boolean
   usableNow?: boolean
   showDetails?: boolean
   showSources?: boolean
+  /** Already in the bags or bank (#186). */
+  owned?: OwnedItem | null
 }) {
   const quality = (item.quality ?? 'COMMON').toLowerCase()
   const details = showDetails ? itemDetails(item) : ''
@@ -36,6 +40,7 @@ export function PoolItemName({
           item.name
         )}
         {isTarget && <span className="tag">your target</span>}
+        <OwnedTag owned={owned} />
         {!usableNow && <span className="tag warn">level {item.effective_level}</span>}
         {details && <small>{details}</small>}
         {showSources && <small className="source-line">{item.sources.map(sourceText).join('; ')}</small>}

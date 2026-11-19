@@ -138,6 +138,7 @@ from character_planner.lookahead import MAX_LEVELS as MAX_LOOK_AHEAD
 from character_planner.lookahead import LookAhead, look_ahead
 from character_planner.metrics import CONTENT_TYPE as METRICS_CONTENT_TYPE
 from character_planner.metrics import Metrics, readiness
+from character_planner.owned import mark_gear_plan, mark_recommendations, owned_for
 from character_planner.pool import (
     PoolRefresh,
     PoolView,
@@ -1064,7 +1065,7 @@ def create_app(
             item.slot: item.model_copy(update={"icon_url": icons.get(item.item_id or 0)})
             for item in parse_equipment(equipment.payload if equipment else None)
         }
-        return recommend(
+        rec = recommend(
             pool_view(session, level, faction, crafted_items(session, character_id)),
             equipped,
             current_weights(session, presets, character_id),
@@ -1072,6 +1073,8 @@ def create_app(
             targets,
             stored_choices(session, character_id),
         )
+        # Upgrades already in the bags or bank, from the addon's game data (#186).
+        return mark_recommendations(rec, owned_for(session, character_id))
 
     def guild_character(session: Session, character_id: int | None) -> Character:
         """The guild view's character: users must be on (ADR 0042), and one chosen."""
@@ -1446,7 +1449,7 @@ def create_app(
     def build_gear_plan(
         session: Session, character_id: int | None, targets: GearTargets, presets: ShippedPresets
     ) -> GearPlan:
-        return gear_plan(
+        plan = gear_plan(
             latest_by_kind(session, character_id),
             targets,
             catalog_by_name(session),
@@ -1455,6 +1458,8 @@ def create_app(
             current_weights(session, presets, character_id),
             jobs.item_levels(session, character_id),
         )
+        # Targets already in the bags or bank (#186): the Plan tab and Look ahead.
+        return mark_gear_plan(plan, owned_for(session, character_id))
 
     @app.get("/api/gear")
     def gear(

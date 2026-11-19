@@ -67,6 +67,7 @@ const downgrade: GearRow = {
   warning: null,
   level: 15,
   upcoming: [],
+  owned: null,
 }
 
 const unknown: GearRow = {
@@ -84,6 +85,7 @@ const unknown: GearRow = {
   warning: null,
   level: null,
   upcoming: [],
+  owned: null,
 }
 
 const manualUpgrade: GearRow = {
@@ -189,13 +191,16 @@ describe('GearTable', () => {
           target_info: null,
           level: 20,
           score_delta: 4.2,
+          owned: null,
         },
       ],
     }
     const later = {
       slot: 'HEAD',
       equipped: null,
-      upcoming: [{ target: target('HEAD', "Guard's Silvered Chain Helm"), target_info: null, level: 20, score_delta: null }],
+      upcoming: [
+        { target: target('HEAD', "Guard's Silvered Chain Helm"), target_info: null, level: 20, score_delta: null, owned: null },
+      ],
     }
     render(<GearTable plan={{ ...plan, rows: [cape], later: [later] }} />)
 
@@ -205,6 +210,29 @@ describe('GearTable', () => {
     expect(screen.getByText('Coming up in other slots')).toBeTruthy()
     expect(screen.getByText("Guard's Silvered Chain Helm")).toBeTruthy()
     expect(screen.getByText('Head')).toBeTruthy()
+  })
+
+  it('flags a target already in the bags or bank (#186)', () => {
+    const owned = { where: 'bags' as const, count: 1, captured_at: new Date().toISOString() }
+    const cape: GearRow = {
+      ...unknown,
+      slot: 'BACK',
+      target: target('BACK', 'Spiritwraith Drape'),
+      owned,
+      upcoming: [
+        {
+          target: target('BACK', 'Cape of the Brotherhood'),
+          target_info: null,
+          level: 20,
+          score_delta: null,
+          owned: { ...owned, where: 'bank', count: 2 },
+        },
+      ],
+    }
+    render(<GearTable plan={{ ...plan, rows: [cape] }} />)
+    expect(screen.getByText('owned: in your bags')).toBeTruthy()
+    const bank = screen.getByText('owned: in your bank ×2')
+    expect(bank.getAttribute('title')).toMatch(/^Owned, not equipped: from the game, just now/)
   })
 
   it('handles having no targets', () => {

@@ -204,6 +204,16 @@
             ],
             "title": "Item Level Delta"
           },
+          "owned": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OwnedItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "pinned": {
             "default": false,
             "title": "Pinned",
@@ -1033,6 +1043,16 @@
         "properties": {
           "item": {
             "$ref": "#/components/schemas/PoolItem"
+          },
+          "owned": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OwnedItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "score_gain": {
             "title": "Score Gain",
@@ -2197,6 +2217,16 @@
             ],
             "title": "Level"
           },
+          "owned": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OwnedItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "reached": {
             "title": "Reached",
             "type": "boolean"
@@ -3144,6 +3174,16 @@
             "title": "Locked",
             "type": "boolean"
           },
+          "owned": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OwnedItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "pinned": {
             "default": false,
             "title": "Pinned",
@@ -3713,6 +3753,35 @@
           "action"
         ],
         "title": "Outcome",
+        "type": "object"
+      },
+      "OwnedItem": {
+        "description": "An item in the character's bags or bank, from the addon's game data (#186, ADR 0052):\nowned, but not equipped.",
+        "properties": {
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "where": {
+            "enum": [
+              "bags",
+              "bank"
+            ],
+            "title": "Where",
+            "type": "string"
+          }
+        },
+        "required": [
+          "where",
+          "count",
+          "captured_at"
+        ],
+        "title": "OwnedItem",
         "type": "object"
       },
       "PerSlotUpdate": {
@@ -6202,6 +6271,16 @@
               }
             ],
             "title": "Level"
+          },
+          "owned": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OwnedItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "score_delta": {
             "anyOf": [

@@ -37,7 +37,7 @@ function RowDetails({ row, best, guest }: { row: SlotRecommendation; best: Candi
       )}
       <div>
         <h4>{guest ? 'Best item' : 'Best upgrade'}</h4>
-        <PoolItemName item={best.item} showDetails showSources />
+        <PoolItemName item={best.item} owned={best.owned} showDetails showSources />
         <Changes candidate={best} />
         {!guest && <ChoiceButtons candidate={best} slot={row.slot} />}
       </div>
@@ -51,6 +51,7 @@ function RowDetails({ row, best, guest }: { row: SlotRecommendation; best: Candi
                   item={candidate.item}
                   isTarget={candidate.is_target}
                   usableNow={candidate.usable_now}
+                  owned={candidate.owned}
                   showDetails
                   showSources
                 />
@@ -78,7 +79,12 @@ function UpgradeRow({ row, best, guest }: { row: SlotRecommendation; best: Candi
           <td>{row.equipped ? <ItemName item={row.equipped} compact /> : <span className="muted">empty</span>}</td>
         )}
         <td>
-          <PoolItemName item={best.item} isTarget={best.is_target} usableNow={best.usable_now} />
+          <PoolItemName
+            item={best.item}
+            isTarget={best.is_target}
+            usableNow={best.usable_now}
+            owned={best.owned}
+          />
         </td>
         <td>
           <GainBadge candidate={best} />
