@@ -39,7 +39,7 @@ The characters on the signed-in Battle.net account (#15), to pick ones to track.
 
 ### `GET /api/character`
 
-Character
+The character as of the last sync, plus the level planning uses: the game's when its data is newer (ADR 0052).
 
 | Parameter | In | Type | Required | Default |
 | --- | --- | --- | --- | --- |
@@ -1004,6 +1004,7 @@ A tracked character, for the header's switcher (#14).
 | `equipped_item_level` | number or null | no |
 | `gear_slots_filled` | integer | no |
 | `captured_at` | string or null | no |
+| `level_source` | [LevelSource](#schema-levelsource) or null | no |
 | `stats` | [Stats](#schema-stats) or null | no |
 | `professions` | list of [Profession](#schema-profession) | no |
 | `specialization` | [Specialization](#schema-specialization) or null | no |
@@ -1575,6 +1576,17 @@ What the app shows for an item id in the file (#185): the file has ids only.
 | --- | --- | --- |
 | `level` | integer | yes |
 | `events` | list of [LookAheadEvent](#schema-lookaheadevent) | yes |
+
+(schema-levelsource)=
+### LevelSource
+
+The level planning uses, where it came from, and when that source captured it (#186, ADR 0052): the game's when its data is newer than the last sync.
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `level` | integer | yes |
+| `source` | `battle.net` \\| `game` | yes |
+| `at` | string or null | yes |
 
 (schema-levelup)=
 ### LevelUp

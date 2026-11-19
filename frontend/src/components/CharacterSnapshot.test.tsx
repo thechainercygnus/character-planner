@@ -30,6 +30,7 @@ const character: CharacterView = {
   equipped_item_level: 16.7,
   gear_slots_filled: 13,
   captured_at: '2026-11-13T17:22:00',
+  level_source: null,
   stats: {
     health: 412,
     strength: 48,

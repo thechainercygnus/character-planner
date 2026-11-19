@@ -142,6 +142,7 @@ from character_planner.jobs import (
     gear_targets,
     sync_character,
 )
+from character_planner.levels import effective_level, planning_level
 from character_planner.logs import ACCESS_LOGGER, configure_logging, request_id, safe_database_url
 from character_planner.lookahead import DEFAULT_LEVELS as DEFAULT_LOOK_AHEAD
 from character_planner.lookahead import MAX_LEVELS as MAX_LOOK_AHEAD
@@ -1399,7 +1400,11 @@ def create_app(
 
     @app.get("/api/character")
     def character(session: SessionDep, character_id: CharacterIdDep) -> CharacterView:
-        return character_view(latest_by_kind(session, character_id), icons_by_id(session))
+        """The character as of the last sync, plus the level planning uses: the game's when
+        its data is newer (ADR 0052)."""
+        view = character_view(latest_by_kind(session, character_id), icons_by_id(session))
+        view.level_source = effective_level(session, character_id)
+        return view
 
     @app.delete("/api/character")
     def erase(session: SessionDep, character_id: CharacterIdDep) -> Erased:
@@ -1469,6 +1474,7 @@ def create_app(
             companion_by_id(session),
             current_weights(session, presets, character_id),
             jobs.item_levels(session, character_id),
+            level=planning_level(session, character_id),  # newest of sync and game
         )
         # Targets already in the bags or bank, and reward quests in the log (#186): the
         # Plan tab and Look ahead.

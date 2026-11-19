@@ -33,8 +33,12 @@ There's no equipped gear in the file, so Battle.net stays the only source for wh
    - A reached target is worn, so it's never flagged.
 2. **The level: newest wins, per value.**
    - The game's level replaces the last sync's only when the file was captured after
-     that sync. Each view that uses the level says which source it came from, and how old
-     it is.
+     that sync.
+   - Every planning view uses the same level: Upgrades, the item pool's window, the Plan
+     tab, Look ahead and class quests. So the label lives in the header, on every tab:
+     "(from the game)", with its age and Battle.net's level in its title. The game data
+     section says which source won.
+   - The Character tab stays the last sync's snapshot.
    - Only the level has two sources. Equipped gear has one: the addon doesn't record it.
 3. **Quest progress rides on the quests the planner already describes.**
    - A quest-reward source, and each step of its chain, shows its log progress when the

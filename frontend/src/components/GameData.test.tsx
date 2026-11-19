@@ -110,13 +110,13 @@ describe('GameDataPanel', () => {
   afterEach(() => vi.unstubAllGlobals())
 
   it('offers the import before there is any', async () => {
-    serve(empty, <GameDataPanel battleNetLevel={25} />)
+    serve(empty, <GameDataPanel battleNetLevel={25} levelSource={null} />)
     expect(await screen.findByText(/which Battle.net can't see/)).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Import game data' })).toBeTruthy()
   })
 
   it('shows the bags as items, with links, counts and their age', async () => {
-    serve(imported, <GameDataPanel battleNetLevel={25} />)
+    serve(imported, <GameDataPanel battleNetLevel={25} levelSource={null} />)
     const bags = await screen.findByRole('region', { name: 'Bags' })
     const girdle = within(bags).getByRole('link', { name: 'Kindlegem Girdle' })
     expect(girdle.getAttribute('href')).toBe('https://www.wowhead.com/forever/item=270230')
@@ -127,14 +127,24 @@ describe('GameDataPanel', () => {
   })
 
   it('marks the bank as not seen yet, not empty', async () => {
-    serve(imported, <GameDataPanel battleNetLevel={25} />)
+    serve(imported, <GameDataPanel battleNetLevel={25} levelSource={null} />)
     const bank = await screen.findByRole('region', { name: 'Bank' })
     expect(within(bank).getByText(/Not seen yet: open your bank/)).toBeTruthy()
   })
 
-  it("says which level the planner uses when the game's differs", async () => {
-    serve(imported, <GameDataPanel battleNetLevel={24} />)
-    expect(await screen.findByText(/Battle.net says 24.*uses Battle.net's level/)).toBeTruthy()
+  it("says the planner uses the game's level when it's newer than the sync (ADR 0052)", async () => {
+    const level = { level: 25, source: 'game' as const, at: HOURS_AGO(2) }
+    serve(imported, <GameDataPanel battleNetLevel={24} levelSource={level} />)
+    expect(
+      await screen.findByText(/Battle.net says 24, as of an older sync: the planner uses the game's level/),
+    ).toBeTruthy()
+  })
+
+  it("says the planner uses Battle.net's level when the sync is newer", async () => {
+    const level = { level: 24, source: 'battle.net' as const, at: HOURS_AGO(1) }
+    serve(imported, <GameDataPanel battleNetLevel={24} levelSource={level} />)
+    // The file says 25, but an older capture can't outvote the sync.
+    expect(await screen.findByText(/Battle.net says 24, as of a newer sync: the planner uses that/)).toBeTruthy()
   })
 })
 

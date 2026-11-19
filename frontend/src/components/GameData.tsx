@@ -1,6 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRef } from 'react'
-import { api, type GameDataView, type GameItem, type GameItemInfo, type GameItems, type GameQuest } from '../api'
+import {
+  api,
+  type GameDataView,
+  type PlanningLevel,
+  type GameItem,
+  type GameItemInfo,
+  type GameItems,
+  type GameQuest,
+} from '../api'
 import { ago, parseTime, stacked } from '../gameData'
 import { Icon } from './GearTable'
 
@@ -174,7 +182,14 @@ function ItemsSection({
 }
 
 /** The Character tab's bags and bank, from the newest import (#185). */
-export function GameDataPanel({ battleNetLevel }: { battleNetLevel: number | null }) {
+export function GameDataPanel({
+  battleNetLevel,
+  levelSource,
+}: {
+  battleNetLevel: number | null
+  /** The level planning uses (ADR 0052): the newer of the last sync and this data. */
+  levelSource: PlanningLevel | null
+}) {
   const view = useQuery({ queryKey: ['game-data'], queryFn: api.gameData })
   if (view.isError) return <p className="error">Couldn't load game data: {view.error.message}</p>
   const data = view.data
@@ -206,7 +221,9 @@ export function GameDataPanel({ battleNetLevel }: { battleNetLevel: number | nul
         Level {level} in the game.
         {battleNetLevel !== null &&
           battleNetLevel !== level &&
-          ` Battle.net says ${battleNetLevel}, as of the last sync: the planner uses Battle.net's level for now.`}
+          (levelSource?.source === 'game'
+            ? ` Battle.net says ${battleNetLevel}, as of an older sync: the planner uses the game's level.`
+            : ` Battle.net says ${battleNetLevel}, as of a newer sync: the planner uses that.`)}
       </p>
       <div className="panels">
         <ItemsSection

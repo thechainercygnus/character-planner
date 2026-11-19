@@ -478,6 +478,16 @@
             ],
             "title": "Level"
           },
+          "level_source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LevelSource"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "name": {
             "anyOf": [
               {
@@ -2988,6 +2998,42 @@
           "events"
         ],
         "title": "LevelGroup",
+        "type": "object"
+      },
+      "LevelSource": {
+        "description": "The level planning uses, where it came from, and when that source captured it\n(#186, ADR 0052): the game's when its data is newer than the last sync.",
+        "properties": {
+          "at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "At"
+          },
+          "level": {
+            "title": "Level",
+            "type": "integer"
+          },
+          "source": {
+            "enum": [
+              "battle.net",
+              "game"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "level",
+          "source",
+          "at"
+        ],
+        "title": "LevelSource",
         "type": "object"
       },
       "LevelUp": {
@@ -6723,6 +6769,7 @@
         "summary": "Erase"
       },
       "get": {
+        "description": "The character as of the last sync, plus the level planning uses: the game's when\nits data is newer (ADR 0052).",
         "operationId": "character_api_character_get",
         "parameters": [
           {
