@@ -22,7 +22,7 @@
 name: character-planner
 
 x-planner: &planner
-  image: ${PLANNER_IMAGE:-ghcr.io/thechainercygnus/character-planner:0.5.3@sha256:d78ed34349fb57eab3e0afbae8c046b46930aadd89815f7b3a4914e3ebaf8dbf}
+  image: ${PLANNER_IMAGE:-ghcr.io/thechainercygnus/character-planner:0.6.0@sha256:c16b4114c4134bf1d95d5c12b9313667fe31776fa338b7d76132eadcc69c559c}
   environment: &planner-env
     DATABASE_URL: sqlite:////data/character-planner.db
     LOG_DIR: /data/logs
