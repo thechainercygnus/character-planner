@@ -8,12 +8,29 @@
 self-hosting, releases, the [architecture](docs/architecture.md), the
 [assurance case](docs/assurance-case.md) and the decision records.
 
-Planner for a WoW Forever character: pulls data from the Battle.net Profile API, keeps a
-history of snapshots, and compares gear against curated targets: per slot, the one to go for
-at your level and the ones coming up.
+A self-hosted planner for World of Warcraft: Forever characters. It syncs your character
+from the Battle.net API, keeps a history of snapshots, and tells you what to chase next:
+
+- **Gear:** per slot, the target for your level and the ones coming up, and the best
+  upgrades from dungeon drops, quest rewards, rares and crafting.
+- **Dungeons** worth running for the gear you still need.
+- **Talents:** your plan on the real trees, checked against what you've spent.
+- **What's next:** what the next few levels bring in gear, talents, class quests and
+  professions.
+- **Progress** over time, Discord alerts, and guild views where opted-in members see each
+  other's needs.
+
+Run it for yourself, or for your guild with sign-in and per-user characters. Guest mode
+gives recommendations for any class and level without an account.
 
 The Forever API is undocumented, so the app stores raw responses and models them only
 after seeing real data. See [ADR 0002](docs/adr/0002-raw-snapshots-first.md).
+
+**Related projects:**
+[CharacterPlannerExport](https://github.com/thechainercygnus/character-planner-export)
+exports in-game data the API doesn't show (bags, bank, quests) for the planner to import, and
+[ForeverAPIExplorer](https://github.com/thechainercygnus/ForeverAPIExplorer) is the research
+addon behind it.
 
 ## Setup
 
