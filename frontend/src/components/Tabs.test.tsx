@@ -46,4 +46,17 @@ describe('tabs', () => {
     render(<Harness />)
     expect(screen.getByText('showing one')).toBeTruthy()
   })
+
+  it('opens a tab named in the hash once it arrives, as the Guild tab does (#215)', () => {
+    window.location.hash = '#three'
+    const { rerender } = render(<Later tabs={TABS} />)
+    expect(screen.getByText('showing one')).toBeTruthy()
+    rerender(<Later tabs={[...TABS, { id: 'three', label: 'Three' }]} />)
+    expect(screen.getByText('showing three')).toBeTruthy()
+  })
 })
+
+function Later({ tabs }: { tabs: readonly Tab<string>[] }) {
+  const [active] = useHashTab(tabs, 'one')
+  return <p>showing {active}</p>
+}
