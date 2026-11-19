@@ -24,6 +24,8 @@ SHARED = frozenset(
         "companionclassquest",
         "blizzarditem",
         "recipedata",
+        "craftingrecipe",
+        "skilltier",
         "talenttreedata",
         "spellicon",
         "joblease",

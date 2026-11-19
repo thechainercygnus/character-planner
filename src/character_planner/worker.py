@@ -49,6 +49,8 @@ def sync_job(session: Session, settings: Settings, http: httpx.Client | None) ->
     outcomes: list[str] = []
     for character in all_characters(session):  # every tracked character (#14)
         statuses = jobs.sync_character(session, settings, character, http=http)
+        if character.id is not None:
+            jobs.recipes_after_sync(session, settings, character.id, http)
         if statuses.get("profile") == 404:
             outcomes.append(f"{character.slug} not found: check its name and region")
             continue

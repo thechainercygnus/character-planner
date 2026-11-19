@@ -172,6 +172,45 @@
         "title": "AlertInfo",
         "type": "object"
       },
+      "BookRecipe": {
+        "properties": {
+          "crafted_item_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Crafted Item Id"
+          },
+          "known": {
+            "title": "Known",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "recipe_id": {
+            "title": "Recipe Id",
+            "type": "integer"
+          },
+          "wowhead": {
+            "title": "Wowhead",
+            "type": "string"
+          }
+        },
+        "required": [
+          "recipe_id",
+          "name",
+          "known",
+          "wowhead"
+        ],
+        "title": "BookRecipe",
+        "type": "object"
+      },
       "Candidate": {
         "properties": {
           "armor_delta": {
@@ -4599,6 +4638,76 @@
         "title": "Profession",
         "type": "object"
       },
+      "ProfessionBook": {
+        "properties": {
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/RecipeCategory"
+            },
+            "title": "Categories",
+            "type": "array"
+          },
+          "known": {
+            "title": "Known",
+            "type": "integer"
+          },
+          "listed": {
+            "title": "Listed",
+            "type": "boolean"
+          },
+          "max_skill": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Skill"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "primary": {
+            "title": "Primary",
+            "type": "boolean"
+          },
+          "season_of_discovery": {
+            "title": "Season Of Discovery",
+            "type": "integer"
+          },
+          "skill": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skill"
+          },
+          "unlearned": {
+            "title": "Unlearned",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "primary",
+          "skill",
+          "max_skill",
+          "listed",
+          "known",
+          "unlearned",
+          "season_of_discovery",
+          "categories"
+        ],
+        "title": "ProfessionBook",
+        "type": "object"
+      },
       "ProfessionRow": {
         "properties": {
           "crafted_gear": {
@@ -5160,6 +5269,53 @@
           "last_error"
         ],
         "title": "RecentView",
+        "type": "object"
+      },
+      "RecipeBook": {
+        "properties": {
+          "details_pending": {
+            "title": "Details Pending",
+            "type": "integer"
+          },
+          "professions": {
+            "items": {
+              "$ref": "#/components/schemas/ProfessionBook"
+            },
+            "title": "Professions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "professions",
+          "details_pending"
+        ],
+        "title": "RecipeBook",
+        "type": "object"
+      },
+      "RecipeCategory": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "recipes": {
+            "items": {
+              "$ref": "#/components/schemas/BookRecipe"
+            },
+            "title": "Recipes",
+            "type": "array"
+          },
+          "season_of_discovery": {
+            "default": false,
+            "title": "Season Of Discovery",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "recipes"
+        ],
+        "title": "RecipeCategory",
         "type": "object"
       },
       "RecipeRefresh": {
@@ -9038,6 +9194,54 @@
           }
         },
         "summary": "Readyz"
+      }
+    },
+    "/api/recipes": {
+      "get": {
+        "description": "Each of the character's professions with its recipes by category: the ones it\nknows and the ones not learned yet, each linked to Wowhead (#226, ADR 0054).\n\nUnlearned recipes are listed once the profession's skill tier is cached, after a\nsync. No recipe has a skill requirement in Blizzard's data, so none is given.\nSeason of Discovery recipes are flagged, for the tab to hide.",
+        "operationId": "get_recipes_api_recipes_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecipeBook"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Recipes"
       }
     },
     "/api/recommendations": {

@@ -115,6 +115,8 @@ def run_sync(character_id: int) -> dict[str, int]:
         statuses = jobs.sync_character(session, settings, character, http=http)
         if jobs.missing_data(session, character_id):
             jobs.load_missing_data(engine, settings, http)
+        if jobs.recipes_wanted(session, character_id):
+            jobs.load_recipe_book(engine, settings, character_id, http)
     return statuses
 
 

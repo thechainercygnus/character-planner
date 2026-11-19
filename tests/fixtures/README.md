@@ -27,3 +27,11 @@ response (Crude Scope) stored by the enchant refresh on 2026-11-12, with `_links
 `companion_dungeon_hall_of_thanes.json` is the real Forever Companion
 `GET /dungeons/hall-of-thanes` response, saved on 2026-11-11 with
 `curl.exe -s https://forevercompanion.io/api/v1/dungeons/hall-of-thanes -o tests/fixtures/companion_dungeon_hall_of_thanes.json`.
+
+`blizzard_skill_tier_engineering.json` is a real Blizzard response from the 2026-11-12
+recipe probe (`samples/recipes-20261112T043112Z`), with `_links` removed. The skill tier
+(2941) is trimmed for #226: each category keeps the recipes the fixture character knows
+(all 19 of its Engineering recipes are in the tier) plus the first two others.
+`blizzard_recipe_2435.json` (Standard Scope, not known) and `blizzard_recipe_49656.json`
+(Soul Vessel, Season of Discovery) are real `GET /data/wow/recipe/{id}` responses fetched
+for #226 on 2026-11-19, with `_links` removed.

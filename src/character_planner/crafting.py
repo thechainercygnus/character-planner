@@ -103,7 +103,7 @@ def load_profession_data(path: Path) -> ProfessionData:
     return ProfessionData.model_validate(yaml.safe_load(path.read_text(encoding="utf-8")))
 
 
-def _professions(payload: Any) -> list[tuple[Mapping[str, Any], bool]]:
+def profession_entries(payload: Any) -> list[tuple[Mapping[str, Any], bool]]:
     """(profession entry, primary?) from a professions snapshot."""
     entries: list[tuple[Mapping[str, Any], bool]] = []
     for key, primary in (("primaries", True), ("secondaries", False)):
@@ -113,7 +113,7 @@ def _professions(payload: Any) -> list[tuple[Mapping[str, Any], bool]]:
     return entries
 
 
-def _tier(entry: Any) -> Any:
+def profession_tier(entry: Any) -> Any:
     """A profession's skill tier: Forever's professions have one each."""
     tiers = fields.as_list(fields.get(entry, "tiers"))
     return tiers[0] if tiers else None
@@ -122,9 +122,9 @@ def _tier(entry: Any) -> Any:
 def known_recipes(payload: Any) -> list[KnownRecipe]:
     """Every recipe the character knows, from a professions snapshot."""
     recipes: list[KnownRecipe] = []
-    for entry, _ in _professions(payload):
+    for entry, _ in profession_entries(payload):
         profession = fields.name(fields.get(entry, "profession", "name"))
-        for recipe in fields.as_list(fields.get(_tier(entry), "known_recipes")):
+        for recipe in fields.as_list(fields.get(profession_tier(entry), "known_recipes")):
             rid = fields.as_int(fields.get(recipe, "id"))
             name = fields.name(fields.get(recipe, "name"))
             if rid is not None and name and profession:
@@ -180,7 +180,7 @@ def _crafted_ids(session: Session) -> dict[int, int]:
     return out
 
 
-def _professions_payload(session: Session, character_id: int | None) -> Any:
+def professions_payload(session: Session, character_id: int | None) -> Any:
     snapshot = latest_by_kind(session, character_id).get("professions")
     return snapshot.payload if snapshot else None
 
@@ -192,7 +192,7 @@ def crafted_items(session: Session, character_id: int | None) -> list[CraftedIte
         row.item_id: row.payload for row in session.exec(select(BlizzardItem)).all() if row.found
     }
     out: dict[int, CraftedItem] = {}
-    for recipe in known_recipes(_professions_payload(session, character_id)):
+    for recipe in known_recipes(professions_payload(session, character_id)):
         item_id = crafted_ids.get(recipe.recipe_id)
         info = item_info(items.get(item_id)) if item_id is not None else None
         if item_id is None or info is None or item_id in out:
@@ -224,14 +224,14 @@ def professions_view(
     gear: dict[str, list[str]] = {}
     for item in crafted_items(session, character_id):
         gear.setdefault(item.profession, []).append(item.name)
-    payload = _professions_payload(session, character_id)
+    payload = professions_payload(session, character_id)
     known = known_recipes(payload)
     rows: list[ProfessionRow] = []
-    for entry, primary in _professions(payload):
+    for entry, primary in profession_entries(payload):
         name = fields.name(fields.get(entry, "profession", "name"))
         if not name:
             continue
-        tier = _tier(entry)
+        tier = profession_tier(entry)
         skill = fields.as_int(fields.get(tier, "skill_points"))
         cap = fields.as_int(fields.get(tier, "max_skill_points"))
         current, upcoming = _rank_for(cap, ranks)
@@ -275,7 +275,7 @@ def refresh_crafting(
     """Fetch the recipes the character knows, then the items they make, where not cached
     in the last 30 days. Best effort: errors are returned, never raised."""
     outcome = CraftingRefresh()
-    recipes = known_recipes(_professions_payload(session, character_id))
+    recipes = known_recipes(professions_payload(session, character_id))
     if not recipes:
         return outcome
     cutoff = utcnow() - CRAFTING_MAX_AGE
@@ -313,7 +313,9 @@ def refresh_crafting(
             outcome.recipes_fetched += 1
         job.done(f"{outcome.recipes_fetched} fetched", outcome.errors)
 
-        item_ids = sorted(set(_crafted_ids(session).values()))
+        # Only what known recipes make: the cache also holds recipes not learned yet (#226).
+        crafted = _crafted_ids(session)
+        item_ids = sorted({crafted[r.recipe_id] for r in recipes if r.recipe_id in crafted})
         wanted_items = [i for i in item_ids if not fresh(session.get(BlizzardItem, i))]
         job = JobLog(logger, "Blizzard crafted items", len(wanted_items))
         for index, item_id in enumerate(wanted_items, start=1):

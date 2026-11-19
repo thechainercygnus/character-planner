@@ -164,6 +164,7 @@ from character_planner.queue import (
     sync_state,
     waiting_refreshes,
 )
+from character_planner.recipe_book import RecipeBook, recipe_book
 from character_planner.recommend import Recommendations, UsageRules, recommend
 from character_planner.rules import (
     EditedRules,
@@ -848,6 +849,8 @@ def create_app(
             raise HTTPException(503, str(error)) from error
         if jobs.missing_data(session, character_id):
             background.add_task(jobs.load_missing_data, engine, settings, http)
+        if jobs.recipes_wanted(session, character.id):
+            background.add_task(jobs.load_recipe_book, engine, settings, character.id, http)
         return statuses
 
     @app.get("/api/sync")
@@ -1052,6 +1055,16 @@ def create_app(
         """Each synced profession: skill, rank, the next rank and crafted gear (#10)."""
         level = jobs.character_context(session, character_id)[0]
         return professions_view(session, data, level, character_id)
+
+    @app.get("/api/recipes")
+    def get_recipes(session: SessionDep, character_id: CharacterIdDep) -> RecipeBook:
+        """Each of the character's professions with its recipes by category: the ones it
+        knows and the ones not learned yet, each linked to Wowhead (#226, ADR 0054).
+
+        Unlearned recipes are listed once the profession's skill tier is cached, after a
+        sync. No recipe has a skill requirement in Blizzard's data, so none is given.
+        Season of Discovery recipes are flagged, for the tab to hide."""
+        return recipe_book(session, character_id)
 
     @app.get("/api/progress")
     def progress_over_time(
