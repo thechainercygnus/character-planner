@@ -150,6 +150,7 @@ class TargetInfo(BaseModel):
     icon_url: str | None = None
     drops: list[str] = []
     rewards: list[str] = []
+    reward_quest_ids: list[int] = []  # the rewarding quests' game ids (#186)
     verified: int | None = None
     wowhead: str | None = None
     conflicts: list[str] = []
@@ -164,6 +165,17 @@ class OwnedItem(BaseModel):
     captured_at: datetime  # when that place was recorded in the game
 
 
+class QuestProgress(BaseModel):
+    """A quest in the character's log, from the addon's game data (#186, ADR 0052)."""
+
+    quest_id: int
+    title: str
+    complete: bool  # every objective done: ready to hand in
+    done: int  # summed over its objectives
+    needed: int
+    captured_at: datetime  # when the log was recorded in the game
+
+
 class UpcomingTarget(BaseModel):
     """A target above the character's level: shown early so you can prepare for it."""
 
@@ -172,6 +184,7 @@ class UpcomingTarget(BaseModel):
     level: int | None
     score_delta: float | None = None  # against what's worn now
     owned: OwnedItem | None = None  # in the bags or bank (#186)
+    quest: QuestProgress | None = None  # its reward quest, in the log (#186)
 
 
 class GearRow(BaseModel):
@@ -190,6 +203,7 @@ class GearRow(BaseModel):
     level: int | None = None  # the level the target counts from (ADR 0015)
     upcoming: list[UpcomingTarget] = []  # the slot's next targets, nearest first
     owned: OwnedItem | None = None  # the target is in the bags or bank (#186)
+    quest: QuestProgress | None = None  # the target's reward quest, in the log (#186)
 
 
 class SlotOutlook(BaseModel):
@@ -493,6 +507,7 @@ def target_info(
         icon_url=_first(icons.get(item_id) if item_id else None, comp.icon_url if comp else None),
         drops=comp.drops if comp else [],
         rewards=comp.rewards if comp else [],
+        reward_quest_ids=comp.reward_quest_ids if comp else [],
         verified=comp.verified if comp else None,
         wowhead=comp.wowhead if comp else None,
         conflicts=conflicts,

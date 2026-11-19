@@ -1,0 +1,92 @@
+{
+  "data": {
+    "id": 279899,
+    "name": "Catacomb Cloak",
+    "quality": "uncommon",
+    "icon": "inv_misc_cape_11",
+    "itemLevel": 17,
+    "requiredLevel": null,
+    "slot": "Back",
+    "armor": null,
+    "weaponType": null,
+    "stats": [
+      "sta",
+      "ap"
+    ],
+    "classicOnly": false,
+    "verified": null,
+    "wowhead": "https://www.wowhead.com/forever/item=279899",
+    "tooltip": [
+      {
+        "left": "Binds when picked up",
+        "right": null,
+        "kind": "plain",
+        "changed": false
+      },
+      {
+        "left": "Back",
+        "right": "Cloth",
+        "kind": "plain",
+        "changed": false
+      },
+      {
+        "left": "15 Armor",
+        "right": null,
+        "kind": "plain",
+        "changed": false
+      },
+      {
+        "left": "+2 Stamina",
+        "right": null,
+        "kind": "plain",
+        "changed": false
+      },
+      {
+        "left": "Equip: +4 Attack Power Vs Humanoids",
+        "right": null,
+        "kind": "green",
+        "changed": false
+      },
+      {
+        "left": "Equip: +3 Attack Power",
+        "right": null,
+        "kind": "green",
+        "changed": false
+      },
+      {
+        "left": "Sell Price: 2s 88c",
+        "right": null,
+        "kind": "muted",
+        "changed": false
+      }
+    ],
+    "dropsFrom": [],
+    "rewardFrom": [
+      {
+        "questId": 96395,
+        "name": "An Ancient Grudge",
+        "type": "dungeon"
+      }
+    ]
+  },
+  "meta": {
+    "updatedAt": "2026-11-19T00:03:39.544+00:00",
+    "version": "v1",
+    "docs": "https://forevercompanion.io/developers",
+    "attribution": "Data from Forever Companion (https://forevercompanion.io), gathered from ForeverChanges, Wowhead and Zockify and checked in game by players. Please link back. Fan-made, not affiliated with Blizzard Entertainment.",
+    "sources": [
+      {
+        "name": "ForeverChanges",
+        "url": "https://foreverchanges.pro"
+      },
+      {
+        "name": "Wowhead",
+        "url": "https://www.wowhead.com/forever"
+      },
+      {
+        "name": "Zockify",
+        "url": "https://www.zockify.com/forever/"
+      }
+    ]
+  }
+}

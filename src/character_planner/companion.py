@@ -73,6 +73,8 @@ class CompanionInfo(BaseModel):
     dps: float | None = None
     drops: list[str] = []
     rewards: list[str] = []
+    # The rewarding quests' game ids (`rewardFrom[].questId`), for quest progress (#186).
+    reward_quest_ids: list[int] = []
     verified: int | None = None
     classic_only: bool | None = None
     icon_url: str | None = None
@@ -146,6 +148,11 @@ def parse_item(payload: Any) -> CompanionInfo | None:
             f"Quest: {fields.get(r, 'name')}"
             for r in fields.as_list(fields.get(item, "rewardFrom"))
             if fields.get(r, "name")
+        ],
+        reward_quest_ids=[
+            quest_id
+            for r in fields.as_list(fields.get(item, "rewardFrom"))
+            if (quest_id := fields.as_int(fields.get(r, "questId"))) is not None
         ],
         verified=fields.as_int(fields.get(item, "verified")),
         classic_only=fields.get(item, "classicOnly"),
