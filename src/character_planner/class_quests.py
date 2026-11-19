@@ -28,6 +28,7 @@ from character_planner.db import (
     save_owned,
     utcnow,
 )
+from character_planner.levels import planning_level
 from character_planner.views import character_faction, character_view
 
 logger = logging.getLogger(__name__)
@@ -185,12 +186,13 @@ def checklist(session: Session, character_id: int | None) -> ClassQuestChecklist
     stored = stored_class_quests(session)
     rows: list[ClassQuestRow] = []
     if character.character_class is not None:
+        level = planning_level(session, character_id)  # newest of sync and game (ADR 0052)
         done = done_ids(session, character_id)
         rows = [
             ClassQuestRow(
                 **quest.model_dump(),
                 done=quest.id in done,
-                status=status(quest, character.level, quest.id in done),
+                status=status(quest, level, quest.id in done),
             )
             for quest in stored
             if applies(quest, character.character_class, faction, character.race)

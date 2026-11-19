@@ -34,6 +34,7 @@ from character_planner.dungeons import stored_dungeons
 from character_planner.enchants import RecipeRefresh, refresh_enchant_data
 from character_planner.items import refresh_item_sources
 from character_planner.leases import Busy, lease
+from character_planner.levels import planning_level
 from character_planner.pool import (
     PoolItem,
     PoolRefresh,
@@ -49,7 +50,7 @@ from character_planner.retention import forget_character, prune
 from character_planner.talent_trees import TalentRefresh, refresh_talent_trees, stored_tree
 from character_planner.targets import current_targets, pin_target, save_targets
 from character_planner.tokens import CredentialsError, app_token
-from character_planner.views import character_faction, character_level, parse_equipment
+from character_planner.views import character_faction, parse_equipment
 
 logger = logging.getLogger(__name__)
 
@@ -87,10 +88,11 @@ def current_token(session: Session) -> oauth.Token | None:
 
 
 def character_context(session: Session, character_id: int | None) -> tuple[int | None, str | None]:
-    """Level and faction from the latest profile snapshot."""
+    """The level planning uses (the newest of the last sync and the game data, ADR 0052)
+    and the faction, from the latest profile snapshot."""
     profile = latest_by_kind(session, character_id).get("profile")
     payload = profile.payload if profile else None
-    return character_level(payload), character_faction(payload)
+    return planning_level(session, character_id), character_faction(payload)
 
 
 def equipped_item_ids(session: Session, character_id: int | None) -> list[int]:
