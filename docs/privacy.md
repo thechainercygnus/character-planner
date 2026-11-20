@@ -17,6 +17,8 @@ This page repeats what the notice says, and covers what an operator needs to do.
 - a short history for the Progress tab: the date, level and item level of each sync;
 - what's set in the app: build, gear targets, talent plan, stat weights, rules, dismissed items
   and class quests marked done;
+- whether each character's public page is on, and its link's token, until it's turned
+  off;
 - the Discord webhooks added for alerts, and the alerts waiting to be sent;
 - a Discord account linked for DMs: its id and name only, until it's unlinked;
 - game data imported from the CharacterPlannerExport addon: the character's bags, bank
@@ -55,6 +57,12 @@ the member ticks it.
 With users on, the admin, and any superusers the admin appoints, see a list of the
 accounts: each one's Battle.net account id, role, when it signed up and last signed in, and
 its characters' names. Nothing more of anyone's.
+**A public page,** if a character's owner turns one on (the Character tab), shows that
+character to anyone with its link, signed in or not: its name, level, race, class, guild,
+spec and talents, equipment, stats and professions, as of the last sync. Never plans,
+settings, the account or other characters. Turning it off, or making a new link, stops the
+old link working at once, and it shows nothing once the 30-day rule has deleted the sync's
+data (ADR 0063).
 
 **Sharing:** nothing is sold, shared or used for advertising. The planner asks Blizzard's
 API for the character by name and realm, and Forever Companion for items and dungeons by

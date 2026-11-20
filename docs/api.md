@@ -190,6 +190,38 @@ Stop tracking the character and delete everything stored for it (#133, #14): sna
 
 **200:** [Erased](#schema-erased)
 
+### `GET /api/character/public-page`
+
+Whether the character's public page is on, and its token for the link (#42).
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**200:** [PublicPageState](#schema-publicpagestate)
+
+### `PUT /api/character/public-page`
+
+Turn the character's public page on or off (#42, ADR 0063). Off deletes its token, so the old link stops working.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**Body:** [PublicPageChange](#schema-publicpagechange)
+
+**200:** [PublicPageState](#schema-publicpagestate)
+
+### `POST /api/character/public-page/regenerate`
+
+A new link for the public page; the old one stops working. 404 when it's off.
+
+| Parameter | In | Type | Required | Default |
+| --- | --- | --- | --- | --- |
+| `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
+
+**200:** [PublicPageState](#schema-publicpagestate)
+
 ## `characters`
 
 ### `GET /api/characters`
@@ -708,6 +740,16 @@ One point per sync, plus gear changes and level-ups (ADR 0008).
 | `X-Character-Id` | header | integer (exclusiveMinimum 0) or null | no |  |
 
 **200:** [Progress](#schema-progress)
+
+## `public`
+
+### `POST /api/public/character`
+
+A character's public page, for anyone with its link (#42, ADR 0063): the last sync's snapshot, from the database only. The token comes in the body, from the link's #public= fragment, so it stays out of the logs. 404 for a link that's unknown, or was turned off or replaced.
+
+**Body:** [PublicPageToken](#schema-publicpagetoken)
+
+**200:** [PublicCharacter](#schema-publiccharacter)
 
 ## `readyz`
 
@@ -2469,6 +2511,52 @@ An item in the character's bags or bank, from the addon's game data (#186, ADR 0
 | `health` | integer or null | no |
 | `armor` | integer or null | no |
 | `stamina` | integer or null | no |
+
+(schema-publiccharacter)=
+### PublicCharacter
+
+Everything a public page shows, and nothing else: each field is named here, so a field added to CharacterView doesn't become public by accident.
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `name` | string or null | no |
+| `surname` | string or null | no |
+| `level` | integer or null | no |
+| `race` | string or null | no |
+| `character_class` | string or null | no |
+| `guild` | string or null | no |
+| `equipped_item_level` | number or null | no |
+| `gear_slots_filled` | integer | no |
+| `captured_at` | string or null | no |
+| `stats` | [Stats](#schema-stats) or null | no |
+| `professions` | list of [Profession](#schema-profession) | no |
+| `specialization` | [Specialization](#schema-specialization) or null | no |
+| `equipment` | list of [EquippedItem](#schema-equippeditem) | no |
+
+(schema-publicpagechange)=
+### PublicPageChange
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `enabled` | boolean | yes |
+
+(schema-publicpagestate)=
+### PublicPageState
+
+For the owner: whether the page is on, and its token to build the link.
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `enabled` | boolean | yes |
+| `token` | string or null | no |
+| `created_at` | string or null | no |
+
+(schema-publicpagetoken)=
+### PublicPageToken
+
+| Field | Type | Required |
+| --- | --- | --- |
+| `token` | string (minLength 1, maxLength 128) | yes |
 
 (schema-quest)=
 ### Quest

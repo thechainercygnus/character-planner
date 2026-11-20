@@ -20,8 +20,14 @@ export async function serveApi(page: Page, answers: Answers = {}): Promise<Reque
     const path = new URL(request.url()).pathname
     const given = answers[`${request.method()} ${path}`] ?? answers[path]
     const answer = typeof given === 'function' ? given(request) : given
-    // Guest mode's recommendations have the same shape as the character's.
-    const known = path === '/api/guest/recommendations' ? '/api/recommendations' : path
+    // Guest mode's recommendations have the same shape as the character's, and a public
+    // page (#42) shows the character's snapshot.
+    const known =
+      path === '/api/guest/recommendations'
+        ? '/api/recommendations'
+        : path === '/api/public/character'
+          ? '/api/character'
+          : path
     const { status = 200, body } = answer ?? recorded[known] ?? { status: 200, body: [] }
     return route.fulfill({ status, json: body })
   })
@@ -36,6 +42,9 @@ export async function openTab(page: Page, hash: string) {
   await page.evaluate(() => document.fonts.ready)
 }
 
+/** A character's public page (#42): its own page, opened from a #public= link. */
+export const PUBLIC_PAGE = 'public=abcdefghijklmnopqrstuvwxyz012345'
+
 export const TABS = [
   'upgrades',
   'dungeons',
@@ -49,6 +58,7 @@ export const TABS = [
   'admin',
   'account',
   'guild',
+  PUBLIC_PAGE,
 ]
 
 const EVERY_PERMISSION = [
