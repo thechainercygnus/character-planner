@@ -1,6 +1,7 @@
 # 0034: What Blizzard's API terms allow us to store and show
 
-Status: accepted (2026-11-13)
+Status: accepted (2026-11-13). Point 4 (public display) is replaced by ADR 0063: public
+pages are allowed, opt-in per character.
 
 ## Context
 

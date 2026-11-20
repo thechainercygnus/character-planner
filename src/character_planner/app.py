@@ -36,6 +36,7 @@ from character_planner import (
     jobs,
     leases,
     notify,
+    public_page,
     questlog,
     signup,
     upstream,
@@ -176,6 +177,7 @@ from character_planner.pool import (
     pool_view,
 )
 from character_planner.progress import Progress, progress
+from character_planner.public_page import PublicCharacter, PublicPageState
 from character_planner.queue import (
     Refresh,
     SyncState,
@@ -305,7 +307,8 @@ PUBLIC_API = frozenset(
     # /api/metrics checks its own token (ADR 0041).
     {"/api/healthz", "/api/readyz", "/api/metrics", "/api/about", "/api/me"}
 )
-PUBLIC_PREFIXES = ("/api/guest",)
+# A public character page (#42, ADR 0063) checks its own token.
+PUBLIC_PREFIXES = ("/api/guest", "/api/public/")
 # What each route needs, with users on (#237, ADR 0055): (methods, path prefix,
 # permission). Checked by name in the middleware; what a role may do is data (roles.py).
 # Alert webhooks are each user's own (#164), filtered in their routes.
@@ -421,6 +424,14 @@ class SignupsChange(BaseModel):
 
 class InviteToken(BaseModel):
     token: Annotated[str, Field(min_length=16, max_length=128)]
+
+
+class PublicPageToken(BaseModel):
+    token: Annotated[str, Field(min_length=1, max_length=128)]
+
+
+class PublicPageChange(BaseModel):
+    enabled: bool
 
 
 class SignupsAdmin(BaseModel):
@@ -1886,6 +1897,47 @@ def create_app(
         view = character_view(latest_by_kind(session, character_id), icons_by_id(session))
         view.level_source = effective_level(session, character_id)
         return view
+
+    @app.get("/api/character/public-page")
+    def get_public_page(session: SessionDep, character_id: CharacterIdDep) -> PublicPageState:
+        """Whether the character's public page is on, and its token for the link (#42)."""
+        return public_page.state(session, character_id)
+
+    @app.put("/api/character/public-page")
+    def put_public_page(
+        change: PublicPageChange, session: SessionDep, character_id: CharacterIdDep
+    ) -> PublicPageState:
+        """Turn the character's public page on or off (#42, ADR 0063). Off deletes its
+        token, so the old link stops working."""
+        if change.enabled:
+            return public_page.enable(session, character_id)
+        return public_page.disable(session, character_id)
+
+    @app.post("/api/character/public-page/regenerate")
+    def regenerate_public_page(
+        session: SessionDep, character_id: CharacterIdDep
+    ) -> PublicPageState:
+        """A new link for the public page; the old one stops working. 404 when it's off."""
+        regenerated = public_page.regenerate(session, character_id)
+        if regenerated is None:
+            raise HTTPException(404, "The public page is off")
+        return regenerated
+
+    @app.post("/api/public/character")
+    def read_public_page(
+        body: PublicPageToken, session: SessionDep, response: Response
+    ) -> PublicCharacter:
+        """A character's public page, for anyone with its link (#42, ADR 0063): the last
+        sync's snapshot, from the database only. The token comes in the body, from the
+        link's #public= fragment, so it stays out of the logs. 404 for a link that's
+        unknown, or was turned off or replaced."""
+        response.headers["Cache-Control"] = "no-store"
+        response.headers["X-Robots-Tag"] = "noindex"
+        character_id = public_page.character_for(session, body.token)
+        if character_id is None:
+            raise HTTPException(404, "This page isn't shared, or its link has changed")
+        view = character_view(latest_by_kind(session, character_id), icons_by_id(session))
+        return public_page.public_view(view)
 
     @app.delete("/api/character")
     def erase(session: SessionDep, character_id: CharacterIdDep) -> Erased:
