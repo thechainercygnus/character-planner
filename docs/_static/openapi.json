@@ -5966,6 +5966,208 @@
         "title": "ProgressPoint",
         "type": "object"
       },
+      "PublicCharacter": {
+        "description": "Everything a public page shows, and nothing else: each field is named here, so a\nfield added to CharacterView doesn't become public by accident.",
+        "properties": {
+          "captured_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Captured At"
+          },
+          "character_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Class"
+          },
+          "equipment": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/EquippedItem"
+            },
+            "title": "Equipment",
+            "type": "array"
+          },
+          "equipped_item_level": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Equipped Item Level"
+          },
+          "gear_slots_filled": {
+            "default": 0,
+            "title": "Gear Slots Filled",
+            "type": "integer"
+          },
+          "guild": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guild"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "professions": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Profession"
+            },
+            "title": "Professions",
+            "type": "array"
+          },
+          "race": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Race"
+          },
+          "specialization": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Specialization"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stats": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Stats"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "surname": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Surname"
+          }
+        },
+        "title": "PublicCharacter",
+        "type": "object"
+      },
+      "PublicPageChange": {
+        "properties": {
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled"
+        ],
+        "title": "PublicPageChange",
+        "type": "object"
+      },
+      "PublicPageState": {
+        "description": "For the owner: whether the page is on, and its token to build the link.",
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Token"
+          }
+        },
+        "required": [
+          "enabled"
+        ],
+        "title": "PublicPageState",
+        "type": "object"
+      },
+      "PublicPageToken": {
+        "properties": {
+          "token": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "title": "PublicPageToken",
+        "type": "object"
+      },
       "Quest": {
         "properties": {
           "complete": {
@@ -8802,6 +9004,158 @@
         "summary": "Character"
       }
     },
+    "/api/character/public-page": {
+      "get": {
+        "description": "Whether the character's public page is on, and its token for the link (#42).",
+        "operationId": "get_public_page_api_character_public_page_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicPageState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Public Page"
+      },
+      "put": {
+        "description": "Turn the character's public page on or off (#42, ADR 0063). Off deletes its\ntoken, so the old link stops working.",
+        "operationId": "put_public_page_api_character_public_page_put",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicPageChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicPageState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Public Page"
+      }
+    },
+    "/api/character/public-page/regenerate": {
+      "post": {
+        "description": "A new link for the public page; the old one stops working. 404 when it's off.",
+        "operationId": "regenerate_public_page_api_character_public_page_regenerate_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Character-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Character-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicPageState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Regenerate Public Page"
+      }
+    },
     "/api/characters": {
       "get": {
         "description": "The tracked characters, for the header's switcher (#14): the signed-in user's\nwhen users are on. Requests pick one with X-Character-Id; without it they get\ndefault_id, the first.",
@@ -10987,6 +11341,45 @@
           }
         },
         "summary": "Progress Over Time"
+      }
+    },
+    "/api/public/character": {
+      "post": {
+        "description": "A character's public page, for anyone with its link (#42, ADR 0063): the last\nsync's snapshot, from the database only. The token comes in the body, from the\nlink's #public= fragment, so it stays out of the logs. 404 for a link that's\nunknown, or was turned off or replaced.",
+        "operationId": "read_public_page_api_public_character_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicPageToken"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicCharacter"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Public Page"
       }
     },
     "/api/readyz": {

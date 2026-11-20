@@ -15,6 +15,7 @@ import { GearTable } from './components/GearTable'
 import { Landing } from './components/Landing'
 import { LookAhead } from './components/LookAhead'
 import { Privacy } from './components/Privacy'
+import { PublicPageControl } from './components/PublicPage'
 import { SignIn } from './components/SignIn'
 import { Professions } from './components/Professions'
 import { Progress } from './components/Progress'
@@ -215,6 +216,7 @@ export default function App() {
                 <BuildPicker label="Follow" />
               </section>
               <CharacterSnapshot character={character.data} />
+              <PublicPageControl />
               <GameDataPanel battleNetLevel={character.data.level} levelSource={character.data.level_source} />
             </>
           )}
