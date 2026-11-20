@@ -102,33 +102,33 @@ def message(settings: Settings, signups_open: bool | None = None) -> dict[str, A
     }
 
 
-class _Refused(Exception):
+class Refused(Exception):
     """Discord said no: the message is the admin's to read."""
 
 
-class _NotAllowed(_Refused):
+class _NotAllowed(Refused):
     """A 403: the bot lacks a permission, named in the message when the step has one."""
 
 
-def _check(response: httpx.Response, doing: str, needs: str | None = None) -> Any:
-    """The response's body, or _Refused saying why. `needs` is the permission this step
+def check(response: httpx.Response, doing: str, needs: str | None = None) -> Any:
+    """The response's body, or Refused saying why. `needs` is the permission this step
     needs, so a 403 names that one and not every permission the bot uses (#212)."""
     if response.status_code in (200, 201, 204):
         return response.json() if response.content else None
     if response.status_code == 401:
-        raise _Refused("Discord refused DISCORD_BOT_TOKEN")
+        raise Refused("Discord refused DISCORD_BOT_TOKEN")
     if response.status_code == 403:
         if needs is None:
             raise _NotAllowed(f"Discord refused to let the bot {doing}")
         raise _NotAllowed(f"The bot can't {doing}: give it {needs} in that channel")
     if response.status_code == 404:
-        raise _Refused(
+        raise Refused(
             "Discord doesn't know DISCORD_SIGNUP_CHANNEL_ID, or the bot can't see it: "
             "check the id, and that the bot is in that server"
         )
     if response.status_code == 429:
-        raise _Refused("Discord is rate limiting the bot: try again in a few minutes")
-    raise _Refused(f"Discord answered {response.status_code} when trying to {doing}")
+        raise Refused("Discord is rate limiting the bot: try again in a few minutes")
+    raise Refused(f"Discord answered {response.status_code} when trying to {doing}")
 
 
 def _ours(pins: Any, bot_id: str) -> str | None:
@@ -153,16 +153,16 @@ def ensure(settings: Settings, http: httpx.Client, signups_open: bool | None = N
     headers = bot_headers(settings)
     body = message(settings, signups_open)
     try:
-        me = _check(http.get(f"{API}/users/@me", headers=headers), "read its own account")
+        me = check(http.get(f"{API}/users/@me", headers=headers), "read its own account")
         bot_id = fields.get(me, "id")
-        pins = _check(
+        pins = check(
             http.get(f"{API}/channels/{channel}/messages/pins", headers=headers),
             "read the channel's pins",
             READ_PINS,
         )
         existing = _ours(pins, bot_id) if isinstance(bot_id, str) else None
         if existing is not None:
-            _check(
+            check(
                 http.patch(
                     f"{API}/channels/{channel}/messages/{existing}", json=body, headers=headers
                 ),
@@ -170,31 +170,31 @@ def ensure(settings: Settings, http: httpx.Client, signups_open: bool | None = N
             )
             logger.info("Discord: the sign-up message is up to date")
             return Outcome(ok=True, action="updated", message_id=existing)
-        posted = _check(
+        posted = check(
             http.post(f"{API}/channels/{channel}/messages", json=body, headers=headers),
             "post in the channel",
             POST,
         )
         message_id = fields.get(posted, "id")
         if not isinstance(message_id, str):
-            raise _Refused("Discord didn't say which message it posted")
+            raise Refused("Discord didn't say which message it posted")
         pinned = http.put(f"{API}/channels/{channel}/messages/pins/{message_id}", headers=headers)
         try:
-            _check(pinned, "pin its message", PIN)
-        except _Refused as refused:
+            check(pinned, "pin its message", PIN)
+        except Refused as refused:
             # Unpinned, the next attempt wouldn't find it and would post another: take it
             # back (authors may always delete their own messages), then say so, since the
             # admin may have seen the post arrive and vanish (#212).
             http.delete(f"{API}/channels/{channel}/messages/{message_id}", headers=headers)
             if isinstance(refused, _NotAllowed):
-                raise _Refused(
+                raise Refused(
                     "Posted, but couldn't pin it, so the post was removed: "
                     f"give the bot {PIN} in that channel"
                 ) from None
-            raise _Refused(
+            raise Refused(
                 f"Posted, but couldn't pin it, so the post was removed: {refused}"
             ) from None
-    except _Refused as refused:
+    except Refused as refused:
         logger.warning("Discord: the sign-up message wasn't updated: %s", refused)
         return Outcome(ok=False, action="none", error=str(refused))
     except (httpx.HTTPError, ValueError) as error:
