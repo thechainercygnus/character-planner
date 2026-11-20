@@ -91,6 +91,7 @@ module adds its line here.
 - `notify.py`: alerts to Discord webhooks: destinations, change detection after a sync, an outbox the worker sends (ADR 0021); each user's webhooks are their own and get only their characters' alerts, system alerts the admin's (#164, ADR 0045)
 - `discord.py`: Discord DMs from the instance's bot: account linking (`identify`), the `discord_dm` destination, refusals pause it; on with the `DISCORD_*` settings (#58, ADR 0043, ADR 0044)
 - `signup.py`: the bot's pinned sign-up message in `DISCORD_SIGNUP_CHANNEL_ID`: found by its author and footer marker among the channel's pins, edited or posted and pinned; refusals reported, never retried (#192, ADR 0048)
+- `announce.py`: at the worker's start, posts a new full release to `DISCORD_SIGNUP_CHANNEL_ID` once, the last one announced kept in `InstanceSetting`; the first start records only, pre-releases skipped, refusals logged and not retried (#254)
 - `logs.py`: logging for the API and the worker: console, rotating files with `LOG_DIR`, request ids, redaction of secrets in every line (ADR 0019)
 - `tokens.py`: the app's own Battle.net token (Client Credentials), cached and renewed; syncs and every refresh use it, so no login is needed (ADR 0027)
 - `leases.py`: one-at-a-time leases for long refreshes, shared by the API and the worker (ADR 0024)

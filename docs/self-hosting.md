@@ -441,6 +441,24 @@ If the bot can post but not pin, it removes its post again, so the next attempt 
 leave a second one behind. You may see the message arrive and vanish; the answer names
 the missing permission (#212).
 
+#### New versions
+
+With the sign-up channel set, the worker also announces each new release there (#254).
+When it starts on a full release newer than the last one it announced, it posts one
+message with the version, a link to its release notes on GitHub and your instance's
+address. It's posted, not pinned, and the pinned sign-up message stays as it is. It needs
+only **Send Messages**, which the sign-up message already has.
+
+- The first start after upgrading to a version with this only records the version, so
+  the channel doesn't hear about one you've been running.
+- Restarts on the same version stay quiet. Test releases (`-rc`) are never announced, so
+  the full release after them still is. Going back to an older version is recorded
+  without a post.
+- If Discord refuses the post, the worker logs why and doesn't try again for that
+  version. If Discord can't be reached, it tries at the next start.
+
+To turn it off, set `DISCORD_ANNOUNCE_VERSIONS=false` in `.env`.
+
 ## 10. Logs
 
 Both containers log to the console and to rotating files on the data volume (ADR 0019):
