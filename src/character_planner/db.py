@@ -334,6 +334,19 @@ class CharacterBuild(SQLModel, table=True):
     chosen_at: datetime = Field(default_factory=utcnow)
 
 
+class PublicPage(SQLModel, table=True):
+    """A character's public page (#42, ADR 0063): its owner turned it on, and anyone with
+    the link sees the last sync's snapshot. The token is kept, not hashed, so the owner can
+    copy the link again; turning the page off deletes the row and breaks the link."""
+
+    __table_args__ = (UniqueConstraint("character_id"),)
+
+    id: int | None = Field(default=None, primary_key=True)
+    character_id: int | None = Field(default=None, foreign_key="character.id", index=True)
+    token: str = Field(unique=True, index=True)
+    created_at: datetime = Field(default_factory=utcnow)
+
+
 class StoredTalentPlan(SQLModel, table=True):
     """The talent plan as edited in the app; data/curated/talent_plan.yaml is the default."""
 

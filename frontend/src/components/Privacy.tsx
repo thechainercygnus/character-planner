@@ -52,6 +52,7 @@ export function Privacy() {
           What you set in the app: build, gear targets, talent plan, stat weights, rules, dismissed items and class
           quests marked done.
         </li>
+        <li>Whether each character's public page is on, and its link's token, until you turn it off.</li>
         <li>The Discord webhooks you add for alerts, and the alerts waiting to be sent.</li>
         <li>A Discord account you link for DMs: its id and name only, until you unlink it.</li>
         <li>
@@ -89,6 +90,12 @@ export function Privacy() {
         channel, for anyone who can read it. With users on, the admin, and any superusers the admin appoints, see a list
         of the accounts: each one's Battle.net account id, role, when it signed up and last signed in, and its
         characters' names. Nothing more of anyone's.
+      </p>
+      <p>
+        If you turn on a character's public page (the Character tab), anyone with its link sees that character, signed in
+        or not: its name, level, race, class, guild, spec and talents, equipment, stats and professions, as of the last
+        sync. Never your plans, settings, account or other characters. Turning it off, or making a new link, stops the old
+        link working at once.
       </p>
       <p>
         With users on, the admin can export everything stored for an account, for an access request, or delete it. A log

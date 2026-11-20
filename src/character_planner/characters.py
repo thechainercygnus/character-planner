@@ -25,6 +25,7 @@ from character_planner.db import (
     ItemChoice,
     NotificationState,
     ProgressHistory,
+    PublicPage,
     Snapshot,
     StoredGearTargets,
     StoredTalentPlan,
@@ -47,6 +48,7 @@ OWNED = (
     ItemChoice,
     ClassQuestDone,
     NotificationState,
+    PublicPage,
 )
 
 logger = logging.getLogger(__name__)

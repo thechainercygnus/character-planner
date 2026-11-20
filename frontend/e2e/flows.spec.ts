@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { DIALOGS, TABS, openDialog, openTab, serveApi } from './support.ts'
+import { DIALOGS, PUBLIC_PAGE, TABS, openDialog, openTab, serveApi } from './support.ts'
 
 /**
  * The main flows (#165), driven in the browser against the mocked API: switching tabs,
@@ -12,7 +12,7 @@ const LOCKET = 279870
 const KALEIDOSCOPE = 273088
 
 // The tab bar's tabs; Privacy and guest mode open from links, not the bar.
-for (const tab of TABS.filter((t) => !['privacy', 'guest', 'admin', 'account', 'guild'].includes(t))) {
+for (const tab of TABS.filter((t) => !['privacy', 'guest', 'admin', 'account', 'guild', PUBLIC_PAGE].includes(t))) {
   test(`the ${tab} tab opens from the tab bar and from its address`, async ({ page }) => {
     await serveApi(page)
     await openTab(page, tab === 'upgrades' ? 'plan' : 'upgrades')

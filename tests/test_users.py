@@ -236,6 +236,7 @@ UNSCOPED = {
         "GET /api/me",
         "GET /api/guest",
         "GET /api/guest/recommendations",
+        "POST /api/public/character",  # its own token (#42): test_public_page.py
     },
     # The signed-in user's own: filtered by user, tested above and below.
     "own": {

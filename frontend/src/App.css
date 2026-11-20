@@ -1477,3 +1477,9 @@ ul.upcoming small {
   color: var(--muted);
   font-weight: 600;
 }
+
+/* The public page's link (#42): as wide as the screen allows, never wider. */
+.public-link input {
+  width: min(100%, 36rem);
+  box-sizing: border-box;
+}
