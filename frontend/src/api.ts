@@ -114,6 +114,27 @@ export interface CharacterView {
   equipment: EquippedItem[]
 }
 
+/** A character's public page (#42, ADR 0063): the snapshot, without the addon's level or anything private. */
+export type PublicCharacter = Omit<CharacterView, 'level_source'>
+
+/** For the owner: whether the public page is on, and the token its link carries. */
+export interface PublicPageState {
+  enabled: boolean
+  token: string | null
+  created_at: string | null
+}
+
+/** The public page's link: the token rides in the fragment, which never reaches the server's logs. */
+export function publicLink(token: string): string {
+  return `${window.location.origin}/#public=${encodeURIComponent(token)}`
+}
+
+/** The token from a #public= link, or null on any other page. */
+export function publicToken(hash: string = window.location.hash): string | null {
+  const match = /^#public=([A-Za-z0-9_-]+)$/.exec(hash)
+  return match ? match[1] : null
+}
+
 export interface GearTarget {
   slot: string
   item: string
@@ -1541,6 +1562,11 @@ export const api = {
     request<CharacterSummary>('/api/characters', json('POST', character)),
   status: () => request<Status>('/api/status'),
   character: () => request<CharacterView>('/api/character'),
+  publicPage: () => request<PublicPageState>('/api/character/public-page'),
+  setPublicPage: (enabled: boolean) => request<PublicPageState>('/api/character/public-page', json('PUT', { enabled })),
+  regeneratePublicPage: () => request<PublicPageState>('/api/character/public-page/regenerate', { method: 'POST' }),
+  // The token goes in the body, not the URL, so it stays out of the server's logs (#42).
+  publicCharacter: (token: string) => request<PublicCharacter>('/api/public/character', json('POST', { token })),
   gear: () => request<GearPlan>('/api/gear'),
   sync: (wait: (ms: number) => Promise<void> = sleep) => syncAndWait(wait),
   refreshItems: () => request<RefreshResult | SyncState>('/api/items/refresh?force=true', { method: 'POST' }),
