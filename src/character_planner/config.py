@@ -102,6 +102,9 @@ class Settings(BaseSettings):
     # A channel where the bot keeps a pinned message about signing up (#192, ADR 0048).
     # Empty: no message. Needs DISCORD_BOT_TOKEN, and the bot in that channel's server.
     discord_signup_channel_id: str = ""
+    # With the bot and that channel set, the worker announces each new full release there
+    # once, when it first starts on it (#254). False keeps it quiet.
+    discord_announce_versions: bool = True
 
     # Backups (#240, ADR 0061): encrypted with an age public key, uploaded to S3-compatible
     # storage by the worker. Off until the bucket, keys and recipient are all set. The
@@ -222,6 +225,11 @@ class Settings(BaseSettings):
     def discord_signup_message(self) -> bool:
         """Whether the bot keeps a pinned sign-up message (#192): its token and a channel."""
         return bool(self.discord_bot_token.get_secret_value() and self.discord_signup_channel_id)
+
+    @property
+    def discord_version_announcements(self) -> bool:
+        """Whether new versions are announced in the sign-up channel (#254)."""
+        return self.discord_signup_message and self.discord_announce_versions
 
     @property
     def discord_dms(self) -> bool:
