@@ -25,6 +25,7 @@ from sqlmodel import Session
 
 from character_planner import (
     admin_log,
+    announce,
     backup,
     health,
     jobs,
@@ -239,6 +240,18 @@ def refresh_signup_message(settings: Settings, engine: Engine | None = None) -> 
         logger.exception("The Discord sign-up message failed")
 
 
+def announce_version(settings: Settings, engine: Engine) -> None:
+    """At start, announce a new full release in the sign-up channel (#254). Never fails the
+    worker."""
+    if not settings.discord_version_announcements:
+        return
+    try:
+        with Session(engine) as session, notify.new_client() as http:
+            announce.announce(session, settings, http, backup.app_version())  # logs it
+    except Exception:
+        logger.exception("The Discord version announcement failed")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run scheduled syncs and pool refreshes.")
     parser.add_argument("--once", action="store_true", help="run every job now, then exit")
@@ -258,6 +271,7 @@ def run(engine: Engine, settings: Settings, *, once: bool) -> int:
     init_db(engine)
     schedule = default_schedule(settings)
     refresh_signup_message(settings, engine)
+    announce_version(settings, engine)
     if once:
         outcomes = run_due(engine, settings, schedule, utcnow())
         with notify.new_client() as discord:
