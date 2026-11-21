@@ -107,7 +107,10 @@ test.describe('desktop zoom reflow', () => {
   test('the Upgrades tabs fit at the reduced layout width', async ({ page }) => {
     await serveApi(page)
     await open(page, 'upgrades')
-    await expect(page.getByRole('tab', { name: 'Character' })).toBeInViewport()
+    const character = await page.getByRole('tab', { name: 'Character' }).boundingBox()
+    expect(character).not.toBeNull()
+    expect(character!.x).toBeGreaterThanOrEqual(0)
+    expect(character!.x + character!.width).toBeLessThanOrEqual(720)
     expect(await overflow(page)).toBeLessThanOrEqual(0)
   })
 })
