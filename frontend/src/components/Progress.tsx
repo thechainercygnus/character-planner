@@ -1,3 +1,4 @@
+import { ResponsiveTable } from './ResponsiveTable'
 import { parseUtc, slotLabel, type Progress as ProgressData, type ProgressPoint } from '../api'
 import { LineChart, type ChartPoint } from './LineChart'
 import { signed } from '../format'
@@ -127,27 +128,27 @@ export function Progress({ data }: { data: ProgressData }) {
 
       <details className="data-table">
         <summary>Show as table</summary>
-        <table className="gear">
+        <ResponsiveTable caption="Progress history">
           <thead>
             <tr>
-              <th>Synced</th>
+              <th scope="col">Synced</th>
               {MEASURES.map((measure) => (
-                <th key={measure.key}>{measure.label}</th>
+                <th scope="col" key={measure.key}>{measure.label}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {data.points.map((point) => (
               <tr key={point.captured_at}>
-                <td>{dateTimeFormat.format(parseUtc(point.captured_at))}</td>
+                <th scope="row">{dateTimeFormat.format(parseUtc(point.captured_at))}</th>
                 {MEASURES.map((measure) => {
                   const value = point[measure.key]
-                  return <td key={measure.key}>{value === null ? '–' : value.toFixed(measure.digits)}</td>
+                  return <td key={measure.key} data-label={measure.label} className="table-number">{value === null ? '–' : value.toFixed(measure.digits)}</td>
                 })}
               </tr>
             ))}
           </tbody>
-        </table>
+        </ResponsiveTable>
       </details>
     </section>
   )

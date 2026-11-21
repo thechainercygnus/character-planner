@@ -37,6 +37,8 @@ that explains why it's built that way.
 
 ## Modules
 
+- `frontend/src/components/ResponsiveTable.tsx` provides captioned, keyboard-scrollable tables with stacked rows on narrow layouts (#275, ADR 0064).
+
 Every module in `src/character_planner/`, with the issue and ADR behind it. A new
 module adds its line here.
 

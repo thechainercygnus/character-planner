@@ -1,3 +1,4 @@
+import { ResponsiveTable } from './ResponsiveTable'
 import { useState, type ReactNode } from 'react'
 import { slotLabel, type Candidate, type Recommendations as RecommendationsData, type SlotRecommendation } from '../api'
 import { ItemName } from './GearTable'
@@ -74,11 +75,11 @@ function UpgradeRow({ row, best, guest }: { row: SlotRecommendation; best: Candi
   return (
     <>
       <tr className={open ? 'upgrade-row open' : 'upgrade-row'} onClick={toggle}>
-        <td>{slotLabel(row.slot)}</td>
+        <th scope="row">{slotLabel(row.slot)}</th>
         {!guest && (
-          <td>{row.equipped ? <ItemName item={row.equipped} compact /> : <span className="muted">empty</span>}</td>
+          <td data-label="Equipped">{row.equipped ? <ItemName item={row.equipped} compact /> : <span className="muted">empty</span>}</td>
         )}
-        <td>
+        <td data-label={guest ? 'Best item' : 'Best upgrade'}>
           <PoolItemName
             item={best.item}
             isTarget={best.is_target}
@@ -86,7 +87,7 @@ function UpgradeRow({ row, best, guest }: { row: SlotRecommendation; best: Candi
             owned={best.owned}
           />
         </td>
-        <td>
+        <td data-label="Score">
           <GainBadge candidate={best} />
         </td>
         <td className="expand-cell">
@@ -173,14 +174,14 @@ export function Recommendations({
               ? 'Click a row for details and the other options.'
               : 'Click a row for details, to pin an item as your target or to stop suggesting it.'}
           </p>
-          <table className="gear upgrades">
+          <ResponsiveTable caption={guest ? 'Recommended items' : 'Recommended upgrades'} className="upgrades">
             <thead>
               <tr>
-                <th>Slot</th>
-                {!guest && <th>Equipped</th>}
-                <th>{guest ? 'Best item' : 'Best upgrade'}</th>
-                <th>Score</th>
-                <th>
+                <th scope="col">Slot</th>
+                {!guest && <th scope="col">Equipped</th>}
+                <th scope="col">{guest ? 'Best item' : 'Best upgrade'}</th>
+                <th scope="col">Score</th>
+                <th scope="col">
                   <span className="visually-hidden">Details</span>
                 </th>
               </tr>
@@ -190,7 +191,7 @@ export function Recommendations({
                 <UpgradeRow key={row.slot} row={row} best={best} guest={guest} />
               ))}
             </tbody>
-          </table>
+          </ResponsiveTable>
           {without.length > 0 && (
             <p className="muted no-upgrades">
               No upgrades in reach: {without.map((row) => slotLabel(row.slot)).join(', ')}
