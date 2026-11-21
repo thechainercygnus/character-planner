@@ -32,6 +32,15 @@ for (const [width, height] of [
       })
     }
 
+    test('the gear table keeps its labels when rows stack', async ({ page }) => {
+      await serveApi(page)
+      await open(page, 'plan')
+      const targets = page.getByRole('region', { name: 'Current gear targets' })
+      const firstCell = targets.locator('[data-label="Target now"]').first()
+      await expect(firstCell).toHaveCSS('display', 'block')
+      expect(await firstCell.evaluate((cell) => getComputedStyle(cell, '::before').content)).toBe('"Target now"')
+    })
+
     test('the status bar shows its links without a menu (#260)', async ({ page }) => {
       await serveApi(page)
       await open(page, 'upgrades')
@@ -88,5 +97,17 @@ test.describe('desktop', () => {
     await expect(page.getByText(/^Level 19 /)).toBeVisible()
     const sync = await page.getByRole('button', { name: 'Sync now' }).boundingBox()
     expect(sync!.height).toBeLessThan(44)
+  })
+})
+
+test.describe('desktop zoom reflow', () => {
+  // A 1440px desktop viewport at 200% zoom provides 720 CSS pixels of layout width.
+  test.use({ viewport: { width: 720, height: 450 } })
+
+  test('the Upgrades tabs fit at the reduced layout width', async ({ page }) => {
+    await serveApi(page)
+    await open(page, 'upgrades')
+    await expect(page.getByRole('tab', { name: 'Character' })).toBeInViewport()
+    expect(await overflow(page)).toBeLessThanOrEqual(0)
   })
 })
