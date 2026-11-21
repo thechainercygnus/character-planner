@@ -1383,7 +1383,7 @@ ul.upcoming small {
 }
 
 /* On phones, keep the tab bar and dialogs within the viewport in either orientation. */
-@media (max-width: 640px), (max-height: 500px) and (orientation: landscape) {
+@media (max-width: 640px), (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
   /* The tab bar scrolls sideways; the active tab scrolls itself into view. */
   .tabs {
     flex-wrap: nowrap;
@@ -1428,7 +1428,7 @@ ul.upcoming small {
 }
 
 /* Phones held sideways: little height, so the chrome gets out of the way. */
-@media (max-height: 500px) and (orientation: landscape) {
+@media (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
   main {
     padding: 0.25rem 1rem;
   }

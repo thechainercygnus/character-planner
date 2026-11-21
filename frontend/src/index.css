@@ -164,7 +164,7 @@ a {
   }
 }
 
-@media (max-height: 500px) and (orientation: landscape) {
+@media (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
   .masthead {
     flex-wrap: nowrap;
     gap: var(--space-3);
