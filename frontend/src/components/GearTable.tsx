@@ -1,4 +1,5 @@
-import { useId, type ReactNode } from 'react'
+import { ResponsiveTable } from './ResponsiveTable'
+import type { ReactNode } from 'react'
 import {
   slotLabel,
   type EquippedItem,
@@ -169,7 +170,6 @@ function Upcoming({ upcoming }: { upcoming: UpcomingTarget[] }) {
  * on the right of the section heading (e.g. the stat weights button).
  */
 export function GearTable({ plan, actions }: { plan: GearPlan; actions?: ReactNode }) {
-  const captionId = useId()
   const heading = (
     <div className="section-heading">
       <h2>
@@ -200,70 +200,64 @@ export function GearTable({ plan, actions }: { plan: GearPlan; actions?: ReactNo
         ones, so you can prepare for them.
       </p>
       {plan.rows.length > 0 && (
-        <div className="gear-scroll" role="region" aria-labelledby={captionId} tabIndex={0}>
-          <table className="gear">
-            <caption id={captionId} className="visually-hidden">Current gear targets</caption>
-            <thead>
-              <tr>
-                <th scope="col">Slot</th>
-                <th scope="col">Equipped</th>
-                <th scope="col">Target now</th>
-                <th scope="col">Verdict</th>
-                <th scope="col">Source</th>
-                <th scope="col">Coming up</th>
+        <ResponsiveTable caption="Current gear targets">
+          <thead>
+            <tr>
+              <th scope="col">Slot</th>
+              <th scope="col">Equipped</th>
+              <th scope="col">Target now</th>
+              <th scope="col">Verdict</th>
+              <th scope="col">Source</th>
+              <th scope="col">Coming up</th>
+            </tr>
+          </thead>
+          <tbody>
+            {plan.rows.map((row) => (
+              <tr key={row.slot} className={`row-${row.verdict}`}>
+                <th scope="row">{slotLabel(row.slot)}</th>
+                <td data-label="Equipped">
+                  {row.equipped ? <ItemName item={row.equipped} /> : <span className="muted">empty</span>}
+                </td>
+                <td data-label="Target now">
+                  <TargetName row={row} />
+                </td>
+                <td data-label="Verdict">
+                  <VerdictBadge row={row} />
+                </td>
+                <td className="muted" data-label="Source">{sourceOf(row)}</td>
+                <td data-label="Coming up">
+                  <Upcoming upcoming={row.upcoming} />
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {plan.rows.map((row) => (
-                <tr key={row.slot} className={`row-${row.verdict}`}>
-                  <th scope="row">{slotLabel(row.slot)}</th>
-                  <td data-label="Equipped">
-                    {row.equipped ? <ItemName item={row.equipped} /> : <span className="muted">empty</span>}
-                  </td>
-                  <td data-label="Target now">
-                    <TargetName row={row} />
-                  </td>
-                  <td data-label="Verdict">
-                    <VerdictBadge row={row} />
-                  </td>
-                  <td className="muted" data-label="Source">{sourceOf(row)}</td>
-                  <td data-label="Coming up">
-                    <Upcoming upcoming={row.upcoming} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </ResponsiveTable>
       )}
       {plan.later.length > 0 && (
         <>
           <h3>Coming up in other slots</h3>
-          <div className="gear-scroll" role="region" aria-labelledby={`${captionId}-later`} tabIndex={0}>
-            <table className="gear">
-              <caption id={`${captionId}-later`} className="visually-hidden">Upcoming gear targets</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Slot</th>
-                  <th scope="col">Equipped</th>
-                  <th scope="col">Next targets</th>
+          <ResponsiveTable caption="Upcoming gear targets">
+            <thead>
+              <tr>
+                <th scope="col">Slot</th>
+                <th scope="col">Equipped</th>
+                <th scope="col">Next targets</th>
+              </tr>
+            </thead>
+            <tbody>
+              {plan.later.map((slot) => (
+                <tr key={slot.slot}>
+                  <th scope="row">{slotLabel(slot.slot)}</th>
+                  <td data-label="Equipped">
+                    {slot.equipped ? <ItemName item={slot.equipped} /> : <span className="muted">empty</span>}
+                  </td>
+                  <td data-label="Next targets">
+                    <Upcoming upcoming={slot.upcoming} />
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {plan.later.map((slot) => (
-                  <tr key={slot.slot}>
-                    <th scope="row">{slotLabel(slot.slot)}</th>
-                    <td data-label="Equipped">
-                      {slot.equipped ? <ItemName item={slot.equipped} /> : <span className="muted">empty</span>}
-                    </td>
-                    <td data-label="Next targets">
-                      <Upcoming upcoming={slot.upcoming} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </ResponsiveTable>
         </>
       )}
     </section>

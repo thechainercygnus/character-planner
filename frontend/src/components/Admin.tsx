@@ -1,3 +1,4 @@
+import { ResponsiveTable } from './ResponsiveTable'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import {
@@ -86,7 +87,7 @@ function DeleteAccount({ account }: { account: Account }) {
           aria-label={`Type ${account.account_id} to confirm`}
         />
       </label>{' '}
-      <button type="submit" disabled={typed.trim() !== String(account.account_id) || remove.isPending}>
+      <button className="danger" type="submit" disabled={typed.trim() !== String(account.account_id) || remove.isPending}>
         Delete for good
       </button>{' '}
       <button type="button" className="secondary" onClick={() => setOpen(false)}>
@@ -120,7 +121,7 @@ function Accounts({ view, canManage, requests }: { view: AdminView; canManage: b
       <p className="muted">
         What the planner stores about each account, and no more: it's for running the instance, not watching people.
       </p>
-      <table className="gear">
+      <ResponsiveTable caption="Accounts">
         <thead>
           <tr>
             <th scope="col">Battle.net account</th>
@@ -134,28 +135,28 @@ function Accounts({ view, canManage, requests }: { view: AdminView; canManage: b
         <tbody>
           {view.accounts.map((account) => (
             <tr key={account.user_id}>
-              <td>{account.account_id}</td>
-              <td>
+              <th scope="row">{account.account_id}</th>
+              <td data-label="Role">
                 <RoleCell account={account} canManage={canManage} />
               </td>
-              <td>
+              <td data-label="Characters">
                 {account.characters.length > 0 ? (
                   account.characters.map((c) => `${c.name} (${c.region.toUpperCase()})`).join(', ')
                 ) : (
                   <span className="muted">none</span>
                 )}
               </td>
-              <td>{day(account.created_at)}</td>
-              <td>{day(account.last_sign_in_at)}</td>
+              <td data-label="Signed up">{day(account.created_at)}</td>
+              <td data-label="Last sign-in">{day(account.last_sign_in_at)}</td>
               {asks && (
-                <td>
+                <td data-label="Data requests">
                   <DataRequests account={account} me={requests} />
                 </td>
               )}
             </tr>
           ))}
         </tbody>
-      </table>
+      </ResponsiveTable>
     </section>
   )
 }
@@ -586,11 +587,11 @@ const ACTION_LABEL: Record<string, string> = {
 function LogRow({ entry }: { entry: AdminLogEntry }) {
   return (
     <tr>
-      <td>{new Date(entry.at).toLocaleString()}</td>
-      <td>{entry.actor_account_id ?? <span className="muted">command line</span>}</td>
-      <td>{ACTION_LABEL[entry.action] ?? entry.action}</td>
-      <td>{entry.target_account_id ?? <span className="muted">—</span>}</td>
-      <td>{entry.detail ?? ''}</td>
+      <th scope="row">{new Date(entry.at).toLocaleString()}</th>
+      <td data-label="By">{entry.actor_account_id ?? <span className="muted">command line</span>}</td>
+      <td data-label="What">{ACTION_LABEL[entry.action] ?? entry.action}</td>
+      <td data-label="Account">{entry.target_account_id ?? <span className="muted">—</span>}</td>
+      <td data-label="Detail">{entry.detail ?? ''}</td>
     </tr>
   )
 }
@@ -608,7 +609,7 @@ function ActionLog() {
       {log.isError && <p className="error">Couldn't load the log: {log.error.message}</p>}
       {log.data && log.data.length === 0 && <p className="muted">Nothing yet.</p>}
       {log.data && log.data.length > 0 && (
-        <table className="admin-log">
+        <ResponsiveTable caption="Action log" className="admin-log">
           <thead>
             <tr>
               <th scope="col">When</th>
@@ -623,7 +624,7 @@ function ActionLog() {
               <LogRow key={entry.id} entry={entry} />
             ))}
           </tbody>
-        </table>
+        </ResponsiveTable>
       )}
     </section>
   )

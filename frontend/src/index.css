@@ -112,6 +112,11 @@ samp {
 
 a {
   color: var(--accent);
+  text-underline-offset: 0.22em;
+}
+
+a:hover {
+  text-decoration-thickness: 0.14em;
 }
 
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
@@ -188,4 +193,19 @@ a {
   :is([aria-selected='true'], [aria-pressed='true']) {
     border: 2px solid Highlight;
   }
+}
+
+:where(select, textarea, input:not([type='checkbox'], [type='radio'], [type='range'], [type='file'])) {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  color: var(--ink);
+  background: var(--sunken);
+  border: 1px solid var(--control-line);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.5rem;
+  font: inherit;
+}
+
+:where(input, select, textarea):user-invalid {
+  border-color: var(--error);
 }

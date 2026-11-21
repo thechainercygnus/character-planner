@@ -1,3 +1,4 @@
+import { ResponsiveTable } from './ResponsiveTable'
 import { slotLabel, type CharacterView, type EquippedItem, type Profession, type Stats } from '../api'
 import { ago, parseTime } from '../gameData'
 import { ItemName } from './GearTable'
@@ -113,18 +114,24 @@ export function EquipmentPanel({ equipment }: { equipment: EquippedItem[] }) {
   return (
     <section>
       <h2>Equipped</h2>
-      <table className="gear">
+      <ResponsiveTable caption="Equipped gear">
+        <thead>
+          <tr>
+            <th scope="col">Slot</th>
+            <th scope="col">Equipped item</th>
+          </tr>
+        </thead>
         <tbody>
           {gear.map((item) => (
             <tr key={item.slot}>
-              <td>{slotLabel(item.slot)}</td>
-              <td>
+              <th scope="row">{slotLabel(item.slot)}</th>
+              <td data-label="Equipped item">
                 <ItemName item={item} />
               </td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </ResponsiveTable>
     </section>
   )
 }

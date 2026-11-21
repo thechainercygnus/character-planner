@@ -142,7 +142,7 @@ describe('NotificationsForm', () => {
   it('lists recent alerts and explains where system alerts go', async () => {
     stubFetch(withMine)
     await openDialog()
-    expect(await screen.findByText('Recent alerts')).toBeTruthy()
+    expect(await screen.findByRole('table', { name: 'Recent alerts' })).toBeTruthy()
     expect(screen.getAllByText('Level-ups').length).toBeGreaterThan(1) // the option and the row
     expect(screen.getByText(/^sent /)).toBeTruthy()
     expect(screen.getByText(/System alerts \(failed jobs, upstream errors\) go to your destinations/)).toBeTruthy()

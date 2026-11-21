@@ -1,3 +1,4 @@
+import { ResponsiveTable } from './ResponsiveTable'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api, isQueued, selectCharacter, selectedCharacter, type MyCharacter } from '../api'
@@ -34,7 +35,7 @@ function RemoveCharacter({ character }: { character: MyCharacter }) {
   return (
     <span className="confirm-remove">
       Delete {character.name} and everything stored for it?{' '}
-      <button type="button" onClick={() => remove.mutate()} disabled={remove.isPending}>
+      <button type="button" className="danger" onClick={() => remove.mutate()} disabled={remove.isPending}>
         {remove.isPending ? 'Deleting…' : 'Yes, remove it'}
       </button>{' '}
       <button type="button" className="secondary" onClick={() => setConfirming(false)}>
@@ -75,7 +76,7 @@ function Characters({ characters }: { characters: MyCharacter[] }) {
       <h2>Characters</h2>
       {characters.length === 0 && <p className="muted">No characters yet.</p>}
       {characters.length > 0 && (
-        <table className="gear my-characters">
+        <ResponsiveTable caption="My characters" className="my-characters">
           <thead>
             <tr>
               <th scope="col">Character</th>
@@ -89,7 +90,7 @@ function Characters({ characters }: { characters: MyCharacter[] }) {
           <tbody>
             {characters.map((character) => (
               <tr key={character.id}>
-                <td>
+                <th scope="row">
                   <strong>{character.name}</strong>{' '}
                   <span className="muted">
                     {[
@@ -101,23 +102,23 @@ function Characters({ characters }: { characters: MyCharacter[] }) {
                       .join(' · ')}
                   </span>
                   {character.default && <span className="tag">default</span>}
-                </td>
-                <td>
+                </th>
+                <td data-label="Build">
                   <BuildPicker as={character.id} label={`Build for ${character.name}`} />
                 </td>
-                <td>{when(character.last_sync)}</td>
-                <td>
+                <td data-label="Last sync">{when(character.last_sync)}</td>
+                <td data-label="Guild">
                   {character.guild ?? <span className="muted">none</span>}
                   {character.in_guild_view && <span className="tag done">in the guild view</span>}
                 </td>
-                <td>{character.game_data_at ? `from the game, ${when(character.game_data_at)}` : 'none'}</td>
-                <td className="row-actions">
+                <td data-label="Game data">{character.game_data_at ? `from the game, ${when(character.game_data_at)}` : 'none'}</td>
+                <td className="row-actions" data-label="Actions">
                   <SyncCharacter character={character} /> <RemoveCharacter character={character} />
                 </td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </ResponsiveTable>
       )}
       {adding ? (
         <AddCharacter onDone={() => setAdding(false)} />
@@ -196,7 +197,7 @@ export function DeleteAccount() {
             This deletes your account: every character you track, with all its data and settings, your sign-in and your
             Battle.net token. It can't be undone.
           </p>
-          <button type="button" onClick={() => remove.mutate()} disabled={remove.isPending}>
+          <button type="button" className="danger" onClick={() => remove.mutate()} disabled={remove.isPending}>
             {remove.isPending ? 'Deleting…' : 'Yes, delete my account'}
           </button>{' '}
           <button type="button" className="secondary" onClick={() => setConfirming(false)}>

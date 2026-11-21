@@ -32,6 +32,18 @@ for (const [width, height] of [
       })
     }
 
+    test('recommendations stack with their score and details control', async ({ page }) => {
+      await serveApi(page)
+      await open(page, 'upgrades')
+      const region = page.getByRole('region', { name: 'Recommended upgrades' })
+      const score = region.locator('[data-label="Score"]').first()
+      await expect(score).toHaveCSS('display', 'block')
+      expect(await score.evaluate((cell) => getComputedStyle(cell, '::before').content)).toBe('"Score"')
+      const details = region.getByRole('button', { name: /Show details for/ }).first()
+      await details.click()
+      await expect(region.getByRole('button', { name: /Hide details for/ }).first()).toHaveAttribute('aria-expanded', 'true')
+    })
+
     test('the gear table keeps its labels when rows stack', async ({ page }) => {
       await serveApi(page)
       await open(page, 'plan')

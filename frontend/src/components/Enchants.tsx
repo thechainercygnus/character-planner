@@ -1,3 +1,4 @@
+import { ResponsiveTable } from './ResponsiveTable'
 import { slotLabel, type EnchantAdvice, type EnchantPick, type SlotEnchants } from '../api'
 import { signed } from '../format'
 import { EffectEditor, OptionCorrections, PerSlotControl } from './EnchantCorrections'
@@ -37,8 +38,8 @@ function Pick({ pick }: { pick: EnchantPick }) {
 function Row({ row }: { row: SlotEnchants }) {
   return (
     <tr>
-      <td>{slotLabel(row.slot)}</td>
-      <td>
+      <th scope="row">{slotLabel(row.slot)}</th>
+      <td data-label="Equipped">
         {row.item ? <ItemLink href={row.wowhead}>{row.item}</ItemLink> : <span className="muted">empty</span>}
         {row.current && (
           <small className="enchant">
@@ -48,7 +49,7 @@ function Row({ row }: { row: SlotEnchants }) {
           </small>
         )}
       </td>
-      <td>
+      <td data-label="Look for">
         {row.picks.length > 0 ? (
           row.picks.map((pick) => <Pick key={pick.option.recipe_id} pick={pick} />)
         ) : (
@@ -85,12 +86,12 @@ export function Enchants({ data }: { data: EnchantAdvice }) {
             {withPicks} of {data.rows.length} slots have a better enchant in reach, scored with your stat weights.
             Levels are estimated from the materials.
           </p>
-          <table className="gear enchants">
+          <ResponsiveTable caption="Recommended enchants" className="enchants">
             <thead>
               <tr>
-                <th>Slot</th>
-                <th>Equipped</th>
-                <th>Look for</th>
+                <th scope="col">Slot</th>
+                <th scope="col">Equipped</th>
+                <th scope="col">Look for</th>
               </tr>
             </thead>
             <tbody>
@@ -98,7 +99,7 @@ export function Enchants({ data }: { data: EnchantAdvice }) {
                 <Row key={row.slot} row={row} />
               ))}
             </tbody>
-          </table>
+          </ResponsiveTable>
           {left.length > 0 && <p className="muted no-upgrades">Not ranked: {left.join('; ')}.</p>}
           {data.missing_effects.length > 0 && (
             <details className="enchant-corrections missing-effects">

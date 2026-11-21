@@ -1,3 +1,4 @@
+import { ResponsiveTable } from './ResponsiveTable'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api, type AlertInfo, type Audience, type Destination, type NotificationsView, type SendResult } from '../api'
@@ -182,13 +183,13 @@ export function NotificationsForm({ admin = true, enabled = true }: { admin?: bo
           {data.recent.length > 0 && (
             <>
               <h3>Recent alerts</h3>
-              <table className="gear recent-alerts">
+              <ResponsiveTable caption="Recent alerts" className="recent-alerts">
                 <thead>
                   <tr>
-                    <th>Queued</th>
-                    <th>To</th>
-                    <th>Alert</th>
-                    <th>Status</th>
+                    <th scope="col">Queued</th>
+                    <th scope="col">To</th>
+                    <th scope="col">Alert</th>
+                    <th scope="col">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -196,10 +197,10 @@ export function NotificationsForm({ admin = true, enabled = true }: { admin?: bo
                     // A read-only list in a fixed order with no id: its index is stable.
                     // oxlint-disable-next-line react/no-array-index-key
                     <tr key={index}>
-                      <td>{when(alert.created_at)}</td>
-                      <td>{alert.destination}</td>
-                      <td>{data.alerts.find((a) => a.kind === alert.kind)?.label ?? alert.kind}</td>
-                      <td>
+                      <td data-label="Queued">{when(alert.created_at)}</td>
+                      <td data-label="To">{alert.destination}</td>
+                      <td data-label="Alert">{data.alerts.find((a) => a.kind === alert.kind)?.label ?? alert.kind}</td>
+                      <td data-label="Status">
                         {alert.sent_at
                           ? `sent ${when(alert.sent_at)}`
                           : alert.failed
@@ -209,7 +210,7 @@ export function NotificationsForm({ admin = true, enabled = true }: { admin?: bo
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </ResponsiveTable>
             </>
           )}
         </>

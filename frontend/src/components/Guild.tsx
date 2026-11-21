@@ -1,3 +1,4 @@
+import { ResponsiveTable } from './ResponsiveTable'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import {
@@ -245,20 +246,20 @@ function GuildPanel({ as }: { as?: number }) {
             Leave the guild view
           </button>
         </p>
-        <table className="gear guild-members">
+        <ResponsiveTable caption="Guild members" className="guild-members">
           <thead>
             <tr>
-              <th>Going</th>
-              <th>Member</th>
-              <th>Level</th>
-              <th>Spec</th>
-              <th>Role</th>
+              <th scope="col">Going</th>
+              <th scope="col">Member</th>
+              <th scope="col">Level</th>
+              <th scope="col">Spec</th>
+              <th scope="col">Role</th>
             </tr>
           </thead>
           <tbody>
             {data.members.map((member) => (
               <tr key={member.character_id}>
-                <td>
+                <td data-label="Going">
                   <input
                     type="checkbox"
                     aria-label={`${member.name} is going`}
@@ -268,7 +269,7 @@ function GuildPanel({ as }: { as?: number }) {
                     onChange={() => toggle(member.character_id)}
                   />
                 </td>
-                <td>
+                <th scope="row">
                   {member.name}
                   {member.yours && <span className="muted"> (yours)</span>}
                   {member.player !== null && (
@@ -276,14 +277,14 @@ function GuildPanel({ as }: { as?: number }) {
                       player {member.player}
                     </span>
                   )}
-                </td>
-                <td>{member.level ?? '?'}</td>
-                <td>{[member.spec, member.character_class].filter(Boolean).join(' ') || '?'}</td>
-                <td>{member.role ? ROLE_LABEL[member.role] : '?'}</td>
+                </th>
+                <td data-label="Level">{member.level ?? '?'}</td>
+                <td data-label="Spec">{[member.spec, member.character_class].filter(Boolean).join(' ') || '?'}</td>
+                <td data-label="Role">{member.role ? ROLE_LABEL[member.role] : '?'}</td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </ResponsiveTable>
         {data.missing_roles.length > 0 && (
           <p className="warn" role="status">
             No {data.missing_roles.map((r) => ROLE_LABEL[r].toLowerCase()).join(' or ')} among the members going.

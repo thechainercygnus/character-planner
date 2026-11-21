@@ -64,11 +64,10 @@ describe('CharacterSnapshot', () => {
   it('lists the gear worn, leaving out the shirt, tabard and ammo', () => {
     render(<CharacterSnapshot character={character} />)
 
-    const equipped = screen.getByRole('heading', { name: 'Equipped' }).closest('section')!
-    const rows = within(equipped)
-      .getAllByRole('row')
-      .map((row) => row.textContent)
-    expect(rows).toEqual(['HeadFlying Tiger Gogglesilvl 20', 'ChestIronheart Chainilvl 20'])
+    const table = within(screen.getByRole('table', { name: 'Equipped gear' }))
+    expect(table.getAllByRole('columnheader').map((header) => header.textContent)).toEqual(['Slot', 'Equipped item'])
+    expect(table.getAllByRole('rowheader').map((header) => header.textContent)).toEqual(['Head', 'Chest'])
+    expect(table.getAllByRole('cell').map((cell) => cell.textContent)).toEqual(['Flying Tiger Gogglesilvl 20', 'Ironheart Chainilvl 20'])
   })
 
   it('shows stats, with percentages and unknowns', () => {
