@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import type { ReactNode } from 'react'
 import { api } from './api'
 import { Account } from './components/Account'
 import { Admin } from './components/Admin'
@@ -43,6 +44,22 @@ const TABS: readonly Tab<TabId>[] = [
 /** With users on, the guild view too (#18): it needs other people. */
 const TABS_WITH_GUILD: readonly Tab<TabId>[] = [...TABS.slice(0, -1), { id: 'guild', label: 'Guild' }, TABS.at(-1)!]
 
+function PlannerPage({ children, toolbar = false }: { children: ReactNode; toolbar?: boolean }) {
+  return (
+    <>
+      <header className="masthead">
+        <a className="brand" href="https://durishlabs.com/" aria-label="DL Durish Labs home">
+          <span className="mark" aria-hidden="true">DL</span>
+          <span className="brand-name">{' Durish Labs'}</span>
+        </a>
+        <a className="site-name" href="/">Character Planner</a>
+        {toolbar && <StatusBar />}
+      </header>
+      <main>{children}</main>
+    </>
+  )
+}
+
 export default function App() {
   const me = useQuery({ queryKey: ['me'], queryFn: api.me, staleTime: Infinity })
   const tabs = me.data?.users ? TABS_WITH_GUILD : TABS
@@ -75,45 +92,43 @@ export default function App() {
   // With users on and nobody signed in (#16): the sign-in, or guest mode, which needs none.
   if (me.data?.users && !me.data.signed_in) {
     return (
-      <main>
+      <PlannerPage>
         {guestView ? <Landing hasCharacter={false} /> : <SignIn signupsOpen={me.data.signups_open} />}
         <Footer />
-      </main>
+      </PlannerPage>
     )
   }
 
   // Without users too (#260, ADR 0062): the one person's shared data, health and backups.
   if (adminView) {
     return (
-      <main>
+      <PlannerPage>
         <Admin />
         <Footer />
-      </main>
+      </PlannerPage>
     )
   }
 
   if (accountView) {
     return (
-      <main>
+      <PlannerPage>
         <Account />
         <Footer />
-      </main>
+      </PlannerPage>
     )
   }
 
   if (privacyView) {
     return (
-      <main>
+      <PlannerPage>
         <Privacy />
         <Footer />
-      </main>
+      </PlannerPage>
     )
   }
 
   return (
-    <main>
-      <StatusBar />
-
+    <PlannerPage toolbar>
       {character.isPending && <p className="muted">Loading character…</p>}
       {character.isError && <p className="error">Couldn't load character: {character.error.message}</p>}
 
@@ -223,6 +238,6 @@ export default function App() {
         </>
       )}
       <Footer />
-    </main>
+    </PlannerPage>
   )
 }

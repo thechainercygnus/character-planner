@@ -9,15 +9,33 @@ h2 {
   margin: 0 0 0.5rem;
 }
 
+/* Page titles (the character's name, the landing and sign-in pages): the shared display
+   face (#273, ADR 0064). */
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--display-sm);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+/* An app's panel headings: a step down from a reading page's (DESIGN.md). */
 h2 {
-  font-size: 1.1rem;
+  font-size: var(--text-xl);
+  line-height: 1.25;
+}
+
+/* Never below the shared floor: the browser's own `smaller` is about 13px. */
+small {
+  font-size: var(--text-sm);
 }
 
 section {
   background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
   margin-bottom: 1rem;
 }
 
@@ -44,26 +62,28 @@ section {
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 1.25rem;
+  flex: 1 0 100%;
+  min-inline-size: 0;
   color: var(--muted);
 }
 
 button,
 .button {
   background: var(--accent);
-  color: #1a1a1a;
+  color: var(--accent-ink);
   border: none;
-  border-radius: 6px;
-  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-sm);
+  padding: 0.65rem var(--space-4);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
+  line-height: 1.4;
   text-decoration: none;
   cursor: pointer;
 }
 
 button:disabled {
-  opacity: 0.6;
-  cursor: progress;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Header */
@@ -77,22 +97,84 @@ button:disabled {
 }
 
 /* Gear table */
+.gear-scroll {
+  position: relative;
+  overflow: auto;
+  max-block-size: min(70dvh, 45rem);
+  container-type: inline-size;
+}
 table.gear {
   width: 100%;
   border-collapse: collapse;
+  line-height: 1.45;
 }
 
 table.gear th,
 table.gear td {
   text-align: left;
   padding: 0.45rem 0.6rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--line);
   vertical-align: top;
 }
 
 table.gear th {
   color: var(--muted);
   font-weight: 600;
+}
+
+.gear-scroll :is(th, td) {
+  padding: var(--space-3) var(--space-4);
+}
+
+.gear-scroll th[scope='row'] {
+  color: var(--ink);
+}
+
+.gear-scroll thead th {
+  position: sticky;
+  inset-block-start: 0;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  text-wrap: balance;
+}
+
+@container (width < 36rem) {
+  .gear-scroll table, .gear-scroll :is(thead, tbody, tr, th, td) {
+    display: block;
+  }
+
+  .gear-scroll thead {
+    position: absolute;
+    clip-path: inset(50%);
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+  }
+
+  .gear-scroll tbody tr {
+    padding: var(--space-3);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+  }
+
+  .gear-scroll tbody {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .gear-scroll tbody :is(th, td) {
+    padding: var(--space-1) 0;
+    border: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .gear-scroll td::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--muted);
+    font-size: var(--text-sm);
+  }
 }
 
 table.gear tr.row-reached td {
@@ -110,17 +192,17 @@ table.gear tr.row-reached td {
   width: 28px;
   height: 28px;
   border-radius: 4px;
-  border: 1px solid var(--border);
-  background: var(--bg);
+  border: 1px solid var(--line);
+  background: var(--background);
 }
 
 .badge {
   display: inline-block;
   padding: 0.1rem 0.5rem;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   white-space: nowrap;
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
 }
 
 .badge + small {
@@ -129,7 +211,7 @@ table.gear tr.row-reached td {
 }
 
 .verdict-upgrade {
-  background: color-mix(in srgb, var(--ok) 20%, transparent);
+  background: color-mix(in oklab, var(--ok) 20%, transparent);
   color: var(--ok);
 }
 
@@ -138,7 +220,7 @@ table.gear tr.row-reached td {
 }
 
 .verdict-downgrade {
-  background: color-mix(in srgb, var(--warn) 18%, transparent);
+  background: color-mix(in oklab, var(--warn) 18%, transparent);
   color: var(--warn);
 }
 
@@ -150,9 +232,19 @@ table.gear tr.row-reached td {
 button.secondary,
 .button.secondary {
   background: transparent;
-  color: var(--text);
-  border: 1px solid var(--border);
+  color: var(--ink);
+  border: 1px solid var(--control-line);
   font-weight: normal;
+}
+
+button:where(:not(:disabled):hover), .button:where(:hover) {
+  background: var(--accent-hover);
+}
+
+button.secondary:not(:disabled):hover,
+.button.secondary:hover {
+  background: var(--panel);
+  border-color: var(--muted);
 }
 
 .item small {
@@ -247,8 +339,8 @@ button.secondary,
 .quest-chain {
   margin: 0.25rem 0 0;
   padding-left: 1.4rem;
-  font-size: 0.85em;
-  color: var(--text); /* not the item's quality colour, which it sits under */
+  font-size: var(--text-sm);
+  color: var(--ink); /* not the item's quality colour, which it sits under */
 }
 
 .quest-chain a {
@@ -268,8 +360,8 @@ button.secondary,
 .page-footer {
   margin-top: 2.5rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border);
-  font-size: 0.8rem;
+  border-top: 1px solid var(--line);
+  font-size: var(--text-sm);
   text-align: center;
 }
 
@@ -302,8 +394,8 @@ button.secondary,
   max-height: calc(100dvh - 2rem);
   overflow: auto;
   background: var(--panel);
-  color: var(--text);
-  border: 1px solid var(--border);
+  color: var(--ink);
+  border: 1px solid var(--line);
   border-radius: 10px;
   padding: 1.25rem 1.5rem;
 }
@@ -355,9 +447,9 @@ button.secondary,
 
 .weights input {
   width: 100%;
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--ink);
+  border: 1px solid var(--line);
   border-radius: 4px;
   padding: 0.2rem 0.4rem;
   font: inherit;
@@ -374,11 +466,11 @@ button.secondary,
 
 .preset-bar select,
 .preset-name input {
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0.3rem 0.4rem;
+  background: var(--sunken);
+  color: var(--ink);
+  border: 1px solid var(--control-line);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.75rem;
   font: inherit;
 }
 
@@ -392,8 +484,9 @@ button.secondary,
 /* Tabs */
 .tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.25rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--line);
   margin-bottom: 1rem;
 }
 
@@ -408,11 +501,11 @@ button.tab {
 }
 
 button.tab:hover {
-  color: var(--text);
+  color: var(--ink);
 }
 
 button.tab.active {
-  color: var(--text);
+  color: var(--ink);
   border-bottom-color: var(--accent);
 }
 
@@ -420,9 +513,9 @@ button.tab.active {
   margin-left: 0.4rem;
   padding: 0 0.4rem;
   border-radius: 999px;
-  background: var(--border);
-  color: var(--text);
-  font-size: 0.75rem;
+  background: var(--line);
+  color: var(--ink);
+  font-size: var(--text-sm);
   font-weight: normal;
 }
 
@@ -435,17 +528,16 @@ button.tab.active {
 
 /* Recommendations */
 h3 {
-  font-size: 0.95rem;
+  font-size: var(--text-lg);
+  line-height: 1.3;
   margin: 0;
 }
 
 h4 {
   margin: 0 0 0.3rem;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .tag {
@@ -454,7 +546,7 @@ h4 {
   padding: 0 0.4rem;
   border: 1px solid var(--accent);
   border-radius: 4px;
-  font-size: 0.75rem;
+  font-size: var(--text-sm);
   color: var(--accent);
   vertical-align: middle;
 }
@@ -472,7 +564,7 @@ h4 {
 
 /* A quest the game reports completed (#186). */
 .tag.done {
-  border-color: var(--border);
+  border-color: var(--line);
   color: var(--muted);
 }
 
@@ -482,7 +574,7 @@ tr.upgrade-row {
 
 tr.upgrade-row:hover td,
 tr.upgrade-row.open td {
-  background: rgb(255 255 255 / 3%);
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
 }
 
 tr.upgrade-row.open td {
@@ -496,14 +588,14 @@ tr.upgrade-row.open td {
 
 button.expand {
   background: transparent;
-  color: var(--text);
+  color: var(--ink);
   border: none;
   padding: 0.1rem 0.3rem;
   font-weight: normal;
 }
 
 .upgrade-details-row td {
-  background: rgb(255 255 255 / 3%);
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
 }
 
 .upgrade-details {
@@ -531,7 +623,7 @@ button.link {
   color: var(--accent);
   border: none;
   padding: 0;
-  font-size: 0.85rem;
+  font-size: var(--text-md);
   font-weight: normal;
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -550,7 +642,7 @@ button.link {
 
 .dismissed h3 {
   margin: 0 0 0.3rem;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   color: var(--muted);
 }
 
@@ -567,10 +659,10 @@ button.link {
 }
 
 .dungeon-card {
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0.75rem 1rem;
-  background: var(--bg);
+  background: var(--background);
 }
 
 .dungeon-card header {
@@ -596,12 +688,12 @@ button.link {
   align-items: center;
   column-gap: 0.5rem;
   padding: 0.3rem 0;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--line);
 }
 
 .dungeon-card .slot-label {
   grid-area: slot;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .dungeon-card .item-cell {
@@ -610,7 +702,7 @@ button.link {
 
 .dungeon-card .upgrade-source {
   grid-area: source;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   padding-left: 2.2rem;
 }
 
@@ -633,13 +725,13 @@ button.link {
   flex-direction: column;
   gap: 0.1rem;
   padding: 0.6rem 0.8rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--bg);
+  background: var(--background);
 }
 
 .tile strong {
-  font-size: 1.4rem;
+  font-size: var(--text-xl);
   font-variant-numeric: tabular-nums;
 }
 
@@ -658,7 +750,7 @@ button.link {
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .line-chart figcaption strong {
@@ -672,13 +764,13 @@ button.link {
 }
 
 .line-chart .axis {
-  stroke: var(--border);
+  stroke: var(--line);
   stroke-width: 1;
 }
 
 .line-chart .tick {
   fill: var(--muted);
-  font-size: 10px;
+  font-size: 15px; /* SVG user units: about 14px at the narrowest chart (#273) */
   font-variant-numeric: tabular-nums;
 }
 
@@ -722,7 +814,7 @@ button.link {
   grid-template-columns: 9rem 1fr auto;
   gap: 0.75rem;
   padding: 0.3rem 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--line);
 }
 
 .data-table summary {
@@ -737,7 +829,7 @@ button.link {
 
 /* Talent plan */
 .next-talent {
-  font-size: 1.05rem;
+  font-size: var(--text-lg);
 }
 
 .off-plan ul {
@@ -757,7 +849,7 @@ button.link {
   grid-template-columns: 1.5rem 1fr auto;
   gap: 0.5rem;
   padding: 0.25rem 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--line);
   break-inside: avoid;
 }
 
@@ -793,7 +885,7 @@ button.link {
 }
 
 .enchant {
-  color: var(--enchant, #4ade80);
+  color: var(--q-uncommon); /* enchant lines are green in the game, as uncommon items */
 }
 
 .enchant-pick + .enchant-pick {
@@ -806,7 +898,7 @@ button.link {
 }
 
 .target-slot {
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: 8px;
   margin: 0 0 0.9rem;
   padding: 0.5rem 0.9rem 0.7rem;
@@ -853,17 +945,17 @@ ul.upcoming small {
 .pin-toggle {
   display: flex;
   align-items: center;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   white-space: nowrap;
 }
 
 .targets-dialog input,
 .targets-dialog select {
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0.25rem 0.4rem;
+  background: var(--sunken);
+  color: var(--ink);
+  border: 1px solid var(--control-line);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.75rem;
   font: inherit;
 }
 
@@ -874,7 +966,7 @@ ul.upcoming small {
 }
 
 .rule-types {
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: 8px;
   margin: 0 0 0.9rem;
   padding: 0.5rem 0.9rem 0.7rem;
@@ -920,7 +1012,7 @@ ul.upcoming small {
 }
 
 .missing-data {
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0.6rem 0.9rem;
   margin: 0 0 0.9rem;
@@ -930,7 +1022,7 @@ ul.upcoming small {
 }
 
 .notifications-dialog .destination {
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: 8px;
   margin: 0 0 0.9rem;
   padding: 0.5rem 0.9rem 0.7rem;
@@ -977,7 +1069,7 @@ ul.upcoming small {
   grid-auto-rows: 52px;
   gap: 8px;
   padding: 8px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: 8px;
 }
 .talent-node {
@@ -987,9 +1079,9 @@ ul.upcoming small {
   padding: 0;
   display: grid;
   place-items: center;
-  border: 2px solid var(--border);
+  border: 2px solid var(--line);
   border-radius: 8px;
-  background: var(--surface, transparent);
+  background: transparent;
 }
 .talent-node img {
   border-radius: 6px;
@@ -1000,34 +1092,34 @@ ul.upcoming small {
   opacity: 0.45;
 }
 .talent-node.partial {
-  border-color: #3ba55c;
+  border-color: var(--ok);
 }
 .talent-node.maxed {
-  border-color: #faa61a;
+  border-color: var(--warn);
 }
 .talent-node.spent {
-  box-shadow: 0 0 0 2px #5865f2 inset;
+  box-shadow: 0 0 0 2px var(--info) inset;
 }
 .talent-rank {
   position: absolute;
   right: -6px;
   bottom: -6px;
-  font-size: 0.7rem;
+  font-size: var(--text-sm);
   padding: 0 4px;
   border-radius: 6px;
-  background: #111;
-  color: #fff;
+  background: var(--sunken);
+  color: var(--ink);
 }
 .talent-spent {
   position: absolute;
   left: -6px;
   top: -6px;
-  font-size: 0.65rem;
+  font-size: var(--text-sm);
   min-width: 1.1em;
   padding: 0 3px;
   border-radius: 6px;
-  background: #5865f2;
-  color: #fff;
+  background: var(--info);
+  color: var(--background);
 }
 .talent-initials {
   font-weight: 600;
@@ -1045,7 +1137,6 @@ ul.upcoming small {
 
 .talents-spent h3 {
   margin: 0 0 0.4rem;
-  font-size: 0.95rem;
 }
 
 .talents-spent ul {
@@ -1054,7 +1145,7 @@ ul.upcoming small {
 }
 
 .snapshot-time {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .class-quest-group ul {
@@ -1122,7 +1213,7 @@ ul.upcoming small {
 }
 
 .look-ahead-range {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   color: var(--muted);
 }
 
@@ -1145,15 +1236,13 @@ ul.upcoming small {
 
 .look-ahead-kind {
   min-width: 5.5rem;
-  font-size: 0.75rem;
+  font-size: var(--text-sm);
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .enchant-corrections {
   margin: 0.2rem 0 0.4rem;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .enchant-corrections summary {
@@ -1183,7 +1272,7 @@ ul.upcoming small {
 }
 
 .per-slot {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   color: var(--muted);
 }
 
@@ -1218,11 +1307,11 @@ ul.upcoming small {
 .character-switcher select,
 .add-character input,
 .add-character select {
-  background: var(--bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0.3rem 0.4rem;
+  background: var(--sunken);
+  color: var(--ink);
+  border: 1px solid var(--control-line);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.75rem;
   font: inherit;
 }
 
@@ -1266,10 +1355,10 @@ ul.upcoming small {
   z-index: 50;
   padding: 0.5rem 0.7rem;
   background: var(--panel);
-  color: var(--text);
+  color: var(--ink);
   border: 1px solid var(--accent);
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   box-shadow: 0 4px 16px rgb(0 0 0 / 40%);
 }
 
@@ -1293,14 +1382,17 @@ ul.upcoming small {
   }
 }
 
-/* Phones either way up: the tab bar and wide tables scroll inside themselves (a table's first
-   column kept in view), and dialogs use nearly all of the screen. A sideways phone is wider than 640px, and
-   a table wider than it zoomed the whole page out. */
-@media (max-width: 640px), (max-height: 500px) and (orientation: landscape) {
+/* On phones, keep the tab bar and dialogs within the viewport in either orientation. */
+@media (max-width: 640px), (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
   /* The tab bar scrolls sideways; the active tab scrolls itself into view. */
   .tabs {
+    flex-wrap: nowrap;
     overflow-x: auto;
     scrollbar-width: thin;
+  }
+
+  button.tab:focus-visible {
+    outline-offset: -2px;
   }
 
   button.tab {
@@ -1308,14 +1400,13 @@ ul.upcoming small {
     white-space: nowrap;
   }
 
-  table.gear {
+  table.gear:not(:where(.gear-scroll > table)) {
     display: block;
     overflow-x: auto;
     max-width: 100%;
   }
 
-  table.gear th:first-child,
-  table.gear td:first-child {
+  table.gear:not(:where(.gear-scroll > table)) :is(th, td):first-child {
     position: sticky;
     left: 0;
     z-index: 1;
@@ -1337,19 +1428,24 @@ ul.upcoming small {
 }
 
 /* Phones held sideways: little height, so the chrome gets out of the way. */
-@media (max-height: 500px) and (orientation: landscape) {
+@media (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
   main {
     padding: 0.25rem 1rem;
   }
 
-  /* One row, scrolling sideways if it must, rather than two. */
+  /* The controls share the masthead row when vertical space is limited. */
   .status-bar {
+    flex: 1 1 auto;
     flex-wrap: nowrap;
     overflow-x: auto;
     scrollbar-width: none; /* swiped on a touch screen; the bar would cost a row */
     white-space: nowrap;
     margin-bottom: 0.15rem;
     gap: 0.5rem;
+  }
+
+  .status-bar :focus-visible {
+    outline-offset: -2px;
   }
 
   .status-bar > * {
@@ -1362,7 +1458,7 @@ ul.upcoming small {
   }
 
   .character-header h1 {
-    font-size: 1.15rem;
+    font-size: var(--text-lg);
     margin: 0;
   }
 
@@ -1419,7 +1515,7 @@ ul.upcoming small {
 }
 
 .recipe-category {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--line);
   padding: 0.35rem 0;
 }
 
@@ -1468,7 +1564,7 @@ ul.upcoming small {
 .admin-log td {
   text-align: left;
   padding: 0.3rem 0.5rem 0.3rem 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--line);
   overflow-wrap: anywhere;
   vertical-align: top;
 }

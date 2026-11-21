@@ -1,17 +1,59 @@
+/* The shared Durish Labs tokens (ADR 0064): copied from DurishLabsPortfolio's DESIGN.md,
+   which is the source. Change them there first, then here. */
 :root {
   color-scheme: dark;
-  --bg: #15171c;
-  --panel: #1e2128;
-  --border: #2e323b;
-  --text: #e6e3da;
-  --muted: #8d8a82;
-  --accent: #e0b04a;
-  --ok: #6fbf73;
-  --warn: #e0a24a;
-  --error: #e06b5a;
 
-  /* WoW item quality colours. Rare and epic are a shade lighter than the game's (#0070dd,
-     #a335ee) so item names keep 4.5:1 contrast on these dark backgrounds (#165). */
+  --background: #141715;
+  --panel: #1e2420;
+  --sunken: #0f1210;
+  --accent-soft: #2a3320;
+
+  --ink: #f3f4e9;
+  --muted: #b9c4b9;
+
+  --accent: #d6ef8d;
+  --accent-hover: #e7f7b4;
+  --accent-ink: #17200f;
+
+  --line: #38443c;
+  --control-line: #6f7d72;
+
+  --ok: #86cfa6;
+  --warn: #e8b04f;
+  --error: #f08f7e;
+  --info: #8fb8ea;
+  --other: #c3a8e6;
+
+  --font-text: system-ui, sans-serif;
+  --font-display: Georgia, 'Times New Roman', serif;
+  --font-mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
+
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.15rem;
+  --text-xl: 1.35rem;
+  --text-2xl: 1.75rem;
+  --display-sm: clamp(1.9rem, 1.2rem + 3vw, 3.4rem);
+  --display-md: clamp(3rem, 1.5rem + 6vw, 6.5rem);
+  --display-lg: clamp(3rem, 1rem + 8vw, 7.5rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-section: clamp(2.5rem, 1.5rem + 4vw, 4.5rem);
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.55rem;
+  --wrap: 72rem;
+  --wrap-wide: 100rem;
+
+  /* The planner's own: WoW item quality colours. Rare and epic are a shade lighter than the
+     game's (#0070dd, #a335ee) so item names keep 4.5:1 contrast on the dark surfaces (#165);
+     not on --accent-soft, where they fall to about 4:1. */
   --q-poor: #9d9d9d;
   --q-common: #ffffff;
   --q-uncommon: #1eff00;
@@ -19,10 +61,12 @@
   --q-epic: #b86af7;
   --q-legendary: #ff8000;
 
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
-  background: var(--bg);
-  color: var(--text);
+  font-family: var(--font-text);
+  line-height: 1.6;
+  background: var(--background);
+  color: var(--ink);
+  accent-color: var(--accent);
+  scrollbar-color: var(--control-line) var(--background);
 }
 
 * {
@@ -48,8 +92,100 @@
 
 body {
   margin: 0;
+  /* Code in the system monospace matches the text's x-height (DESIGN.md). */
+  font-size-adjust: from-font;
+}
+
+/* The shared monospace, at the text's size: browsers otherwise draw code at 13px. */
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--font-mono);
+  font-size: 1em;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--ink);
 }
 
 a {
   color: var(--accent);
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 1.3rem max(var(--space-4), calc((100% - 1100px) / 2 + var(--space-5)));
+  border-bottom: 1px solid var(--line);
+}
+
+.masthead > a {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.masthead > a:hover {
+  text-decoration: underline;
+}
+
+.masthead .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.masthead .mark {
+  display: grid;
+  place-items: center;
+  inline-size: 2.4rem;
+  block-size: 2.4rem;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: 700 0.9rem var(--font-mono);
+}
+
+@media (max-width: 30rem) {
+  .masthead .brand-name {
+    position: absolute;
+    clip-path: inset(50%);
+    overflow: hidden;
+    inline-size: 1px;
+    block-size: 1px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+  .masthead {
+    flex-wrap: nowrap;
+    gap: var(--space-3);
+    padding: var(--space-1) var(--space-4);
+  }
+
+  .masthead > a {
+    flex: none;
+  }
+
+  .masthead .brand-name {
+    position: absolute;
+    clip-path: inset(50%);
+    overflow: hidden;
+    inline-size: 1px;
+    block-size: 1px;
+  }
+}
+
+@media (forced-colors: active) {
+  :is([aria-selected='true'], [aria-pressed='true']) {
+    border: 2px solid Highlight;
+  }
 }

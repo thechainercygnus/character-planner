@@ -89,6 +89,13 @@ describe('App tabs (#41)', () => {
     window.location.hash = ''
   })
 
+  it.each(['', 'guest'])('links to Durish Labs and Planner home from #%s', (hash) => {
+    renderAt(hash)
+    const masthead = within(screen.getByRole('banner'))
+    expect(masthead.getByRole('link', { name: 'DL Durish Labs home' }).getAttribute('href')).toBe('https://durishlabs.com/')
+    expect(masthead.getByRole('link', { name: 'Character Planner' }).getAttribute('href')).toBe('/')
+  })
+
   it('orders the tabs Upgrades, Dungeons, Plan, Talents, Professions, Progress, Character', async () => {
     renderAt('')
     const tabs = await screen.findAllByRole('tab')
