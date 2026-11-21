@@ -9,8 +9,26 @@ h2 {
   margin: 0 0 0.5rem;
 }
 
+/* Page titles (the character's name, the landing and sign-in pages): the shared display
+   face (#273, ADR 0064). */
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--display-sm);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+/* An app's panel headings: a step down from a reading page's (DESIGN.md). */
 h2 {
-  font-size: 1.1rem;
+  font-size: var(--text-xl);
+  line-height: 1.25;
+}
+
+/* Never below the shared floor: the browser's own `smaller` is about 13px. */
+small {
+  font-size: var(--text-sm);
 }
 
 section {
@@ -80,6 +98,7 @@ button:disabled {
 table.gear {
   width: 100%;
   border-collapse: collapse;
+  line-height: 1.45;
 }
 
 table.gear th,
@@ -118,7 +137,7 @@ table.gear tr.row-reached td {
   display: inline-block;
   padding: 0.1rem 0.5rem;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   white-space: nowrap;
   border: 1px solid var(--line);
 }
@@ -247,7 +266,7 @@ button.secondary,
 .quest-chain {
   margin: 0.25rem 0 0;
   padding-left: 1.4rem;
-  font-size: 0.85em;
+  font-size: var(--text-sm);
   color: var(--ink); /* not the item's quality colour, which it sits under */
 }
 
@@ -269,7 +288,7 @@ button.secondary,
   margin-top: 2.5rem;
   padding-top: 1rem;
   border-top: 1px solid var(--line);
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   text-align: center;
 }
 
@@ -422,7 +441,7 @@ button.tab.active {
   border-radius: 999px;
   background: var(--line);
   color: var(--ink);
-  font-size: 0.75rem;
+  font-size: var(--text-sm);
   font-weight: normal;
 }
 
@@ -435,17 +454,16 @@ button.tab.active {
 
 /* Recommendations */
 h3 {
-  font-size: 0.95rem;
+  font-size: var(--text-lg);
+  line-height: 1.3;
   margin: 0;
 }
 
 h4 {
   margin: 0 0 0.3rem;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .tag {
@@ -454,7 +472,7 @@ h4 {
   padding: 0 0.4rem;
   border: 1px solid var(--accent);
   border-radius: 4px;
-  font-size: 0.75rem;
+  font-size: var(--text-sm);
   color: var(--accent);
   vertical-align: middle;
 }
@@ -531,7 +549,7 @@ button.link {
   color: var(--accent);
   border: none;
   padding: 0;
-  font-size: 0.85rem;
+  font-size: var(--text-md);
   font-weight: normal;
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -550,7 +568,7 @@ button.link {
 
 .dismissed h3 {
   margin: 0 0 0.3rem;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   color: var(--muted);
 }
 
@@ -601,7 +619,7 @@ button.link {
 
 .dungeon-card .slot-label {
   grid-area: slot;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .dungeon-card .item-cell {
@@ -610,7 +628,7 @@ button.link {
 
 .dungeon-card .upgrade-source {
   grid-area: source;
-  font-size: 0.8rem;
+  font-size: var(--text-sm);
   padding-left: 2.2rem;
 }
 
@@ -639,7 +657,7 @@ button.link {
 }
 
 .tile strong {
-  font-size: 1.4rem;
+  font-size: var(--text-xl);
   font-variant-numeric: tabular-nums;
 }
 
@@ -658,7 +676,7 @@ button.link {
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .line-chart figcaption strong {
@@ -678,7 +696,7 @@ button.link {
 
 .line-chart .tick {
   fill: var(--muted);
-  font-size: 10px;
+  font-size: 15px; /* SVG user units: about 14px at the narrowest chart (#273) */
   font-variant-numeric: tabular-nums;
 }
 
@@ -737,7 +755,7 @@ button.link {
 
 /* Talent plan */
 .next-talent {
-  font-size: 1.05rem;
+  font-size: var(--text-lg);
 }
 
 .off-plan ul {
@@ -853,7 +871,7 @@ ul.upcoming small {
 .pin-toggle {
   display: flex;
   align-items: center;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   white-space: nowrap;
 }
 
@@ -1012,7 +1030,7 @@ ul.upcoming small {
   position: absolute;
   right: -6px;
   bottom: -6px;
-  font-size: 0.7rem;
+  font-size: var(--text-sm);
   padding: 0 4px;
   border-radius: 6px;
   background: var(--sunken);
@@ -1022,7 +1040,7 @@ ul.upcoming small {
   position: absolute;
   left: -6px;
   top: -6px;
-  font-size: 0.65rem;
+  font-size: var(--text-sm);
   min-width: 1.1em;
   padding: 0 3px;
   border-radius: 6px;
@@ -1045,7 +1063,6 @@ ul.upcoming small {
 
 .talents-spent h3 {
   margin: 0 0 0.4rem;
-  font-size: 0.95rem;
 }
 
 .talents-spent ul {
@@ -1054,7 +1071,7 @@ ul.upcoming small {
 }
 
 .snapshot-time {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .class-quest-group ul {
@@ -1122,7 +1139,7 @@ ul.upcoming small {
 }
 
 .look-ahead-range {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   color: var(--muted);
 }
 
@@ -1145,15 +1162,13 @@ ul.upcoming small {
 
 .look-ahead-kind {
   min-width: 5.5rem;
-  font-size: 0.75rem;
+  font-size: var(--text-sm);
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .enchant-corrections {
   margin: 0.2rem 0 0.4rem;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .enchant-corrections summary {
@@ -1183,7 +1198,7 @@ ul.upcoming small {
 }
 
 .per-slot {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   color: var(--muted);
 }
 
@@ -1269,7 +1284,7 @@ ul.upcoming small {
   color: var(--ink);
   border: 1px solid var(--accent);
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   box-shadow: 0 4px 16px rgb(0 0 0 / 40%);
 }
 
@@ -1362,7 +1377,7 @@ ul.upcoming small {
   }
 
   .character-header h1 {
-    font-size: 1.15rem;
+    font-size: var(--text-lg);
     margin: 0;
   }
 

@@ -62,7 +62,7 @@
   --q-legendary: #ff8000;
 
   font-family: var(--font-text);
-  line-height: 1.5;
+  line-height: 1.6;
   background: var(--background);
   color: var(--ink);
   accent-color: var(--accent);
@@ -92,6 +92,17 @@
 
 body {
   margin: 0;
+  /* Code in the system monospace matches the text's x-height (DESIGN.md). */
+  font-size-adjust: from-font;
+}
+
+/* The shared monospace, at the text's size: browsers otherwise draw code at 13px. */
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--font-mono);
+  font-size: 1em;
 }
 
 ::selection {
